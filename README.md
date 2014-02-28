@@ -1,3 +1,6 @@
+![alt text](http://lime.cirsfid.unibo.it/wp-content/uploads/2014/02/logo_lime.png "Logo Title")
+
+
 LIME (Language Independent Markup Editor)
 ---
 
