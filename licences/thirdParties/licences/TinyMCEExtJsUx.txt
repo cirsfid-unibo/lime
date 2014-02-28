@@ -1,0 +1,11 @@
+/**
+ * @class Ext.ux.form.field.TinyMCE
+ * @extends Ext.form.field.TextArea
+ *
+ * The Initial Developer of the Original Code is daanlib with some methods of
+ * Fady Khalife (http://code.google.com/p/ext-js-4-tinymce-ux/source/browse/trunk/ux/form/TinyMCE.js)
+ * @see http://www.sencha.com/forum/showthread.php?138436-TinyMCE-form-field
+ *
+ * @contributor Harald Hanek
+ * @license MIT (http://www.opensource.org/licenses/mit-license.php)
+ */

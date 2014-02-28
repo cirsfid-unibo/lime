@@ -1,0 +1,158 @@
+body {
+	background-color: #FFFFFF;
+	color: #000000;
+	font-family: "Times New Roman", "Georgia", "Verdana", "Arial", "Times", "Helvetica";
+	margin: 0 auto 0 auto;
+}
+
+.sxSmall {
+	/*padding-left: 10px;*/
+}
+
+h1 {
+	color: #9B1818;
+	display: block;
+	font-size: 2em;
+	font-weight: 700;
+	margin-bottom: 0.67em;
+	margin-top: 0.67em;
+	text-align: center;
+}
+
+h2 { 
+	display: block;
+	color: #9B1818;	
+	font-size: 1.5em;
+	font-weight: 700;
+	margin-bottom: 0.83em;
+	margin-top: 0.83em;
+}
+
+h3 { 
+	display: block;
+	color: #9B1818;	
+	font-size: 1.17em;
+	font-weight: 700;
+	margin-bottom: 1em;
+	margin-top: 1em;
+}
+
+h4 { 
+	display: block;
+	color: #9B1818;	
+	font-size: 1em;
+	font-weight: 700;
+	margin-bottom: 1em;
+	margin-top: 1em;
+}
+
+h5 { 
+	display: block;
+	color: #9B1818;	
+	font-size: 0.83em;
+	font-weight: 700;
+	margin-bottom: 1,67em;
+	margin-top: 1,67em;
+}
+
+
+.sottoTit {
+	display: block;
+	color: #9B1818;	
+	font-size: 1.5em;
+	font-weight: 700;
+	margin-bottom: 0.83em;
+	margin-top: 0.83em;
+}
+
+.sxSmall p,.sxWide p,.sxHalf p {
+	font-size: 1em;
+}
+
+p {
+	margin-bottom: 1em;
+	margin-top: 1em;
+}
+
+a {
+	color: #0000FF;
+	text-decoration: none;
+}
+
+a:visited {
+	color: #7D007D;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:active {
+	color: #E39230;
+}
+
+.center {
+	text-align: center;
+	text-indent: 0em;
+}
+
+.right {
+	text-align: right;
+}
+
+.caption {
+	font-weight: bold;
+}
+
+.noindent {
+	text-indent: 0em;
+}
+
+.smallcaps {
+	font-variant: small-caps;
+}
+
+.small {
+	font-size: small;
+}
+
+.large {
+	font-size: large;
+}
+
+.note {
+	font-size: small;
+	text-indent: 0em;
+}
+
+.chapter_heading {
+	text-align: center;
+	text-indent: 0em;
+	margin-top: 20pt;
+	margin-bottom: 20pt;
+}
+
+.toc_heading {
+	text-align: center;
+	margin-top: 20pt;
+	margin-bottom: 20pt;
+}
+
+.p_normal {
+	text-indent: 10mm;
+	margin-top: 5pt;
+	margin-bottom: 5pt;
+}
+
+.p_first {
+	text-indent: 0mm;
+	margin-top: 5pt;
+	margin-bottom: 5pt;
+}
+
+.p_toc {
+	text-indent: 10mm;
+	margin-top: 10pt;
+	margin-bottom: 10pt;
+}

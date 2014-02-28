@@ -1,0 +1,86 @@
+{
+	"docTypes": [
+		{
+			"name": "bill",
+			"locales": [
+				{
+					"name": "ke"
+				}, {
+					"name": "uy"
+				}, {
+					"name": "ch"
+				}, {
+					"name": "it"
+				}
+			]
+		}, {
+			"name": "doc",
+			"locales": [
+				{
+					"name": "ke"
+				}, {
+					"name": "uy"
+				}, {
+					"name": "ch"
+				}, {
+					"name": "it"
+				}
+			]
+		}, {
+			"name": "act",
+			"locales": [
+				{
+					"name": "ke"
+				}, {
+					"name": "uy"
+				}, {
+					"name": "ch"
+				}, {
+					"name": "it"
+				}
+			]
+		}, {
+			"name": "amendment",
+			"locales": [
+				{
+					"name": "ke"
+				}, {
+					"name": "uy"
+				}, {
+					"name": "ch"
+				}, {
+					"name": "it"
+				}
+			]
+		}, {
+			"name": "statment",
+			"locales": [
+				{
+					"name": "ke"
+				}, {
+					"name": "uy"
+				}, {
+					"name": "ch"
+				}, {
+					"name": "it"
+				}
+			]
+		}, {
+			"name": "documentCollection",
+			"locales": [
+				{
+					"name": "ke"
+				}, {
+					"name": "uy"
+				}, {
+					"name": "ch"
+				}, {
+					"name": "it"
+				}
+			]
+		}
+	],
+
+	"customViews": ["MarkingMenu"],
+	"plugins": ["aknPreview", "documentCollection", "at4am"]
+}
