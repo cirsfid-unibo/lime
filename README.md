@@ -1,4 +1,4 @@
-lime
+LIME
 ====
 
 LIME (Language Independent Markup Editor)
