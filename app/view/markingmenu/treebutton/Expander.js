@@ -68,7 +68,7 @@ Ext.define('LIME.view.markingmenu.treebutton.Expander', {
 			var button = me.up("treeButton");
 			if (button.childrenShown) {
 				// Hide the children  
-				me.hideChildren(true, button);
+				me.hideChildren(button);
 				//This is for the view bug when the scrollbar disappears
 				me.up("treeButton").updateLayout();
 			} else {
@@ -109,13 +109,11 @@ Ext.define('LIME.view.markingmenu.treebutton.Expander', {
 	/**
 	 * @private
 	 * This function expands the list of the treeButton's children buttons.
-	 * If noWidgets is true related widgets are not hidden.
-	 * @param {Boolean} preserveWidgets True if children and their widgets must be kept shown
 	 * @param {LIME.view.markingmenu.TreeButton} treeButton An istance of the treeButton we have to act on
 	 */
-	hideChildren : function(preserveWidgets, treeButton) {
+	hideChildren : function(treeButton) {
 		// Just check if the children exist and are opened
-		if ((treeButton.getChildren().length == 0 || treeButton.getChildrenContainer().hidden) && treeButton.getWidgets().items.items.length == 0){
+		if ((treeButton.getChildren().length == 0 || treeButton.getChildrenContainer().hidden)){
 			return;
 		}
 		var markingMenu = this.up("markingMenu"),
@@ -128,12 +126,8 @@ Ext.define('LIME.view.markingmenu.treebutton.Expander', {
 		if (treeButtonIndex != -1){
 			for (var i in realChildren) {
 				var currentChildExpander = realChildren[i].getExpander();
-				if (!preserveWidgets) {
-					// Hide the widgets 
-					realChildren[i].hideWidgets();
-					// Hide the children  
-					currentChildExpander.hideChildren(preserveWidgets, realChildren[i]);
-				}
+				// Hide the children  
+				currentChildExpander.hideChildren(realChildren[i]);
 			}
 			//For better performance call direct the el.hide() instead of .hide()		
 			children.hidden = true;

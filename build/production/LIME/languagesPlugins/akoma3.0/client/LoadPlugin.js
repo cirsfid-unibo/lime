@@ -51,38 +51,44 @@
 Ext.define('LIME.ux.LoadPlugin', {
     singleton : true,
     alternateClassName : 'LoadPlugin',
-
-    metadataClass : 'meta',
-    authorialNoteClass : 'authorialNote',
-    changePosAttr: 'chposid',
-    changePosTargetAttr: 'chpos_id',
-    refToAttribute: 'refto',
-
-    supLinkTemplate : new Ext.Template('<sup><a class="linker" href="#">{markerNumber}</a></sup>'),
+    
+    config: {
+        authorialNoteClass: 'authorialNote',
+        metadataClass: 'meta',
+        refToAttribute: 'noteref',
+        noteTmpId: 'notetmpid',
+        tmpSpanCls: 'posTmpSpan'
+    },
 
     beforeLoad : function(params) {
         var metaResults = [], extdom, documents, treeData = [];
         if (params.docDom) {
             extdom = new Ext.Element(params.docDom);
             documents = extdom.query("*[class~=" + DocProperties.documentBaseClass + "]");
-            Ext.each(documents, function(doc, index) {
-                metaResults.push(Ext.Object.merge(this.processMeta(doc, params), {docDom: doc}));
-            }, this);
-                       
-            this.processNotes(extdom);
-            
-            // Set the properties of main document which is the first docuemnt found
-            if (metaResults[0]) {
-                // params object contains properties inserted by user, 
-                // metaResults contains properties founded in the document
-                metaResults[0].docLang = metaResults[0].docLang || params.docLang;
-                metaResults[0].docLocale = metaResults[0].docLocale || params.docLocale;
-                metaResults[0].docType = metaResults[0].docType || params.docType;
-                params.docLang = metaResults[0].docLang;
-                params.docLocale = metaResults[0].docLocale;
-                params.docType = metaResults[0].docType;
-                params.metaDom = metaResults[0].metaDom;
+            if(documents.length) {
+                Ext.each(documents, function(doc, index) {
+                    metaResults.push(Ext.Object.merge(this.processMeta(doc, params), {docDom: doc}));
+                }, this);    
+            } else {
+                metaResults.push(this.processMeta(null, params));
             }
+            
+            this.preProcessNotes(params.docDom);
+                   
+            // Set the properties of main document which is the first docuemnt found
+            // params object contains properties inserted by user, 
+            // metaResults contains properties founded in the document
+            metaResults[0].docLang = metaResults[0].docLang || params.docLang;
+            metaResults[0].docLocale = metaResults[0].docLocale || params.docLocale;
+            metaResults[0].docType = metaResults[0].docType || params.docType;
+            params.docLang = metaResults[0].docLang;
+            params.docLocale = metaResults[0].docLocale;
+            params.docType = metaResults[0].docType;
+            params.metaDom = metaResults[0].metaDom;
+        } else {
+            metaResults.push(this.processMeta(null, params));
+            metaResults[0].docType = params.docType;
+            params.metaDom = metaResults[0].metaDom;
         }
         params.treeData = treeData;
         params.metaResults = metaResults;
@@ -90,64 +96,113 @@ Ext.define('LIME.ux.LoadPlugin', {
     },
 
     afterLoad : function(params, app) {
+        var me = this, 
+            schemaUrl = Config.getLanguageSchemaPath(),
+            langId = Language.getAttributePrefix()+Language.getElementIdAttribute();
+        Ext.Ajax.request({
+            url : schemaUrl,
+            method : 'GET',
+            scope : this,
+            success : function(result, request) {
+                var doc = DomUtils.parseFromString(result.responseText);
+                if(doc) {
+                    me.langSchema = doc;
+                    me.getMetaDataStructure(doc);
+                }
+            }
+        });
+        //TODO: remove all existent language id
+        /*var elementsWithId = params.docDom.querySelectorAll("["+langId+"]");
+        Ext.each(elementsWithId, function(element) {
+            var id = element.getAttribute(langId);
+            console.log(id);
+        });*/
+    },
+    
+    
+    getMetaDataStructure: function(schemaDoc) {
+        var me = this;
+        var elements = me.getSchemaElements(schemaDoc, "meta");
+        if(elements) {
+            Language.setMetadataStructure(elements);
+        }
+    },
+    
+    
+    getSchemaElements: function(schema, elementName) {
+        var me = this, 
+            element = schema.querySelector("element[name = '"+elementName+"']"),
+            children = [],
+            obj = {};
+        if(element) {
+            obj.name = elementName;
+            Ext.each(element.querySelectorAll("element"), function(child) {
+                var name = child.getAttribute("ref"),
+                    chObj = me.getSchemaElements(schema, name);
+                if(chObj) {
+                    children.push(chObj);
+                }
+            });
+            obj.children = children;    
+        } else {
+            return null;
+        }
+        return obj;
     },
     
     processMeta: function(doc, params) {
-        var extdom = new Ext.Element(doc),
-            meta = extdom.down("*[class=" + this.metadataClass + "]"),
-            result = {};
-            
-        result.docType = DomUtils.getDocTypeByNode(doc);
+        var extdom, meta, result = {}, ownDoc;
+        
         result.docMarkingLanguage = params.docMarkingLanguage;
-        if (meta && meta.dom.parentNode) {
-            var language = meta.down("*[class=FRBRlanguage]", true),
-                country = meta.down("*[class=FRBRcountry]", true);
-
-            if (language) {
-                result.docLang = language.getAttribute('language');
+        
+        if(!doc || !doc.querySelector("*[class="+this.getMetadataClass()+"]")) {
+            result.metaDom = this.createBlankMeta();
+        }  else {
+            extdom = new Ext.Element(doc);
+            meta = extdom.down("*[class=" + this.getMetadataClass() + "]");
+            result = {}, ownDoc = doc.ownerDocument;
+            result.docType = DomUtils.getDocTypeByNode(doc);
+            if (meta && meta.dom.parentNode) {
+                var language = meta.down("*[class=FRBRlanguage]", true),
+                    country = meta.down("*[class=FRBRcountry]", true);
+    
+                if (language) {
+                    result.docLang = language.getAttribute('language');
+                }
+                if (country) {
+                    result.docLocale = country.getAttribute('value');
+                }
+                result.metaDom = meta.dom.parentNode.removeChild(meta.dom);
             }
-            if (country) {
-                result.docLocale = country.getAttribute('value');
-            }
-            result.metaDom = meta.dom.parentNode.removeChild(meta.dom);
-        }
+        }         
+        
         return result;
     },
     
-    processNotes : function(extdom) {
-        var athNotes = extdom.query("*[class~=" + this.authorialNoteClass + "]"), 
-            linkTemplate = this.supLinkTemplate,
-            authCounter = 0;
+    createBlankMeta: function() {
+        var meta = Utilities.jsonToHtml(Config.getLanguageConfig().metaTemplate);
+        if(meta) {
+            meta.setAttribute('class', this.getMetadataClass());
+            return meta;
+        }
+    },
+    
+    /*
+     * Is important to call this function before loading the document in the editor. 
+     * */
+    preProcessNotes : function(dom) {
+        var athNotes = dom.querySelectorAll("*[class~=" + this.getAuthorialNoteClass() + "]"),
+            markerTemplate = new Ext.Template('<span class="'+this.getTmpSpanCls()+'" '+this.getRefToAttribute()+'="{ref}"></span>');
             
         Ext.each(athNotes, function(element, index) {
-            var parent = element.parentNode, 
-                markerNumber = element.getAttribute('akn_marker'),
-                elId = 'athNote_' + index,
-                tmpElement,  link, tmpExtEl;
-
-            while(!markerNumber) {
-                var newMarker = 'note'+(++authCounter);
-                if (extdom.query("*[akn_marker=" + newMarker + "]").length == 0) {
-                    markerNumber =  newMarker;   
-                }
-            }
-           tmpElement = Ext.DomHelper.createDom({
-                tag : 'span',
-                cls: 'posTmpSpan',
-                html : linkTemplate.apply({
-                    'markerNumber' : markerNumber
-                })
-            });
-            tmpElement.querySelector('a').setAttribute(this.refToAttribute, elId);
-            //TODO: move to constants
-            tmpElement.setAttribute(this.changePosAttr, elId);
-            element.setAttribute(this.changePosTargetAttr, elId);
-            element = parent.replaceChild(tmpElement, element);
-            //TODO: imporve this
-            if (parent.nextSibling) {
-                parent.parentNode.insertBefore(element, parent.nextSibling);
-            } else {
-                parent.parentNode.appendChild(element);
+            var noteTmpId = "note_"+index;
+            Ext.DomHelper.insertHtml("beforeBegin", element, markerTemplate.apply({
+                'ref' : noteTmpId
+            }));
+            element.setAttribute(this.getNoteTmpId(), noteTmpId);
+            // Move the element to the end of parent to prevent split in parent
+            if(element.nextSibling) {
+                element.parentNode.appendChild(element);
             }
         }, this);
     }

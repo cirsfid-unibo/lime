@@ -68,10 +68,10 @@ Ext.define('LIME.Locale', {
     getString: function(name, scope) {
         if (scope && this.pStrings[scope]) {
             if(this.pStrings[scope][this.lang])
-                return this.pStrings[scope][this.lang][name];
+                return this.pStrings[scope][this.lang][name] || name;
                 
             if(this.pStrings[scope][this.getDefaultLang()])
-                return this.pStrings[scope][this.getDefaultLang()][name];
+                return this.pStrings[scope][this.getDefaultLang()][name] || name;
         }
         return this.strings[name];
     },

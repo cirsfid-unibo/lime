@@ -43,25 +43,16 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 /**
- * This store contains the ext interface languages
+ * This store lists the possible locales of a document.
+ * ie. two documents written in the same language may have important
+ * cultural differences.  
+ *
+ * This store is populated by language plugins depending on the
+ * supported locales.
  */
-
 Ext.define('LIME.store.Locales', {
-	
 	extend : 'Ext.data.Store',
-
-	// The fields of the store, disabled items are just decoys
-	// fields : ['locale', 'name', 'status', 'color', 'indentation'],
 	fields: ['name']
-
-
-	// Load datas from locale/languages.js
-	// data : [
-		// {"name": "Civil Law", "status": "disabled"},
-		// {"locale": "uruguay", "status": "enabled", "name": "Uruguay"},
-		// {"name": "Common Law", "status": "disabled"},
-		// {"locale": "kenya", "status": "enabled", "name": "Kenya"}
-	// ]
-
 }); 

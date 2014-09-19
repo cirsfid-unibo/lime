@@ -493,7 +493,7 @@
 	},
 	"quotedStructure": {
 		"label": "Set quoted structure",
-		"shortLabel": "quotedStructure"
+		"shortLabel": "quoted structure"
 	},
 	"quotedText": {
 		"label": "Set quoted text",

@@ -53,8 +53,7 @@ require_once('./../dbInterface/class.dbInterface.php');
 
 $condition = TRUE;
 $init_db = TRUE;
-$host = 'http://'.$_SERVER['HTTP_HOST'] . substr($_SERVER['REQUEST_URI'], 0,
-												 strrpos($_SERVER['REQUEST_URI'],'/php/'));
+$host = 'http://'.$_SERVER['SERVER_NAME'];
 $dbhost = 'http://'.$_SERVER['HTTP_HOST'].':8080/exist/';
 $uname = 'admin'; $pwd = 'exist'; $abipath = '/path/to/AbiWord';
 
@@ -64,7 +63,8 @@ $uname = 'admin'; $pwd = 'exist'; $abipath = '/path/to/AbiWord';
 if($_POST){
 	$host = $_POST['host'];$dbhost = $_POST['dbhost'];
 	$uname = $_POST['uname']; $pwd = $_POST['pwd']; $abipath = $_POST['abipath'];
-	if(write_lime_config()) header( 'Location: ' . $host);
+	if(write_lime_config()) header( 'Location: ' . $host . substr($_SERVER['REQUEST_URI'], 0,
+												 strrpos($_SERVER['REQUEST_URI'],'/php/')));
 };
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -86,8 +86,8 @@ function check_tmp_permission() {
 	chmod($TMPFOLDER, 0700);
 	if(!is_writable($TMPFOLDER)) {
 		global $condition;$condition = FALSE;	
-		return '<tr><td/><td class="warn"><p>Please set the folder <code>' . realpath($TMPFOLDER) .
-			   '</code> writable.</td></tr>';
+		return '<tr><td/><td class="warn"><p>Please set the <code>php</code> LIME folder
+		to have writable permission for the web server user (example: apache) </td></tr>';
 	}
 }
 
@@ -172,7 +172,7 @@ function check_db() {
 <form method="POST" action=".">
 	<table class="form-table">
 		<tr>
-			<td id="heading"><label for="host">lime url</label></th>
+			<td id="heading"><label for="host">server name</label></th>
 			<td><input name="host" id="host" type="text" size="25" value="<?php global $host;echo $host; ?>"</td>
 		</tr>
 		

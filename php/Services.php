@@ -64,15 +64,15 @@
 	require('./Proxies/Services/Proxies_Services_AknToEpub.php');
 	require('./Proxies/Services/Proxies_Services_AknToXml.php');
 	require('./Proxies/Services/Proxies_Services_AknToHtml.php');
-	require('./Proxies/Services/Proxies_Services_FileToString.php');
 	require('./Proxies/Services/Proxies_Services_FileToHtml.php');
 	require('./Proxies/Services/Proxies_Services_Upload.php');
 	require('./Proxies/Services/Proxies_Services_HtmlToPdf.php');
 	require('./Proxies/Services/Proxies_Services_CreateDocumentCollection.php');
-	require('./Proxies/Services/Proxies_Services_AknValidation.php');
+	require('./Proxies/Services/Proxies_Services_XmlValidation.php');
 	require('./Proxies/Services/Proxies_Services_ExportFiles.php');
 	require('./Proxies/Services/Proxies_Services_FilterUrls.php');
 	require('./Proxies/Proxies.php');
+	require('./Proxies/Services/Proxies_Services_AknToPdfFop.php');
 	
 	// the method of the request
 	$type = $_SERVER['REQUEST_METHOD'];

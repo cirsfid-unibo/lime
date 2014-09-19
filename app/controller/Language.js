@@ -122,11 +122,21 @@ Ext.define('LIME.controller.Language', {
         var languageController = this, 
             editorController = this.getController("Editor"),
             tmpElement = params.docDom,
-            extTmp = new Ext.Element(tmpElement), 
-            unusedElements = extTmp.query(DomUtils.getTempClassesQuery()), 
-            markedElements = extTmp.query("*[" + DomUtils.elementIdAttribute + "]"), 
+            unusedElements = tmpElement.querySelectorAll(DomUtils.getTempClassesQuery()), 
+            markedElements = tmpElement.querySelectorAll("*[" + DomUtils.elementIdAttribute + "]"),
+            focusedElements  = tmpElement.querySelectorAll("."+DocProperties.elementFocusedCls),
+            langPrefix = languageController.getLanguagePrefix(),
             counters = {};
 
+        if (DocProperties.frbrDom) {
+            var root = tmpElement.querySelector("*["+DocProperties.docIdAttribute+"]");
+            var metaDom = Ext.clone(DocProperties.frbrDom);
+            metaDom.setAttribute("class", "meta");
+            if (root && !root.querySelector("*[class*=meta]")) {
+                root.insertBefore(metaDom, root.firstChild);    
+            }
+        }
+        
         // TODO: decide if this part is general for all languages or specific
         try {
             //Remove all unused elements
@@ -137,10 +147,20 @@ Ext.define('LIME.controller.Language', {
                     element.parentNode.removeChild(element);
                 }
             });
+            
+            Ext.each(focusedElements, function(node) {
+                Ext.fly(node).removeCls(DocProperties.elementFocusedCls);
+            });
+            
             //Apply rules for all marked elements
             Ext.each(markedElements, function(element) {
+                var intId = element.getAttribute(DomUtils.elementIdAttribute), newId,
+                    hrefElements = tmpElement.querySelectorAll("*["+langPrefix+"href = '#"+intId+"']");
                 //Set a language unique Id
-                DomUtils.setLanguageMarkingId(element, counters);
+                newId = languageController.setLanguageMarkingId(element, counters, tmpElement);
+                Ext.each(hrefElements, function(hrefElement) {
+                    hrefElement.setAttribute(langPrefix+"href", "#"+newId);
+                });
                 Interpreters.wrappingRulesHandlerOnTranslate(element);
             }, this);
         } catch(e) {
@@ -150,15 +170,11 @@ Ext.define('LIME.controller.Language', {
             return;
         }
         
-        if (DocProperties.frbrDom) {
-            var root = extTmp.down("*["+DocProperties.docIdAttribute+"]", true);
-            var metaDom = Ext.clone(DocProperties.frbrDom);
-            metaDom.setAttribute("class", "meta");
-            if (root && !root.querySelector("*[class*=meta]")) {
-                root.insertBefore(metaDom, root.firstChild);    
-            }
-        }
-        var tmpHtml = editorController.serialize(extTmp.dom);
+        var tmpHtml = editorController.serialize(tmpElement);
+        
+        //temporary trick to remove focus class when removeCls don't work
+        tmpHtml = tmpHtml.replace(/(class=\"[^\"]+)(\s+\bfocused\")/g, '$1"');
+
         //Ext.log(false, tmpHtml);
         Language.translateContent(tmpHtml, DocProperties.documentInfo.docMarkingLanguage, {
             success : function(responseText) {
@@ -233,10 +249,8 @@ Ext.define('LIME.controller.Language', {
     buildMetadata : function(values, dom, docUri){
         var serializer = new XMLSerializer(),
             container = document.createElement('div'),
-            metaTemplate = Ext.clone(this.metaTemplate),
-            innerTemplate = metaTemplate.inner,
-            mainTemplate = metaTemplate.outer, // The main template to populate and convert
-            identification = mainTemplate['identification'],
+            metaTemplate = Ext.clone(Config.getLanguageConfig().metaTemplate),
+            identification = metaTemplate['identification'],
             work = identification['FRBRWork'],
             expression = identification['FRBRExpression'],
             manifestation = identification['FRBRManifestation'],
@@ -251,13 +265,6 @@ Ext.define('LIME.controller.Language', {
         container.setAttribute('class', Statics.metadata.containerClass);
         internalMetadata = this.buildInternalMetadata(container);
         container.appendChild(internalMetadata);
-
-        // Copy the template
-        for (var level in identification) {
-            for (var prop in innerTemplate) {
-                identification[level][prop] = Ext.clone(innerTemplate[prop]);
-            }
-        }
 
         // Populate template
         // Example: identification['FRBRWork']['FRBRCountry']['@value'] = values.nationality;
@@ -287,7 +294,7 @@ Ext.define('LIME.controller.Language', {
         DocProperties.frbrDom = null;
         // Convert to HTML
         if (dom) {
-            var frbr = Utilities.jsonToHtml(mainTemplate);
+            var frbr = Utilities.jsonToHtml(metaTemplate);
             frbr.setAttribute('class', Statics.metadata.frbrClass);
             this.parseFrbrMetadata(frbr);
             container.appendChild(frbr);
@@ -337,6 +344,60 @@ Ext.define('LIME.controller.Language', {
                 metaObject.nationality =  DocProperties.frbr.work.nationality;
             }
         return metaObject;
+    },
+    /**
+     * This function builds and set an id attribute starting from the given element.
+     * The build process is based on the hierarchy of the elements.
+     * The difference between this and {@link LIME.controller.Marker#getMarkingId} is that this id is
+     * specific to the language plugin currently in use while the latest is for development purposes.
+     * @param {HTMLElement} markedElement The element we have to set the attribute to
+     * @param {Object} counters Counters of elements
+     */
+    getLanguageMarkingIdGeneral : function(markedElement, prefix, root, counters) {
+        var newId = '', elementId = markedElement.getAttribute(DomUtils.elementIdAttribute);
+        if (elementId && DocProperties.markedElements[elementId]) {
+            var counter = 1, button = DocProperties.markedElements[elementId].button;
+            // If the element has already an language id, leave it
+            if (markedElement.getAttribute(prefix + DomUtils.langElementIdAttribute))
+                return;
+            newId = button.id.replace(DomUtils.vowelsRegex, ''),
+            //don't use "parent" variable because in IE is a reference to Window
+            parentMarked = DomUtils.getFirstMarkedAncestor(markedElement.parentNode);
+            if (parentMarked) {
+                parentId = parentMarked.getAttribute(prefix + DomUtils.langElementIdAttribute);
+                if (!counters[parentId]) {
+                    counters[parentId] = {};
+                } else if (counters[parentId][newId]) {
+                    counter = counters[parentId][newId];
+                }
+                counters[parentId][newId] = counter + 1;
+                newId = parentId + '-' + newId;
+            } else {
+                if (!counters[newId]) {
+                    counters[newId] = counter + 1;
+                } else {
+                    counter = counters[newId];
+                }
+            }
+            newId += counter;
+        }
+        
+        return newId;
+    },
+    
+    setLanguageMarkingId: function(markedElement, counters, root) {
+        var me = this, langSetId, newId, langPrefix = me.getLanguagePrefix();
+        if(Ext.isFunction(Language.getLanguageMarkingId)) {
+            langSetId = Ext.Function.bind(Language.getLanguageMarkingId, Language);
+        } else {
+            langSetId = me.getLanguageMarkingIdGeneral;
+        }
+        newId = langSetId(markedElement, langPrefix, root, counters);
+        if (newId != '') {
+            markedElement.setAttribute(langPrefix + DomUtils.langElementIdAttribute, newId);
+        }
+            
+        return newId;
     },
     
     parseFrbrMetadata : function(dom) {
@@ -392,6 +453,16 @@ Ext.define('LIME.controller.Language', {
          var languageConfig = this.getStore("LanguagesPlugin").getData();
          return languageConfig.markupMenuRules.defaults.attributePrefix;       
     },
+    
+    nodeGetLanguageAttribute: function(node, attribute) {
+        var prefix = this.getLanguagePrefix(),
+            value = node.getAttribute(prefix+attribute);
+        
+        return {
+            name: prefix+attribute,
+            value: value
+        };
+    },
 
     /**
      * Execute the custom request needed to save the document.
@@ -422,10 +493,11 @@ Ext.define('LIME.controller.Language', {
     },
     
     beforeLoad: function(params, callback) {
-        var app = this.application, beforeLoad = LoadPlugin.beforeLoad,
+        var me = this, app = this.application, beforeLoad = LoadPlugin.beforeLoad,
             XMLS = new XMLSerializer(),
+            editorController = me.getController("Editor"),
             newParams = params,
-            newFn, docDom,
+            newFn, docDom, docText,
             parser = new DOMParser(), doc, docCounters = {}, openedDocumentsData = [];
         // Checking that before load will be called just one time per document
         if (beforeLoad && !newParams.beforeLoaded) {
@@ -465,8 +537,14 @@ Ext.define('LIME.controller.Language', {
                     });
                 }
                 
-                params.docText = (newParams.docDom) ? XMLS.serializeToString(newParams.docDom) : params.docText;
-                
+                if(newParams.docDom) {
+                    try {
+                        docText = editorController.serialize(newParams.docDom.firstChild);
+                    } catch(e) {
+                        docText = "";
+                    }
+                    params.docText = docText || XMLS.serializeToString(newParams.docDom);
+                }
                 if (newParams.metaDom) {
                     this.parseFrbrMetadata(newParams.metaDom);
                 }
@@ -478,6 +556,10 @@ Ext.define('LIME.controller.Language', {
     },
     
     afterLoad: function(params) {
+        var docEl = params.docDom.querySelector("."+DocProperties.documentBaseClass);
+        if(docEl && !docEl.getAttribute(DocProperties.docIdAttribute)) {
+            docEl.setAttribute(DocProperties.docIdAttribute, 0);
+        }
         var newFn = Ext.Function.bind(LoadPlugin.afterLoad, LoadPlugin, [params, this.application]);
         newFn();
     },
@@ -499,7 +581,8 @@ Ext.define('LIME.controller.Language', {
         // Create bindings between events and callbacks
         // User's custom callbacks
         this.application.on(Statics.eventsNames.translateRequest, this.beforeTranslate, this);
-        this.application.on(Statics.eventsNames.documentLoaded, this.beforeTranslate, this);
+        // now before translate on documentLoaded is useless
+        //this.application.on(Statics.eventsNames.documentLoaded, this.beforeTranslate, this);
         this.application.on(Statics.eventsNames.afterLoad, this.afterLoad, this);
         this.application.on(Statics.eventsNames.beforeLoad, this.beforeLoad, this);
         this.application.on(Statics.eventsNames.saveDocument, this.saveDocument, this);
@@ -512,7 +595,8 @@ Ext.define('LIME.controller.Language', {
                     var me = this;
                     Ext.defer(function() {
                         me.application.fireEvent(Statics.eventsNames.changedEditorMode, {
-                            sidebarsHidden: newC.notEditMode
+                            sidebarsHidden: newC.notEditMode,
+                            markingMenu: newC.markingMenu
                         });            
                     }, 100);
                 }

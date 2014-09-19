@@ -136,10 +136,6 @@
 					header("Content-Type: application/json");
 					$this->_service = new Proxies_Services_AknToXml($this->_params, true);
 					break;
-				case 'FILE_TO_STRING':
-					header("Content-Type: text/html"); // TODO if set to any other type the result is wrapped into a <pre> tag
-					$this->_service = new Proxies_Services_FileToString($this->_params);
-					break;
 				case 'FILE_TO_HTML':
 					header("Content-Type: application/json"); // TODO if set to any other type the result is wrapped into a <pre> tag
 					$this->_service = new Proxies_Services_FileToHtml($this->_params);
@@ -162,7 +158,7 @@
 					break;
 				case 'XML_VALIDATION':
 					header("Content-Type: application/json");
-					$this->_service = new Proxies_Services_AknValidation($this->_params);
+					$this->_service = new Proxies_Services_XmlValidation($this->_params);
 					break;
 				case 'EXPORT_FILES':
 					header("Content-Type: application/json");
@@ -171,6 +167,10 @@
 				case 'FILTER_URLS':
 					header("Content-Type: application/json");
 					$this->_service = new Proxies_Services_FilterUrls($this->_params);
+					break;
+				case 'AKN_TO_PDF_FOP':
+					header("Content-Type: application/json");
+					$this->_service = new Proxies_Services_AknToPdfFop($this->_params);
 					break;
 			}
 			

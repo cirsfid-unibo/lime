@@ -61,6 +61,9 @@ Ext.define('LIME.controller.Storage', {
     }, {
         selector: 'newOpenfileToolbarCancelButton',
         ref: 'newOpenfileToolbarCancelButton'
+    },{
+        selector: 'newDocument',
+        ref: 'newDocument'
     }],
    
     storageColumns: [{
@@ -121,8 +124,9 @@ Ext.define('LIME.controller.Storage', {
             selectOnFocus: true
         },
         getValue: function() {
-            return DocProperties.documentInfo["docLang"]+"@"+ ((DocProperties.frbr) ? 
-                   ((DocProperties.frbr.expression) ? Ext.Date.format(DocProperties.frbr.expression['date'], 'Y-m-d') : "") :"");
+            var date = ((DocProperties.frbr && DocProperties.frbr.expression && !isNaN(DocProperties.frbr.expression['date'])) ? 
+                        Ext.Date.format(DocProperties.frbr.expression['date'], 'Y-m-d') : "");
+            return DocProperties.documentInfo["docLang"]+"@"+date;
         }
     },{
         text: Locale.strings.fileLabel,
@@ -200,22 +204,42 @@ Ext.define('LIME.controller.Storage', {
             'userPassword' : localStorage.getItem('password')
         }, requestMetaUrl = Utilities.getAjaxUrl(Ext.Object.merge(params, {
             'requestedService' : Statics.services.getFileMetadata
-        })), requestUrl = Utilities.getAjaxUrl(Ext.Object.merge(params, {
-            'requestedService' : Statics.services.getFileContent
-        })), prefManager = this.getController('PreferencesManager'), config = {};
+        }));
 
         Ext.Ajax.request({
             url : requestMetaUrl,
             async : false,
             success : function(response, opts) {
                 DocProperties.clearMetadata(app);
-                config = LanguageController.parseMetadata(response.responseXML, response.responseText);
+                var config = LanguageController.parseMetadata(response.responseXML, response.responseText);
+                if(config.docMarkingLanguage) {
+                    Config.setLanguage(config.docMarkingLanguage, function() {
+                        me.requestDoc(filePath, config, openWindow);
+                    });
+                } else {
+                    me.requestDoc(filePath, config, openWindow);
+                }
             },
             failure : function(response, opts) {
                 Ext.Msg.alert('server-side failure with status code ' + response.status);
+                me.requestDoc(filePath, null, openWindow);
             }
         });
 
+    },
+    
+    requestDoc: function(filePath, config, openWindow) {
+        config = config || {};
+        var app = this.application, 
+            transformFile = (config.docMarkingLanguage) ? Config.getLanguageTransformationFile("languageToLIME", config.docMarkingLanguage) : "",
+            requestUrl = Utilities.getAjaxUrl({
+                'requestedFile' : filePath,
+                'userName' : localStorage.getItem('username'),
+                'userPassword' : localStorage.getItem('password'),
+                'requestedService' : Statics.services.getFileContent,
+                'transformFile': (transformFile) ? transformFile : ""
+            }), 
+            prefManager = this.getController('PreferencesManager');
         // get the doc
         Ext.Ajax.request({
             url : requestUrl,
@@ -235,7 +259,8 @@ Ext.define('LIME.controller.Storage', {
                 // If the service is called with empty name the file will be saved in a temporary location
                 app.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(config, {
                     docText : response.responseText,
-                    docId : documentId
+                    docId : documentId,
+                    originalDocId: filePath
                 }));
 
                 // Set the last opened document into the user's preferences
@@ -266,7 +291,7 @@ Ext.define('LIME.controller.Storage', {
                     // Store after load may change data on the fly, so reconfigure the grid
                     cmp.reconfigure(store);
                     if (Ext.isFunction(callback)) {
-                        callback(store);
+                        callback(store, cmp);
                     }
                 }
             });
@@ -296,14 +321,17 @@ Ext.define('LIME.controller.Storage', {
         }
     },
     
-    fileListViewClick: function(cmp, record, item, index, e, eOpts ) {
+    fileListViewClick: function(cmp, record, item, index, e, eOpts, storeCallback) {
         var data = record.getData(),
             path = data.id, nextList, 
             relatedWindow = cmp.up('window'),
             relatedButton = relatedWindow.down('button[dynamicDisable]'),
             parent = relatedWindow.down('listFilesPanel') || relatedWindow.down('panel'),  
             thisListView = cmp.up('grid') || cmp, thisListViewIndex, columnConfig = {};
-
+        
+        if(record.notSelectable) {
+            return;
+        }
         if (record.data.leaf) {
             if(relatedButton) {
                 relatedButton.enable();    
@@ -325,6 +353,7 @@ Ext.define('LIME.controller.Storage', {
                         indexInParent: thisListView.indexInParent + 1
                 });
                 nextList = parent.add(Ext.widget(thisListView.xtype, columnConfig));
+                Ext.callback(relatedWindow.afterAddColumn, this, [nextList]);
             }
             this.removeUselessListViews(nextList, parent);
             
@@ -341,14 +370,16 @@ Ext.define('LIME.controller.Storage', {
                 }
             }, this);
             nextList.userClick = (item) ? true : false;               
-            this.loadOpenFileListData(nextList, path);
+            this.loadOpenFileListData(nextList, path, function(store, cmp) {
+                Ext.callback(storeCallback, false, [store, cmp]);
+                Ext.callback(relatedWindow.onLoad, false, [store, cmp]);
+            });
             this.scrollToListView(nextList, parent);
             relatedWindow.activeList = nextList;
         }
         if(!relatedWindow.avoidTitleUpdate) {
             this.updateTitle(relatedWindow, data.path);
         }
-        CMP = cmp; //TODO: remove, just for testing
     },
     
     updateTitle: function(relatedWindow, pathToShow) {
@@ -477,7 +508,6 @@ Ext.define('LIME.controller.Storage', {
                 path+=prevListSelected.get("path");
             }
         }
-        
         store.loadData([{
             "id": newRecordId,
             "leaf": (cmp.indexInParent==(me.storageColumns.length-1)) ? "1" : "",
@@ -499,7 +529,6 @@ Ext.define('LIME.controller.Storage', {
     saveListViewOnStoreLoad: function(loadedStore, cmp) {
         var me = this, columnDescriptor = me.storageColumns[cmp.indexInParent],
             columnValue = me.columnValues[cmp.indexInParent], recordPos;
-
         if (columnValue) {
             recordPos = loadedStore.findBy(function(record, id) {
                 return ((record.get("name") == columnValue) || (record.get("text") == columnValue));
@@ -516,15 +545,84 @@ Ext.define('LIME.controller.Storage', {
         }
     },
     
-    selectDocument: function(callback, scope) {
-        Ext.widget('newOpenfileMain', {onOpen: Ext.bind(callback, scope)}).show();
+    selectDocument: function(config) {
+        var onLoad, afterAddColumn, notAllowedPaths, allowOnlyInPaths, path = config.path || "";
+
+        notAllowedPaths = Ext.isArray(config.notAllowedPaths) ? 
+                          config.notAllowedPaths : (config.notAllowedPaths) ? [config.notAllowedPaths] : [];
+        allowOnlyInPaths = Ext.isArray(config.allowOnlyInPaths) ? 
+                          config.allowOnlyInPaths : (config.allowOnlyInPaths) ? [config.allowOnlyInPaths] : [];
+
+        if (allowOnlyInPaths.length || notAllowedPaths.length) {
+            onLoad = function(store, cmp) {
+                var view = cmp.getView(), recordsForbidden = store.queryBy(function(record, id) {
+                    var allow = (allowOnlyInPaths.length) ? false : true, idLength = id.length;
+                    for(var i = 0; i < allowOnlyInPaths.length; i++) {
+                        var can = (allowOnlyInPaths[i].length > idLength) ? 
+                                   (allowOnlyInPaths[i].indexOf(id) != -1) : (id.indexOf(allowOnlyInPaths[i]) != -1);
+                        if(can) {
+                            allow = true;
+                            break;
+                        }
+                    }
+                    return Ext.Array.contains(notAllowedPaths, id) || !allow;
+                }), notAllowedRecords = store.queryBy(function(record, id) {
+                    return Ext.Array.contains(notAllowedPaths, id);
+                });
+                recordsForbidden.each(function(record) {
+                    view.addRowCls(record.index, 'forbidden-row');
+                    record.notSelectable = true;
+                });
+                notAllowedRecords.each(function(record) {
+                    var recordEl = cmp.getView().getEl().down("[data-recordindex="+record.index+"]"); 
+                    view.addRowCls(record.index, 'forbidden-cell');
+                    if(recordEl) {
+                        Ext.callback(config.notAllowedPathRender, false, [recordEl, record]);
+                    }
+                    record.notSelectable = true;
+                });
+            };
+            afterAddColumn = function(cmp) {
+                cmp.addListener("beforeselect", function(selModel, record, index) {
+                    return (record.notSelectable) ? false : true;
+                });
+            };
+        }
+
+        Ext.widget('newOpenfileMain', {
+            pathToOpen : config.path,
+            afterAddColumn : afterAddColumn,
+            onLoad : onLoad,
+            onOpen : Ext.bind(config.callback, config.scope)
+        }).show();
     },
     
+    openDocumentByUri: function(config) {
+        var me = this,
+            fullPath = DocProperties.documentInfo.originalDocId ||  DocProperties.documentInfo.docId, indexPath;
+        if (fullPath && config.path) {
+            indexPath = fullPath.indexOf(config.path);
+            if(indexPath != -1) {
+                config.path = fullPath.substr(0, indexPath+config.path.length);
+            } else {
+                indexPath = Utilities.globalIndexOf("/", fullPath);
+                if(indexPath.length>4) {
+                    config.path = fullPath.substr(0, indexPath[4]) + config.path; 
+                }
+            }
+        }
+        config.callback = function(document) {
+            me.openDocument(document.id);
+        };
+        config.scope = me;
+        me.selectDocument(config);
+    },
     
     init : function() {
         // save a reference to the controller
         var me = this;
         me.application.on(Statics.eventsNames.selectDocument, this.selectDocument, this);
+        me.application.on(Statics.eventsNames.openDocument, this.openDocumentByUri, this);
         // set up the control
         this.control({
 
@@ -548,10 +646,30 @@ Ext.define('LIME.controller.Storage', {
            },
            'listFilesPanel': {
                activated: function(cmp) {
-                   var me = this, listViews = cmp.query("openFileListView");
-                   Ext.each(listViews, function(listView) {
-                       me.loadOpenFileListData(listView);
-                   });
+                   var me = this, listViews = cmp.query("openFileListView"),
+                       relatedWindow = cmp.up("window"), path,
+                       onStoreLoad = function(store, cmp) {
+                           var recordIndex = store.findBy(function(record, id) {
+                                   return (path.indexOf(id) != -1);
+                               }), record, fullPath;
+                           if(recordIndex != -1) {
+                               record = store.getAt(recordIndex);
+                               fullPath = record.get("id");
+                               cmp.getView().select(recordIndex);
+                               me.fileListViewClick(cmp, record, false, false, false, false, onStoreLoad);
+                           }
+                       };
+                   if(relatedWindow && relatedWindow.pathToOpen) {
+                       path = relatedWindow.pathToOpen || "";
+                        me.loadOpenFileListData(listViews[0], false, function(store, cmp) {
+                            Ext.callback(onStoreLoad, false, [store, cmp]);
+                            Ext.callback(relatedWindow.onLoad, false, [store, cmp]);
+                        }); 
+                   } else {
+                       Ext.each(listViews, function(listView) {
+                           me.loadOpenFileListData(listView, false, relatedWindow.onLoad);
+                       });
+                   }
                }
            },
             'saveFileListView': {
@@ -576,7 +694,6 @@ Ext.define('LIME.controller.Storage', {
                     if (columnConfig && columnConfig.editor) {
                         column.editor = columnConfig.editor;
                     }
-                    
                 },
                 itemclick: this.fileListViewClick,
                 recordChanged: function(cmp, record, silent) {
@@ -625,6 +742,13 @@ Ext.define('LIME.controller.Storage', {
             },
             'newSavefileMain newSavefileToolbarOpenButton': {
                 click: this.saveDocument
+            },
+            'newDocument' : {
+                close: function(cmp, option) {
+                    if(!cmp.autoClosed) {
+                        me.application.fireEvent(Statics.eventsNames.progressEnd);
+                    }
+                }
             }
         });
     }

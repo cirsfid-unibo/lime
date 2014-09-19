@@ -69,11 +69,26 @@ Ext.define('LIME.Interpreters', {
 		/*Clone the pattern configuration*/
 		var patternConfigClone = Ext.clone(patternConfig);
 		var patternName = buttonConfig.pattern;
-
-		/*Return the result of the mergePattern function that returns a new pattern configuration*/
+        
+        if(!patternConfigClone) return buttonConfig;
+        
+		
+		if (buttonConfig.remove) {
+            for (var i in buttonConfig.remove) {
+                var elementsToRemove = buttonConfig.remove[i];
+                if (elementsToRemove.length > 0) {
+                    Ext.each(elementsToRemove, function(elementToRemove) {
+                        delete patternConfigClone[i][elementToRemove];
+                    });
+                } else {
+                    delete patternConfigClone[i];
+                }
+            }
+        }
+        /*Return the result of the mergePattern function that returns a new pattern configuration*/
 		var newPattern = this.mergePattern(patternConfigClone, buttonConfig);
 		newPattern.wrapperClass = this.parseClass(newPattern.wrapperClass, elName, patternName);
-		if (newPattern.remove) {
+		/*if (newPattern.remove) {
 			for (var i in newPattern.remove) {
 				var elementsToRemove = newPattern.remove[i];
 				if (elementsToRemove.length > 0) {
@@ -86,7 +101,7 @@ Ext.define('LIME.Interpreters', {
 
 			}
 
-		}
+		}*/
 		return newPattern;
 	},
 	/**
@@ -239,13 +254,18 @@ Ext.define('LIME.Interpreters', {
 		}
 		//  Get the element's widget
 		widget = (rule) ? Interpreters.parseWidget(rule) : null;
+		
+		if(widget) {
+            DocProperties.setElementWidget(name, widget);
+        }
+		
+		
 		pattern = Interpreters.parsePattern(name, patterns[button.pattern], button);
 		//Create the configuration object
 		config = {
 			markupConfig : button,
 			pattern : pattern,
 			rules : rule,
-			widgetConfig : widget,
 			name : name,
 			label : label
 		};
@@ -359,13 +379,14 @@ Ext.define('LIME.Interpreters', {
 	 */
 	parseWidget : function(rule) {
 		var widgetsObject = rule.askFor,
-		      globalAttributes = rule.attributes;
-		var namePrefix = rule[Utilities.buttonFieldDefault].attributePrefix || "";
+		      globalAttributes = rule.attributes || {};
+		
 		if (!widgetsObject)
 			return null;
 		var widgetConfig = {
 			list : []
 		};
+		var namePrefix = rule[Utilities.buttonFieldDefault].attributePrefix || "";
 		var title = "";
 		var how = Ext.Object.getSize(widgetsObject);
 		for (var i in widgetsObject) {
@@ -373,6 +394,16 @@ Ext.define('LIME.Interpreters', {
 			/* Don't create many panels containing the fields but concatenate them in a unique panel */
 			var tempWidget = {};
 			tempWidget.xtype = (Statics.widgetTypePatterns[widget.type]) ? Statics.widgetTypePatterns[widget.type] : 'textfield';
+			if(widget.type == "list") {
+			    var store = Ext.create('Ext.data.Store', {
+                    fields: ["type"],
+                    data : widget.values.map(function(el) {return {"type": el};})
+                });
+                tempWidget.store = store;
+                tempWidget.queryMode = 'local';
+                tempWidget.displayField = 'type';
+                tempWidget.valueField = 'type';
+			}
 			if (how > 1) {
 				tempWidget.emptyText = widget.label;
 				if (title != "")
@@ -384,6 +415,9 @@ Ext.define('LIME.Interpreters', {
 			if (widget.insert && widget.insert.attribute) {
 				tempWidget.name = namePrefix + widget.insert.attribute.name;
 				tempWidget.origName = widget.insert.attribute.name;
+				globalAttributes[tempWidget.origName] = {
+				    tpl: "{"+tempWidget.origName+"}"
+				};
 			} else {
 			    tempWidget.origName = i;
 			    tempWidget.name = i;

@@ -3,7 +3,7 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:akn="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD08"
+    xmlns:akn="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD10"
     exclude-result-prefixes="xs"
     version="1.0">
     <xsl:output method="xml" indent="yes" encoding="UTF-8" />
@@ -120,10 +120,13 @@
 						 akn:amendmentJustification |
 						 akn:introduction |
 						 akn:background |
+					     akn:collectionBody |
+					     akn:component |
 						 akn:arguments |
 						 akn:remedias |
 						 akn:motivation |
 						 akn:decision |
+						 akn:mod |
 						 akn:fragmentBody
 						">
 	        <div>
@@ -189,7 +192,8 @@
 	</xsl:template>
 	
 	<!-- Popup elements -->
-	<xsl:template match="akn:authorialNote">
+	<xsl:template match="akn:quotedStructure |
+						 akn:authorialNote">
 			<div>
 	        	<xsl:attribute name="class">
 		         	<xsl:value-of select="concat('popup ',name(.))" />
@@ -271,8 +275,7 @@
 	</xsl:template>
 	
 	<!-- Undefined elements -->
-	<xsl:template match="akn:quotedStructure|
-						akn:amendmentList |
+	<xsl:template match="akn:amendmentList |
 						akn:meta |
 						akn:identification |
 						akn:FRBRWork |
@@ -365,14 +368,10 @@
 						akn:TLCReference |
 						akn:notes |
 						akn:note |
-						akn:componentRef |
 						akn:proprietary |
 						akn:presentation |
-						akn:collectionBody |
-						akn:documentRef |
 						akn:attachments |
 						akn:components |
-						akn:component |
 						akn:debateBody |
 						akn:amendmentBody |
 						akn:judgementBody |
@@ -445,13 +444,13 @@
 						 akn:outcome |
 						 akn:ins |
 						 akn:del |
-						 akn:mod |
 						 akn:legislature |
 						 akn:session |
 						 akn:shortTitle |
 						 akn:docPurpose |
 						 akn:docCommittee |
 						 akn:docIntroducer |
+						 akn:docAuthority |
 						 akn:docStage |
 						 akn:docStatus |
 						 akn:docJurisdiction |
@@ -475,6 +474,37 @@
 	        	
 	        	<!-- ATTRIBUTE'S GENERIC TEMPLATE -->
 	        	<xsl:apply-templates select="@*" mode="elementAttributes" />
+	        	<xsl:apply-templates />
+	        </span>
+	</xsl:template>
+	
+	
+	<xsl:template match="akn:componentRef">
+		<div>
+			<xsl:attribute name="class">
+				<xsl:value-of select="name(.)" />
+			</xsl:attribute>
+			<!-- UNDEFINED ATTRIBUTE'S GENERIC TEMPLATE -->
+			<xsl:apply-templates select="@*" mode="elementAttributes" />
+			<br></br>
+		</div>
+	</xsl:template>
+	
+	<xsl:template match="akn:documentRef">
+	        <xsl:variable name="idref" select="substring-after(@href,'#')" />
+	        <xsl:variable name="uri" select="//akn:component[@currentId=$idref]//akn:FRBRManifestation//akn:FRBRthis/@value"/>
+	        <span>
+	        	<xsl:attribute name="class">
+		         	<xsl:value-of select="concat('inline ',name(.))" />
+		         </xsl:attribute>
+		         <xsl:attribute name="internalid">
+		         	<xsl:value-of select="name(.)" />
+		         </xsl:attribute>
+		         
+		         
+	        	<!-- ATTRIBUTE'S GENERIC TEMPLATE -->
+	        	<xsl:apply-templates select="@*" mode="elementAttributes" />
+	        	<xsl:value-of select="$uri" />
 	        	<xsl:apply-templates />
 	        </span>
 	</xsl:template>
@@ -511,9 +541,9 @@
 	</xsl:template>
 	
     
-    <xsl:template match="text()">
+    <!-- <xsl:template match="text()">
         <xsl:value-of select="normalize-space(.)"/>
-    </xsl:template>
+    </xsl:template> -->
     
     <!-- Elements to remove -->
     <xsl:template match="content">

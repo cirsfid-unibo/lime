@@ -140,8 +140,8 @@
         "shortLabel": "tapa"
     },
     "date": {
-        "label": "fFecha",
-        "shortLabel": "data"
+        "label": "Fecha",
+        "shortLabel": "Fecha"
     },
     "debateBody": {
         "label": "Cuerpo",
@@ -181,7 +181,7 @@
     },
     "docDate": {
         "label": "Fecha del documento",
-        "shortLabel": "data-doc"
+        "shortLabel": "Fecha-Doc"
     },
     "docIntroducer": {
         "label": "Introductor",
@@ -217,7 +217,7 @@
     },
     "docTitle": {
         "label": "Título de documento",
-        "shortLabel": "titolo-doc"
+        "shortLabel": "Título-doc"
     },
     "docType": {
         "label": "Tipo de documento",
@@ -228,8 +228,8 @@
         "shortLabel": "link-doc"
     },
     "entity": {
-        "label": "Entidad'",
-        "shortLabel": "entita"
+        "label": "Entidad",
+        "shortLabel": "Entidad"
     },
     "eol": {
         "label": "Final de la línea",
@@ -237,7 +237,7 @@
     },
     "eop": {
         "label": "Final de la pagina",
-        "shortLabel": "fine-pagina"
+        "shortLabel": "Final-pagina"
     },
     "event": {
         "label": "Evento",
@@ -269,7 +269,7 @@
     },
     "from": {
         "label": "De",
-        "shortLabel": "da"
+        "shortLabel": "De"
     },
     "hcontainer": {
         "label": "Contenedor jerárquico genérico",
@@ -280,12 +280,12 @@
         "shortLabel": "Encabezado-juicio"
     },
     "heading": {
-        "label": "Rúbrica",
-        "shortLabel": "Rúbrica"
+        "label": "Nomen juris",
+        "shortLabel": "Nomen-juris"
     },
     "indent": {
-        "label": "Inciso",
-        "shortLabel": "Inciso"
+        "label": "Indentación",
+        "shortLabel": "Indentación"
     },
     "inline": {
         "label": "Inline",
@@ -341,7 +341,7 @@
     },
     "mainBody": {
         "label": "cuerpo de documento",
-        "shortLabel": "corpo-doc"
+        "shortLabel": "cuerpo-doc"
     },
     "marker": {
         "label": "marcador",
@@ -357,7 +357,7 @@
     },
     "mod": {
         "label": "Modificación",
-        "shortLabel": "modifica"
+        "shortLabel": "Modificación"
     },
     "motivation": {
         "label": "Motivación",
@@ -365,7 +365,7 @@
     },
     "mref": {
         "label": "Referencias múltiples",
-        "shortLabel": "rif-multipli"
+        "shortLabel": "Ref-Multiple"
     },
     "narrative": {
         "label": "Narración",
@@ -425,7 +425,7 @@
     },
     "paragraph": {
         "label": "Inciso",
-        "shortLabel": "comma"
+        "shortLabel": "Inciso"
     },
     "part": {
         "label": "Parte",
@@ -480,8 +480,8 @@
         "shortLabel": "disposizione"
     },
     "quantity": {
-        "label": "Cantidad'",
-        "shortLabel": "quantita"
+        "label": "Cantidad",
+        "shortLabel": "Cantidad"
     },
     "question": {
         "label": "Pregunta",
@@ -493,11 +493,11 @@
     },
     "quotedStructure": {
         "label": "Novella estructurada",
-        "shortLabel": "novella-strutturata"
+        "shortLabel": "novella strutturata"
     },
     "quotedText": {
         "label": "Novella textual",
-        "shortLabel": "novella-testo"
+        "shortLabel": "novella testo"
     },
     "recital": {
         "label": "Justificación",
@@ -509,7 +509,7 @@
     },
     "ref": {
         "label": "Referencia",
-        "shortLabel": "riferimento"
+        "shortLabel": "Referencia"
     },
     "relatedDocument": {
         "label": "Documento relacionado",
@@ -528,16 +528,16 @@
         "shortLabel": "intervallo-mod"
     },
     "role": {
-        "label": "Ruolo",
-        "shortLabel": "ruolo"
+        "label": "Rol",
+        "shortLabel": "Rol"
     },
     "rollCall": {
         "label": "Acta de Votación",
         "shortLabel": "atto-votazione"
     },
     "rref": {
-        "label": "Intervallo di riferimenti",
-        "shortLabel": "intervallo-rif"
+        "label": "Intervalo de la Referencia",
+        "shortLabel": "Intervalo-ref"
     },
     "rule": {
         "label": "Regla",
@@ -588,8 +588,8 @@
         "shortLabel": "subFlow"
     },
     "subheading": {
-        "label": "Subrúbrica",
-        "shortLabel": "subrúbrica"
+        "label": "SubNomen",
+        "shortLabel": "subnomen"
     },
     "sublist": {
         "label": "Sub-list",

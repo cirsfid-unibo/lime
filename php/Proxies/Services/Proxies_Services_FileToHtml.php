@@ -45,6 +45,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+ 
+require_once('utils.php'); 
+ 
 class Proxies_Services_FileToHtml implements Proxies_Services_Interface
 {
 	private $_filePath;
@@ -52,8 +55,6 @@ class Proxies_Services_FileToHtml implements Proxies_Services_Interface
 	private $_fileName;
     
     private $cleaningXsl = CLEAN_CONVERTED_HTML;
-	private $xmlToHtmlXsl20 = AKN20_TO_XHTML;
-	private $xmlToHtmlXsl30 = AKN30_TO_XHTML;
     private $cleaningXslDom;
 	private $xmlMime = "application/xml";
 	private $akn20Namespace = "http://www.akomantoso.org/2.0";
@@ -74,6 +75,7 @@ class Proxies_Services_FileToHtml implements Proxies_Services_Interface
                 $this->cleaningXslDom = new DOMDocument();
                 $this->cleaningXslDom->load($this->cleaningXsl);
 		}
+		$this->_transformFile = (isset($params['transformFile']) && $params['transformFile']) ? realpath(LIMEROOT."/".$params['transformFile']) : FALSE;
 	}
 	
 	/**
@@ -89,7 +91,7 @@ class Proxies_Services_FileToHtml implements Proxies_Services_Interface
             if ($fileType === $this->xmlMime) {
             	$doc = new DOMDocument();
 				if ($doc->load($this->_filePath)) {
-					$result = aknToHtml($doc, FALSE, FALSE, TRUE);
+					$result = aknToHtml($doc, $this->_transformFile, FALSE, TRUE);
 					$output['markinglanguage'] = $result["markinglanguage"];
 					$resultXml = $result["xml"];
 					if ($resultXml) {
@@ -112,8 +114,6 @@ class Proxies_Services_FileToHtml implements Proxies_Services_Interface
 				exec($cmd);
 				$htmlSource = file_get_contents($filePath);
 				$output['html'] = $this->cleanHtml($htmlSource);
-				//$output['html'] = $this->htmlToAkn($htmlSource);
-				//$output['html'] = aknToHtml($aknDoc);
 				if ($this->_fileSize && (strlen($output['html']) == 0)) {
 					$output['success'] = false;
 				} else {
@@ -128,6 +128,13 @@ class Proxies_Services_FileToHtml implements Proxies_Services_Interface
 			$output['success'] = false;
 			$output['filePath'] = $this->_filePath;
 			$output['fileName'] = $this->_fileName;
+		}
+		
+		if(array_key_exists('html', $output) && strlen($output['html'])) {
+			$lang = detectLanguage($output['html'], 3);
+			if($lang) {
+				$output['language'] = $lang;
+			}	
 		}
 		
 		return str_replace('\/','/',json_encode($output));
@@ -151,22 +158,9 @@ class Proxies_Services_FileToHtml implements Proxies_Services_Interface
         return $result;
     }
 	
-	private function htmlToAkn($htmlSource) {
-        $xslt = new DOMDocument();
-		$xslt->load(HTML_TO_AKN3_0);
-		$xml = new DOMDocument();
-		$xml->loadXML($htmlSource);
-		// create the processor 
-		$xslProcessor = new XSLTProcessor();
-		// add the stylesheet
-		$xslProcessor->importStylesheet($xslt);
-		// transform the input
-		$result = $xslProcessor->transformToXML($xml);
-        return $result;
-    }
-	
 	private function isTypeAllowed($mime) {
-		$allowedTypes = array("text/html", "application/msword", "application/pdf", "application/vnd.oasis.opendocument.text", "text/plain");
+		$allowedTypes = array("text/html", "application/msword", "application/pdf", "application/vnd.oasis.opendocument.text", "text/plain",
+							   "application/rtf","text/rtf");
 		$docxExtension = ".docx";
 		$fileExtension = (false === $pos = strrpos($this->_fileName, '.')) ? '' : substr($this->_fileName, $pos);
 		

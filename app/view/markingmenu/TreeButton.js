@@ -54,9 +54,7 @@ Ext.define('LIME.view.markingmenu.TreeButton', {
 	
 	requires : ['LIME.view.markingmenu.treebutton.Expander',
 				'LIME.view.markingmenu.treebutton.Name', 
-				'LIME.view.markingmenu.treebutton.Children',
-				'LIME.view.markingmenu.treebutton.Widgets',
-				'LIME.view.markingmenu.menuwidgets.MenuWidget'],
+				'LIME.view.markingmenu.treebutton.Children'],
 
 	border :  false,
 	margin:"4 2 4 2",
@@ -81,9 +79,6 @@ Ext.define('LIME.view.markingmenu.TreeButton', {
 		xtype : 'treeButtonChildren',
 		// Hidden by default
 		hidden : true
-	},{
-		// Wrapper for the widgets
-		xtype : 'treeButtonWidgets'
 	}],
 	
 	
@@ -165,24 +160,6 @@ Ext.define('LIME.view.markingmenu.TreeButton', {
 			if (tbar[i].xtype == 'treeButtonExpander') return tbar[i];
 		}
 		return null;
-	},
-	
-	/**
-	 * This function returns a reference to the widget container 
-	 * @returns {LIME.view.markingmenu.treebutton.Widgets} This TreeButton's widgets container
-	 */
-	getWidgets : function(){
-		return this.down("treeButtonWidgets");
-	},
-	
-	/**
-	 * Returns a particular widget belonging to this button or to one of its children
-	 * @param {String} id The id of the widget
-	 * @returns {LIME.markingmenu.menuwidgets.MenuWidget} A reference to the widget or null if no widgets were found
-	 */
-	getWidget : function(id, children){
-		var widget = this.queryById(id);
-		return widget;
 	},
 	
 	/**
@@ -274,124 +251,7 @@ Ext.define('LIME.view.markingmenu.TreeButton', {
 	hideChildren : function(animate){
 		var expander = this.down('treeButtonExpander');
 		if (expander) {
-		  expander.hideChildren(false, this, animate);    
-		}
-	},
-	
-	/**
-
-	 * This function shows the widget related to this button.
-	 * If highlight is true the shown widget is highlighted.
-	 * If childWidgets is set this function looks for children's
-	 * widgets and show them (even if the children are not visible).
-	 * It's useful for nested marked elements with widgets.
-	 * @param {String} widgetId The widget to show
-	 * @param {Boolean} [highlight]
-	 * @param {String[]} [childWidgets]
-	 * @param {Boolean} [hidden] 
-	 * @return {Ext.panel.Panel}
-	 */
-	showWidget : function(widgetId, highlight, childWidgets, hidden){
-		var newWidget = null,
-			children = this.down('treeButtonChildren').items.items;
-		// Check if the widgets set exists
-		this.widgetsSet = this.widgetsSet || {};
-		// Check if this button has at least one widget, otherwise iterate on the children
-		if (childWidgets){
-			// The main button has no widgets but its children have, let's show them!
-			Ext.each(childWidgets, function(childWidget){
-				children.forEach(function(child){
-					if (childWidget.indexOf(child.id) != -1){
-						child.showWidget(childWidget);
-					}
-				});
-			});
-		}
-		// If a widget with this id already exists just show it, otherwise create it
-		if (this.waweConfig.widgetConfig && !this.widgetsSet[widgetId]){
-			// generic xtype  
-			var itemsList = this.waweConfig.widgetConfig.list;
-			newWidget = Ext.widget('menuWidget', {
-				items : itemsList,
-				id : widgetId,
-				title : this.waweConfig.widgetConfig.title,
-				attributes : this.waweConfig.widgetConfig.attributes
-			});
-			// We take advantage of the equality between widgetId and the id of the marked element
-			newWidget.setContent(widgetId);
-			if (hidden) newWidget.hide();
-			// Add the just created widget to the global list  
-			this.widgetsSet[widgetId] = newWidget;
-			this.down('treeButtonWidgets').add(newWidget);
-		} else if (this.waweConfig.widgetConfig){
-			newWidget = this.widgetsSet[widgetId];
-			if (newWidget) {
-				//Update content of widget
-				newWidget.setContent(widgetId);
-				if (!newWidget.isVisible()){
-					newWidget.show();	
-				}
-			}
-		}
-		if (highlight && newWidget && newWidget.el){
-			//newWidget.el.frame("#ff0000", 3, { duration: 250 });
-			newWidget.animate({
-				duration : 1000,
-				keyframes : {
-					25 : {
-						left : 5
-					},
-					75 : {
-						left : -5
-					},
-					100 : {
-						left : 0
-					}
-				}
-			});	
-		}
-		return newWidget;
-	},
-	
-	
-	/**
-	 * This function hides the widgets of the TreeButton 
-	 * either from a given list or all of them (if the list
-	 * is not specified).
-	 * @param {String[]} idList
-	 */
-	hideWidgets : function(idList){
-		if (!this.waweConfig.widgetConfig) return; // Nothing to do  
-		if (!idList){
-			// Hide all the widgets  
-			for (var widget in this.widgetsSet){
-				this.widgetsSet[widget].hide();
-			}
-		} else {
-			// Hide only the specified ones  
-			for (var widget in this.widgetsSet){
-				if (idList.indexOf(widget)){
-					this.widgetsSet[widget].hide();
-				}
-			}
-		}
-	},
-	
-	/**
-	 * This function destroys a widget with the given id.
-	 * If no id is specified all the widgets of this button are destroyed.
-	 * @param {String} widgetId The id of the widget to destroy
-	 */
-	deleteWidgets : function(widgetId){
-		var widgetsSet = this.widgetsSet;
-		for (var widget in widgetsSet){
-			if (!widgetId || widgetId == widget){
-				// Delete the component
-				this.remove(widgetsSet[widget]);
-				//Ext.destroy(widgetsSet[widget]); --> takes too much time
-				// Delete the property from the widgetsSet
-				delete widgetsSet[widget];
-			}
+		  expander.hideChildren(this, animate);    
 		}
 	},
 	/**

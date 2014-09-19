@@ -45,30 +45,20 @@
  */
 
 /**
- *This store contains the ext interface languages
+ * This store lists the available interface languages.
  */
 Ext.define('LIME.store.Languages', {
-    // extends the store component
     extend : 'Ext.data.Store',
-
-    // the fields of the store
-    fields : ['code', 'language'],
+    fields : [
+        'code',
+        'language'
+    ],
     
-    data : [{
-        code : 'en',
-        language : 'English'
-    }, {
-        code : 'es',
-        language : 'Spanish/Latin American'
-    }, {
-        code : 'it',
-        language : 'Italian'
-    }, {
-        code : 'ro',
-        language : 'Romanian'
-    }, {
-        code : 'ru',
-        language : 'Russian'
-    }]
-
+    data : [
+        { code : 'en', language : 'English' },
+        { code : 'es', language : 'Spanish/Latin American' },
+        { code : 'it', language : 'Italian' },
+        { code : 'ro', language : 'Romanian' },
+        { code : 'ru', language : 'Russian' }
+    ]
 });

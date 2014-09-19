@@ -58,11 +58,27 @@ Ext.define('LIME.DocProperties', {
      */
     metadataClass : 'limeMetadata',
     
+    /**
+     * @property {String} documentBaseClass
+     * This is the first class of the document element 
+     */
     documentBaseClass: 'document',
     
+    elementFocusedCls: 'focused',
+    
+    /**
+     * @property {String} docIdAttribute
+     * The name of the attribute which contains the id of the document
+     */
     docIdAttribute: 'docid',
     
+    /**
+     * @property {String} markingLanguageAttribute
+     * The name of the attribute which contains the marking language
+     */
     markingLanguageAttribute: 'markinglanguage',
+    
+    languageAttribute: 'language',
     
     /**
      * @property {Ext.Template} docClsTpl
@@ -101,6 +117,11 @@ Ext.define('LIME.DocProperties', {
      * This object contains information about marked elements.
      */
     markedElements : {},
+    /**
+     * @property {Object} elementsWidget
+     * This object contains information about widget of marked elements.
+     */
+    elementsWidget : {},
     /**
      * @property {Object} currentEditorFile
      * This object contains information about opened document
@@ -141,6 +162,18 @@ Ext.define('LIME.DocProperties', {
         this.markedElements = {};
         this.currentEditorFile.id = '';
     },
+    
+    setElementWidget: function(name, widget) {
+        this.elementsWidget[name] = widget;
+    },
+    
+    getElementWidget: function(name) {
+        return this.elementsWidget[name];
+    },
+    
+    getNodeWidget: function(node) {
+        return this.getElementWidget(DomUtils.getElementNameByNode(node));
+    },
 
     /**
      * This function set the properties of a given marked element id
@@ -175,16 +208,28 @@ Ext.define('LIME.DocProperties', {
         this.documentInfo.docId = id;
         this.currentEditorFile.id = id;
     },
-
+    
+    /**
+     * This function updates the documentInfo property
+     * @param {Object} values The new documentInfo object
+     */
     setDocumentInfo : function(values) {
         this.documentInfo = Ext.Object.merge(this.documentInfo, values);
     },
-
+    
+    /**
+     * This function updates the frbr property
+     * @param {Object} values The new frbr object
+     */
     setFrbr : function(values) {
         var newFrbr = Ext.Object.merge(this.frbr, values);
         this.frbr = newFrbr;
     },
-
+    
+    /**
+     * This function clears and initializes metadata objects
+     * @param {Object} app The new frbr object
+     */
     clearMetadata : function(app) {
         this.initVars();
         app.fireEvent(Statics.eventsNames.frbrChanged);
@@ -195,6 +240,61 @@ Ext.define('LIME.DocProperties', {
             return this.frbr.manifestation.FRBRuri;
         }
         return;
+    },
+    
+    updateMetadata: function(config) {
+        var obj = config.metadata.obj,
+            nodes = config.path.split("/"),
+            targetNode = nodes[nodes.length-1],
+            parentTarget = obj,
+            afterNode,
+            result = 0;
+        Ext.Array.remove(nodes, targetNode);
+        Ext.each(nodes, function(el) {
+            parentTarget = parentTarget[el];
+        });
+        if (parentTarget) {
+            try {
+            	if(config.overwrite) {
+            		config.after = targetNode;
+            	} else if (!config.append) {
+                    /* Using Ext.Array.push is a trick to transform the value
+                     * in array if it isn't an array and array remain the same */
+                    Ext.each(Ext.Array.push(parentTarget[targetNode]), function(child) {
+                        parentTarget.el.removeChild(child.el);
+                    });
+                }
+                afterNode = (config.after && parentTarget[config.after])
+                            ? Utilities.getLastItem(Ext.Array.push(parentTarget[config.after])).el
+                            : parentTarget.el.lastChild;
+                firstAfterNode = afterNode;
+                Ext.each(config.data, function(attributes) {
+                    var newElConf = Ext.merge({
+                        tag : 'div',
+                        cls : targetNode
+                    }, attributes);
+                    if(afterNode) {
+                        afterNode = Ext.DomHelper.insertAfter(afterNode, newElConf);    
+                    } else {
+                        afterNode = Ext.DomHelper.append(parentTarget.el, newElConf);
+                    }
+                });
+                if(config.overwrite && firstAfterNode) {
+            		afterNode.parentNode.removeChild(firstAfterNode);
+            	}
+            } catch(e) {
+                Ext.log({level: "error"}, e);
+                result = 2;
+            }
+        } else {
+            result = 1;
+        }
+
+        return result;
+    },
+    
+    isAutosaveId: function(id) {
+        return !Ext.isEmpty(id.match("/autosave/"));
     },
     
     initVars : function() {

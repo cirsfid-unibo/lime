@@ -45,13 +45,17 @@
  */
 
 /**
- *This store contains the ext interface languages
+ * This store contains all countries and their abbreviation,
+ * as defined in ISO_3166.
+ * http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
  */
 Ext.define('LIME.store.Nationalities', {
     extend : 'Ext.data.Store',
     autoLoad: true,
-    // the fields of the store
-    fields : ['alpha-2', 'name'],
+    fields : [
+        'alpha-2',
+        'name'
+    ],
     
     proxy : {
         type : 'ajax',
@@ -61,5 +65,4 @@ Ext.define('LIME.store.Nationalities', {
             root : 'countries'
         }
     }
-
 });

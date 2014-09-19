@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -49,15 +49,15 @@
  * This controller takes care of manipulating the text area reserved for the
  * actual document. It also provides a useful interface for getting and putting data
  * through a lot of getter and setter and utility methods.
- * 
+ *
  * It also includes the path view where the current hierarchy (starting from the selected
  * node and going up) can be easily seen.
  */
 Ext.define('LIME.controller.Editor', {
-	
+
 	extend : 'Ext.app.Controller',
 
-	views : ['main.Editor', 'Explorer', 'main.editor.Path', 'modal.NewDocument'],
+	views : ['main.Editor', 'Explorer', 'main.editor.Path', 'main.editor.Uri','modal.NewDocument'],
 
 	refs : [{
 		ref : 'mainEditor',
@@ -71,7 +71,7 @@ Ext.define('LIME.controller.Editor', {
 	}, {
 		ref : 'contextMenuItems',
 		selector : 'menuitem[cls=editor]'
-	},	
+	},
 	{
 		ref : 'explorer',
 		selector : 'explorer'
@@ -88,26 +88,26 @@ Ext.define('LIME.controller.Editor', {
         ref : 'codemirror',
         selector : 'codemirror'
     }],
-	
+
 	constructor : function(){
 		/**
-		 * @property {HTMLElement} lastFocused The last focused element 
+		 * @property {HTMLElement} lastFocused The last focused element
 		 */
 		this.lastFocused = null;
-		
+
 		/**
-		 * @property {Object} defaultElement 
-		 * The default element that wraps the content of the editor (compatible with Ext.DomHelper) 
+		 * @property {Object} defaultElement
+		 * The default element that wraps the content of the editor (compatible with Ext.DomHelper)
 		 */
 		this.defaultElement = {
 			tag : 'div'
 		};
-		
+
 		this.callParent(arguments);
 	},
-    
+
     documentTempConfig: {},
-    
+
 	/**
 	 * Returns a reference to the ExtJS component
 	 * that contains the editor plugin.
@@ -125,7 +125,7 @@ Ext.define('LIME.controller.Editor', {
 	getEditor : function() {
 		return this.getEditorComponent().getEditor();
 	},
-	
+
 	/**
 	 * Returns the editor iframe container. Useful for positioning.
 	 * **Warning**: this method only works with those editor which support an
@@ -135,23 +135,23 @@ Ext.define('LIME.controller.Editor', {
 	getIframe : function(){
 		return this.getEditorComponent().iframeEl;
 	},
-	
-	/** 
+
+	/**
 	 * Returns the real height of the editor body.
-	 * @returns {Number} The height 
+	 * @returns {Number} The height
 	 */
 	getHeight : function(){
 		return this.getIframe().getHeight();
 	},
-	
-	/** 
+
+	/**
 	 * Returns the real height of the editor body.
-	 * @returns {Number} The width 
+	 * @returns {Number} The width
 	 */
 	getWidth : function(){
 		return this.getIframe().getWidth();
 	},
-	
+
 	/**
 	 * Returns the editor DOM position inside the whole page (main DOM).
 	 * @returns {Array} The coordinates of the position as an array (i.e. [x,y])
@@ -182,14 +182,14 @@ Ext.define('LIME.controller.Editor', {
 		//Return the serializer of active editor instead a new serializer
 		return tinymce.activeEditor.serializer;
 	},
-	
+
 	/**
 	 * Returns the serialized string of passed HTMLElement
 	 * @param {HTMLElement} element to serialize
 	 * @returns {String}
 	 */
 	serialize : function(dom){
-		return this.getSerializer().serialize(dom);	
+		return this.getSerializer().serialize(dom);
 	},
 
 	/**
@@ -211,12 +211,21 @@ Ext.define('LIME.controller.Editor', {
 	/**
 	 * Returns the selection range expressed in characters. For example if the
 	 * selection starts at the character i and ends
-	 * after j characters from the beginning of the row the range will be [i,j] 
+	 * after j characters from the beginning of the row the range will be [i,j]
 	 * @returns {Number[]} [start, end] The array containing the start and end of the range
 	 */
 	getSelectionRange : function() {
 		var ed = this.getEditor(), rng = ed.selection.getRng(), range = [rng.startOffset, rng.endOffset];
 		return range;
+	},
+
+	showDocumentUri: function(docId) {
+	    var editorContainer = this.getMainEditor().up(), title, main = this.getMain(),
+	        uri = DocProperties.getDocumentUri();
+	    //!docId || !Ext.isString(docId) || DocProperties.isAutosaveId(docId) ||
+        uri = (!uri) ? Locale.getString("newDocument") : uri;
+	    editorContainer.tab.setTooltip(uri);
+	    main.down("mainEditorUri").setUri(uri);
 	},
 
 	/**
@@ -233,10 +242,10 @@ Ext.define('LIME.controller.Editor', {
 		tinymce.activeEditor.formatter.register(patternName, patternProperties);
 		tinymce.activeEditor.formatter.apply(patternName);
 		var searchRoot = this.getBody();
-		var marked = Ext.query('span[class*=' + DomUtils.tempSelectionClass + ']', searchRoot);
+		var marked = Ext.query('span[class*=' + patternProperties.classes + ']', searchRoot);
 		return marked;
 	},
-	
+
 	/**
 	 * Dispatcher for the focus events. It distinguishes
 	 * between a single node and an array of them.
@@ -244,11 +253,11 @@ Ext.define('LIME.controller.Editor', {
 	 * all the actions are applied (this avoids a waste of resources to repeat
 	 * the same actions even on the other nodes without a useful result).
 	 * @param {HTMLElement/HTMLElement[]/String} nodes The node(s) to focus
-	 * @param {Object} actions The actions that have to be performed on the node(s), e.g. click, scroll, select and 
+	 * @param {Object} actions The actions that have to be performed on the node(s), e.g. click, scroll, select and
 	 */
 	focus : function(nodes, actions){
 			var markedAscendant,
-				lastNode;	
+				lastNode;
 			if (Ext.isString(nodes)){
 				//This means that "nodes" is an node id
 				nodes = Ext.query("#"+nodes,this.getBody());
@@ -277,24 +286,24 @@ Ext.define('LIME.controller.Editor', {
 
 	/**
 	 * This function focuses the given node and performs the given actions on it.
-	 * There's a big difference with the focus method since this one only applies on a 
+	 * There's a big difference with the focus method since this one only applies on a
 	 * single node and performs all the given actions on it, while the second
 	 * uses this method to apply all the actions only on the last node given in the array.
 	 * The actions that can be performed are:
-	 * 
+	 *
 	 * * click: simulate a click event on the given node
 	 * * select: highlight the node in the view
 	 * * change: state that the focused node has changed in some way (value, attributes etc.)
 	 * * scroll: scroll the view to the given node
-	 * 
+	 *
 	 * An example of actions object is the following:
-	 * 
+	 *
 	 *  {
 	 *  	// Set to true only the ones to perform
 	 * 		click : true,
 	 * 		select : true
 	 *  }
-	 * 
+	 *
 	 * @param {HTMLElement} node The dom node to focus
 	 * @param {Object} actions The actions to perform
 	 */
@@ -321,15 +330,20 @@ Ext.define('LIME.controller.Editor', {
 		if (actions.click) {
 			this.application.fireEvent('editorDomNodeFocused', node);
 		}
-		
+
 	},
-	
+
 	/**
 	 * Just select the given node in the editor
 	 * @param {HTMLElement} node The node to highlight
 	 */
-	selectNode : function(node) {
-		this.getEditor().selection.select(node);
+	selectNode : function(node, content) {
+	    content = (content == undefined) ? true : content;
+		this.getEditor().selection.select(node, content);
+	},
+
+	setCursorLocation: function(node, offset) {
+	    this.getEditor().selection.setCursorLocation(node, offset);
 	},
 
 	/**
@@ -341,7 +355,7 @@ Ext.define('LIME.controller.Editor', {
 	},
 
 	/**
-	 * This function set an attribute to the given element or 
+	 * This function set an attribute to the given element or
 	 * the given id of the element
 	 * using name as its name and value as its value.
 	 * @param {HTMLElement/String} element The node or its id
@@ -350,31 +364,33 @@ Ext.define('LIME.controller.Editor', {
 	 * @returns {Boolean} true if the attribute was changed, false otherwise
 	 */
 	setElementAttribute : function(elementId, name, value) {
-		var element = elementId;
+		var element = elementId, oldValue, chaged = false;
 		var newElement = (Ext.isString(element))? Ext.query("*["+DomUtils.elementIdAttribute+"="+element+"]", this.getDom())[0] : element;
 		if (newElement) {
-			//set attribute that has the same name of field
-			newElement.setAttribute(name, value);
-			/* Prevent from inserting empty attributes */
-			if (value == "") {
-				newElement.removeAttribute(name);
-			}
-			this.getEditorComponent().fireEvent('change', this.getEditor());
-			return true;
-		} else {
-			return false;
+		    oldValue = newElement.getAttribute(name);
+		    if(oldValue != value) {
+                //set attribute that has the same name of field
+                newElement.setAttribute(name, value);
+                /* Prevent from inserting empty attributes */
+                if (value == "") {
+                    newElement.removeAttribute(name);
+                }
+                this.getEditorComponent().fireEvent('change', this.getEditor());
+                chaged = newElement;
+		    }
 		}
+		return chaged;
 	},
 
 	/**
 	 * Returns the currently selected text in the format requested.
 	 * **Warning**: no checks are performed on the given format but
 	 * it should be one of the following:
-	 * 
+	 *
 	 * * html (default)
 	 * * raw
 	 * * text
-	 * 
+	 *
 	 * **Warning**: this method heavily relies on what editor is used (tested with tinyMCE)
 	 * @param {String} [formatType] The format of the selection
 	 */
@@ -395,7 +411,7 @@ Ext.define('LIME.controller.Editor', {
 	getBody : function() {
 		return this.getEditor().getBody();
 	},
-	
+
 	/**
 	 * Returns a reference to the dom of the editor.
 	 * This method is very useful when separated-dom editors are used (such as tinyMCE).
@@ -413,16 +429,41 @@ Ext.define('LIME.controller.Editor', {
 	    var doc = this.getDom().documentElement;
 	    return DomUtils.serializeToString(doc);
 	},
-	
+
+	getDocumentElement: function() {
+	    var me = this, body = me.getBody();
+	    return body.querySelector("*[class~='"+DocProperties.documentBaseClass+"']");
+	},
+
+	getCurrentDocId: function() {
+	    var doc = this.getBody(),
+	       docEl = doc.querySelector("["+DocProperties.docIdAttribute+"]");
+        if(docEl) {
+            return docEl.getAttribute(DocProperties.docIdAttribute);
+        }
+        return null;
+	},
+
+	getDocumentMetadata: function(docId) {
+	    var result = {};
+	    docId = docId || this.getCurrentDocId();
+	    result.originalMetadata = DocProperties.docsMeta[docId];
+	    if(result.originalMetadata) {
+	        result.obj = DomUtils.nodeToJson(result.originalMetadata.metaDom);
+	        return result;
+	    }
+	    return null;
+	},
+
 	/**
 	 * Returns the currently selected node or one of its ascendants
 	 * found by looking at two possible conditions given as arguments: either
 	 * a generic marked node or a node with a particular tag name (e.g.
 	 * div, span, p etc.).
-	 * 
+	 *
 	 * **Warning**: the two arguments are mutually exclusive and more
 	 * priority is given to the first one but both are optional.
-	 * 
+	 *
 	 * @param {Boolean} [marked]
 	 * @param {String} [elementName]
 	 * @return {HTMLElement} The selected/found element
@@ -438,29 +479,30 @@ Ext.define('LIME.controller.Editor', {
 		}
 	},
 
+
 	/**
 	 * This method returns an object containing many things:
-	 * 
+	 *
 	 * * text : the content of the selected text
 	 * * node : the selected node
 	 * * start : the first node of the selected nodes
 	 * * end : the last node of the selected nodes
-	 * 
+	 *
 	 * All the involved nodes are retrieved depending on the given arguments.
 	 * Thus you can specify: what should the format of the text be, what
 	 * tag name should the retrieved nodes have and if start and end should be
 	 * at the same nesting level.
-	 * 
+	 *
 	 * The tag name of the nodes can be specified as an object:
-	 * 
+	 *
 	 * 		{
 	 * 			start : "div",
 	 * 			end : "p",
 	 * 			current : "span",
 	 * 		}
-	 * 
+	 *
 	 * Non specified names are simply ignored.
-	 * 
+	 *
 	 * @param {String} [formatType] The format of the selected text
 	 * @param {Object} [nodeNames] The names of the nodes
 	 * @param {Boolean} [sameLevel] If true start or end is brought to the same (upper) level as the other one
@@ -512,7 +554,7 @@ Ext.define('LIME.controller.Editor', {
 
 	/**
 	 * Returns the whole content of the editor (__not__ the selection).
-	 * 
+	 *
 	 * **Warning**: this method heavily depends on what editor is used.
 	 * @param {String} formatType Specify the format of the output (html, raw, text etc.)
 	 */
@@ -523,7 +565,7 @@ Ext.define('LIME.controller.Editor', {
 			format : formatType
 		});
 	},
-	
+
 	/**
 	 * Given a css selector, an object with some css properties and
 	 * the name of a button (to match the class of marked elements)
@@ -554,16 +596,32 @@ Ext.define('LIME.controller.Editor', {
 
 		}
 	},
-	
-	onPluginLoaded : function(data) {
+
+	onPluginLoaded : function(data, styleUrls) {
 	    var markingMenuController = this.getController('MarkingMenu'),
 	    	mainToolbarController = this.getController('MainToolbar'),
 	       app = this.application, config = this.documentTempConfig;
+	    this.addStyles(styleUrls);
 		app.fireEvent(Statics.eventsNames.languageLoaded, data);
         app.fireEvent(Statics.eventsNames.progressUpdate, Locale.strings.progressBar.loadingDocument);
         this.loadDocument(config.docText, config.docId, config.callback, config.initial);
         app.fireEvent(Statics.eventsNames.progressEnd);
+        config.docDom = this.getDom();
         app.fireEvent(Statics.eventsNames.afterLoad, config);
+        this.setPath(this.getBody());
+        this.showDocumentUri(config.docId);
+    },
+
+    addStyles: function(urls) {
+        var me = this, editorDom = me.getDom(),
+            head = editorDom.querySelector("head");
+        Ext.each(urls, function(url) {
+            var link = editorDom.createElement("link");
+            link.setAttribute("href", url);
+            link.setAttribute("rel", "stylesheet");
+            link.setAttribute("type", "text/css");
+            head.appendChild(link);
+        });
     },
 
 	/**
@@ -575,7 +633,7 @@ Ext.define('LIME.controller.Editor', {
 	addContentStyle : function(selector, styleText) {
 		DomUtils.addStyle(selector, styleText, this.getDom());
 	},
-	
+
 	beforeLoadDocument: function(config) {
 	    var initDocument = this.initDocument, me = this, loaded = false;
         if (!config.docMarkingLanguage && me.getStore('MarkupLanguages').count() == 1) {
@@ -589,15 +647,15 @@ Ext.define('LIME.controller.Editor', {
     	                //Before load
                         me.application.fireEvent(Statics.eventsNames.beforeLoad, config, function(newConfig) {
                             initDocument(newConfig, me);
-                        });    
+                        });
     	            } else {
-                        initDocument(config, me);    
+                        initDocument(config, me);
     	            }
-                    
+
                 });
                 loaded = true;
             }
-	    } 
+	    }
 	    if(!loaded) {
 	        var newDocumentWindow = Ext.widget('newDocument');
             // TODO: temporary solution
@@ -606,9 +664,9 @@ Ext.define('LIME.controller.Editor', {
             newDocumentWindow.show();
 	    }
 	},
-	
+
     initDocument : function(config, me) {
-        var me = me || this, app = me.application;
+        var me = me || this, app = me.application, docType;
         if (!config.docType || !config.docLang || !config.docLocale) {
             var newDocumentWindow = Ext.widget('newDocument');
             // TODO: temporary solution
@@ -619,14 +677,16 @@ Ext.define('LIME.controller.Editor', {
         DocProperties.documentInfo.docType = config.docType;
         DocProperties.documentInfo.docLang = config.docLang;
         DocProperties.documentInfo.docLocale = config.docLocale;
+        DocProperties.documentInfo.originalDocId = config.originalDocId;
         DocProperties.documentInfo.docMarkingLanguage = config.docMarkingLanguage;
-        
+
         me.documentTempConfig = config;
         me.getStore('LanguagesPlugin').addListener('filesloaded', me.onPluginLoaded, me);
-        
-        app.fireEvent(Statics.eventsNames.progressStart, null, {value:0.1, text: Locale.strings.progressBar.loadingDocument}); 
+
+        app.fireEvent(Statics.eventsNames.progressStart, null, {value:0.1, text: Locale.strings.progressBar.loadingDocument});
+        docType =  Ext.isString(config.alternateDocType) ? config.alternateDocType : config.docType;
         Ext.defer(function() {
-            me.getStore('LanguagesPlugin').loadPluginData(app, config.docType, config.docLocale);            
+            me.getStore('LanguagesPlugin').loadPluginData(app, docType, config.docLocale);
         }, 200, me);
     },
 
@@ -653,10 +713,10 @@ Ext.define('LIME.controller.Editor', {
 		}
 		//Remove all previous document proprieties
 		DocProperties.removeAll();
-		// Clear previous undo levels 
+		// Clear previous undo levels
 		editor.undoManager.clear();
 		editor.setContent(docText); // Add a space, empty content prevents other views from updating
-		
+
 		// Add an undo level
 		editor.undoManager.add();
 		//Parse the new document and build documentProprieties
@@ -672,38 +732,50 @@ Ext.define('LIME.controller.Editor', {
                         select : true,
                         scroll : true,
                         click : true
-                    });    
+                    });
                 }
-            }  
-        }; 
+            }
+        };
         Ext.each(noteLinkers, function(linker) {
             linker.onclick = clickLinker;
-        }, this);  
+        }, this);
 		Ext.each(markedElements, function(element, index) {
 			var elId = element.getAttribute(DomUtils.elementIdAttribute),
 			    newElId;
+			var nameAttr = element.getAttribute(LanguageController.getLanguagePrefix()+'name');
 			var buttonId = DomUtils.getButtonIdByElementId(elId);
 			var button = Ext.getCmp(buttonId);
 			if (!button) {
 			    if (elId.indexOf(DomUtils.elementIdSeparator)==-1) {
-			        var buttons = markingMenu.getButtonsByName(elId) || 
-			                      markingMenu.getButtonsByName(element.getAttribute(LanguageController.getLanguagePrefix()+'name')),
-			            buttonKeys;
-			        if(buttons) {
-			            buttonKeys = Ext.Object.getKeys(buttons);
-			            if(buttonKeys.length) {
-                            buttonId = buttonKeys[0];
-                            button = buttons[buttonId];
-                            elId = marker.getMarkingId(buttonId);
+			        var parent = DomUtils.getFirstMarkedAncestor(element.parentNode);
+                    if(parent) {
+                        var buttonParent = DomUtils.getButtonByElement(parent);
+                        if(buttonParent) {
+                            button = buttonParent.getChildByName(elId) || buttonParent.getChildByName(nameAttr);
                         }
-			        }
+                    }
+                    if(!button) {
+                        var buttons = markingMenu.getButtonsByName(elId) ||
+                                  markingMenu.getButtonsByName(nameAttr),
+                        buttonKeys;
+                        if(buttons) {
+                            buttonKeys = Ext.Object.getKeys(buttons);
+                            if(buttonKeys.length) {
+                                buttonId = buttonKeys[0];
+                                button = buttons[buttonId];
+                                elId = marker.getMarkingId(buttonId);
+                            }
+                        }
+                    } else {
+                        elId = marker.getMarkingId(button.id);
+                    }
 			    }
 			    if (!button) {
 			       Ext.MessageBox.alert("FATAL ERROR!!", "The button with id " + buttonId + " is missing!");
-                    return; 
+                    return;
 			    }
 			}
-			
+
 			DocProperties.setMarkedElementProperties(elId, {
 				button : button,
 				htmlElement : element
@@ -712,11 +784,14 @@ Ext.define('LIME.controller.Editor', {
 			element.removeAttribute('style');
 			element.setAttribute(DomUtils.elementIdAttribute, elId);
 			// Widget is created on demand for performance reasons
-			// button.showWidget(elId, null, null, "hidden");
 			var styleClass = button.waweConfig.pattern.wrapperClass;
 			this.applyAllStyles('*[class="' + styleClass + '"]', button.waweConfig.pattern.wrapperStyle, button.waweConfig.shortLabel);
+			var isBlock = DomUtils.blockTagRegex.test(button.waweConfig.pattern.wrapperElement);
+			if(isBlock){
+                marker.addBreakingElements(element);
+            }
 		}, this);
-		
+
 		if (Ext.isString(docId)) {
 		    // save the id of the currently opened file
 		    DocProperties.setDocId(docId);
@@ -727,7 +802,7 @@ Ext.define('LIME.controller.Editor', {
 
 	/**
 	 * Replace the whole content of the editor with the given string.
-	 * 
+	 *
 	 * **Warning**: do NOT use this method to load text. Please refer to
 	 * {@link LIME.controller.Editor#loadDocument} that will perform additional checks.
 	 * @param {newContent} The content that has to be set
@@ -740,10 +815,10 @@ Ext.define('LIME.controller.Editor', {
 
 	/**
 	 * Replace the given old node(s) with the new one.
-	 * 
+	 *
 	 * Note that this method can also replace an array of
 	 * siblings with a single node.
-	 * 
+	 *
 	 * **Warning**: this method doesn't check if the given nodes are siblings!
 	 * @param {HTMLElement} newNode
 	 * @param {HTMLElement/HTMLElement[]} oldNodes
@@ -759,7 +834,7 @@ Ext.define('LIME.controller.Editor', {
 		}
 		return newNode;
 	},
-	
+
 	/**
 	 * Split the content into many chunks to be saved (e.g. cookies max size is 4095 bytes)
 	 * @param {String} content The content to be split
@@ -772,20 +847,20 @@ Ext.define('LIME.controller.Editor', {
 		var toSplit = content;
 		while (toSplit.length > chunkSize){
 			var chunk = toSplit.split(chunkSize);
-			
+
 		}
 	},
-	
+
 	saveDocument: function(config) {
 	   var editor = this;
 	   this.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
 	       xml = xml.replace('<?xml version="1.0" encoding="UTF-8"?>', '');
 	       editor.saveDocumentText(xml, config);
-       }, {complete: true});    
+       }, {complete: true});
 	},
-	
+
 	/**
-	 * This is a wrapper for Language.saveDocument function 
+	 * This is a wrapper for Language.saveDocument function
 	 */
 	saveDocumentText: function(text, config) {
 	    var app = this.application,
@@ -804,9 +879,9 @@ Ext.define('LIME.controller.Editor', {
 	        metadataString,
 	        xmlSerializer = new XMLSerializer(),
             uriTpl = new Ext.Template('/{nationality}/{docType}/{date}/{number}/{docLang}@/{docName}'),
-            uriPartialTmp = new Ext.Template('/{docLang}@/{docName}'), 
+            uriPartialTmp = new Ext.Template('/{docLang}@/{docName}'),
             saveWindow = (config)? config.view : null, partialUrl;
-        
+
         // Fill the values to be used to compile the template
         if (config.path) {
             docUrl = config.path;
@@ -819,29 +894,29 @@ Ext.define('LIME.controller.Editor', {
         } else {
             // TODO: don't call this every autosave
             metadataDom = languageController.buildInternalMetadata(true);
-        } 
-            
+        }
+
         // Before saving
         app.fireEvent(Statics.eventsNames.beforeSave, {
             editorDom: editorDom,
             metadataDom: metadataDom,
             documentInfo: DocProperties.documentInfo
         });
-       
+
         try {
         metadataString = xmlSerializer.serializeToString(metadataDom);
         } catch(e) {
             metadataString = Ext.emptyString;
         }
-        
-        
+
+
 
         params = {
             userName : userInfo.username,
             fileContent : text,
             metadata: metadataString
         };
-        
+
         // Saving phase
 	    app.fireEvent(Statics.eventsNames.saveDocument, docUrl, params, function(response, docUrl) {
 	        var responseText = response.responseText, jsonData;
@@ -849,13 +924,13 @@ Ext.define('LIME.controller.Editor', {
 	            responseText = responseText.substring(0, (responseText.length-1));
 	        }
 	        jsonData = JSON.parse(responseText);
-	        
+
             // If it's an autosave don't show anything
             if (!config || !config.autosave) {
                if (saveWindow){
                    saveWindow.close();
                }
-               
+
                var msgTpl = Locale.strings.savedToTpl;
 	           Ext.Msg.alert({
                     title : Locale.strings.saveAs,
@@ -863,16 +938,16 @@ Ext.define('LIME.controller.Editor', {
                         docName : docName,
                         docUrl : docUrl.replace(docName, '')
                     })
-                });    
+                });
 	        }
-	        
+
             // After saving
             app.fireEvent(Statics.eventsNames.afterSave, {
                 editorDom: editorDom,
                 metadataDom: metadataDom,
                 documentInfo: DocProperties.documentInfo
             });
-            
+
             // Save as the last opened
             if (jsonData.path) {
                 // Set the current file's id
@@ -882,7 +957,7 @@ Ext.define('LIME.controller.Editor', {
                 });
             }
         });
-	    
+
 	},
 
 	/**
@@ -909,12 +984,16 @@ Ext.define('LIME.controller.Editor', {
 	tinyInit : function(editor, autoSaveContent) {
 		/* The context is the one from the plugin! */
 		var tinyautosave = this,
-		    mainToolbarController = editor.getController('MainToolbar');  
+		    mainToolbarController = editor.getController('MainToolbar');
 		tinyautosave.onPreSave = autoSaveContent;
-		userPreferences = editor.getController('PreferencesManager').getUserPreferences();
+		userPreferences = editor.getController('PreferencesManager').getUserPreferences(),
+		storage = editor.getController('Storage');
 
 		/* Load exemple document if there is no saved document */
 		if (!userPreferences.lastOpened) {
+			/*Config.setLanguage(Config.languages[0].name, function() {
+	            editor.application.fireEvent(Statics.eventsNames.languageLoaded, {});
+            });*/
     		Ext.Ajax.request({
     			url : Statics.editorStartContentUrl,
     			success : function(response) {
@@ -938,6 +1017,7 @@ Ext.define('LIME.controller.Editor', {
                             html : response.responseText
                         }, {
                             xtype : 'button',
+                            cls: "bigButton",
                             text : Locale.strings.continueStr,
                             style : {
                                 width : '150px',
@@ -952,12 +1032,13 @@ Ext.define('LIME.controller.Editor', {
                     }).show();
                 }
     		});
+
 		} else {
 		    editor.restoreSession();
 		}
 	},
-	
-	
+
+
 	/* -------------- Events handlers ---------------- */
 
 	/**
@@ -989,6 +1070,21 @@ Ext.define('LIME.controller.Editor', {
 		this.getMain().down('mainEditorPath').setPath(elements);
 	},
 
+	onNodeClick: function(selectedNode) {
+	    var body = this.getBody();
+
+	    Ext.each(body.querySelectorAll("*["+DocProperties.elementFocusedCls+"]"), function(node) {
+	        //Ext.fly(node).removeCls(DocProperties.elementFocusedCls);
+	        node.removeAttribute(DocProperties.elementFocusedCls);
+	    });
+	    if(selectedNode) {
+	       this.setPath(selectedNode);
+            //Ext.fly(selectedNode).addCls(DocProperties.elementFocusedCls);
+            selectedNode.setAttribute(DocProperties.elementFocusedCls, "true");
+	    }
+
+	},
+
     /**
      * Restore a previously opened document by settings the appropriate
      * document properties and content taking them from the HTML5 localStorage object
@@ -1003,59 +1099,33 @@ Ext.define('LIME.controller.Editor', {
              storage.openDocument(userPreferences.lastOpened);
          }
     },
-    
+
     disableEditor: function() {
-        this.getBody().setAttribute('contenteditable', false);    
+        this.getBody().setAttribute('contenteditable', false);
     },
-    
+
     enableEditor: function() {
         this.getBody().setAttribute('contenteditable', true);
     },
-	
+
 	/* Initialization of the controller */
 	init : function() {
-		
+
 		// Set the event listeners
 		this.application.on({
 			nodeFocusedExternally : this.focus,
 			nodeChangedExternally : this.focus,
-			editorDomNodeFocused : this.setPath,
+			editorDomNodeFocused : this.onNodeClick,
 			scope : this
 		});
 		this.application.on(Statics.eventsNames.loadDocument, this.beforeLoadDocument, this);
 		this.application.on(Statics.eventsNames.disableEditing, this.disableEditor, this);
 		this.application.on(Statics.eventsNames.enableEditing, this.enableEditor, this);
-		
+
 		// save a reference to the controller
 		var editorController = this;
 		var markerController = this.getController('Marker');
 		this.control({
-			
-			// Handle the context menu
-			'contextMenu menuitem' : {
-				/* TODO Distinguere i due casi basandosi sui due bottoni */
-				click : function(cmp, e) {
-					var parentXtype = cmp.parentMenu.getXType(),
-						id = cmp.id;
-					// Call the unmark only with one of the inner buttons
-					if (parentXtype != "contextMenu"){
-						try{
-							// Differentiate between the types of action that have to be performed by looking at the id of the pressed button
-							switch(id){
-								case "unmarkThis": markerController.unmark(this.getSelectedNode());	
-										break;
-								case "unmarkAll": markerController.unmark(this.getSelectedNode(), true);
-										break;
-							}
-						}catch(e){
-							Ext.log({level: "error"}, e);
-						}
-					} else {
-						/* TODO Don't let the menu hide when the main item is clicked */
-					}
-				}
-			},
-			
 			// Handle the path panel
 			'mainEditorPath' : {
 				update : function() {
@@ -1074,25 +1144,72 @@ Ext.define('LIME.controller.Editor', {
 					}, this);
 				}
 			},
-			
+
+			'mainEditorUri' : {
+                update : function() {
+                    var me = this;
+                    Ext.select(".uriSelector").on("click", function(evt, el) {
+                        var elId = el.getAttribute("id");
+                        if (elId) {
+                            me.application.fireEvent(Statics.eventsNames.openDocument, config = {path: elId});
+                        }
+                    }, this);
+                }
+            },
+
 			// Handle the viewable events on the editor (click, contextmenu etc.)
 			'mainEditor' : {
 				click : function(ed, e, selectedNode) {
-					var me = this;
+					var me = this,
+					   toMarkNodes = me.getBody().querySelectorAll("."+DomUtils.toMarkNodeClass);
+
+					// Replace all empty toMarkNodes with breaking elements
+					Ext.each(toMarkNodes, function(node) {
+					   if(Ext.isEmpty(DomUtils.getTextOfNode(node).trim())) {
+					       if(node.parentNode) {
+					           Ext.DomHelper.insertHtml('beforeBegin',node, DomUtils.getBreakingElementHtml());
+					           node.parentNode.removeChild(node);
+					       }
+					   }
+					});
+
 					// Hide the context menu
 					this.getContextMenu().hide();
 					if (Ext.Object.getSize(selectedNode)==0) {
-						selectedNode = editorController.getSelectedNode(true);
+						selectedNode = DomUtils.getFirstMarkedAncestor(e.target);
+						if(DomUtils.isBreakingNode(e.target)) {
+						    var newElement = Ext.DomHelper.createDom({
+                                tag : 'div',
+                                html : '&nbsp;',
+                                cls: DomUtils.toMarkNodeClass
+                            });
+						    e.target.parentNode.replaceChild(newElement, e.target);
+						    this.setCursorLocation(newElement, 0);
+						    if(selectedNode) {
+						        this.lastFocused = selectedNode;
+                                me.application.fireEvent('editorDomNodeFocused', selectedNode);
+                                return;
+						    }
+						}
 					}
-					// Expand the selected node's related buttons
-					this.lastFocused = selectedNode;
-					me.application.fireEvent('editorDomNodeFocused', selectedNode);
+
+					if(selectedNode) {
+					   var editorNode = this.getSelectedNode(),
+					       cls = editorNode.getAttribute("class");
+					   if((cls && cls != DomUtils.toMarkNodeClass) &&
+					       !DomUtils.isBreakingNode(editorNode) && editorNode != selectedNode) {
+                            this.setCursorLocation(selectedNode, 0);
+                       }
+                       // Expand the selected node's related buttons
+                       this.lastFocused = selectedNode;
+                       me.application.fireEvent('editorDomNodeFocused', selectedNode);
+					}
 				},
 				change : function(ed, e) {
 					/* If the body node is not the default one wrap it */
 					var body = ed.getBody(),
 					    docCls = DocProperties.getDocClassList(),
-    					documentTypeNode = Ext.query('*[class='+docCls+']', body)[0], 
+    					documentTypeNode = Ext.query('*[class='+docCls+']', body)[0],
 						explorer = this.getExplorer();
 					if (!documentTypeNode) {
 						/* Save a bookmark of the selection */
@@ -1116,7 +1233,19 @@ Ext.define('LIME.controller.Editor', {
 					/* Warn of the change */
 					this.changed = true;
 				},
-				
+
+				contextmenu : function(ed, e) {
+                    var coordinates = [],
+                        offsetPosition = this.getPosition();
+                    // Prevent the default context menu to show
+                    e.preventDefault();
+                    // Compute the coordinates
+                    //coordinates = [e.pageX+offsetPosition[0], e.pageY+offsetPosition[1]];
+                    coordinates = [e.clientX+offsetPosition[0], e.clientY+offsetPosition[1]];
+                    // Can't use Ext getXY because it's a tinymce event!
+                    this.application.fireEvent(Statics.eventsNames.showContextMenu, coordinates);
+                },
+
 				setcontent : function(ed, e) {
 					var explorer = this.getExplorer(),
 						body = this.getBody(),
@@ -1141,34 +1270,37 @@ Ext.define('LIME.controller.Editor', {
 					} else {
 					    var classAtt = documentTypeNode.getAttribute('class');
 					    if (!classAtt || classAtt.indexOf(docCls)==-1) {
-					       documentTypeNode.setAttribute('class', docCls);    
+					       documentTypeNode.setAttribute('class', docCls);
 					    }
 					}
 					/* Warn of the change */
 					this.changed = true;
 					this.application.fireEvent('editorDomChange', body);
 				},
-				
+
 				beforerender : function() {
-                    var me = this, editorView = me.getMainEditor(), tinyView = me.getEditorComponent();
-					
+                    var me = this, editorView = me.getMainEditor(), tinyView = me.getEditorComponent(),
+                        marker = me.getController("Marker");
+
 					// trick for a global scope (needed by the autosave plugin)
 					__tinyInit = function() {
 					   var plugin = this;
 					   // Call 'tinyInit' with the plugin scope, pass 'autoSaveContent' with editor scope
 					   Ext.bind(me.tinyInit, plugin, [me, Ext.bind(me.autoSaveContent, me)])();
 					};
-					
+
 					var tinyConfig = {
                         tinymceConfig : {
                             doctype : '<!DOCTYPE html>',
                             theme : "modern",
                             schema: "html5",
                             element_format : "xhtml",
-                            forced_root_blocks: false,
+                            force_br_newlines : true,
+                            force_p_newlines : false,
+                            forced_root_block : '',
                             // Custom CSS
                             content_css : 'resources/tiny_mce/css/content.css',
-                            
+
                             // the editor mode
                             mode : 'textareas',
 
@@ -1182,14 +1314,16 @@ Ext.define('LIME.controller.Editor', {
                             nonbreaking_force_tab: true,
                             statusbar : false,
                             // the enabled plugins in the editor
-                            plugins : "compat3x, code, tinyautosave, table, link, image, searchreplace, jbimages",
-                            
+                            plugins : "compat3x, code, tinyautosave, table, link, image, searchreplace, jbimages, paste, noneditable",
+
+                            noneditable_leave_contenteditable: true,
+
                             valid_elements : "*[*]",
 
                             // the language of tinymce
                             language : Locale.getLang(),
 
-                            toolbar: "undo redo | bold italic strikethrough | bullist numlist outdent indent | table | link image jbimages | searchreplace",
+                            toolbar: "undo redo | bold italic strikethrough | superscript subscript | bullist numlist outdent indent | table | link image jbimages | searchreplace",
 
                             // Events and callbacks
 
@@ -1197,23 +1331,20 @@ Ext.define('LIME.controller.Editor', {
                                 editor.on('change', function(e) {
                                     editorView.fireEvent('change', editor, e);
                                 });
-                                
+
                                 editor.on('setcontent', function(e) {
                                     editorView.fireEvent('setcontent', editor, e);
                                 });
-                                
+
                                 editor.on('click', function(e) {
                                     // Fire a click event only if left mousebutton was used
-                                    if (e.which == 1){
+                                    //if (e.which == 1){
                                         editorView.fireEvent('click', editor, e);
-                                    }
+                                    //}
                                 });
-                                
+
                                 editor.on('contextmenu', function(e) {
                                     editorView.fireEvent('contextmenu', editor, e);
-                                });
-                                
-                                editor.on('paste', function(e) {
                                 });
                             },
 
@@ -1223,12 +1354,12 @@ Ext.define('LIME.controller.Editor', {
                             tinyautosave_interval_seconds : 10
                         }
 					};
-					
+
 					if (!WaweDebug) {
-                        tinyConfig.tinymceConfig.menubar = false;  
+                        tinyConfig.tinymceConfig.menubar = false;
                     }
 					/* Set the editor custom configuration */
-                    Ext.apply(tinyView, tinyConfig);            
+                    Ext.apply(tinyView, tinyConfig);
 				}
 			}
 		});

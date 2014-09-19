@@ -103,7 +103,6 @@ Ext.define('LIME.view.MarkingMenu', {
             item = items[i];
             if (item) {
                 item.hideChildren();
-                item.hideWidgets();
             }
         }
         this.doLayout();

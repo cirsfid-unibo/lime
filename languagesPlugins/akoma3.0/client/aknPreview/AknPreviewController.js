@@ -62,10 +62,15 @@ Ext.define('LIME.controller.AknPreviewController', {
     },
     
     doTranslate: function() {
-        var me = this;
-        me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
-            me.updateContent(xml);
-        }, this.getXml());
+        if(this.getXml()) {
+            var me = this,
+                activeTab = this.getXml().up("main").getActiveTab();
+            if (activeTab == this.getXml()) {
+                me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
+                    me.updateContent(xml);
+                }, this.getXml());    
+            }
+        }
     },
     
     /**
@@ -77,6 +82,16 @@ Ext.define('LIME.controller.AknPreviewController', {
         if (this.getXml()) {
             this.getXml().down('codemirror').setValue(content);
         }
+    },
+    
+    onRemoveController: function() {
+        var me = this;
+        me.application.removeListener(Statics.eventsNames.afterLoad, me.doTranslate, me);
+    },
+    
+    onInitPlugin: function() {
+        var me = this;
+        me.application.on(Statics.eventsNames.afterLoad, me.doTranslate, me);
     },
     
     init : function() {

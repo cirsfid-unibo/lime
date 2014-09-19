@@ -164,112 +164,210 @@ Ext.define('LIME.controller.LoginManager', {
 	},
 	
 	
-	/**
-	 * Start the login procedure calling the related web service.
-	 * If the login is successful it loads the editor
-	 * otherwise it shows some message. 
-	 */
-	login: function() {
-	   	var loginView = this.getLogin(),
-	    	   data = loginView.getData(),
-	    	   openFileStore = Ext.getStore('OpenFile');
-	   
-	    // save the login manager object
-	    var loginManager = this,
-	        preferencesManager = this.getController('PreferencesManager');
-	   	
-	   	// call the service to check the user login
-	   	var requestUrl = Utilities.getAjaxUrl({
-	   		   'requestedService' : Statics.services.userManager,
-			   'requestedAction' : 'Login',
-	   		   'userName' :  data.username,
-	   		   'password':  data.password
-	   	});
-	   	
-	   	// DEBUG used when Exist is down (fake login)
-	   	/*
-	   	loginManager.setUserInfo("demo@prova.com", "demo", "/path/to/collection");
-	   	loginView.hide();
+	prepareLogin: function() {
+	    var me = this, loginView = this.getLogin(),
+            data = loginView.getData(),  requestUrl,
+            preferencesManager = this.getController('PreferencesManager');
+       
+        // DEBUG used when Exist is down (fake login)
+        /*
+        loginManager.setUserInfo("demo@prova.com", "demo", "/path/to/collection");
+        loginView.hide();
         loginManager.startEditor();
-	   	return;
-	   	*/
+        return;
+        */
 
-		Ext.Ajax.request({
-			url : requestUrl,
-			success : function(response, opts) {
-				var jsonData,
-				    userData = {},
-				    userPreferences;
-				try {    
-				    jsonData = Ext.decode(response.responseText);
-				} catch(e){
-				    Ext.Msg.alert(Locale.strings.error, Locale.strings.serverFailure);
-				    return;
-				}
-				// login the user
-				if(jsonData.success == 'true')
-				{
-				   userData.username = data.username;
-				   userData.password = data.password;
-				   userData.userCollection = jsonData.userCollection;
-				   userData.editorLanguage = Locale.strings.languageCode;
-				   
-				   // Store user's info locally
-				   loginManager.setUserInfo(userData);
-				   
-				   // Retrieve user's preferences from the DB (load them in the editor in the callback)
-				   preferencesManager.getUserPreferences(function(args){
-				       Ext.defer(function(args){
-				           preferencesManager.loadUserPreferences(args);
-				           // Dinamically load the files store when the user has already logged in
-				           loginView.hide();
-                           loginManager.startEditor();
-                           /*openFileStore.load({
-                               scope : this,
-                               callback : function(){    
-                                   loginView.hide();
-                                   loginManager.startEditor();
-                               }
-                           });*/
-				       }, 0, preferencesManager, [args]);
-				   });
-				   
-				}
-				
-				// login data was wrong
-				else
-				{
-				    if (!loginView.isVisible()){
-				        loginView.show();
-				    }
-				    var errorCode = jsonData.msg;
-                    switch (errorCode) {
-                        
-                        case 'ERR_0' : 
-                           Ext.Msg.alert(Locale.strings.authErrors.LOGIN_FAILED_TITLE, Locale.strings.authErrors.ERR_0);   
-                           loginView.loginFailed();
-                           break;
-                   }
-               }
-            },
-            
-			failure : function(response, opts) {
-			    if (!response || !response.status){
-			        response.status = 'request timed-out';
-			    }
-				Ext.Msg.alert(Locale.strings.error, Locale.strings.serverFailure +' '+response.status);
-				loginView.loginFailed();
-			}
-		});
+        me.login(data.username, data.password, function(loginData) {
+            var userData = {
+                username: data.username,
+                password: data.password,
+                userCollection: loginData.userCollection,
+                editorLanguage: Locale.strings.languageCode
+            };
+
+            // Store user's info locally
+            me.setUserInfo(userData);
+
+            // Retrieve user's preferences from the DB (load them in the editor in the callback)
+            preferencesManager.getUserPreferences(function(args) {
+                Ext.defer(function(args) {
+                    preferencesManager.loadUserPreferences(args);
+                    // Dinamically load the files store when the user has already logged in
+                    loginView.hide();
+                    me.startEditor();
+                }, 0, preferencesManager, [args]);
+            });
+        }, function(loginData) {
+            var errorCode, errorMsg = {title: Locale.strings.error, content:  Locale.strings.serverFailure};
+            if (Ext.isObject(loginData)) {
+                errorCode = loginData.msg;
+                switch (errorCode) {
+                    case 'ERR_0' :
+                        errorMsg = {
+                            title: Locale.strings.authErrors.LOGIN_FAILED_TITLE,
+                            content:  Locale.strings.authErrors.ERR_0
+                        };
+                        break;
+                }
+            } else {
+                Ext.Msg.alert(Locale.strings.error, Locale.strings.serverFailure);
+            }
+
+            if (!loginView.isVisible()) {
+                loginView.show();
+            }
+            loginView.loginFailed(); 
+            Ext.Msg.alert(errorMsg.title, errorMsg.content);
+        });
 	},
 	
+	prepareRegister: function(cmp) {
+	    // cmp is the registration button
+        var form = cmp.up('form').getForm(),
+            modal = cmp.up('window'),
+            me = this,
+            preferencesManager = this.getController('PreferencesManager');
+        
+        if (form.isValid()){
+            values = form.getValues();
+            if (modal.checkPasswords()){
+                // Give a waiting feedback to the user
+                modal.setLoading(true);
+                
+                me.register(values.email, values.password, values.name, function(data) {
+                    Ext.Msg.alert(Locale.strings.registrationOk, Locale.strings.registrationOkMessage);
+                    modal.setLoading(false);
+                    modal.close();
+                    // Create the user'spreferences
+                    preferencesManager.setUserPreferences({
+                        username : values.email,
+                        userFullName : values.name,
+                        password : values.password,
+                        editorLanguage : Locale.strings.languageCode
+                    }, true); 
+                }, function(data) {
+                    var errorCode;
+
+                    if (Ext.isObject(data)) {
+                        errorCode = data.msg;
+                        // Handle different type of server-side errors
+                        switch (errorCode) {
+                            case 'ERR_1' :
+                                Ext.Msg.alert(Locale.strings.authErrors.REGISTRATION_FAILED_TITLE, Locale.strings.authErrors.ERR_1);
+                                break;
+
+                            case 'ERR_2' :
+                                Ext.Msg.alert(Locale.strings.authErrors.REGISTRATION_FAILED_TITLE, Locale.strings.authErrors.ERR_2);
+                                break;
+
+                            default :
+                                Ext.Msg.alert(Locale.strings.authErrors.REGISTRATION_FAILED_TITLE, 'Undefined error');
+                        }
+                    } else {
+                        Ext.Msg.alert(Locale.strings.authErrors.REGISTRATION_FAILED_TITLE, ' server-side failure');
+                    }
+                    modal.setLoading(false); 
+                    modal.registrationFailed();
+                });
+            }
+            
+        } else {
+            modal.registrationFailed();
+        }
+	},
 	/**
-	 * Perform a logout cleaning whatever is needed from the
-	 * localStorage.
-	 * Refresh the page to force the user to login again. 
+     * Start the login procedure calling the related web service.
+     * If the login is successful it loads the editor
+     * otherwise it shows some message. 
+     */
+    login: function(username, password, success, failure) {
+        var me = this, requestUrl;
+        
+        if(!Ext.isString(username) || !Ext.isString(password) 
+           || Ext.isEmpty(username.trim()) || Ext.isEmpty(password.trim())) {
+            Ext.callback(failure, me);
+            return;            
+        }
+        
+        requestUrl = Utilities.getAjaxUrl({
+               'requestedService' : Statics.services.userManager,
+               'requestedAction' : 'Login',
+               'userName' :  username,
+               'password':  password
+        });
+        
+
+        Ext.Ajax.request({
+            url : requestUrl,
+            success : function(response, opts) {
+                var jsonData = Ext.decode(response.responseText, true);
+                if (!jsonData) {
+                    Ext.callback(failure, me, [response.responseText]);
+                } else if (jsonData.success == 'true') {
+                    Ext.callback(success, me, [jsonData]);
+                } else { // login data was wrong
+                    Ext.callback(failure, me, [jsonData]);
+                }
+            },
+            failure : function(response, opts) {
+                if (!response || !response.status) {
+                    response = response || {};
+                    response.status = 'request timed-out';
+                }
+                Ext.callback(failure, me, [response.status]);
+            }
+        }); 
+
+    },
+    
+	/**
+	 * Starts the registration procedure calling the related web service.
+	 * If the registration is successful the user is created and can now login.
+	 * Otherwise a message is shown to the user. 
 	 */
-	logout : function(){
-	     // Only remove user credentials
+    
+    register : function(email, password, name, success, failure) {
+        var me = this, requestUrl;
+        
+        if(!Ext.isString(email) || !Ext.isString(password) || !Ext.isString(name) 
+           || Ext.isEmpty(email.trim()) || Ext.isEmpty(password.trim()) || Ext.isEmpty(name.trim())) {
+            Ext.callback(failure, me);
+            return;            
+        }
+        
+        requestUrl = Utilities.getAjaxUrl({
+            'requestedService' : Statics.services.userManager,
+            'requestedAction' : 'Create_User',
+            'userName' : email,
+            'password' : password,
+            'userFullName' : name
+        });
+
+        Ext.Ajax.request({
+            url : requestUrl,
+            success : function(response, opts) {
+                var jsonData = Ext.decode(response.responseText, true);
+                if (!jsonData) {
+                    Ext.callback(failure, me, [response.responseText]);
+                } else if (jsonData.success == 'true') {
+                    Ext.callback(success, me, [jsonData]);
+                } else {
+                    Ext.callback(failure, me, [jsonData]);
+                }
+            },
+            failure : function(response, opts) {
+                Ext.callback(failure, me, [response.status]);
+            }
+        });
+    },
+
+	/**
+     * Perform a logout cleaning whatever is needed from the
+     * localStorage.
+     * Refresh the page to force the user to login again. 
+     */
+    logout : function(){
+         // Only remove user credentials
          localStorage.removeItem('username');
          localStorage.removeItem('password');
          localStorage.removeItem('userCollection');
@@ -278,110 +376,8 @@ Ext.define('LIME.controller.LoginManager', {
          
          // Refresh the page
          window.location.reload();
-	},
-	
-	
-	
-	
-	/**
-	 * Starts the registration procedure calling the related web service.
-	 * If the registration is successful the user is created and can now login.
-	 * Otherwise a message is shown to the user. 
-	 */
-	register : function(cmp){
-	    // cmp is the registration button
-        var form = cmp.up('form').getForm(),
-            modal = cmp.up('window'),
-            loginManager = this,
-            preferencesManager = this.getController('PreferencesManager');
-        
-        if (form.isValid()){
-            values = form.getValues();
-            if (modal.checkPasswords()){
-                // call the service to check the user login
-                var requestUrl = Utilities.getAjaxUrl({
-                       'requestedService' : Statics.services.userManager,
-                       'requestedAction' : 'Create_User',
-                       'userName' :  values.email,
-                       'password':  values.password,
-                       'userFullName': values.name
-                });
-                
-                // Give a waiting feedback to the user
-                modal.setLoading(true);
-                
-                // get the doc
-                Ext.Ajax.request({
-                    url : requestUrl,
-                    success : function(response, opts) {
-                        var jsonData,
-                            errorCode;
-                            
-                        try {
-                            // Watch out for malformed JSON
-                            jsonData = Ext.decode(response.responseText);
-                        } catch (e) {
-                            jsonData = {success : false};
-                        }
-                        
-                        // Read the error code sent by the server (if any)
-                        errorCode = jsonData.msg;
-                            
-                        // login the user
-                        if(jsonData.success == 'true')
-                        {
-                            Ext.Msg.alert(Locale.strings.registrationOk, Locale.strings.registrationOkMessage);
-                            modal.setLoading(false);
-                            modal.close();
-                            
-                            // Create the user'spreferences
-                            preferencesManager.setUserPreferences(
-                                {
-                                    username: values.email, 
-                                    userFullName: values.name,
-                                    password: values.password,
-                                    editorLanguage: Locale.strings.languageCode
-                                }, true);
-                        }
-                        else {
-                            modal.setLoading(false);
-                            
-                            // Handle different type of server-side errors
-                            switch (errorCode) {
-                                
-                                case 'ERR_1' : 
-                                   Ext.Msg.alert(Locale.strings.authErrors.REGISTRATION_FAILED_TITLE, 
-                                       Locale.strings.authErrors.ERR_1);   
-                                   modal.registrationFailed();
-                                   break;
-                                   
-                                case 'ERR_2' :
-                                   Ext.Msg.alert(Locale.strings.authErrors.REGISTRATION_FAILED_TITLE, 
-                                       Locale.strings.authErrors.ERR_2);   
-                                   modal.registrationFailed();
-                                   break;
-                                   
-                                default :
-                                    Ext.Msg.alert(Locale.strings.authErrors.REGISTRATION_FAILED_TITLE, 
-                                       'Undefined error');   
-                                   modal.registrationFailed();
-                            }
-                               
-                        }
-                    },
-                    
-                    failure : function(response, opts) {
-                        modal.setLoading(false);
-                        Ext.Msg.alert('server-side failure with status code ' + response.status);
-                    }
-                });
-            }
-            
-        } else {
-            modal.registrationFailed();
-        }
     },
-	
+    
 	/**
 	 * Show a form where the user can add his 
 	 * registration details (e.g. username, password, email).
@@ -407,7 +403,7 @@ Ext.define('LIME.controller.LoginManager', {
                         password = localStorage.getItem('password');
                     if (user && password) {
                         loginView.setData({username: user, password: password});  
-                        this.login();
+                        this.prepareLogin();
                     } else {
                         cmp.show();    
                     }
@@ -415,7 +411,7 @@ Ext.define('LIME.controller.LoginManager', {
             },
             'login button': {
                 click: function(cmp) {
-                    this.login();
+                    this.prepareLogin();
                 }
             },
             'box[cls=registration]': {
@@ -436,7 +432,7 @@ Ext.define('LIME.controller.LoginManager', {
             },
 
             'registration button' : {
-                click : this.register
+                click : this.prepareRegister
             },
             
             'userButton': {

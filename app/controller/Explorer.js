@@ -262,7 +262,13 @@ Ext.define('LIME.controller.Explorer', {
     init : function() {
         // Register for events
         this.application.on({
-            editorDomChange : this.buildTree,
+            editorDomChange : function(node, config) {
+                try {
+                    this.buildTree(node, config);   
+                } catch(e) {
+                    Ext.log({level: "error"}, e);
+                }
+            },
             editorDomNodeFocused : this.expandItem,
             scope : this
         });
@@ -283,12 +289,12 @@ Ext.define('LIME.controller.Explorer', {
                     }
                 },
                 itemcontextmenu : function(view, rec, item, index, e, eOpts) {
-                    var coordinates = [], contextMenu = this.getContextMenu();
+                    var coordinates = [];
                     // Prevent the default context menu to show
                     e.preventDefault();
                     /*Fire an itemclick event to select the htmlNode in the editor*/
                     view.fireEvent('itemclick', view, rec, item, index, e, eOpts);
-                    contextMenu.showAt(e.getXY());
+                    this.application.fireEvent(Statics.eventsNames.showContextMenu, e.getXY());
                 }
             }
         });

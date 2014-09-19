@@ -106,7 +106,7 @@
 	define('HTML_TO_AKN3_0', XSLT_BASE_DIR . 'HtmlToAkn3.0.xsl');
 	
 	// the xslt that translates akomantoso to pdf
-	define('AKN_TO_PDF', XSLT_BASE_DIR . 'AknToPdf.xsl');
+	define('AKN_TO_PDF', XSLT_BASE_DIR . 'AknToPdfGeneric.xsl');
 	
 	// the xslt that translates akomantoso2 to xhtml
 	define('AKN2_TO_HTML', XSLT_BASE_DIR . 'Akn20ToXhtml.xsl');
@@ -116,8 +116,6 @@
 	
 	// the xslt that translates akomantoso2 to a package for ebook
 	define('AKN30_TO_XHTML', XSLT_BASE_DIR . 'AknToXhtml30.xsl');
-	
-	define('AKNToXHTMLDiff', XSLT_BASE_DIR . 'AKNToXHTMLDiff.xsl');
 	
 	// the xslt that translates akomantoso3 to xhtml
 	define('AKN3_TO_HTML', XSLT_BASE_DIR . 'Akn30ToXhtml.xsl');
@@ -143,6 +141,9 @@
 	// relative path to temp directory
 	define('TMPSUBDIRLOCALPATH', '../../tmp/');
 	
+	// path to root of LIME
+	define('LIMEROOT', realpath(dirname(__FILE__)."/../"));
+	
 	// web relative path to temp directory
 	define('TMPSUBDIRWEBPATH', 'tmp/');
 	
@@ -150,7 +151,7 @@
 	define('SOURCEXMLFILENAME', 'source.xml');
 
 	// the name of fo xsl files
-	define('XSLFOFILENAME', 'intermediate.fo');	
+	define('XSLFOFILENAME', 'intermediate.xml');	
 	
 	// the name of pdf files
 	define('PDFFILENAME', 'final.pdf');

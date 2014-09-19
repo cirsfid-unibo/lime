@@ -18,7 +18,7 @@ Ext.define("Ext.ux.form.field.TinyMCE", {
     config: {
         height: 170
     },
-    cicciobello: 1,
+
     hideBorder: false,
 
     inProgress: false,

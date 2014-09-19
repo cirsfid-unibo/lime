@@ -575,6 +575,7 @@ Ext.define('LIME.controller.MainToolbar', {
                     }
                     data = Ext.Object.merge(newWindow.tmpConfig, newWindow.getData());
                     this.createNewDocument(data);
+                    newWindow.autoClosed = true;
                     newWindow.close();
                 }
             },

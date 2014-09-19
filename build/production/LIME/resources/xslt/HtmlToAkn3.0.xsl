@@ -38,6 +38,13 @@
         </xsl:if>	
     </xsl:template>
     
+    <xsl:template mode="aknPrefixAttributesWithoutId" match="@*" >
+    	<xsl:variable name="attName"><xsl:value-of select="substring-after(name(.),'_')"/></xsl:variable>
+    	<xsl:if test="substring-before(name(.),'_') = 'akn' and $attName != 'id'">
+			<xsl:attribute name="{$attName}"><xsl:value-of select="." /></xsl:attribute>
+        </xsl:if>	
+    </xsl:template>
+    
     <xsl:template mode="allAttributes" match="@*" >
 		<xsl:attribute name="{name(.)}"><xsl:value-of select="." /></xsl:attribute>
     </xsl:template>
@@ -112,6 +119,41 @@
 	    			<xsl:apply-templates />
 	    		</xsl:otherwise>
 	 		</xsl:choose>
+		</xsl:element>
+	</xsl:template>
+	
+	<xsl:template match="span[contains(@class,'documentRef')]">
+		<xsl:variable name="aknName">
+            <xsl:if test="substring-after(./@class,' ') != ''">
+                <xsl:value-of select="translate(substring-after(./@class,' '),'_','')" />
+            </xsl:if>
+            <xsl:if test="substring-after(./@class,' ') = ''">
+                <xsl:value-of select="translate(@class,'_','')" />
+            </xsl:if>
+            <xsl:if test="./@class = ''">
+            	<xsl:value-of select="name(.)" />
+            </xsl:if>
+        </xsl:variable>
+		<xsl:element name="{$aknName}">
+			<xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
+		</xsl:element>
+	</xsl:template>
+	
+	<xsl:template match="*[contains(@class,'collectionBody')]">
+		<xsl:variable name="aknName">
+            <xsl:if test="substring-after(./@class,' ') != ''">
+                <xsl:value-of select="translate(substring-after(./@class,' '),'_','')" />
+            </xsl:if>
+            <xsl:if test="substring-after(./@class,' ') = ''">
+                <xsl:value-of select="translate(@class,'_','')" />
+            </xsl:if>
+            <xsl:if test="./@class = ''">
+            	<xsl:value-of select="name(.)" />
+            </xsl:if>
+        </xsl:variable>
+		<xsl:element name="{$aknName}">
+			<xsl:apply-templates select="@*" mode="aknPrefixAttributesWithoutId" />
+			<xsl:apply-templates />
 		</xsl:element>
 	</xsl:template>
 	

@@ -11,6 +11,14 @@
 					"name": "ch"
 				}, {
 					"name": "it"
+				}, {
+					"name": "cl"
+				}, {
+					"name": "eu"
+				}, {
+					"name": "uk"
+				}, {
+					"name": "us"
 				}
 			]
 		}, {
@@ -24,6 +32,14 @@
 					"name": "ch"
 				}, {
 					"name": "it"
+				}, {
+					"name": "cl"
+				}, {
+					"name": "eu"
+				}, {
+					"name": "uk"
+				}, {
+					"name": "us"
 				}
 			]
 		}, {
@@ -37,6 +53,14 @@
 					"name": "ch"
 				}, {
 					"name": "it"
+				}, {
+					"name": "cl"
+				}, {
+					"name": "eu"
+				}, {
+					"name": "uk"
+				}, {
+					"name": "us"
 				}
 			]
 		}, {
@@ -50,6 +74,14 @@
 					"name": "ch"
 				}, {
 					"name": "it"
+				}, {
+					"name": "cl"
+				}, {
+					"name": "eu"
+				}, {
+					"name": "uk"
+				}, {
+					"name": "us"
 				}
 			]
 		}, {
@@ -63,6 +95,14 @@
 					"name": "ch"
 				}, {
 					"name": "it"
+				}, {
+					"name": "cl"
+				}, {
+					"name": "eu"
+				}, {
+					"name": "uk"
+				}, {
+					"name": "us"
 				}
 			]
 		}, {
@@ -76,11 +116,114 @@
 					"name": "ch"
 				}, {
 					"name": "it"
+				}, {
+					"name": "cl"
+				}, {
+					"name": "eu"
+				}, {
+					"name": "uk"
+				}, {
+					"name": "us"
 				}
 			]
 		}
 	],
 
 	"customViews": ["MarkingMenu"],
-	"plugins": ["aknPreview", "documentCollection", "at4am"]
+	"plugins": ["aknPreview", 
+				"documentCollection", 
+				"parsers", 
+				"modsMarker", 
+				"notesManager",
+				"metadataManager"],
+	"transformationFiles": {
+		"languageToLIME": "AknToXhtml.xsl",
+		"LIMEtoLanguage": "HtmlToAkn.xsl"
+	},
+	"metaTemplate": {
+		"identification": {
+			"@source": "",
+			"FRBRWork": {
+				"FRBRthis": {
+					"@value": ""
+				},
+				"FRBRuri": {
+					"@value": ""
+				},
+				"FRBRalias": {
+					"@value": "",
+					"@name": ""
+				},
+				"FRBRdate": {
+					"@date": "",
+					"@name": ""
+				},
+				"FRBRauthor": {
+					"@akn_href": "",
+					"@as": ""
+				},
+				"FRBRcountry": {
+					"@value": ""
+				},
+				"FRBRnumber": {
+					"@value": ""
+				}
+			},
+			"FRBRExpression": {
+				"FRBRthis": {
+					"@value": ""
+				},
+				"FRBRuri": {
+					"@value": ""
+				},
+				"FRBRdate": {
+					"@date": "",
+					"@name": ""
+				},
+				"FRBRauthor": {
+					"@akn_href": "",
+					"@as": ""
+				},
+				"FRBRlanguage": {
+					"@language": ""
+				}
+			},
+			"FRBRManifestation": {
+				"FRBRthis": {
+					"@value": ""
+				},
+				"FRBRuri": {
+					"@value": ""
+				},
+				"FRBRdate": {
+					"@date": "",
+					"@name": ""
+				},
+				"FRBRauthor": {
+					"@akn_href": "",
+					"@as": ""
+				},
+				"FRBRformat": {
+					"@value": ""
+				}
+			}
+		},
+		"publication": {
+			"@name": "",
+			"@date": "",
+			"@number": "",
+			"@showAs": ""
+		},
+		"references": {
+			"@source": "",
+			"!possibleChildren": {
+				"names": ["original", "TLCPerson", "TLCOrganization", "TLCConcept", "TLCObject", "TLCEvent", "TLCLocation", "TLCProcess", "TLCRole", "TLCTerm", "TLCReference"],
+				"attributes": {
+					"@eId": "",
+					"@akn_href": "",
+					"@akn_showAs": ""
+				}
+			}
+		}
+	}
 }

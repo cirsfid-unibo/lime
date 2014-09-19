@@ -67,6 +67,7 @@ class Proxies_Services_AknToPdfFop implements Proxies_Services_Interface
 		$this->_submittedSourceXML = $params['source'];
 		
 		$this->_isDownload = $isDownload;
+		$this->_cssFile = (isset($params['css'])) ? $params['css'] : FALSE;
 	}
 	
 	/**
@@ -74,7 +75,7 @@ class Proxies_Services_AknToPdfFop implements Proxies_Services_Interface
 	 * @return The result that the service computed
 	 */ 
 	public function getResults()
-	{	
+	{
 		//$fop_command = $currentDirFullpath."isafop/fop ";
 		
 		$currentDirFullpath = dirname(__FILE__)."/";
@@ -91,8 +92,7 @@ class Proxies_Services_AknToPdfFop implements Proxies_Services_Interface
 		$sourceXML = trim($this->_submittedSourceXML);
 		if (get_magic_quotes_gpc()) 
 		            $sourceXML = stripcslashes($sourceXML);
-		
-		
+			
 		$doc = new DOMDocument();
 		$output = array();
 
@@ -112,8 +112,26 @@ class Proxies_Services_AknToPdfFop implements Proxies_Services_Interface
 		
 						if (file_exists($xmlFullPathFilename))
 						{
+							
 							$xsl = new DOMDocument;
 							$xsl->load(AKN_TO_PDF);
+							
+							if($this->_cssFile) {
+								$cssRules = cssFileToArray($this->_cssFile);
+								foreach($cssRules as $selector => $rules) {
+									$attributeSet = createAttributeSet($xsl, $selector, $rules);
+									$xsl->documentElement->appendChild($attributeSet);
+								}
+							}
+							
+							$uriNamespace = $doc ->documentElement ->lookupnamespaceURI(NULL);
+							
+							// set namespace uri of the correct AKN3.0 revision
+							$xsl->documentElement->setAttributeNS(
+						        'http://www.w3.org/2000/xmlns/',
+						        'xmlns:akn',
+						        $uriNamespace
+							);
 			
 							// Configure the transformer
 							$proc = new XSLTProcessor;
@@ -131,14 +149,14 @@ class Proxies_Services_AknToPdfFop implements Proxies_Services_Interface
 								/*** FONT-ISSUE ***/
 														
 								$fo->save($currentDirFullpath.TMPSUBDIRLOCALPATH.$token."/".XSLFOFILENAME);
-								
-								$foFullPath = $currentDirFullpath.TMPSUBDIRLOCALPATH.$token."/".XSLFOFILENAME;
-								$pdfFullPath = $currentDirFullpath.TMPSUBDIRLOCALPATH.$token."/".PDFFILENAME;				
-								
-								//$fop_conf = " -c ".$currentDirFullpath."isafop/conf/fop.xconf ";
+							
+								$fullPath = realpath($currentDirFullpath.TMPSUBDIRLOCALPATH.$token."/");	
+								$foFullPath = $fullPath."/".XSLFOFILENAME;
+								$pdfFullPath = $fullPath."/".PDFFILENAME;
+									
+								//$fop_conf = " -c ".$currentDirFullpath."isafop/conf/fop.xconf";
 								$fop_conf = "";
-							    $final_command = FOP_COMMAND." $fop_conf -fo ".$foFullPath." -pdf ".$currentDirFullpath.TMPSUBDIRLOCALPATH.$token."/".PDFFILENAME;
-
+							    $final_command = '"'.realpath(FOP_COMMAND).'"'." $fop_conf -fo ".'"'.$foFullPath.'"'." -pdf ".'"'.$pdfFullPath.'"';
 							    exec($final_command);
 
 							    if (file_exists($pdfFullPath)){

@@ -100,7 +100,7 @@ Ext.define('LIME.Utilities', {
 		// get the url for the requested service
 		var requestedServiceUrl = this.ajaxUrls['baseUrl'] + '?';
 
-		// itereate throuhg the params
+		// itereate through the params
 		for (param in params) {
 			// create the request url
 			requestedServiceUrl = requestedServiceUrl + param + '=' + encodeURI(params[param]) + '&';
@@ -368,8 +368,9 @@ Ext.define('LIME.Utilities', {
             current = json[obj];
             if (obj.indexOf('@') == 0){
                 // Set attribute (if the value is null use the XML strict boolean value repeating the name of the attribute)
-                root.setAttribute(obj.substr(1), (!current)? obj.substr(1) : current);
-            } else {
+                //root.setAttribute(obj.substr(1), (!current)? obj.substr(1) : current);
+                root.setAttribute(obj.substr(1), (!current)? "" : current);
+            } else if(obj.charAt(0) != "!") {
                 // Append new div and call the conversion on it
                 if (current){
                     if (Ext.isString(current)){
@@ -422,6 +423,28 @@ Ext.define('LIME.Utilities', {
         return root;
     },
     
+    globalIndexOf: function(substring, string) {
+        var a=[],i=-1;
+        while((i=string.indexOf(substring,i+1)) >= 0) a.push(i);
+        return a;
+    },
+    
+    removeNodeByQuery: function(root, query) {
+        var node = root.querySelector(query);
+        if(node && node.parentNode) {
+            node.parentNode.removeChild(node);
+        }
+        return node;
+    },
+    
+    replaceChildByQuery: function(root, query, newChild) {
+        var oldChild = root.querySelector(query);
+        if (oldChild && oldChild.parentNode) {
+            oldChild.parentNode.replaceChild(newChild, oldChild);
+        }
+        return oldChild;
+    },
+    
     createWidget: function(name, config) {
         var widget;
         try {
@@ -429,6 +452,52 @@ Ext.define('LIME.Utilities', {
         } catch(e) {
         }
         return widget;
+    },
+    
+    pushOrValue: function(target, element) {
+        var result = target;
+        if(Ext.isArray(target)) {
+            result.push(element);
+        } else if (Ext.isEmpty(target)) {
+            result = element;
+        } else {
+            result = [target];
+            result.push(element);
+        }
+        return result;
+    },
+    
+    getLastItem: function(array) {
+        return array[array.length-1];
+    },
+    
+    filterUrls: function(reqUrls, content, success, failure, scope) {
+        var params = {
+            requestedService : Statics.services.filterUrls,
+            urls : Ext.encode(reqUrls)
+        };
+        if(content) {
+            params = Ext.merge(params, {content: true});
+        }
+        Ext.Ajax.request({
+            // the url of the web service
+            url : Utilities.getAjaxUrl(),
+            method : 'POST',
+            params : params,
+            scope : this,
+            success : function(result, request) {
+                var newUrls  = Ext.decode(result.responseText, true);
+                if (Ext.isFunction(success) && newUrls) {
+                    Ext.bind(success, scope)(newUrls);
+                } else if(Ext.isFunction(failure)) {
+                    Ext.bind(failure, scope)(reqUrls);
+                }
+            },
+            failure: function() {
+                if (Ext.isFunction(failure)) {
+                    Ext.bind(failure, scope)(reqUrls);
+                }
+            }
+        });
     }
-	
 });

@@ -6,18 +6,34 @@
  <xsl:strip-space elements="*"/>
  
  <xsl:template match="/">
-  <xsl:apply-templates select="//*[name()='body']"/> 
+  <xsl:choose>
+   <xsl:when test="//*[@id = 'main']">
+    <xsl:apply-templates select="//*[@id = 'main']"/>
+   </xsl:when>
+   <xsl:otherwise>
+    <xsl:apply-templates select="//*[name()='body']"/>
+   </xsl:otherwise>
+  </xsl:choose>
  </xsl:template>
  
  <xsl:template match="*[name()='body']">
    <xsl:apply-templates />
+ </xsl:template>
+ 
+ <xsl:template match="*[@id = 'main']">
+  <xsl:apply-templates />
  </xsl:template>
 
  <xsl:template match="*[name()='br']">
   <br/>
  </xsl:template>
  
- <xsl:template match="*[not(name()='a') and not(name()='body') and not(name()='br')]">
+ <xsl:template match="*[name()='p']">
+  <xsl:apply-templates />
+  <br/>
+ </xsl:template>
+ 
+ <xsl:template match="*[not(name()='a') and not(name()='body') and not(name()='br') and not(name()='p')]">
   <xsl:if test="not(.='')">
    <xsl:element name="{name()}">
     <xsl:for-each select="@*[not(name() = 'class') and 

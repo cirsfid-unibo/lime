@@ -46,6 +46,7 @@
  */
 
 require_once('config.php');
+require_once('lib/Text_LanguageDetect/Text/LanguageDetect.php');
  
 function aknToHtml($input,$stylesheet=FALSE,$language=FALSE, $fullOutput=FALSE, $akn2xsl=FALSE, $akn3xsl=FALSE) {
 	
@@ -71,6 +72,7 @@ function aknToHtml($input,$stylesheet=FALSE,$language=FALSE, $fullOutput=FALSE, 
 		// or custom stylesheet		 
 	    if ($stylesheet) $xsl -> load($stylesheet);
 		else $xsl -> load($akn3xsl);
+		
 		$language = 'akoma3.0';
 		$xpath = new DOMXPath($doc);
 		foreach( $xpath->query('namespace::*', $doc -> documentElement) as $node ) {
@@ -121,5 +123,58 @@ function XMLToJSON ($xml,$container=NULL) {
 		$json = json_encode($arrayXml);
 		return $json;
 }
+
+function cssFileToArray($path) {
+	$cssRules = array();	
+	$cssContent = file_get_contents($path);
+	if($cssContent) {
+		$cssContent = preg_replace('/}(?!$)/', '}||', preg_replace('/\s+/', '', $cssContent));
+		$blocks = explode("||", $cssContent);
+		foreach($blocks as $block) {
+			preg_match('/(?P<selector>[^{]+){(?P<rules>[^}]+)/',$block,$matches);
+			$tmpRules = explode(";", $matches["rules"]);
+			$rules = array();
+			foreach($tmpRules as $rule) {
+				$values = explode(":", $rule);
+				if(count($values) == 2) {
+					$rules[$values[0]] = $values[1];
+				}
+			}
+			if(array_key_exists($matches["selector"], $cssRules)) {
+				$cssRules[$matches["selector"]] = array_merge($cssRules[$matches["selector"]], $rules);
+			} else {
+				$cssRules[$matches["selector"]] = $rules;
+			}
+		}
+	}
+	return $cssRules;
+}
+
+function createAttributeSet($dom, $selector, $rules) {
+	$name = preg_replace('/\./', '', $selector);
+	$attributeSet = $dom->createElementNS("http://www.w3.org/1999/XSL/Transform", "xsl:attribute-set");
+	$attributeSet->setAttribute("name", $name);
+	foreach($rules as $rule => $value) {
+		$attribute = $dom->createElementNS("http://www.w3.org/1999/XSL/Transform", "xsl:attribute", $value);
+		$attribute->setAttribute("name", $rule);
+		$attributeSet->appendChild($attribute);
+	}
+	return $attributeSet;
+}
+	
+function detectLanguage($text, $length = 2) {
+    $l = new Text_LanguageDetect();
+
+	try {
+	    $l->setNameMode($length);
+	
+	    $result = $l->detect($text, 1);
+		$languages = array_keys($result);
+	    return (count($languages)) ? $languages[0] : NULL;
+	} catch (Text_LanguageDetect_Exception $e) {
+	    return NULL;
+	}
+}
+
 
 ?>

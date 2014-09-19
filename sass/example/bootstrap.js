@@ -896,6 +896,8 @@ Ext.ClassManager.addNameAlternateMappings({
   "LIME.Utilities": [
     "Utilities"
   ],
+  "LIME.controller.ContextInfoManager": [],
+  "LIME.controller.ContextMenu": [],
   "LIME.controller.CustomizationManager": [],
   "LIME.controller.DocumentUploader": [],
   "LIME.controller.Editor": [],
@@ -909,6 +911,7 @@ Ext.ClassManager.addNameAlternateMappings({
   "LIME.controller.PreferencesManager": [],
   "LIME.controller.ProgressWindow": [],
   "LIME.controller.Storage": [],
+  "LIME.controller.WidgetManager": [],
   "LIME.model.Json": [],
   "LIME.model.OpenFile": [],
   "LIME.store.DocumentLanguages": [],
@@ -935,8 +938,10 @@ Ext.ClassManager.addNameAlternateMappings({
   "LIME.view.ProgressWindow": [],
   "LIME.view.Viewport": [],
   "LIME.view.generic.MetadataForm": [],
+  "LIME.view.main.ContextPanel": [],
   "LIME.view.main.Editor": [],
   "LIME.view.main.editor.Path": [],
+  "LIME.view.main.editor.Uri": [],
   "LIME.view.maintoolbar.DocumentMenuButton": [],
   "LIME.view.maintoolbar.EditMenuButton": [],
   "LIME.view.maintoolbar.FileMenuButton": [],
@@ -953,11 +958,9 @@ Ext.ClassManager.addNameAlternateMappings({
   "LIME.view.maintoolbar.UserButton": [],
   "LIME.view.maintoolbar.WindowMenuButton": [],
   "LIME.view.markingmenu.TreeButton": [],
-  "LIME.view.markingmenu.menuwidgets.MenuWidget": [],
   "LIME.view.markingmenu.treebutton.Children": [],
   "LIME.view.markingmenu.treebutton.Expander": [],
   "LIME.view.markingmenu.treebutton.Name": [],
-  "LIME.view.markingmenu.treebutton.Widgets": [],
   "LIME.view.modal.Login": [],
   "LIME.view.modal.NewDocument": [],
   "LIME.view.modal.Registration": [],
@@ -975,7 +978,8 @@ Ext.ClassManager.addNameAlternateMappings({
   "LIME.view.modal.newSavefile.VersionSelector": [],
   "LIME.view.modal.newSavefile.toolbar.CancelButton": [],
   "LIME.view.modal.newSavefile.toolbar.ContextualButton": [],
-  "LIME.view.modal.newSavefile.toolbar.SaveButton": []
+  "LIME.view.modal.newSavefile.toolbar.SaveButton": [],
+  "LIME.view.widgets.MarkedElementWidget": []
 });
 Ext.ClassManager.addNameAliasMappings({
   "Ext.AbstractComponent": [],
@@ -2000,6 +2004,8 @@ Ext.ClassManager.addNameAliasMappings({
   "LIME.Locale": [],
   "LIME.Statics": [],
   "LIME.Utilities": [],
+  "LIME.controller.ContextInfoManager": [],
+  "LIME.controller.ContextMenu": [],
   "LIME.controller.CustomizationManager": [],
   "LIME.controller.DocumentUploader": [],
   "LIME.controller.Editor": [],
@@ -2013,6 +2019,7 @@ Ext.ClassManager.addNameAliasMappings({
   "LIME.controller.PreferencesManager": [],
   "LIME.controller.ProgressWindow": [],
   "LIME.controller.Storage": [],
+  "LIME.controller.WidgetManager": [],
   "LIME.model.Json": [],
   "LIME.model.OpenFile": [],
   "LIME.store.DocumentLanguages": [],
@@ -2067,11 +2074,17 @@ Ext.ClassManager.addNameAliasMappings({
   "LIME.view.generic.MetadataForm": [
     "widget.metadataForm"
   ],
+  "LIME.view.main.ContextPanel": [
+    "widget.contextPanel"
+  ],
   "LIME.view.main.Editor": [
     "widget.mainEditor"
   ],
   "LIME.view.main.editor.Path": [
     "widget.mainEditorPath"
+  ],
+  "LIME.view.main.editor.Uri": [
+    "widget.mainEditorUri"
   ],
   "LIME.view.maintoolbar.DocumentMenuButton": [
     "widget.documentMenuButton"
@@ -2121,9 +2134,6 @@ Ext.ClassManager.addNameAliasMappings({
   "LIME.view.markingmenu.TreeButton": [
     "widget.treeButton"
   ],
-  "LIME.view.markingmenu.menuwidgets.MenuWidget": [
-    "widget.menuWidget"
-  ],
   "LIME.view.markingmenu.treebutton.Children": [
     "widget.treeButtonChildren"
   ],
@@ -2132,9 +2142,6 @@ Ext.ClassManager.addNameAliasMappings({
   ],
   "LIME.view.markingmenu.treebutton.Name": [
     "widget.treeButtonName"
-  ],
-  "LIME.view.markingmenu.treebutton.Widgets": [
-    "widget.treeButtonWidgets"
   ],
   "LIME.view.modal.Login": [
     "widget.login"
@@ -2189,6 +2196,9 @@ Ext.ClassManager.addNameAliasMappings({
   ],
   "LIME.view.modal.newSavefile.toolbar.SaveButton": [
     "widget.newSavefileToolbarOpenButton"
+  ],
+  "LIME.view.widgets.MarkedElementWidget": [
+    "widget.markedElementWidget"
   ]
 });
 Ext.setVersion("ext-theme-base", "4.2.1");

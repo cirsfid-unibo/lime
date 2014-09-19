@@ -97,3 +97,11 @@
 .cm-s-default span.cm-error {
     color: #117700;
 }
+
+.forbidden-row .x-grid-cell {
+    color: #B5BCB5; 
+}
+
+.forbidden-cell .x-grid-cell {
+	color: #FF0000;
+}

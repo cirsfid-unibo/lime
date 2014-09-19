@@ -1,4 +1,9 @@
 {
+	"docType" : {
+		"wrapperStyle": {
+			"this": "font-weight: bold;"
+		}
+	},
 	"annex": {
 		"buttonStyle": "background-color: #74BAAC;",
 		"wrapperStyle": {
@@ -11,7 +16,7 @@
 		"buttonStyle": "background-color: #74BAAC;",
 		"wrapperStyle": {
 			"before": "background-color: #74BAAC; border:1px solid #74BAAC;",
-			"this": "border:1px solid #74BAAC;"
+			"this": "border:1px solid #74BAAC;color:#2385A0;"
 		}
 	},
 
@@ -19,7 +24,7 @@
 		"buttonStyle": "background-color: #74BAAC;",
 		"wrapperStyle": {
 			"before": "background-color: #74BAAC; border-color: #74BAAC;",
-			"this": "border:1px solid #74BAAC;"
+			"this": "border:1px solid #74BAAC;color: #8C489F;"
 		}
 	},
 
@@ -27,10 +32,10 @@
 		"buttonStyle": "background-color: #74BAAC;",
 		"wrapperStyle": {
 			"before": "background-color: #74BAAC; border-color: #74BAAC;",
-			"this": "border:1px solid #74BAAC;"
+			"this": "border:1px solid #74BAAC; color:#FF6600;"
 		}
 	},
-	
+
 	"coverPage": {
 		"buttonStyle": "background-color: #74BAAC;",
 		"wrapperStyle": {
@@ -38,33 +43,33 @@
 			"this": "border:1px solid #74BAAC;"
 		}
 	},
-	
+
 	"mainBody": {
 		"buttonStyle": "background-color: #74BAAC;",
 		"wrapperStyle": {
 			"before": "background-color: #74BAAC; border-color: #74BAAC;",
-			"this": "border:1px solid #74BAAC;"
+			"this": "border:1px solid #74BAAC; color:#2385A0;"
 		}
 	},
 	"amendmentBody": {
 		"buttonStyle": "background-color: #74BAAC;",
 		"wrapperStyle": {
 			"before": "background-color: #74BAAC; border-color: #74BAAC;",
-			"this": "border:1px solid #74BAAC;"
+			"this": "border:1px solid #74BAAC;color:#2385A0;"
 		}
 	},
 	"debateBody": {
 		"buttonStyle": "background-color: #74BAAC;",
 		"wrapperStyle": {
 			"before": "background-color: #74BAAC; border-color: #74BAAC;",
-			"this": "border:1px solid #74BAAC;"
+			"this": "border:1px solid #74BAAC;color:#29A2C6;"
 		}
 	},
 	"fragmentBody": {
 		"buttonStyle": "background-color: #74BAAC;",
 		"wrapperStyle": {
 			"before": "background-color: #74BAAC; border-color: #74BAAC;",
-			"this": "border:1px solid #74BAAC;"
+			"this": "border:1px solid #74BAAC;color:#29A2C6;"
 		}
 	},
 	"attachments": {
@@ -85,7 +90,7 @@
 		"buttonStyle": "background-color: #74BAAC;",
 		"wrapperStyle": {
 			"before": "background-color: #74BAAC; border-color: #74BAAC;",
-			"this": "border:1px solid #74BAAC;"
+			"this": "border:1px solid #74BAAC;color:#2385A0;"
 		}
 	},
 
@@ -93,7 +98,7 @@
 		"buttonStyle": "background-color: #74BAAC;",
 		"wrapperStyle": {
 			"before": "background-color: #74BAAC; border:1px solid #74BAAC;",
-			"this": "border:1px solid #74BAAC;"
+			"this": "border:1px solid #74BAAC; color: #66A15E;"
 		}
 	},
 	"item": {
@@ -101,6 +106,16 @@
 			"wrapperRules": ["addWrapperElement"]
 		},
 		"wrapperElement": "<div><p>&content;</p></div>"
+	},
+	"p": {
+		"wrapperElement": "<p>&content;</p>",
+		"remove": {
+			"wrapperStyle": ["after", "before", "this"]
+		},
+		"wrapperStyle" : {
+			"before":"border: 1px solid #C0E0DA; background-color:#C0E0DA;color:#000000;font-size:8pt;position:relative;left:85%;margin:0px;padding:2px 4px 2px 4px;border-radius: 3px;width:90px;display: block;text-align:center; margin-bottom:5px;",
+			"this": "border-radius: 3px; border:1px solid #C0E0DA; padding:3px; margin:3px 0px 3px 0px;"
+		}
 	},
 	"recitals": {
 		"remove": {
@@ -134,12 +149,21 @@
 			}
 		}
 	},
+	"ref": {
+		"wrapperStyle": {
+			"this": "background-color: #DBEADC;text-decoration:underline;"
+		}
+	},
 	"quotedStructure": {
 		"wrapperRules": {
 			"addWrapperElement": {
 				"type" : "mod"
 			}
+		},
+		"wrapperStyle": {
+			"this": "border-radius: 3px; border:1px solid #C0E0DA; border-left: 10px solid #CCC;  padding:3px; margin:3px 0px 3px 0px;"
 		}
+
 	},
 	"quotedText": {
 		"wrapperRules": {
@@ -160,7 +184,7 @@
 			}
 		}
 	},
-	
+
 	"subdivision":{
 		"wrapperClass":"patternName patternName",
 		"wrapperRules": {
@@ -168,11 +192,11 @@
 				"values":{
 					"name": "subdivision"
 				}
-				
+
 			}
 		}
 	},
-	
+
 	"signature": {
 		"wrapperStyle": "padding: 3px;"
 	},

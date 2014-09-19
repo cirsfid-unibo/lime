@@ -81,7 +81,7 @@
 		"pattern": "container"
 	},
 	"component": {
-		"pattern": "patternless"
+		"pattern": "container"
 	},
 	"componentRef": {
 		"pattern": "patternless"
@@ -131,6 +131,9 @@
 	"division": {
 		"pattern": "hcontainer"
 	},
+	"docAuthority": {
+		"pattern": "inline"
+	},
 	"docCommittee": {
 		"pattern": "inline"
 	},
@@ -168,7 +171,7 @@
 		"pattern": "inline"
 	},
 	"documentRef": {
-		"pattern": "patternless"
+		"pattern": "inline"
 	},
 	"entity": {
 		"pattern": "inline"
@@ -312,6 +315,9 @@
 		"pattern": "block"
 	},
 	"outcome": {
+		"pattern": "inline"
+	},
+	"p": {
 		"pattern": "inline"
 	},
 	"papers": {

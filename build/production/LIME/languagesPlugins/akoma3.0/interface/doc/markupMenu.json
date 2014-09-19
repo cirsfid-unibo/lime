@@ -87,6 +87,9 @@
 	"division": {
 		"pattern": "hcontainer"
 	},
+	"docAuthority": {
+		"pattern": "inline"
+	},
 	"docCommittee": {
 		"pattern": "inline"
 	},
@@ -220,6 +223,9 @@
 		"pattern": "inline"
 	},
 	"outcome": {
+		"pattern": "inline"
+	},
+	"p": {
 		"pattern": "inline"
 	},
 	"paragraph": {

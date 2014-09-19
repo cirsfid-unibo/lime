@@ -53,7 +53,7 @@
 Ext.define('LIME.controller.CustomizationManager', {
     extend : 'Ext.app.Controller',
 
-    views : ['MarkingMenu', 'Ext.ux.Iframe'],
+    views : ['DocumentLangSelector', 'LocaleSelector', 'MarkingMenu', 'Ext.ux.Iframe'],
 
     customCallbacks : {},
     
@@ -115,7 +115,7 @@ Ext.define('LIME.controller.CustomizationManager', {
         item = mainToolbar.addMenuItem(config, menuConfig);
         if(item) {
             me.customMenuItems[controller.id] = me.customMenuItems[controller.id] || [];
-            me.customMenuItems[controller.id].push(item);    
+            me.customMenuItems[controller.id].push(item);
         }
     },
     
@@ -133,7 +133,7 @@ Ext.define('LIME.controller.CustomizationManager', {
         me.application.on(Statics.eventsNames.languageLoaded, me.onLanguageLoaded, me);
         me.application.on(Statics.eventsNames.beforeCreation, me.beforeCreation, me);
         me.application.on("addMenuItem", me.addMenuItem, me);
-        
+                
         Config.beforeSetLanguage = function(lang, callback) {
             if (Config.customControllers) {
                 Ext.each(Config.customControllers, function(controller) {
@@ -144,11 +144,34 @@ Ext.define('LIME.controller.CustomizationManager', {
             }
             Ext.callback(callback);
         };
-        
+
+        var loadDefaultPlugin = function () {
+            Ext.defer(me.onLanguageLoaded, 2000, me);
+        }
+        if (Config.loaded) {
+            loadDefaultPlugin();
+        } else {
+            Config.afterDefaultLoaded = loadDefaultPlugin;
+        }
+
         me.control({
             'markingMenu' : {
                 afterrender : function(cmp) {
                     me.callCallback(cmp, "afterCreation");
+                }
+            },
+            'docLangSelector': {
+                afterrender: function(cmp) {
+                    if(Config.fieldsDefaults[cmp.name]) {
+                        cmp.setValue(Config.fieldsDefaults[cmp.name]);
+                    }
+                }
+            },
+            'docLocaleSelector': {
+                afterrender: function(cmp) {
+                    if(Config.fieldsDefaults[cmp.name]) {
+                        cmp.setValue(Config.fieldsDefaults[cmp.name]);
+                    }
                 }
             }
         });

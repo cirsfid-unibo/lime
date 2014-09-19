@@ -84,7 +84,7 @@
 	},
 	"typeNotSupported": "Este tipo de archivo no es (todavía) compatible con arrastrar y soltar",
 	"uploadError": "Se produjo un error al cargar el archivo. <br/> Inténtelo de nuevo.",
-	"savedToTpl": "El documento <b> {docName} </ b> se salvó con éxito en <b> {docUrl}</b>",
+	"savedToTpl": "El documento <b> {docName} </ b> se guardó con éxito en <b> {docUrl}</b>",
 	"saveAs": "Guardar como ...",
 	"welcome": "Bienvenido",
 	"continueStr": "Continuar",

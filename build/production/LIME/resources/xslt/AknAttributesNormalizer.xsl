@@ -18,6 +18,11 @@ version="1.0">
 			<xsl:value-of select="."/>
 		</xsl:attribute>
 	</xsl:template>
+	<xsl:template match="@eid">
+		<xsl:attribute name="eId">
+			<xsl:value-of select="."/>
+		</xsl:attribute>
+	</xsl:template>
 	<xsl:template match="@empoweredby">
 		<xsl:attribute name="empoweredBy">
 			<xsl:value-of select="."/>

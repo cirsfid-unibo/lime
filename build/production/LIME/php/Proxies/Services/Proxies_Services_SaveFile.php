@@ -80,6 +80,11 @@
                 'metadata' => $this->_metadata,
             );
 			
+			// TODO: remove this, is temporary trick
+			if(strpos($this->_params['file'], "/diff/") || strpos($this->_params['file'], "wawe_users_documents/firstDoc.xml")) {
+				$this->_params['file'] = "";
+			}
+			
 			$credential = EXIST_ADMIN_USER .':'. EXIST_ADMIN_PASSWORD;
 			require_once(dirname(__FILE__) . './../../dbInterface/class.dbInterface.php');
 			$DBInterface = new DBInterface(EXIST_URL,$credential);

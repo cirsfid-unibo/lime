@@ -57,6 +57,7 @@
 		 */
 		public function __construct($params) {
 			$this->_params = $params;
+			$this->_transformFile = (isset($params['transformFile']) && $params['transformFile']) ? realpath(LIMEROOT."/".$params['transformFile']) : FALSE;
 		}
 		
 		/**
@@ -74,7 +75,7 @@
 			if ($doc->loadXML($xmlResult)) {
 				// Checking if the document is marked
 				if($doc->documentElement->tagName == $this->markedRootName) {
-					$xmlResult = aknToHtml($doc);
+					$xmlResult = aknToHtml($doc, $this->_transformFile);
 				}
 			}
 			

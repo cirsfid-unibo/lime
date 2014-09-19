@@ -59,6 +59,8 @@ Ext.define('LIME.store.LanguagesPlugin', {
         global : "config"
     },
     
+    styleFile: 'content.css',
+    
     /**
      * @property {Object} lastConfiguration
      * This object contains the last configuration of plugins
@@ -168,7 +170,7 @@ Ext.define('LIME.store.LanguagesPlugin', {
             }
         });
             
-        me.fireEvent('filesloaded', me.dataObjects);
+        me.fireEvent('filesloaded', me.dataObjects, me.styleUrls.map(function(el) {return el.url;}));
         me.lastConfiguration.loaded = true;
         app.fireEvent(Statics.eventsNames.progressUpdate, Locale.strings.progressBar.configurationFiles);
     },
@@ -223,9 +225,12 @@ Ext.define('LIME.store.LanguagesPlugin', {
             markingLanguage: Config.getLanguage()
         };
         
+        var styleUrls = [];
+        
         for (var directory in directoriesListDefault) {
             var newDir = directoriesListDefault[directory];
             currentDirectoryDefault += '/' + newDir;
+            styleUrls.push({url: currentDirectoryDefault+"/"+me.styleFile});
             for (var files in pluginsFiles) {
                 for (var file in pluginsFiles[files]) {
                     var reqUrl = currentDirectoryDefault + '/' + pluginsFiles[files][file];
@@ -247,6 +252,7 @@ Ext.define('LIME.store.LanguagesPlugin', {
                 newDir = docType;
             }
             currentDirectory += '/' + newDir;
+            styleUrls.push({url: currentDirectory+"/"+me.styleFile});
             for (var files in pluginsFiles) {
                 for (var file in pluginsFiles[files]) {
                     var reqUrl = currentDirectory + '/' + pluginsFiles[files][file];
@@ -259,8 +265,14 @@ Ext.define('LIME.store.LanguagesPlugin', {
                 }
             }
         }
-        
-        me.filterUrls(reqUrls, me.requestSyncLoader, function(reqUrls) {
+        me.reqUrls = reqUrls;
+        Utilities.filterUrls(styleUrls, false, me.setStyleAndRequestFiles, me.setStyleAndRequestFiles, me);
+    },
+    
+    setStyleAndRequestFiles: function(styleUrls) {
+        var me = this;
+        me.styleUrls = styleUrls;
+        Utilities.filterUrls(me.reqUrls, true, me.requestSyncLoader, function(reqUrls) {
             for (objIndex in reqUrls) {
                 /* Add a lister that waits for the given key file to be loaded */
                 var eventName = 'makeRequest' + objIndex;
@@ -269,36 +281,9 @@ Ext.define('LIME.store.LanguagesPlugin', {
             
             /* Start the requests from the first file */
             me.fireEvent('makeRequest0', 0, reqUrls);
-        });
-    },
+        }, me);
+    }, 
     
-    
-    filterUrls: function(reqUrls, success, failure) {
-        Ext.Ajax.request({
-            // the url of the web service
-            url : Utilities.getAjaxUrl(),
-            method : 'POST',
-            params : {
-                requestedService : Statics.services.filterUrls,
-                urls : Ext.encode(reqUrls),
-                content: true
-            },
-            scope : this,
-            success : function(result, request) {
-                var newUrls  = Ext.decode(result.responseText, true);
-                if (Ext.isFunction(success) && newUrls) {
-                    Ext.bind(success, this)(newUrls);
-                } else if(Ext.isFunction(failure)) {
-                    Ext.bind(failure, this)(reqUrls);
-                }
-            },
-            failure: function() {
-                if (Ext.isFunction(failure)) {
-                    Ext.bind(failure, this)(reqUrls);
-                }
-            }
-        });
-    },
     /**
      * This function returns the already retrieved data in a raw format.
      * NOTICE: This function DOES NOT check if the data is already available in the store!

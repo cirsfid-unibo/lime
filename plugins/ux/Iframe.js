@@ -56,7 +56,7 @@ Ext.define('Ext.ux.Iframe', {
     
     alias: 'plugin.iframe',
     
-    src : " ",
+    src : "",
     
     loadingHtml : '<div id="loading" style="text-align:center"><img style="position: absolute;top: 50%; left: 50%;" src="resources/images/icons/loading.gif"/></div>',
     
@@ -79,6 +79,24 @@ Ext.define('Ext.ux.Iframe', {
         }
     },
     
+    setRawSrc: function(url, callback) {
+        var iframe = this.getIframe(),
+            onLoad = function() {
+                iframe.removeEventListener( 'load', onLoad );
+                callback(this.contentDocument);
+            };
+        if(url){
+            if(Ext.isFunction(callback)) {
+                iframe = this.getIframe();
+                if(iframe) {
+                    iframe.addEventListener( 'load', onLoad );    
+                }
+            }
+            iframe.setAttribute("src", url);
+            this.url = url;
+        }
+    },
+    
     getIframe: function() {
         return this.cmp.body.down("iframe", true);
     },
@@ -93,7 +111,7 @@ Ext.define('Ext.ux.Iframe', {
     
     setLoading : function() {
         var iframe = this.getIframe();
-        if (iframe.doc) {
+        if (iframe && iframe.doc) {
             iframe.doc.body.innerHTML = this.loadingHtml;
         }
     },

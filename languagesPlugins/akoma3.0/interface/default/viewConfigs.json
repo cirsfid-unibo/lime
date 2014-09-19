@@ -1,3 +1,3 @@
 {
-	"allowedViews": ["xml","pdf", "at4am"]
+	"allowedViews": ["xml","pdf", "at4am", "xmlDiff", "newPdf"]
 }

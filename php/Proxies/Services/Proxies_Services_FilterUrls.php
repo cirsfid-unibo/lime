@@ -69,7 +69,7 @@ class Proxies_Services_FilterUrls implements Proxies_Services_Interface {
 	 */
 	public function getResults() {
 		$output = Array();
-		$rootDirPath = dirname(__FILE__)."/../../../";
+		$rootDirPath = LIMEROOT;
 		foreach ($this -> _urls as &$value) {
 			$internalPath = realpath($rootDirPath.'/'.$value["url"]);
 			if ($internalPath) {

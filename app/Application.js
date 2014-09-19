@@ -62,7 +62,10 @@ Ext.define('LIME.Application', {
 		'Language', 
 		'ProgressWindow',
 		'PreferencesManager',
-		'Notification'
+		'Notification',
+		'ContextMenu',
+		'ContextInfoManager',
+		'WidgetManager'
     ],
 
     stores: [
@@ -83,11 +86,15 @@ Ext.define('LIME.Application', {
 	    this.secureLaunch();
 	},
 	
+	/**
+	 * This function loads the MarkupLanguages store and creates
+	 * the application viewport when the configuration is finished
+	 * */
 	secureLaunch: function() {
 	    if (!Config.loadedFinish) {
 	        Ext.defer(this.secureLaunch, 100, this);
 	    } else {
-	        this.getStore('MarkupLanguages').loadData(Config.languages);    
+	        this.getStore('MarkupLanguages').loadData(Config.languages);
             Ext.create('LIME.view.Viewport');
 	    }
 	}

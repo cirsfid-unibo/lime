@@ -61,7 +61,9 @@ Ext.define('LIME.controller.DocumentCollectionController', {
     }],
     
     config: {
-        pluginName: "documentCollection"
+        pluginName: "documentCollection",
+        colModSuffix: "-mod",
+        docColAlternateType: "documentCollectionContent"
     },
     
     onDocumentLoaded : function(docConfig) {
@@ -88,24 +90,24 @@ Ext.define('LIME.controller.DocumentCollectionController', {
             if (docConfig.docType != "documentCollection") {
                 tabPanel.setActiveTab(0);
                 tabPanel.getTabBar().items.items[1].disable();
+            } else {
+                // Wrap beforeTrasnalte for customizate it
+                TranslatePlugin.beforeTranslate = function(params) {
+                    var newParams = Ext.Function.bind(beforeTranslate, TranslatePlugin, [params])() || params;
+                    return me.docCollectionBeforeTranslate(newParams);
+                };
             }
         }
         
-        if (docConfig.docType == "documentCollection") {           
+        if (docConfig.docType == "documentCollection" && !docConfig.colectionMod) { 
             tabPanel.setActiveTab(collTab);
             tabPanel.getTabBar().items.items[0].disable();
             app.fireEvent(Statics.eventsNames.disableEditing);
         } else {
             app.fireEvent(Statics.eventsNames.enableEditing);
         }
-        
+       
         me.selectActiveDocument(docConfig.treeDocId, true);
-        
-        // Wrap beforeTrasnalte for customizate it
-        TranslatePlugin.beforeTranslate = function(params) {
-            var newParams = Ext.Function.bind(beforeTranslate, TranslatePlugin, [params])() || params;
-            return me.docCollectionBeforeTranslate(newParams);
-        };
     },
     
     newDocumentCollection : function(modify) {
@@ -177,18 +179,16 @@ Ext.define('LIME.controller.DocumentCollectionController', {
         var me = this, editor = me.getController('Editor'),
             newSnapshot = me.createEditorSnapshot(),
             snapshotDoc, newSnapshot, editorDoc, editorDocId;
-            
         if (newSnapshot.dom) {
             editorDoc = newSnapshot.dom.querySelector("*["+DocProperties.docIdAttribute+"]");
             if (editorDoc) {
                 editorDocId = editorDoc.getAttribute(DocProperties.docIdAttribute);
-                if (editorDocId === 0) {
-                    snapshot.dom = newSnapshot.dom;    
+                if(me.isDocColMod(editorDoc)) {
+                    snapshot.dom = me.docColModToSnapshot(editorDoc, editorDocId, snapshot);
+                } else if (parseInt(editorDocId) === 0) {
+                    snapshot.dom = newSnapshot.dom;
                 } else {
-                    snapshotDoc = snapshot.dom.querySelector("*["+DocProperties.docIdAttribute+"='" + editorDocId + "']");
-                    if (snapshotDoc && snapshotDoc.parentNode) {
-                        snapshotDoc.parentNode.replaceChild(editorDoc, snapshotDoc);
-                    }
+                    Utilities.replaceChildByQuery(snapshot.dom, "["+DocProperties.docIdAttribute+"='" + editorDocId + "']", editorDoc);
                 }
                 snapshot.content = DomUtils.serializeToString(snapshot.dom);
             }
@@ -196,31 +196,48 @@ Ext.define('LIME.controller.DocumentCollectionController', {
         return Ext.merge(snapshot, {editorDocId: editorDocId});
     },
     
+    isDocColMod: function(doc) {
+        var colMod = parseInt(doc.getAttribute("colmod"));
+        if(isNaN(colMod)) {
+            return false;
+        }
+        return (colMod) ? true : false;
+    },
+    
     docToTreeData: function(doc, dom, textSufix, qtip) {
         var res = {}, collBody, children, docChildren = [],
             languageController = this.getController("Language"),
             langPrefix = languageController.getLanguagePrefix(), chDoc, cmpDoc;
         if (doc) {
+            if(Ext.DomQuery.is(doc, "[class~=documentCollection]")) {
+                docChildren.push({text: doc.getAttribute(langPrefix+"name") || "collection",
+                   leaf: true, 
+                   id: doc.getAttribute("docid")+this.getColModSuffix(),
+                   qtip: "collection"});
+            }
             collBody = doc.querySelector("*[class*=collectionBody]");
-            children = (collBody) ? collBody.childNodes : [];
+            children = (collBody) ? DomUtils.filterMarkedNodes(collBody.childNodes) : [];
             for (var i = 0; i < children.length; i++) {
                 cmpDoc = children[i];
                 if (cmpDoc.getAttribute("class").indexOf("component") != -1) {
-                    cmpDoc = cmpDoc.firstChild;
+                    cmpDoc = DomUtils.filterMarkedNodes(cmpDoc.childNodes)[0];
                 }
-                if (cmpDoc.getAttribute("class").indexOf("documentRef") != -1) {
-                    var docRef = cmpDoc.getAttribute(langPrefix+"href");
-                    docRef = (docRef) ? docRef.substr(1) : ""; //Removing the '#'
-                    if (docRef) {
-                        chDoc = dom.querySelector("*["+langPrefix+"currentId="+docRef+"] *[class*="+DocProperties.documentBaseClass+"]") 
-                                || dom.querySelector("*["+langPrefix+"currentid="+docRef+"] *[class*="+DocProperties.documentBaseClass+"]");
-                        if (chDoc) {
-                            docChildren.push(this.docToTreeData(chDoc, dom, '#'+docRef, cmpDoc.getAttribute(langPrefix+"showAs")));    
+                if(cmpDoc) {
+                    if (DomUtils.getElementNameByNode(cmpDoc) == "documentRef") {
+                        var docRef = cmpDoc.getAttribute(langPrefix+"href");
+                        docRef = (docRef) ? docRef.substr(1) : ""; //Removing the '#'
+                        if (docRef) {
+                            chDoc = dom.querySelector("*[class~='components'] *["+langPrefix+Language.getElementIdAttribute()+"="+docRef+"] *[class*="+DocProperties.documentBaseClass+"]") 
+                                    || dom.querySelector("*[class~='components'] *["+langPrefix+Language.getElementIdAttribute().toLowerCase()+"="+docRef+"] *[class*="+DocProperties.documentBaseClass+"]");
+                            if (chDoc) {
+                                docChildren.push(this.docToTreeData(chDoc, dom, '#'+docRef, cmpDoc.getAttribute(langPrefix+"showAs")));    
+                            }
                         }
+                    } else if(cmpDoc.getAttribute("class").indexOf(DocProperties.documentBaseClass) != -1) {
+                        docChildren.push(this.docToTreeData(cmpDoc, dom));
                     }
-                } else if(cmpDoc.getAttribute("class").indexOf(DocProperties.documentBaseClass) != -1) {
-                    docChildren.push(this.docToTreeData(cmpDoc, dom));
                 }
+                
             }
             res = {text:DomUtils.getDocTypeByNode(doc) + ((textSufix) ? " "+ textSufix : ""),
                    children: docChildren, 
@@ -342,9 +359,11 @@ Ext.define('LIME.controller.DocumentCollectionController', {
     
     switchDoc: function(config) {
         var me = this, app = me.application, editor = me.getController('Editor'),
-            docId = config.id,
+            docId = Ext.isString(config.id) ? parseInt(config.id) : config.id,
             docMeta = DocProperties.docsMeta[docId],
-            snapshot = me.completeEditorSnapshot;
+            colMod = Ext.isString(config.id) ? (config.id.indexOf(me.getColModSuffix()) != -1) : false;
+            snapshot = me.completeEditorSnapshot, prevColMod = 0;
+
         if (snapshot && snapshot.dom) {
             /* Before loading a new document we need to update 
              * the snapshot with new content from the editor
@@ -352,11 +371,58 @@ Ext.define('LIME.controller.DocumentCollectionController', {
             newSnapshot = me.updateEditorSnapshot(snapshot);
             // Select the document in the snapshot and load it
             doc = (docId === 0) ? snapshot.dom : snapshot.dom.querySelector("*["+DocProperties.docIdAttribute+"='" + docId + "']");
-            if (doc && parseInt(docId) != parseInt(newSnapshot.editorDocId)) {
-                app.fireEvent(Statics.eventsNames.loadDocument, 
-                                Ext.Object.merge(docMeta, {docText: DomUtils.serializeToString(doc), lightLoad: true, treeDocId: docId}));
+            prevColMod = doc.querySelector("[colmod]");
+            prevColMod = (prevColMod) ? parseInt(prevColMod.getAttribute("colmod")) : 0;
+            if (doc && ((docId != parseInt(newSnapshot.editorDocId)) || colMod || prevColMod)) {
+                if(colMod) {
+                    doc = me.snapshotToDocColMod(snapshot, docId);
+                    docTypeAlternateName = "";
+                }
+                var docEl = doc.querySelector("["+DocProperties.docIdAttribute+"]");
+                if(docEl) {
+                    docEl.setAttribute("colmod", (colMod) ? 1 : 0);
+                }
+                app.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(docMeta, {
+                    docMarkingLanguage: Config.getLanguage(),
+                    docText : DomUtils.serializeToString(doc),
+                    alternateDocType: (colMod) ? me.getDocColAlternateType() : null,
+                    lightLoad : true,
+                    treeDocId : config.id,
+                    colectionMod : colMod
+                })); 
             }
         }
+    },
+    
+    snapshotToDocColMod: function(snapshot, docId) {
+        // Create a temporary copy of the snapshot, don't modify it directly!
+        var breakingElement, completeSnapshotDom = DomUtils.parseFromString(snapshot.content),
+            doc = (docId === 0) ? completeSnapshotDom : completeSnapshotDom.querySelector("*["+DocProperties.docIdAttribute+"='" + docId + "']"),
+            docCol = completeSnapshotDom.querySelector("*["+DocProperties.docIdAttribute+"='" + docId + "']"),
+            colBody;
+        Utilities.removeNodeByQuery(doc, "[class=components]");
+        if(docCol) {
+            colBody = docCol.querySelector("[class*=collectionBody]");
+            //Utilities.removeNodeByQuery(docCol, "[class*=collectionBody]");
+            if(colBody) {
+                // Add breaking element to be able to insert text
+                Ext.DomHelper.insertHtml('beforeBegin', colBody, "<p class=\""+DomUtils.breakingElementClass+"\"></p>");    
+            }
+        }
+        return doc;
+    },
+    
+    docColModToSnapshot: function(doc, docId, snapshot) {
+        var completeSnapshotDom = DomUtils.parseFromString(snapshot.content), oldDoc, collectionBody;
+        if (completeSnapshotDom) {
+            /*oldDoc = completeSnapshotDom.querySelector("["+DocProperties.docIdAttribute+"='" + docId + "']");
+            if (oldDoc) {
+                collectionBody = oldDoc.querySelector("[class*=collectionBody]");
+                doc.appendChild(collectionBody);    
+            }*/
+            Utilities.replaceChildByQuery(completeSnapshotDom, "["+DocProperties.docIdAttribute+"='" + docId + "']", doc);    
+        }
+        return completeSnapshotDom;
     },
     
     getDocumentsFromSnapshot: function(snapshot) {

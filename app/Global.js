@@ -78,6 +78,11 @@ Ext.define('LIME.Global', {
     allLanguages: [{name: "default"}],
     
     languages:[],
+    
+    fieldsDefaults: {},
+
+    // Indicates whether the default language/plugin was loaded.
+    loaded: false,
 
     getDependences : function() {
         return Ext.Array.map(this.extensionScripts, function(script) {
@@ -86,6 +91,8 @@ Ext.define('LIME.Global', {
     },
 
     load : function() {
+        var me = this;
+
         Ext.Loader.setPath(this.uxPath, this.getPluginLibsPath());
         Ext.syncRequire(this.getDependences());
         // Loading the language plugin configuration file
@@ -98,11 +105,15 @@ Ext.define('LIME.Global', {
                 try {
                     jsonData = Ext.decode(response.responseText, true);
                     if(jsonData) {
-                        Ext.Array.push(this.allLanguages, jsonData.languages);
-                        this.languages = jsonData.languages;
+                        Ext.Array.push(me.allLanguages, jsonData.languages);
+                        me.languages = jsonData.languages;
+                        me.fieldsDefaults = (jsonData.fieldsDefaults) ? jsonData.fieldsDefaults : me.fieldsDefaults;
                         // Load the plugin structure
-                        this.loadPluginStructure();
-                        this.loadLanguage();    
+                        me.loadPluginStructure();
+                        me.loadLanguage(function() {
+                            me.loaded = true;
+                            Ext.callback(me.afterDefaultLoaded);
+                        });
                     } else {
                         Ext.log({level: "error"}, "language config (languagesPlugins/config.json) decode error!");                        
                     }
@@ -139,7 +150,7 @@ Ext.define('LIME.Global', {
     },
 
     loadLanguage : function(callback) {
-        var me = this, counter,
+        var me = this, counter, urls = [],
             callingCallback = function() {
                 if(!--counter) {
                     var newCallback = function() {
@@ -174,6 +185,24 @@ Ext.define('LIME.Global', {
             me.loadScript(this.getPluginLibsPath() + '/' + script + '.js', callingCallback, callingCallback);
         }, this);
 
+        if(langConf.transformationFiles) {
+            Ext.Object.each(langConf.transformationFiles, function(name, value) {
+                if(name == "languageToLIME" || name == "LIMEtoLanguage") {
+                    urls.push({
+                        url: me.getLanguagePath()+value,
+                        name: name
+                    });
+                }
+            });
+            if(!Ext.isEmpty(urls)) {
+                Utilities.filterUrls(urls, false, function(newUrls) {
+                    langConf.transformationUrls = {};
+                    Ext.each(newUrls, function(obj) {
+                        langConf.transformationUrls[obj.name] = obj.url;
+                    });
+                }, false, me);    
+            }
+        } 
     },
     
     loadScript: function(url, success, error) {
@@ -219,6 +248,9 @@ Ext.define('LIME.Global', {
                     Ext.callback(callback, me);  
                 }
             };
+            
+        me.setPluginUrl(name, pluginDirUrl);
+        
         Ext.Ajax.request({
            async : false,
            url : structureUrl,
@@ -227,6 +259,7 @@ Ext.define('LIME.Global', {
                var data = Ext.decode(response.responseText, true),
                    scriptToLoad = [];
                 if(data) {
+                    
                     if (data.views) {
                         Ext.Array.push(scriptToLoad, data.views);    
                     }
@@ -277,6 +310,32 @@ Ext.define('LIME.Global', {
         }
     },
     
+    setPluginUrl: function(name, relativeUrl) {
+        var me = this;
+        me.pluginUrls = me.pluginUrls || {};
+        me.pluginUrls[name] = {
+            relative: relativeUrl,
+            absolute: me.getAppUrl()+relativeUrl
+        };
+    },
+    
+    getAppUrl: function() {
+        return window.location.origin+window.location.pathname;
+    },
+    
+    getPluginUrl: function(name) {
+        return this.pluginUrls[name];
+    },
+    
+    getLanguageTransformationFiles: function(lang) {
+        return this.getLanguageConfig(lang).transformationUrls;
+    },
+    
+    getLanguageTransformationFile: function(name, lang) {
+        var files =  this.getLanguageTransformationFiles(lang);
+        return (files && files[name]) ? files[name] : null;
+    },
+    
     getCustomViews : function(name) {
         return this.customizationViews[name];
     },
@@ -295,15 +354,20 @@ Ext.define('LIME.Global', {
 
     setLanguage : function(language, callback) {
         var me = this;
-        me.language = language;
-        if(Ext.isFunction(this.beforeSetLanguage)) {
-            var callB = Ext.bind(function() {
-                me.loadLanguage(callback);
-            }, me);
-            this.beforeSetLanguage(language, callB);
+        if(me.language != language) {
+            me.language = language;
+            if(Ext.isFunction(this.beforeSetLanguage)) {
+                var callB = Ext.bind(function() {
+                    me.loadLanguage(callback);
+                }, me);
+                this.beforeSetLanguage(language, callB);
+            } else {
+                this.loadLanguage(callback);    
+            }
         } else {
-            this.loadLanguage(callback);    
+            Ext.callback(callback, me);
         }
+        
     },
     
     getLanguage: function() {

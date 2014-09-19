@@ -45,15 +45,15 @@
  */
 
 /**
- *This store contains the ext interface languages
+ * This store lists the languages a document can be written in.
  */
 Ext.define('LIME.store.DocumentLanguages', {
-    // extends the store component
     extend : 'Ext.data.Store',
     autoLoad: true,
-
-    // the fields of the store
-    fields : ['code', 'name'],
+    fields : [
+        'code',
+        'name'
+    ],
     
     proxy : {
         type : 'ajax',

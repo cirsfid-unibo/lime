@@ -53,15 +53,25 @@ Ext.define('LIME.view.main.editor.Path', {
 	alias : 'widget.mainEditorPath',
 	id : "path",   
    	// set the layout type
-    layout:'fit',
-    
+    layout: {
+        type: 'hbox',
+        align: 'stretch'
+    },
     width: '100%',
     frame: true,
-    style:{borderRadius:"0px",margin:"0px", border:'0px'},
+    style:{borderRadius:"0px",margin:"0px"},
     separator:'<span style="padding:0 2 0 2"> > </span>',
     selectorsInitId: 'pathSelector_',
     elementLinkTemplate : '<a id="%id" class="pathSelectors" style="color:black;text;text-decoration:none;" href="javascript:;">%el</a>',
     elementTemplate : '<span>%el</span>',
+    items:[{
+        xtype: "panel",
+        margin: 0,
+        padding: 0,
+        style: {borderRadius:"0px",margin:"0px", border:'0px'},
+        frame: true,
+        flex: 1
+    }],
     /**
      * This function builds a path from elements and set it to the view.
      * @param {Object[]} elements
@@ -89,11 +99,10 @@ Ext.define('LIME.view.main.editor.Path', {
 			counter++;
 		}
 		var pathView = this;
-		this.update(this.initialPath+new_html,false,function(){pathView.fireEvent("update");});
+		this.down("panel").update(this.initialPath+new_html,false,function(){pathView.fireEvent("update");});
 	},
 	initComponent: function(){
         this.initialPath = Locale.strings.mainEditorPath +': ';
-        this.html = Locale.strings.mainEditorPath +': ';
         this.callParent(arguments);
     }
 }); 

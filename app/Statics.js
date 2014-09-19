@@ -75,7 +75,6 @@ Ext.define('LIME.Statics', {
 	    internalClass : 'internalMetadata'
 	},
 	
-	
 	/**
 	 * @property {Object} widgetTypePatterns
 	 * Object used as dictionary for translation of widget type in ext xtypes 
@@ -85,7 +84,8 @@ Ext.define('LIME.Statics', {
 		date : "datefield",
 		number: 'numberfield',
 		doctype: 'docTypeSelector',
-		nationality: 'nationalitySelector'
+		nationality: 'nationalitySelector',
+		list: 'combo'
 	},
 	/**
 	 * @property {Object} treeIcon
@@ -128,7 +128,21 @@ Ext.define('LIME.Statics', {
          languageLoaded: 'languageLoaded',
          selectDocument: 'selectDocument',
          beforeCreation: 'beforeCreation',
-         nodeChangedExternally: 'nodeChangedExternally'
+         nodeChangedExternally: 'nodeChangedExternally',
+         openDocument: 'openDocument',
+         addMarkingGroup: 'addMarkingGroup',
+         addMarkingButton: 'addMarkingButton',
+         setCustomMarkingHandler: "setCustomMarkingHandler",
+         editorDomNodeFocused: "editorDomNodeFocused",
+         nodeFocusedExternally: "nodeFocusedExternally",
+         unmarkNodes: "unmarkNodes",
+         unmarkedNodes: "unmarkedNodes",
+         nodeAttributesChanged: "nodeAttributesChanged",
+         showContextMenu: "showContextMenu",
+         registerContextMenuBeforeShow: "registerContextMenuBeforeShow",
+         openCloseContextPanel: "openCloseContextPanel",
+         addContextPanelTab: "addContextPanelTab",
+         removeGroupContextPanel: "removeGroupContextPanel"
 	 },
 	 
 	 services: {
@@ -145,7 +159,6 @@ Ext.define('LIME.Statics', {
 	     saveAs : 'SAVE_FILE',
 	     listFiles: 'LIST_FILES',
 	     fileToHtml: 'FILE_TO_HTML',
-	     fileToString: 'FILE_TO_STRING',
 	     userManager: 'USER_MANAGER',
 	     userPreferences: 'USER_PREFERENCES',
 	     createDocumentCollection: 'CREATE_DOCUMENT_COLLECTION',

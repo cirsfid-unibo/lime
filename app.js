@@ -51,6 +51,7 @@
     Sencha Cmd when upgrading.
 */
 
+
 Ext.Loader.setConfig({
     enabled : true,
     paths   : {

@@ -79,22 +79,26 @@ Ext.define('LIME.controller.ImportController', {
     },
     
     uploadFinished: function(content, request) {
-        var app = this.application, docMLang;
+        var app = this.application, docMLang, docLang;
         if(request.response && request.response[DocProperties.markingLanguageAttribute]) {
             docMLang = request.response[DocProperties.markingLanguageAttribute]; 
         }
-
+        if(request.response && request.response[DocProperties.languageAttribute]) {
+            docLang = request.response[DocProperties.languageAttribute] || "";
+        }
         // Upload the editor's content
         app.fireEvent(Statics.eventsNames.loadDocument, {
                         docText: content, 
                         docId: new Date().getTime(),
-                        docMarkingLanguage: docMLang
+                        docMarkingLanguage: docMLang,
+                        docLang: docLang
         });
     },
 
     importDocument : function() {
         // Create a window with a form where the user can select a file
         var me = this, 
+            transformFile = Config.getLanguageTransformationFile("languageToLIME", Config.getLanguage()),
             uploaderView = Ext.widget('uploader', {
                 buttonSelectLabel : Locale.getString("selectDocument", me.getPluginName()),
                 buttonSubmitLabel : Locale.getString("importDocument", me.getPluginName()),
@@ -104,7 +108,8 @@ Ext.define('LIME.controller.ImportController', {
                 callbackScope: me,
                 uploadUrl : Utilities.getAjaxUrl(),
                 uploadParams : {
-                    requestedService: Statics.services.fileToHtml
+                    requestedService: Statics.services.fileToHtml,
+                    transformFile: (transformFile) ? transformFile : ""
                 }
             });
         uploaderView.show();

@@ -44,9 +44,10 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/**
+ * This store lists the available markup languages.
+ */
 Ext.define('LIME.store.MarkupLanguages', {
     extend : 'Ext.data.Store',
-
     fields : ['name']
-
 }); 

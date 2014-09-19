@@ -67,6 +67,8 @@
 			
 			// save the document marking language
 			$this->_markingLanguage = $params['markingLanguage'];
+			
+			$this->_transformFile = (isset($params['transformFile'])) ? realpath(LIMEROOT."/".$params['transformFile']) : FALSE;
 		}
 		
 		/**
@@ -81,44 +83,44 @@
 			// create the processor 
 			$xslProcessor = new XSLTProcessor();
 			
-			switch($this->_output)
-			{
-				case 'akn':
-				// create the xml file
-				$xml = new DOMDocument();
-				$xml->loadXML('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">' . stripcslashes($this->_input));
-				
-				if ($this->_markingLanguage == 'akoma2.0') {
-					$xslt->load(HTML_TO_AKN2_0);		
-				} else {
-					$xslt->load(HTML_TO_AKN3_0);
-				}
-				
-				$xpath = new DOMXPath($xml);
-				// The element which has an attribute 'language' which contains 'akoma' has the akn namespace  
-				$elements = $xpath->evaluate("//*[@markinglanguage]");
-				// Loocking for the namespace
-				if (!is_null($elements) && $elements->length) {
-					foreach( $xpath->query('namespace::*', $elements->item(0)) as $node ) {
-						$name = ($node->nodeName == 'xmlns:akn') ? 'xmlns' : $node->nodeName;
-						$xslt->documentElement->setAttributeNS('http://www.w3.org/2000/xmlns/',$name,$node->nodeValue);
+			if($this->_transformFile) {
+				switch($this->_output)
+				{
+					case 'akn':
+					// create the xml file
+					$xml = new DOMDocument();
+					$xml->loadXML('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">' . stripcslashes($this->_input));
+					
+					$xslt->load($this->_transformFile);
+					
+					$xpath = new DOMXPath($xml);
+					// The element which has an attribute 'language' which contains 'akoma' has the akn namespace  
+					$elements = $xpath->evaluate("//*[@markinglanguage]");
+					// Loocking for the namespace
+					if (!is_null($elements) && $elements->length) {
+						foreach( $xpath->query('namespace::*', $elements->item(0)) as $node ) {
+							$name = ($node->nodeName == 'xmlns:akn') ? 'xmlns' : $node->nodeName;
+							$xslt->documentElement->setAttributeNS('http://www.w3.org/2000/xmlns/',$name,$node->nodeValue);
+						}
 					}
+					break;
 				}
-				break;
-			}
-	
-			// add the stylesheet
-			$xslProcessor->importStylesheet($xslt);
-	
-			// transform the input
-			$xml = $xslProcessor->transformToDoc($xml);
-			
-			// Normalize attributes
-			$xslt->load(ATTRIBUTES_NORMALIZER);
-			$xslProcessor->importStylesheet($xslt);
-			$result = $xslProcessor->transformToXML($xml);
 		
-			// return the translated document
-			return $result; 		
+				// add the stylesheet
+				$xslProcessor->importStylesheet($xslt);
+		
+				// transform the input
+				$xml = $xslProcessor->transformToDoc($xml);
+				
+				// Normalize attributes
+				$xslt->load(ATTRIBUTES_NORMALIZER);
+				$xslProcessor->importStylesheet($xslt);
+				$result = $xslProcessor->transformToXML($xml);
+			
+				// return the translated document
+				return $result;
+			} else {
+				return "XSL transform file not found";	
+			}		 		
 		}
 	}

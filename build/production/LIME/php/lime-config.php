@@ -48,7 +48,7 @@
 define('EXIST_ADMIN_USER', 'admin');
 
 // the exist admin password
-define('EXIST_ADMIN_PASSWORD', 'existPassword');
+define('EXIST_ADMIN_PASSWORD', 'exist');
 
 // the exist db base url
 define('EXIST_URL','http://localhost:8080/exist/');

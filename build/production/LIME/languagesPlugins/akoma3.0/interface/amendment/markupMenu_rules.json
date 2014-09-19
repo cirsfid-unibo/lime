@@ -7,7 +7,7 @@
 			"children": ["sublist", "indent", "division", "part", "proviso", "book", "rule", "tome", "blockList", "transitional", "subdivision", "fillIn", "alinea"]
 		},
 		"genericElement": {
-			"children": ["hcontainer", "inline", "placeholder", "blockContainer", "block", "tblock", "container", "marker"]
+			"children": ["hcontainer", "inline",  "p", "placeholder", "blockContainer", "block", "tblock", "container", "marker"]
 		},
 		"externalFragment": {
 			"children": ["extractText", "rmod", "mmod", "mod", "quotedText", "extractStructure", "quotedStructure"]
