@@ -1,33 +1,3 @@
-/* line 131, ../../../ext-theme-neutral/sass/src/resizer/Resizer.scss */
-.x-resizable-handle-east-over,
-.x-resizable-handle-west-over {
-  background-image: url(images/sizer/e-handle.gif);
-}
-
-/* line 137, ../../../ext-theme-neutral/sass/src/resizer/Resizer.scss */
-.x-resizable-handle-south-over,
-.x-resizable-handle-north-over {
-  background-image: url(images/sizer/s-handle.gif);
-}
-
-/* line 142, ../../../ext-theme-neutral/sass/src/resizer/Resizer.scss */
-.x-resizable-handle-southeast-over {
-  background-position: top left;
-  background-image: url(images/sizer/se-handle.gif);
-}
-
-/* line 147, ../../../ext-theme-neutral/sass/src/resizer/Resizer.scss */
-.x-resizable-handle-northwest-over {
-  background-position: bottom right;
-  background-image: url(images/sizer/nw-handle.gif);
-}
-
-/* line 152, ../../../ext-theme-neutral/sass/src/resizer/Resizer.scss */
-.x-resizable-handle-northeast-over {
-  background-position: bottom left;
-  background-image: url(images/sizer/ne-handle.gif);
-}
-
 /* line 157, ../../../ext-theme-neutral/sass/src/resizer/Resizer.scss */
 .x-resizable-handle-southwest-over {
   background-position: top right;

@@ -16594,14 +16594,6 @@ ul.x-tagfield-list.x-tagfield-singleselect {
   text-transform: none;
   padding: 0;
 }
-/* line 370, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-default > .x-title-text-default:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #9bc5e4;
-}
 /* line 390, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default > .x-title-icon-wrap-default.x-title-icon-top {
   height: 22px;
@@ -16927,14 +16919,6 @@ ul.x-tagfield-list.x-tagfield-singleselect {
 .x-panel-header-title-default-framed > .x-title-text-default-framed {
   text-transform: none;
   padding: 0;
-}
-/* line 370, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-default-framed > .x-title-text-default-framed:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #9bc5e4;
 }
 /* line 390, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default-framed > .x-title-icon-wrap-default-framed.x-title-icon-top {
@@ -22756,14 +22740,6 @@ div.x-border-layout-ct {
 .x-window-header-title-default > .x-title-text-default {
   padding: 0;
   text-transform: none;
-}
-/* line 303, ../../../ext-theme-neutral/sass/src/window/Window.scss */
-.x-window-header-title-default > .x-title-text-default:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #9bc5e4;
 }
 /* line 323, ../../../ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-title-default > .x-title-icon-wrap-default.x-title-icon-top {
@@ -29442,4 +29418,22 @@ a.x-color-picker-item:hover {
 /* line 528, ../../../ext-theme-neutral/sass/src/button/Button.scss */
 .x-btn-arrow-right > .x-btn-text.x-btn-icon-right > .x-btn-icon-el-plain-toolbar-large {
   margin-right: 10px;
+}
+
+/* line 535, ../../../ext-theme-neutral/sass/src/button/Button.scss */
+.x-btn-arrow-bottom > .x-btn-button-plain-toolbar-large,
+.x-btn-split-bottom > .x-btn-button-plain-toolbar-large {
+  padding-bottom: 5px;
+}
+
+/* line 541, ../../../ext-theme-neutral/sass/src/button/Button.scss */
+.x-btn-wrap-plain-toolbar-large.x-btn-arrow-right:after {
+  width: 30px;
+  padding-right: 30px;
+  background-image: url(images/button/plain-toolbar-large-arrow.png);
+}
+/* line 563, ../../../ext-theme-neutral/sass/src/button/Button.scss */
+.x-btn-wrap-plain-toolbar-large.x-btn-arrow-bottom:after {
+  height: 24px;
+  background-image: url(images/button/plain-toolbar-large-arrow.png);
 }

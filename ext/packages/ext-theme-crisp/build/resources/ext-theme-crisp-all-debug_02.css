@@ -1,12 +1,3 @@
-/* line 525, ../../../ext-theme-neutral/sass/src/button/Button.scss */
-.x-btn-arrow-right > .x-btn-icon.x-btn-no-text.x-btn-button-plain-toolbar-large {
-  padding-right: 10px;
-}
-/* line 528, ../../../ext-theme-neutral/sass/src/button/Button.scss */
-.x-btn-arrow-right > .x-btn-text.x-btn-icon-right > .x-btn-icon-el-plain-toolbar-large {
-  margin-right: 10px;
-}
-
 /* line 535, ../../../ext-theme-neutral/sass/src/button/Button.scss */
 .x-btn-arrow-bottom > .x-btn-button-plain-toolbar-large,
 .x-btn-split-bottom > .x-btn-button-plain-toolbar-large {
@@ -477,14 +468,6 @@
   text-transform: none;
   padding: 0;
 }
-/* line 370, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-light > .x-title-text-light:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #999999;
-}
 /* line 390, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-light > .x-title-icon-wrap-light.x-title-icon-top {
   height: 22px;
@@ -811,14 +794,6 @@
 .x-panel-header-title-light-framed > .x-title-text-light-framed {
   text-transform: none;
   padding: 0;
-}
-/* line 370, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-light-framed > .x-title-text-light-framed:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #999999;
 }
 /* line 390, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-light-framed > .x-title-icon-wrap-light-framed.x-title-icon-top {

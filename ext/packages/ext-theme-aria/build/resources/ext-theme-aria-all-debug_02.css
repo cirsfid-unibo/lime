@@ -1,16 +1,3 @@
-.x-btn-focus.x-btn-menu-active .x-btn-plain-toolbar-medium-ml,
-.x-btn-focus.x-btn-menu-active .x-btn-plain-toolbar-medium-mr,
-.x-btn-focus.x-btn-pressed .x-btn-plain-toolbar-medium-ml,
-.x-btn-focus.x-btn-pressed .x-btn-plain-toolbar-medium-mr {
-  background-image: url(images/btn/btn-plain-toolbar-medium-focus-pressed-sides.gif);
-}
-/* line 922, ../../../ext-theme-neutral/sass/src/button/Button.scss */
-.x-btn-focus.x-btn-menu-active .x-btn-plain-toolbar-medium-mc,
-.x-btn-focus.x-btn-pressed .x-btn-plain-toolbar-medium-mc {
-  background-color: #da7b19;
-  background-image: url(images/btn/btn-plain-toolbar-medium-focus-pressed-fbg.gif);
-}
-
 /* line 940, ../../../ext-theme-neutral/sass/src/button/Button.scss */
 .x-btn.x-btn-disabled .x-btn-plain-toolbar-medium-tl,
 .x-btn.x-btn-disabled .x-btn-plain-toolbar-medium-bl,
@@ -878,14 +865,6 @@
   text-transform: none;
   padding: 0;
 }
-/* line 370, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-light > .x-title-text-light:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #b1b1b2;
-}
 /* line 390, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-light > .x-title-icon-wrap-light.x-title-icon-top {
   height: 22px;
@@ -1212,14 +1191,6 @@
 .x-panel-header-title-light-framed > .x-title-text-light-framed {
   text-transform: none;
   padding: 0;
-}
-/* line 370, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-light-framed > .x-title-text-light-framed:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #b1b1b2;
 }
 /* line 390, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-light-framed > .x-title-icon-wrap-light-framed.x-title-icon-top {

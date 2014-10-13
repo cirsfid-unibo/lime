@@ -17377,19 +17377,6 @@ ul.x-tagfield-list.x-tagfield-singleselect {
   text-transform: none;
   padding: 0;
 }
-/* line 370, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-default > .x-title-text-default:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #888d99;
-}
-/* line 381, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-default > .x-title-text-default.x-rtl:after {
-  right: auto;
-  left: 0;
-}
 /* line 390, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default > .x-title-icon-wrap-default.x-title-icon-top {
   height: 22px;
@@ -17776,19 +17763,6 @@ ul.x-tagfield-list.x-tagfield-singleselect {
 .x-panel-header-title-default-framed > .x-title-text-default-framed {
   text-transform: none;
   padding: 0;
-}
-/* line 370, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-default-framed > .x-title-text-default-framed:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #888d99;
-}
-/* line 381, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-default-framed > .x-title-text-default-framed.x-rtl:after {
-  right: auto;
-  left: 0;
 }
 /* line 390, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default-framed > .x-title-icon-wrap-default-framed.x-title-icon-top {
@@ -24068,19 +24042,6 @@ div.x-border-layout-ct {
   padding: 0;
   text-transform: none;
 }
-/* line 303, ../../../ext-theme-neutral/sass/src/window/Window.scss */
-.x-window-header-title-default > .x-title-text-default:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #9ca0a9;
-}
-/* line 314, ../../../ext-theme-neutral/sass/src/window/Window.scss */
-.x-window-header-title-default > .x-title-text-default.x-rtl:after {
-  right: auto;
-  left: 0;
-}
 /* line 323, ../../../ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-title-default > .x-title-icon-wrap-default.x-title-icon-top {
   height: 22px;
@@ -29859,4 +29820,64 @@ a.x-color-picker-item:hover {
 /* line 5, ../../../ext-theme-neutral/sass/src/ux/grid/SubTable.scss */
 tr.x-grid-subtable-row {
   background-color: #232d38;
+}
+
+/* line 9, ../../../ext-theme-neutral/sass/src/ux/grid/SubTable.scss */
+.x-grid-subtable-header {
+  border: 1px solid #c1c1c1;
+  color: white;
+  font: bold 15px/16px helvetica, arial, verdana, sans-serif;
+  background-image: none;
+  background-color: #373c4b;
+  padding: 6px 10px 6px 10px;
+  text-overflow: ellipsis;
+}
+
+/* line 27, ../../../ext-theme-neutral/sass/src/ux/grid/SubTable.scss */
+.x-grid-subtable-cell {
+  border-top: 1px solid #ededed;
+  border-right: 1px solid #ededed;
+  border-bottom: 1px solid #ededed;
+  border-left: 1px solid #ededed;
+}
+
+/* including package ext-theme-neptune */
+/* line 187, ../../../ext-theme-base/sass/etc/mixins/frame.scss */
+.x-btn-plain-toolbar-small {
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+  padding: 3px 3px 3px 3px;
+  border-width: 1px;
+  border-style: solid;
+  background-image: none;
+  background-color: transparent;
+}
+
+/* line 237, ../../../ext-theme-base/sass/etc/mixins/frame.scss */
+.x-btn-plain-toolbar-small-mc {
+  background-image: url(images/btn/btn-plain-toolbar-small-fbg.gif);
+  background-position: 0 top;
+  background-color: transparent;
+}
+
+/* line 264, ../../../ext-theme-base/sass/etc/mixins/frame.scss */
+.x-nbr .x-btn-plain-toolbar-small {
+  padding: 0 !important;
+  border-width: 0 !important;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  -ms-border-radius: 0px;
+  -o-border-radius: 0px;
+  border-radius: 0px;
+  background-color: transparent !important;
+  background-image: none;
+  box-shadow: none !important;
+}
+
+/* line 281, ../../../ext-theme-base/sass/etc/mixins/frame.scss */
+.x-btn-plain-toolbar-small-frameInfo {
+  font-family: th-3-3-3-3-1-1-1-1-3-3-3-3;
 }

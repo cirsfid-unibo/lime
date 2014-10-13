@@ -1,45 +1,3 @@
-/* line 667, ../../../ext-theme-neutral/sass/src/button/Button.scss */
-.x-btn-over.x-btn-plain-toolbar-small {
-  border-color: #d8d8d8;
-  background-image: none;
-  background-color: #ebebeb;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ededed), color-stop(50%, #ebebeb), color-stop(51%, #dfdfdf), color-stop(100%, #ebebeb));
-  background-image: -webkit-linear-gradient(top, #ededed, #ebebeb 50%, #dfdfdf 51%, #ebebeb);
-  background-image: -moz-linear-gradient(top, #ededed, #ebebeb 50%, #dfdfdf 51%, #ebebeb);
-  background-image: -o-linear-gradient(top, #ededed, #ebebeb 50%, #dfdfdf 51%, #ebebeb);
-  background-image: -ms-linear-gradient(top, #ededed, #ebebeb 50%, #dfdfdf 51%, #ebebeb);
-  background-image: linear-gradient(top, #ededed, #ebebeb 50%, #dfdfdf 51%, #ebebeb);
-}
-
-/* line 694, ../../../ext-theme-neutral/sass/src/button/Button.scss */
-.x-btn-focus.x-btn-over.x-btn-plain-toolbar-small {
-  -webkit-box-shadow: #4196d4 0 1px 0px 0 inset, #4196d4 0 -1px 0px 0 inset, #4196d4 -1px 0 0px 0 inset, #4196d4 1px 0 0px 0 inset;
-  -moz-box-shadow: #4196d4 0 1px 0px 0 inset, #4196d4 0 -1px 0px 0 inset, #4196d4 -1px 0 0px 0 inset, #4196d4 1px 0 0px 0 inset;
-  box-shadow: #4196d4 0 1px 0px 0 inset, #4196d4 0 -1px 0px 0 inset, #4196d4 -1px 0 0px 0 inset, #4196d4 1px 0 0px 0 inset;
-}
-
-/* line 723, ../../../ext-theme-neutral/sass/src/button/Button.scss */
-.x-btn.x-btn-menu-active.x-btn-plain-toolbar-small,
-.x-btn.x-btn-pressed.x-btn-plain-toolbar-small {
-  border-color: #cecece;
-  background-image: none;
-  background-color: #e1e1e1;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #e1e1e1), color-stop(50%, #d5d5d5), color-stop(51%, #e1e1e1), color-stop(100%, #e4e4e4));
-  background-image: -webkit-linear-gradient(top, #e1e1e1, #d5d5d5 50%, #e1e1e1 51%, #e4e4e4);
-  background-image: -moz-linear-gradient(top, #e1e1e1, #d5d5d5 50%, #e1e1e1 51%, #e4e4e4);
-  background-image: -o-linear-gradient(top, #e1e1e1, #d5d5d5 50%, #e1e1e1 51%, #e4e4e4);
-  background-image: -ms-linear-gradient(top, #e1e1e1, #d5d5d5 50%, #e1e1e1 51%, #e4e4e4);
-  background-image: linear-gradient(top, #e1e1e1, #d5d5d5 50%, #e1e1e1 51%, #e4e4e4);
-}
-
-/* line 751, ../../../ext-theme-neutral/sass/src/button/Button.scss */
-.x-btn-focus.x-btn-menu-active.x-btn-plain-toolbar-small,
-.x-btn-focus.x-btn-pressed.x-btn-plain-toolbar-small {
-  -webkit-box-shadow: #4196d4 0 1px 0px 0 inset, #4196d4 0 -1px 0px 0 inset, #4196d4 -1px 0 0px 0 inset, #4196d4 1px 0 0px 0 inset;
-  -moz-box-shadow: #4196d4 0 1px 0px 0 inset, #4196d4 0 -1px 0px 0 inset, #4196d4 -1px 0 0px 0 inset, #4196d4 1px 0 0px 0 inset;
-  box-shadow: #4196d4 0 1px 0px 0 inset, #4196d4 0 -1px 0px 0 inset, #4196d4 -1px 0 0px 0 inset, #4196d4 1px 0 0px 0 inset;
-}
-
 /* line 779, ../../../ext-theme-neutral/sass/src/button/Button.scss */
 .x-btn.x-btn-disabled.x-btn-plain-toolbar-small {
   background-image: none;
@@ -1680,19 +1638,6 @@
   text-transform: none;
   padding: 0;
 }
-/* line 370, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-light > .x-title-text-light:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #aeb5ba;
-}
-/* line 381, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-light > .x-title-text-light.x-rtl:after {
-  right: auto;
-  left: 0;
-}
 /* line 390, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-light > .x-title-icon-wrap-light.x-title-icon-top {
   height: 22px;
@@ -2080,19 +2025,6 @@
 .x-panel-header-title-light-framed > .x-title-text-light-framed {
   text-transform: none;
   padding: 0;
-}
-/* line 370, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-light-framed > .x-title-text-light-framed:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #aeb5ba;
-}
-/* line 381, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-light-framed > .x-title-text-light-framed.x-rtl:after {
-  right: auto;
-  left: 0;
 }
 /* line 390, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-light-framed > .x-title-icon-wrap-light-framed.x-title-icon-top {

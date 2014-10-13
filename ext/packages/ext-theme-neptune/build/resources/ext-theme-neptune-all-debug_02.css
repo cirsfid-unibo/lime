@@ -1,18 +1,3 @@
-/* line 355, ../../../ext-theme-base/sass/etc/mixins/frame.scss */
-.x-btn-plain-toolbar-large-bl {
-  background-position: 0 -12px;
-}
-
-/* line 359, ../../../ext-theme-base/sass/etc/mixins/frame.scss */
-.x-btn-plain-toolbar-large-br {
-  background-position: right -15px;
-}
-
-/* line 363, ../../../ext-theme-base/sass/etc/mixins/frame.scss */
-.x-btn-plain-toolbar-large-ml {
-  background-position: 0 top;
-}
-
 /* line 371, ../../../ext-theme-base/sass/etc/mixins/frame.scss */
 .x-btn-plain-toolbar-large-mr {
   background-position: right top;
@@ -625,14 +610,6 @@
   text-transform: none;
   padding: 0;
 }
-/* line 370, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-light > .x-title-text-light:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #aeb5ba;
-}
 /* line 390, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-light > .x-title-icon-wrap-light.x-title-icon-top {
   height: 22px;
@@ -959,14 +936,6 @@
 .x-panel-header-title-light-framed > .x-title-text-light-framed {
   text-transform: none;
   padding: 0;
-}
-/* line 370, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-light-framed > .x-title-text-light-framed:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #aeb5ba;
 }
 /* line 390, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-light-framed > .x-title-icon-wrap-light-framed.x-title-icon-top {

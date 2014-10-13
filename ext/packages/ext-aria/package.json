@@ -4,7 +4,7 @@
     "creator": "Sencha",
     "summary": "Ext JS Accessibility Support",
     "detailedDescription": "Core support for Accessibility, ARIA and Section 508 for Ext JS",
-    "version": "1255",
+    "version": "5.0.0",
     "compatVersion": "5.0.0",
     "format": "1",
     "slicer": {

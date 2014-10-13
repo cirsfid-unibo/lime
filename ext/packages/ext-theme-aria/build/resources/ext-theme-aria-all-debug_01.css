@@ -16943,14 +16943,6 @@ ul.x-tagfield-list.x-tagfield-singleselect {
   text-transform: none;
   padding: 0;
 }
-/* line 370, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-default > .x-title-text-default:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #888d99;
-}
 /* line 390, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default > .x-title-icon-wrap-default.x-title-icon-top {
   height: 22px;
@@ -17276,14 +17268,6 @@ ul.x-tagfield-list.x-tagfield-singleselect {
 .x-panel-header-title-default-framed > .x-title-text-default-framed {
   text-transform: none;
   padding: 0;
-}
-/* line 370, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-default-framed > .x-title-text-default-framed:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #888d99;
 }
 /* line 390, ../../../ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default-framed > .x-title-icon-wrap-default-framed.x-title-icon-top {
@@ -23218,14 +23202,6 @@ div.x-border-layout-ct {
 .x-window-header-title-default > .x-title-text-default {
   padding: 0;
   text-transform: none;
-}
-/* line 303, ../../../ext-theme-neutral/sass/src/window/Window.scss */
-.x-window-header-title-default > .x-title-text-default:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #9ca0a9;
 }
 /* line 323, ../../../ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-title-default > .x-title-icon-wrap-default.x-title-icon-top {
@@ -29747,4 +29723,17 @@ tr.x-grid-subtable-row {
 .x-btn-focus.x-btn-pressed .x-btn-plain-toolbar-medium-tc,
 .x-btn-focus.x-btn-pressed .x-btn-plain-toolbar-medium-bc {
   background-image: url(images/btn/btn-plain-toolbar-medium-focus-pressed-corners.gif);
+}
+/* line 919, ../../../ext-theme-neutral/sass/src/button/Button.scss */
+.x-btn-focus.x-btn-menu-active .x-btn-plain-toolbar-medium-ml,
+.x-btn-focus.x-btn-menu-active .x-btn-plain-toolbar-medium-mr,
+.x-btn-focus.x-btn-pressed .x-btn-plain-toolbar-medium-ml,
+.x-btn-focus.x-btn-pressed .x-btn-plain-toolbar-medium-mr {
+  background-image: url(images/btn/btn-plain-toolbar-medium-focus-pressed-sides.gif);
+}
+/* line 922, ../../../ext-theme-neutral/sass/src/button/Button.scss */
+.x-btn-focus.x-btn-menu-active .x-btn-plain-toolbar-medium-mc,
+.x-btn-focus.x-btn-pressed .x-btn-plain-toolbar-medium-mc {
+  background-color: #da7b19;
+  background-image: url(images/btn/btn-plain-toolbar-medium-focus-pressed-fbg.gif);
 }

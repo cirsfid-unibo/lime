@@ -17117,7 +17117,7 @@ ul.x-tagfield-list.x-tagfield-singleselect {
  *
  * @member Ext.panel.Panel
  */
-/* line 842, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 841, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-ghost {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=65);
   opacity: 0.65;
@@ -17208,68 +17208,55 @@ ul.x-tagfield-list.x-tagfield-singleselect {
   text-transform: none;
   padding: 0 2px 1px;
 }
-/* line 370, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-default > .x-title-text-default:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #7b9ec9;
-}
-/* line 381, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-default > .x-title-text-default.x-rtl:after {
-  right: auto;
-  left: 0;
-}
-/* line 390, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 389, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default > .x-title-icon-wrap-default.x-title-icon-top {
   height: 18px;
   padding-bottom: 2px;
 }
-/* line 395, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 394, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default > .x-title-icon-wrap-default.x-title-icon-right {
   width: 18px;
   padding-left: 2px;
 }
-/* line 400, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 399, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default > .x-title-icon-wrap-default.x-title-icon-right.x-rtl {
   padding-left: 0;
   padding-right: 2px;
 }
-/* line 407, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 406, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default > .x-title-icon-wrap-default.x-title-icon-bottom {
   height: 18px;
   padding-top: 2px;
 }
-/* line 412, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 411, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default > .x-title-icon-wrap-default.x-title-icon-left {
   width: 18px;
   padding-right: 2px;
 }
-/* line 417, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 416, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default > .x-title-icon-wrap-default.x-title-icon-left.x-rtl {
   padding-right: 0;
   padding-left: 2px;
 }
-/* line 424, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 423, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default > .x-title-icon-wrap-default > .x-title-icon-default {
   width: 16px;
   height: 16px;
   background-position: center center;
 }
-/* line 430, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 429, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default > .x-title-icon-wrap-default > .x-title-glyph {
   color: #04408c;
   font-size: 16px;
   line-height: 16px;
   opacity: 0.5;
 }
-/* line 447, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 446, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-ie8 .x-panel-header-title-default > .x-title-icon-wrap-default > .x-title-glyph {
   color: #678ebf;
 }
 
-/* line 457, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 456, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-body-default {
   background: white;
   border-color: #99bce8;
@@ -17281,7 +17268,7 @@ ul.x-tagfield-list.x-tagfield-singleselect {
   border-style: solid;
 }
 
-/* line 621, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 620, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default {
   background-image: none;
   background-color: #cbddf3;
@@ -17293,7 +17280,7 @@ ul.x-tagfield-list.x-tagfield-singleselect {
   background-image: linear-gradient(top, #dae7f6, #cddef3 45%, #abc7ec 46%, #abc7ec 50%, #b8cfee 51%, #cbddf3);
 }
 
-/* line 625, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 624, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-vertical {
   background-image: none;
   background-color: #cbddf3;
@@ -17305,7 +17292,7 @@ ul.x-tagfield-list.x-tagfield-singleselect {
   background-image: linear-gradient(right, #dae7f6, #cddef3 45%, #abc7ec 46%, #abc7ec 50%, #b8cfee 51%, #cbddf3);
 }
 
-/* line 630, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 629, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-rtl.x-panel-header-default-vertical {
   background-image: none;
   background-color: #cbddf3;
@@ -17317,44 +17304,44 @@ ul.x-tagfield-list.x-tagfield-singleselect {
   background-image: linear-gradient(left, #dae7f6, #cddef3 45%, #abc7ec 46%, #abc7ec 50%, #b8cfee 51%, #cbddf3);
 }
 
-/* line 643, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 642, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-nlg .x-panel-header-default-top {
   background: url(images/panel-header/panel-header-default-top-bg.gif);
 }
-/* line 648, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 647, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-nlg .x-panel-header-default-bottom {
   background: url(images/panel-header/panel-header-default-bottom-bg.gif) bottom left;
 }
-/* line 653, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 652, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-nlg .x-panel-header-default-left {
   background: url(images/panel-header/panel-header-default-left-bg.gif) top left;
 }
-/* line 658, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 657, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-nlg .x-panel-header-default-right {
   background: url(images/panel-header/panel-header-default-right-bg.gif) top right;
 }
-/* line 665, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 664, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-nlg .x-rtl.x-panel-header-default-left {
   background: url(images/panel-header/panel-header-default-left-bg-rtl.gif) top right;
 }
-/* line 669, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 668, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-nlg .x-rtl.x-panel-header-default-right {
   background: url(images/panel-header/panel-header-default-right-bg-rtl.gif) top left;
 }
 
-/* line 683, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 682, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel .x-panel-header-default-collapsed-border-top {
   border-bottom-width: 1px !important;
 }
-/* line 687, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 686, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel .x-panel-header-default-collapsed-border-right {
   border-left-width: 1px !important;
 }
-/* line 691, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 690, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel .x-panel-header-default-collapsed-border-bottom {
   border-top-width: 1px !important;
 }
-/* line 695, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 694, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel .x-panel-header-default-collapsed-border-left {
   border-right-width: 1px !important;
 }
@@ -17395,78 +17382,78 @@ ul.x-tagfield-list.x-tagfield-singleselect {
 
 /*</if slicer>*/
 /* */
-/* line 712, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 711, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-top {
   -webkit-box-shadow: #f3f7fb 0 1px 0px 0 inset;
   -moz-box-shadow: #f3f7fb 0 1px 0px 0 inset;
   box-shadow: #f3f7fb 0 1px 0px 0 inset;
 }
 
-/* line 716, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 715, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-right {
   -webkit-box-shadow: #f3f7fb -1px 0 0px 0 inset;
   -moz-box-shadow: #f3f7fb -1px 0 0px 0 inset;
   box-shadow: #f3f7fb -1px 0 0px 0 inset;
 }
 
-/* line 720, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 719, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-bottom {
   -webkit-box-shadow: #f3f7fb 0 -1px 0px 0 inset;
   -moz-box-shadow: #f3f7fb 0 -1px 0px 0 inset;
   box-shadow: #f3f7fb 0 -1px 0px 0 inset;
 }
 
-/* line 724, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 723, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-left {
   -webkit-box-shadow: #f3f7fb 1px 0 0px 0 inset;
   -moz-box-shadow: #f3f7fb 1px 0 0px 0 inset;
   box-shadow: #f3f7fb 1px 0 0px 0 inset;
 }
 
-/* line 731, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 730, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-horizontal .x-tool-after-title {
   margin: 0 0 0 2px;
 }
-/* line 736, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 735, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-horizontal .x-rtl.x-tool-after-title {
   margin: 0 2px 0 0;
 }
-/* line 741, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 740, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-horizontal .x-tool-before-title {
   margin: 0 2px 0 0;
 }
-/* line 746, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 745, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-horizontal .x-rtl.x-tool-before-title {
   margin: 0 0 0 2px;
 }
 
-/* line 753, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 752, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-vertical .x-tool-after-title {
   margin: 2px 0 0 0;
 }
-/* line 758, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 757, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-vertical .x-rtl.x-tool-after-title {
   margin: 2px 0 0 0;
 }
-/* line 763, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 762, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-vertical .x-tool-before-title {
   margin: 0 0 2px 0;
 }
-/* line 768, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 767, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-vertical .x-rtl.x-tool-before-title {
   margin: 0 0 2px 0;
 }
 
-/* line 776, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 775, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-rtl.x-panel-header-default-collapsed-border-right {
   border-right-width: 1px !important;
 }
-/* line 779, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 778, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-rtl.x-panel-header-default-collapsed-border-left {
   border-left-width: 1px !important;
 }
 
-/* line 793, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 792, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-default-resizable .x-panel-handle {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
   opacity: 0;
@@ -17557,68 +17544,55 @@ ul.x-tagfield-list.x-tagfield-singleselect {
   text-transform: none;
   padding: 0 2px 1px;
 }
-/* line 370, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-default-framed > .x-title-text-default-framed:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #7b9ec9;
-}
-/* line 381, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
-.x-panel-header-title-default-framed > .x-title-text-default-framed.x-rtl:after {
-  right: auto;
-  left: 0;
-}
-/* line 390, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 389, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default-framed > .x-title-icon-wrap-default-framed.x-title-icon-top {
   height: 18px;
   padding-bottom: 2px;
 }
-/* line 395, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 394, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default-framed > .x-title-icon-wrap-default-framed.x-title-icon-right {
   width: 18px;
   padding-left: 2px;
 }
-/* line 400, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 399, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default-framed > .x-title-icon-wrap-default-framed.x-title-icon-right.x-rtl {
   padding-left: 0;
   padding-right: 2px;
 }
-/* line 407, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 406, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default-framed > .x-title-icon-wrap-default-framed.x-title-icon-bottom {
   height: 18px;
   padding-top: 2px;
 }
-/* line 412, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 411, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default-framed > .x-title-icon-wrap-default-framed.x-title-icon-left {
   width: 18px;
   padding-right: 2px;
 }
-/* line 417, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 416, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default-framed > .x-title-icon-wrap-default-framed.x-title-icon-left.x-rtl {
   padding-right: 0;
   padding-left: 2px;
 }
-/* line 424, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 423, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default-framed > .x-title-icon-wrap-default-framed > .x-title-icon-default-framed {
   width: 16px;
   height: 16px;
   background-position: center center;
 }
-/* line 430, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 429, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-title-default-framed > .x-title-icon-wrap-default-framed > .x-title-glyph {
   color: #04408c;
   font-size: 16px;
   line-height: 16px;
   opacity: 0.5;
 }
-/* line 447, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 446, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-ie8 .x-panel-header-title-default-framed > .x-title-icon-wrap-default-framed > .x-title-glyph {
   color: #678ebf;
 }
 
-/* line 457, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 456, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-body-default-framed {
   background: #dfe9f6;
   border-color: #99bce8;
@@ -19115,112 +19089,112 @@ ul.x-tagfield-list.x-tagfield-singleselect {
 
 /*</if slicer>*/
 /* */
-/* line 583, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 582, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel .x-panel-header-default-framed-top {
   border-bottom-width: 1px !important;
 }
-/* line 587, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 586, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel .x-panel-header-default-framed-right {
   border-left-width: 1px !important;
 }
-/* line 591, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 590, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel .x-panel-header-default-framed-bottom {
   border-top-width: 1px !important;
 }
-/* line 595, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 594, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel .x-panel-header-default-framed-left {
   border-right-width: 1px !important;
 }
 
-/* line 601, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 600, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-nbr .x-panel-header-default-framed-collapsed-top {
   border-bottom-width: 0 !important;
 }
-/* line 605, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 604, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-nbr .x-panel-header-default-framed-collapsed-right {
   border-left-width: 0 !important;
 }
-/* line 609, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 608, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-nbr .x-panel-header-default-framed-collapsed-bottom {
   border-top-width: 0 !important;
 }
-/* line 613, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 612, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-nbr .x-panel-header-default-framed-collapsed-left {
   border-right-width: 0 !important;
 }
 
-/* line 712, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 711, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-framed-top {
   -webkit-box-shadow: #f3f7fb 0 1px 0px 0 inset, #f3f7fb -1px 0 0px 0 inset, #f3f7fb 1px 0 0px 0 inset;
   -moz-box-shadow: #f3f7fb 0 1px 0px 0 inset, #f3f7fb -1px 0 0px 0 inset, #f3f7fb 1px 0 0px 0 inset;
   box-shadow: #f3f7fb 0 1px 0px 0 inset, #f3f7fb -1px 0 0px 0 inset, #f3f7fb 1px 0 0px 0 inset;
 }
 
-/* line 716, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 715, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-framed-right {
   -webkit-box-shadow: #f3f7fb 0 1px 0px 0 inset, #f3f7fb 0 -1px 0px 0 inset, #f3f7fb -1px 0 0px 0 inset;
   -moz-box-shadow: #f3f7fb 0 1px 0px 0 inset, #f3f7fb 0 -1px 0px 0 inset, #f3f7fb -1px 0 0px 0 inset;
   box-shadow: #f3f7fb 0 1px 0px 0 inset, #f3f7fb 0 -1px 0px 0 inset, #f3f7fb -1px 0 0px 0 inset;
 }
 
-/* line 720, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 719, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-framed-bottom {
   -webkit-box-shadow: #f3f7fb 0 -1px 0px 0 inset, #f3f7fb -1px 0 0px 0 inset, #f3f7fb 1px 0 0px 0 inset;
   -moz-box-shadow: #f3f7fb 0 -1px 0px 0 inset, #f3f7fb -1px 0 0px 0 inset, #f3f7fb 1px 0 0px 0 inset;
   box-shadow: #f3f7fb 0 -1px 0px 0 inset, #f3f7fb -1px 0 0px 0 inset, #f3f7fb 1px 0 0px 0 inset;
 }
 
-/* line 724, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 723, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-framed-left {
   -webkit-box-shadow: #f3f7fb 0 1px 0px 0 inset, #f3f7fb 0 -1px 0px 0 inset, #f3f7fb 1px 0 0px 0 inset;
   -moz-box-shadow: #f3f7fb 0 1px 0px 0 inset, #f3f7fb 0 -1px 0px 0 inset, #f3f7fb 1px 0 0px 0 inset;
   box-shadow: #f3f7fb 0 1px 0px 0 inset, #f3f7fb 0 -1px 0px 0 inset, #f3f7fb 1px 0 0px 0 inset;
 }
 
-/* line 731, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 730, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-framed-horizontal .x-tool-after-title {
   margin: 0 0 0 2px;
 }
-/* line 736, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 735, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-framed-horizontal .x-rtl.x-tool-after-title {
   margin: 0 2px 0 0;
 }
-/* line 741, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 740, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-framed-horizontal .x-tool-before-title {
   margin: 0 2px 0 0;
 }
-/* line 746, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 745, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-framed-horizontal .x-rtl.x-tool-before-title {
   margin: 0 0 0 2px;
 }
 
-/* line 753, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 752, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-framed-vertical .x-tool-after-title {
   margin: 2px 0 0 0;
 }
-/* line 758, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 757, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-framed-vertical .x-rtl.x-tool-after-title {
   margin: 2px 0 0 0;
 }
-/* line 763, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 762, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-framed-vertical .x-tool-before-title {
   margin: 0 0 2px 0;
 }
-/* line 768, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 767, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-header-default-framed-vertical .x-rtl.x-tool-before-title {
   margin: 0 0 2px 0;
 }
 
-/* line 776, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 775, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-rtl.x-panel-header-default-framed-collapsed-border-right {
   border-right-width: 1px !important;
 }
-/* line 779, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 778, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-rtl.x-panel-header-default-framed-collapsed-border-left {
   border-left-width: 1px !important;
 }
 
-/* line 793, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
+/* line 792, ../../../../../ext/packages/ext-theme-neutral/sass/src/panel/Panel.scss */
 .x-panel-default-framed-resizable .x-panel-handle {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
   opacity: 0;
@@ -24310,7 +24284,7 @@ div.x-border-layout-ct {
  *
  * @member Ext.window.Window
  */
-/* line 647, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 646, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-ghost {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=65);
   opacity: 0.65;
@@ -24516,63 +24490,50 @@ div.x-border-layout-ct {
   padding: 0 2px 1px;
   text-transform: none;
 }
-/* line 303, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
-.x-window-header-title-default > .x-title-text-default:after {
-  content: 'Ext JS Trial';
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #7d9ec2;
-}
-/* line 314, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
-.x-window-header-title-default > .x-title-text-default.x-rtl:after {
-  right: auto;
-  left: 0;
-}
-/* line 323, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 322, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-title-default > .x-title-icon-wrap-default.x-title-icon-top {
   height: 18px;
   padding-bottom: 2px;
 }
-/* line 328, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 327, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-title-default > .x-title-icon-wrap-default.x-title-icon-right {
   width: 18px;
   padding-left: 2px;
 }
-/* line 333, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 332, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-title-default > .x-title-icon-wrap-default.x-title-icon-right.x-rtl {
   padding-left: 0;
   padding-right: 2px;
 }
-/* line 340, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 339, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-title-default > .x-title-icon-wrap-default.x-title-icon-bottom {
   height: 18px;
   padding-top: 2px;
 }
-/* line 345, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 344, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-title-default > .x-title-icon-wrap-default.x-title-icon-left {
   width: 18px;
   padding-right: 2px;
 }
-/* line 350, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 349, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-title-default > .x-title-icon-wrap-default.x-title-icon-left.x-rtl {
   padding-right: 0;
   padding-left: 2px;
 }
-/* line 357, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 356, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-title-default > .x-title-icon-wrap-default > .x-title-icon-default {
   width: 16px;
   height: 16px;
   background-position: center center;
 }
-/* line 363, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 362, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-title-default > .x-title-icon-wrap-default > .x-title-glyph {
   color: #04468c;
   font-size: 16px;
   line-height: 16px;
   opacity: 0.5;
 }
-/* line 380, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 379, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-ie8 .x-window-header-title-default > .x-title-icon-wrap-default > .x-title-glyph {
   color: #698fb9;
 }
@@ -25689,35 +25650,35 @@ div.x-border-layout-ct {
 
 /*</if slicer>*/
 /* */
-/* line 482, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 481, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-default-top {
   -webkit-box-shadow: #ecf2fb 0 1px 0px 0 inset, #ecf2fb -1px 0 0px 0 inset, #ecf2fb 1px 0 0px 0 inset;
   -moz-box-shadow: #ecf2fb 0 1px 0px 0 inset, #ecf2fb -1px 0 0px 0 inset, #ecf2fb 1px 0 0px 0 inset;
   box-shadow: #ecf2fb 0 1px 0px 0 inset, #ecf2fb -1px 0 0px 0 inset, #ecf2fb 1px 0 0px 0 inset;
 }
 
-/* line 486, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 485, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-default-right {
   -webkit-box-shadow: #ecf2fb 0 1px 0px 0 inset, #ecf2fb 0 -1px 0px 0 inset, #ecf2fb -1px 0 0px 0 inset;
   -moz-box-shadow: #ecf2fb 0 1px 0px 0 inset, #ecf2fb 0 -1px 0px 0 inset, #ecf2fb -1px 0 0px 0 inset;
   box-shadow: #ecf2fb 0 1px 0px 0 inset, #ecf2fb 0 -1px 0px 0 inset, #ecf2fb -1px 0 0px 0 inset;
 }
 
-/* line 490, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 489, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-default-bottom {
   -webkit-box-shadow: #ecf2fb 0 -1px 0px 0 inset, #ecf2fb -1px 0 0px 0 inset, #ecf2fb 1px 0 0px 0 inset;
   -moz-box-shadow: #ecf2fb 0 -1px 0px 0 inset, #ecf2fb -1px 0 0px 0 inset, #ecf2fb 1px 0 0px 0 inset;
   box-shadow: #ecf2fb 0 -1px 0px 0 inset, #ecf2fb -1px 0 0px 0 inset, #ecf2fb 1px 0 0px 0 inset;
 }
 
-/* line 494, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 493, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-default-left {
   -webkit-box-shadow: #ecf2fb 0 1px 0px 0 inset, #ecf2fb 0 -1px 0px 0 inset, #ecf2fb 1px 0 0px 0 inset;
   -moz-box-shadow: #ecf2fb 0 1px 0px 0 inset, #ecf2fb 0 -1px 0px 0 inset, #ecf2fb 1px 0 0px 0 inset;
   box-shadow: #ecf2fb 0 1px 0px 0 inset, #ecf2fb 0 -1px 0px 0 inset, #ecf2fb 1px 0 0px 0 inset;
 }
 
-/* line 500, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 499, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-default .x-window-header-icon {
   width: 16px;
   height: 16px;
@@ -25726,63 +25687,63 @@ div.x-border-layout-ct {
   line-height: 16px;
   background-position: center center;
 }
-/* line 509, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 508, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-default .x-window-header-glyph {
   color: #04468c;
   font-size: 16px;
   line-height: 16px;
   opacity: 0.5;
 }
-/* line 526, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 525, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-ie8 .x-window-header-default .x-window-header-glyph {
   color: #698fb9;
 }
 
-/* line 535, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 534, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-default-horizontal .x-tool-after-title {
   margin: 0 0 0 2px;
 }
-/* line 540, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 539, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-default-horizontal .x-rtl.x-tool-after-title {
   margin: 0 2px 0 0;
 }
-/* line 545, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 544, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-default-horizontal .x-tool-before-title {
   margin: 0 2px 0 0;
 }
-/* line 550, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 549, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-default-horizontal .x-rtl.x-tool-before-title {
   margin: 0 0 0 2px;
 }
 
-/* line 557, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 556, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-default-vertical .x-tool-after-title {
   margin: 2px 0 0 0;
 }
-/* line 562, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 561, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-default-vertical .x-rtl.x-tool-after-title {
   margin: 2px 0 0 0;
 }
-/* line 567, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 566, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-default-vertical .x-tool-before-title {
   margin: 0 0 2px 0;
 }
-/* line 572, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 571, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-header-default-vertical .x-rtl.x-tool-before-title {
   margin: 0 0 2px 0;
 }
 
-/* line 585, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 584, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-default-collapsed .x-window-header {
   border-width: 1px !important;
 }
 
-/* line 591, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 590, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-nbr .x-window-default-collapsed .x-window-header {
   border-width: 0 !important;
 }
 
-/* line 657, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
+/* line 656, ../../../../../ext/packages/ext-theme-neutral/sass/src/window/Window.scss */
 .x-window-body-plain {
   background-color: transparent;
 }
