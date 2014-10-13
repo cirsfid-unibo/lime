@@ -1,0 +1,23 @@
+{
+  "data": {
+    "created": "2013-03-15T07:59:46Z",
+    "email": "support@sencha.com",
+    "expires": "2018-03-16T00:00:00Z",
+    "name": "Sencha",
+    "uuid": "e93ebd09-85f5-46b6-bfc1-c7f06cf0b8a5"
+  },
+  "publicKey": {
+    "algorithm": "RSA",
+    "key": "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAtr2KjCeqVx5PWjoPq5tDmUmVe2FrmMVrr2+YfYfk8LNeU/m5KGfp/SYwFPHvDAKg2C3l96arnQzz57VRu0+FgXCDS/FEV3PzWecU4hDlbZfhvhherRCMfYZp+rB9qEspUbFKWDODwaIncIybma5IVTPOs4Ags1SsEZRartRQ30JL36boOmOlLtfgJrqO9BrSt9R9Z58Uq6fjUYxy5O0DtScE/lGQ8hsOUg/qTN0XHKbKg60W5jK4NA77jxHmIDS1wYLx+BR0Ilb3SahJK2e6wn9mBpGVywOzr5IlJMe76fhkiTqemKgzx3q3CxFAojK+hsWiJGqZKclXfRtsGR9Hw9UfGGho5OYkHr0C4CenmJUtmiJ+PuortmaHLr/YV4CzacNCsxVts5yGZgO7qMm4Cdp5KQJw1xu7kJwXTp6qcgrIssznf+QDuxqlx+SYlvn/f3NT60wjfp4oGbHVeiogRMwPu7sFZfREr/WJmdW9TewZxHMnP/nwEX+kOJWHjCtX9nEYZM8tiSvtKnkDvQWF4HUKqQXDVckoBUABykiOI7fw6JBDVRkJRAl6TD6xkEoKEeuHVJFv/B/0pLW/V/8983gEzHhySoLdcqAjxQg0BKuTkCz1dlEipMoyP81Q1arHXoAv5xO6FSmN6psMe6q8fKWwc5YEXczx+mIrS3y83dcCAwEAAQ\u003d\u003d"
+  },
+  "signatures": [
+    {
+      "name": "Sencha",
+      "uuid": "e93ebd09-85f5-46b6-bfc1-c7f06cf0b8a5",
+      "created": "2013-03-15T07:59:52Z",
+      "algorithm": "SHA1withRSA",
+      "nonce": "cNWQdVFoixA\u003d",
+      "signature": "jgmGljdaGtU0bvJsTj+rp2Op0SvNCFbFFU6CjwiyS7Zmr31edpukSHmQodrHUsdOQvFg5IjBeJQaFMJxXI51Czq048WkzmSD4PawIglaCjaB5ycmBKo7e8MyukQjTBmD6n/Z1F04brOn+yOcyliRw6f9rw5xbR8IC1khj0D7EwDTXLGJJMnPYsXssithGpMlYfNc9QLEHq159V3sL0pIYpCcBqSIYid6ALp4x7NX6uDw5kYsKE9BO8ElnEd/KoMglh7cNCR5YSjEIsIWr5apzsh4a8r8LDxacZZ3CMOrAZQ+Epcb+q/JTdqyfowRJwuXbNcXkr0FwNCbhTZ2GE3NOUAzFPBpgxYLy+nfrrwkXj0V7TKY677xvAA0jyxx8CD6ecWM1+pXznp10v/VQEcg7tnC4vOGfFdw1KZv2s9HkbMkpvNVRf7gEAxUcfFFwJpKltYXsyVaaVgpriHIG/YKs7XIT+bv4yYjlZhPlGJxwl2VYSpNZXuNAwzGsi5vneVdlkQSi7znxfXw3m1qAJP354ew6HRgxKlqQdoqLc+02NZoJ7gMXR7TT5wbuxcLZ1yYJFjg02mRA92RtSPvD0tW25LoWN2DBFdex9Bdv+KJVuzZChJ/zPaK7rh29bnoK4zjlx/OXn8T16Z08qsmRnuPJK+Lwqj3kitsJbU3AYhKrDQ\u003d"
+    }
+  ]
+}

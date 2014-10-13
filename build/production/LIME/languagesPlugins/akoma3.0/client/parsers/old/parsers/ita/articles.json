@@ -1,0 +1,8 @@
+{
+	"name" : "article",
+	"patterns" : ["{{partitions:name,markingAlternative;marking}}\\s+{{number}}"],
+	"utilities" : {
+		"num" : "\\b(?:(?:\\d+(?:[-\\s]?{{latinOrdinals:name}})?\\)?)|(?:[ivxlcdm]+|\\w))\\s{0,2}[).]",
+		"locations" : "{{locations:denominazione}}"
+	}
+}

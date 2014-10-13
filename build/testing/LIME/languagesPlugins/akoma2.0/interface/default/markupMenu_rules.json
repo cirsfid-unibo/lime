@@ -1,0 +1,248 @@
+{
+	"rootElements": ["coverPage", "preface", "preamble", "body", "mainBody", "amendmentBody", "debateBody", "fragmentBody", "collectionBody", "conclusions", "attachments", "components"],
+	"commonElements": ["commonElement", "hierarchicalStructure",  "genericElement", "externalFragment", "commonsInline", "contentInline", "commonReference", "commonJudgement", "commonReport", "argument", "header", "declarationOfVote",  "writtenStatements", "speech", "speechGroup", "remark", "rollCall", "resolutions", "questions",  "pointOfOrder", "proceduralMotions", "personalStatements", "petitions", "party", "ministerialStatements", "judge", "change", "narrative", "nationalInterest", "neutralCitation", "papers", "opinion", "oralStatements", "scene", "noticesOfMotion", "foreign", "address", "administrationOfOath"],
+
+	"defaults": {
+		"leaveExpanded": false,
+		"sameLevelExpand": false,
+		"attributePrefix": "akn_"
+	},
+
+	"elements": {
+		"hierarchicalStructure": {
+			"children": ["sublist", "indent", "division", "part", "proviso", "book", "rule", "tome", "blockList", "transitional", "subdivision", "fillIn", "alinea"]
+		},
+		"genericElement": {
+			"children": ["hcontainer", "inline", "placeholder", "blockContainer", "block", "tblock", "container", "marker"]
+		},
+		"externalFragment": {
+			"children": ["extractText", "rmod", "mmod", "mod", "quotedText", "extractStructure", "quotedStructure"]
+		},
+		"commonsInline": {
+			"children": ["def", "decoration", "docPurpose"]
+		},
+		"contentInline": {
+			"children": ["del", "omissis",  "outcome", "ins", "eop", "noteRef", "authorialNote"]
+		},
+		"commonElement": {
+			"children": ["process",  "location", "concept", "quantity", "organization", "object", "date", "term", "time", "event", "person", "role", "entity"]
+		},
+		"commonReference": {
+			"children": ["ref", "rref", "mref"]
+		},
+		"commonJudgement": {
+			"children": ["introduction", "background", "courtType", "arguments", "remedies", "motivation", "decision"]
+		},
+		"commonReport": {
+			"children": ["vote", "question", "answer"]
+		},
+		"article": {
+			"children": ["num", "heading", "subheading", "paragraph", "subparagraph", "blockList"]
+		},
+
+		"blockList": {
+			"children": ["listIntroduction", "item", "listConclusion"]
+		},
+		"toc": {
+			"children": ["tocItem"]
+		},
+
+		"item": {
+			"children": ["num", "heading", "subheading"]
+		},
+		"section" : {
+			"children": ["num", "heading", "subheading", "subsection"]
+		},
+		"body": {
+			"children": ["title", "chapter", "section", "article", "clause", "subclause", "list", "point", "paragraph", "mod"]
+		},
+		"mod": {
+			"children": ["quotedStructure", "quotedText"]
+		},
+		"quotedStructure": {
+			"children": ["title", "chapter", "section", "article", "clause", "subclause", "list", "point", "paragraph"]
+		},
+		"amendmentBody": {
+			"children": ["amendmentHeading", "amendmentContent", "amendmentReference", "amendmentJustification"]
+		},
+		"debateBody": {
+			"children": ["debateSection"]
+		},
+		"mainBody": {
+			"children": ["title", "chapter", "article", "clause", "subclause", "list", "point", "paragraph"]
+		},
+		"collectionBody": {
+			"children": ["documentRef", "interstitial"]
+		},
+
+		"clause": {
+			"children": ["num", "heading", "subheading"]
+		},
+		"questions": {
+			"children": ["question"]
+		},
+		"part": {
+			"children": ["subpart"]
+		},
+		"rule": {
+			"children": ["subrule"]
+		},
+		"chapter": {
+			"children": ["num", "heading", "subheading", "subchapter"]
+		},
+		
+		"speech": {
+			"children": ["from"]
+		},
+		"paragraph": {
+			"children": ["num", "heading", "subparagraph"]
+		},
+		"conclusions": {
+			"children": ["date", "location", "blockContainer", "signature"]
+		},
+		
+		"signature": {
+			"children": ["role", "person"]
+		},
+		
+		"date": {
+			"askFor": {
+				"date1": {
+					"label": "Date",
+					"type": "date",
+					"insert": {
+						"attribute": {
+							"name": "date"
+						}
+					}
+				}
+			}
+		},
+
+		"docDate": {
+			"askFor": {
+				"date1": {
+					"label": "Date",
+					"type": "date",
+					"insert": {
+						"attribute": {
+							"name": "date"
+						}
+					}
+				}
+			}
+		},
+
+		"formula": {
+			"askFor": {
+				"type1": {
+					"label": "Type",
+					"type": "text",
+					"insert": {
+						"attribute": {
+							"name": "type"
+						}
+					}
+				}
+			}
+		},
+
+		"list": {
+			"children": ["intro", "num", "heading", "subheading", "point", "wrap"]
+		},
+
+		"point": {
+			"children": ["num", "heading", "subheading"]
+		},
+
+		"preamble": {
+			"children": ["toc", "formula", "recitals", "citations", "affectedDocument", "longTitle", "list", "paragraph"]
+		},
+
+		"preface": {
+			"children": ["toc", "docType", "docNumber", "docDate", "docTitle", "docProponent", "docStage", "docStatus", "docCommittee", "docIntroducer", "docJurisdiction", "docketNumber","shortTitle", "longTitle", "citations", "legislature"]
+		},
+		
+		"attachments": {
+			"children": ["toc"]
+		},
+		"citations": {
+			"children": ["citation"]
+		},
+		"recitals": {
+			"children": ["recital"]
+		},
+		
+		"subclause": {
+			"children": ["num", "heading", "subheading"]
+		},
+		"title": {
+			"children": ["num", "heading", "subheading", "subtitle"]
+		},
+		"ref": {
+			"askFor": {
+				"nationality": {
+					"label": "Nationality",
+					"type": "nationality"
+				},
+				"doctype": {
+					"label": "Doc. Type",
+					"type": "doctype"
+				},
+				"subtype": {
+					"label": "Doc. SubType",
+					"type": "text"
+				},
+				"date": {
+					"label": "Date",
+					"type": "date"
+				},
+				"number": {
+					"label": "Number",
+					"type": "text"
+				}
+			},
+			"attributes" : {
+				"href" : {
+					"tpl": "/{nationality}/{doctype}/{date}/{number}",
+					"separator": "/"
+				}
+			}
+		},
+		"a": {
+			"askFor": {
+				"href": {
+					"label": "Href",
+					"type": "text",
+					"insert": {
+						"attribute": {
+							"name": "href"
+						}
+					}
+				}
+			}
+		},
+		"authorialNote": {
+			"askFor": {
+				"marker": {
+					"label": "Marker",
+					"type": "text",
+					"insert": {
+						"attribute": {
+							"name": "marker"
+						}
+					}
+				},
+				"placement": {
+					"label": "Placement",
+					"type": "text",
+					"insert": {
+						"attribute": {
+							"name": "placement"
+						}
+					}
+				}
+			}
+		}
+	}
+}

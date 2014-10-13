@@ -1,0 +1,27 @@
+{
+	"en": {
+		"parseDocumentText": "Automatic markup",
+		"parseDocumentTooltip": "Try to markup automatically this document",
+		"parsing": "Parsing"
+	},
+	"it": {
+		"parseDocumentText": "Markup automatico",
+		"parseDocumentTooltip": "Prova a marcare il documento automaticamente",
+		"parsing": "Riconoscimento"
+	},
+	"es": {
+		"parseDocumentText": "Marcado Autimático",
+		"parseDocumentTooltip": "Trate de analizar el documento automáticamente",
+		"parsing": "Análisis"
+	},
+	"ro": {
+		"parseDocumentText": "Parser",
+		"parseDocumentTooltip": "Încercă să analizăzi documentul în mod automat",
+		"parsing": "Parsing"
+	},
+	"ru": {
+		"parseDocumentText": "Парсер",
+		"parseDocumentTooltip": "Попробуйте анализировать этот документ автоматически",
+		"parsing": "Анализ"
+	}
+}

@@ -1,0 +1,63 @@
+html, body {
+	padding:0;
+	margin: 0;
+	font-family:"Open Sans",sans-serif;
+}
+
+
+.insertion {
+    background-color: #70B58D;
+    font-weight:bold;
+}
+
+.num + p {
+	display: inline;
+}
+
+.substitution {
+    background-color: #EAF257;
+    font-weight:normal;
+    font-style:italic;
+}
+.repeal {
+	background-color:#B57098;
+	text-decoration:line-through;
+}
+
+.num + p {
+	display: inline;
+}
+
+
+td {
+	width: 50%;
+	padding:1em;
+	vertical-align:text-top;
+}
+
+td:first-child {
+	border-right: 2px dotted #B5B8C8;
+}
+
+td[colspan] {
+	padding: 0px;
+	border: 0px;
+}
+
+.num, .docType, .location, .location+.date {
+	font-weight:bold;
+}
+
+.person {
+	display: block;
+}
+
+.role {
+	font-size: 0.9em;
+}
+.signature {
+	display: block;
+	text-align:center;
+}
+
+

@@ -1,0 +1,15 @@
+Client:
+Ext JS 4.2 (/ext) - Open Source GPL 3.0
+TinyMCE 4.0 (/lib/tinymce4) - GPLv2
+CodeMirror 2.35 (/lib/codemirror) - MIT license
+vkBeautify 0.99 (/lib/vkbeautify) - Dual licensed under the MIT and GPL licenses
+Plupload 1.5 (/lib/plupload) - GPLv2
+Ext JS 4 TinyMCE ux (/plugins/ux/form/field/TinyMCE.js) - GNU Lesser GPL and MIT
+Ext CodeMirror ux (/plugins/ux/form/field/CodeMirror.js) - MIT license
+Notification extension for Ext JS 4.0.2+ (/plugins/ux/window/Notification.js) - Dual licensed under the MIT and GPL
+
+Server:
+AbiWord 2.8 (Optional) - GPL
+Scriba eBook Maker v. 1.0 RC (/php/lib/scriba) - GPL3
+Fop (/php/lib/isafop) - Apache License, Version 2.0
+class.Diff.php (/php/diff/lib/class.Diff.php) - CC0 1.0 Universal legal code

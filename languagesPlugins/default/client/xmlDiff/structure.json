@@ -1,0 +1,4 @@
+{
+	"views": ["DiffPanel"],
+	"controllers": ["XmlDiffController"]
+}

@@ -1,0 +1,5 @@
+{
+	//These files must have the .json extension
+	"vocabularies": ['knownActs', 'typesOfActs', 'authorities', 'partitions', 'ordinals', 'latinOrdinals', 'wordSeparators','months','locations'],
+	"parsers": ["dates","references","articles","finalFormula"]
+}

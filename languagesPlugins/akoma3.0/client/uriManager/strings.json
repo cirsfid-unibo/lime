@@ -1,0 +1,18 @@
+{
+	"en": {
+		"uriManagerTitle": "URI manager",
+		"addUri": "Add uri",
+		"addAlias": "Add alias",
+		"removeComponent": "Remove this item",
+		"apply": "Apply",
+		"cancel": "Cancel"
+	},
+	"it": {
+		"uriManagerTitle": "Gestore degli URI",
+		"addUri": "Aggiungi uri",
+		"addAlias": "Aggiungi alias",
+		"removeComponent": "Rimuovi questo elemento",
+		"apply": "Applica",
+		"cancel": "Annulla"
+	}
+}

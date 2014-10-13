@@ -1,0 +1,32 @@
+{
+    "name": "LIME",
+
+    "requires": [
+    ],
+    
+    "resources": ["lib", "config", "languagesPlugins", "php"],
+
+    "id": "9ec55dc5-ec08-4d75-bd6f-723dddfc48c5",
+
+    "compatibility": {
+        "ext": "4.2"
+    },
+
+    //"theme": "ext-theme-neptune",
+
+    "framework": "ext",
+    "css": [
+        {
+            "path": "bootstrap.css",
+            "bootstrap": true
+        }
+    ],
+    "js": [
+        {
+            "path":"${ext.dir}/build/ext-all-debug.js"
+        },{
+            "path": "app.js",
+            "bundle": true
+        }
+    ]
+}

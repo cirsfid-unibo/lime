@@ -1,0 +1,4 @@
+{
+	"views": ["AknPreviewPanel"],
+	"controllers": ["AknPreviewController"]
+}

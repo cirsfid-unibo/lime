@@ -1,0 +1,4 @@
+{
+	"views": ["UriManagerWindow"],
+	"controllers": ["UriManagerController"]
+}

@@ -1,0 +1,26 @@
+{
+	"en": {
+		"tabTitle": "Differences Viewer",
+		"textTabTitle": "Text",
+		"xmlTabTitle": "XML",
+		"firstDocumentLabel":"Document 1",
+		"secondDocumentLabel":"Document 2",
+		"currentDocument": "Current document in the editor",
+		"changeDocument": "Change document",
+		"selectDocument" : "Select document",
+		"resetDocument": "Reset",
+		"forbiddenElement": "This document was already selected"
+	},
+	"it": {
+		"tabTitle": "Confronta documenti",
+		"textTabTitle": "Testo",
+		"xmlTabTitle": "XML",
+		"firstDocumentLabel":"Documento 1",
+		"secondDocumentLabel":"Documento 2",
+		"currentDocument": "Il documento aperto nell'editor",
+		"changeDocument": "Cambia documento",
+		"selectDocument" : "Seleziona documento",
+		"resetDocument": "Reset",
+		"forbiddenElement": "Questo documento è stato già selezionato"
+	}
+}

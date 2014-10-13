@@ -1,0 +1,5 @@
+{
+	"name" : "finalFormula",
+	"patterns" : ["^\\s*(?:il|la)\\s+presente"],
+	"requireToPass" : [["repubblica\\s+italiana"]]
+}

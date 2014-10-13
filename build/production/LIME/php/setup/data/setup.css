@@ -1,0 +1,57 @@
+#logo a {
+	margin-left:auto;
+	margin-right:auto;
+	background-image:none, url('../../../resources/images/icons/logo_lime.png');
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-size: 268px 129px;
+    display: block;
+    font-size: 20px;
+    font-weight: normal;
+    height: 129px;
+    width: 268px;
+    line-height: 1.3em;
+    outline: medium none;
+    overflow: hidden;
+    padding: 0;
+    text-decoration: none;
+    text-indent: -9999px;
+}
+
+body {
+	font-family:"Open Sans",sans-serif;
+	background-color: #ECECEC;
+}
+
+table {
+	    overflow: hidden;
+}
+
+input {
+	padding-left:0.2em;
+	font-family:"Open Sans",sans-serif;
+	border:1px solid #ACACAC;
+}
+
+.warn {
+	padding:0.2em;
+	background-color:rgba(255,0,0,0.6);
+}
+
+td#heading {
+	padding-right:0.2em;
+	text-align:right;
+	width:8em;
+}
+
+label {	
+	color:#828282;
+}
+
+#mainContainer {
+	margin-left:auto;
+	margin-right:auto;
+	width:60%;
+	background-color: #FFFFFF;
+	padding:2em;
+}
