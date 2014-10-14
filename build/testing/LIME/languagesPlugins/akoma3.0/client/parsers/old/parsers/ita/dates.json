@@ -1,8 +1,0 @@
-{
-	"name":"date",
-	"day": "\\d{1,2}",
-	"year":"\\d{4}|'?\\d{2}",
-	"month":"\\d{1,2}",
-	"separator":"\\\|\\/|-|\\.",
-	"patterns":["{{day}}\\s+{{months}}\\s+{{year}}","{{months}}\\s+{{year}}","{{day}}{{separator}}{{month}}{{separator}}{{year}}"]
-}
