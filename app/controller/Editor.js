@@ -325,6 +325,7 @@ Ext.define('LIME.controller.Editor', {
 			this.getEditor().undoManager.add();
 			/* Warn of the change */
 			this.changed = true;
+			console.log(node, "partial");
 			this.application.fireEvent("editorDomChange", node, "partial");
 		}
 		if (actions.click) {

@@ -195,7 +195,6 @@ Ext.define('LIME.controller.Outliner', {
             tree = Ext.getStore('Outliner'),
             treeView = this.getOutliner(),
             root = tree.getRootNode();
-
         try {
             //convert to tree format json the node
             if (config != "partial" || DomUtils.getFirstMarkedAncestor(node.parentNode) == null) {
@@ -206,12 +205,13 @@ Ext.define('LIME.controller.Outliner', {
                 if (Ext.isArray(data)) {
                     wrapper = {
                         text : 'root',
-                        children : data
+                        children : data,
+                        expanded: true
                     };
                 } else {
                     wrapper = data;
                 }
-                tree.setRootNode(wrapper);
+                treeView.setRootNode(wrapper);
             } else {
                 var nodeIter = node;
                 var nodeBuild = null;
@@ -249,6 +249,7 @@ Ext.define('LIME.controller.Outliner', {
                     }
                 }, this);
             }
+            treeView.getRootNode().expand();
         } catch(e) {
         }
     },

@@ -158,7 +158,7 @@ Ext.define('LIME.controller.ParsersController', {
             if (elementId) {
                 var button = DocProperties.markedElements[elementId].button, 
                     widgetConfig = button.waweConfig.widgetConfig, markedWrapper = new Ext.dom.Element(markedNode), 
-                    contentToParse = markedWrapper.getHTML(), editor = this.getController("Editor"), 
+                    contentToParse = markedWrapper.getHtml(), editor = this.getController("Editor"), 
                     app = this.application, viewport = this.getAppViewport();
                 //TODO: make an configuration file with all parsers avaible
                 if (widgetConfig && (button.waweConfig.name == 'docDate')) {
@@ -303,7 +303,7 @@ Ext.define('LIME.controller.ParsersController', {
                     editor.selectNode(markNode);
                     app.fireEvent('markingMenuClicked', itemButton, config);
                     var extWrapper = Ext.get(markNode);
-                    extWrapper.setHTML(extWrapper.getHTML().replace(item.match, me.getParsingTemplate(item.match)));
+                    extWrapper.setHTML(extWrapper.getHtml().replace(item.match, me.getParsingTemplate(item.match)));
                     var elementToMark = extWrapper.query("." + DomUtils.tempParsingClass)[0];
                     if (elementToMark) {
                         elementToMark.removeAttribute("class");
@@ -801,7 +801,7 @@ Ext.define('LIME.controller.ParsersController', {
         finalQuotes = node.querySelectorAll("[class~=quotedText], [class~=quotedStructure]");
         
         Ext.each(finalQuotes, function(quote) {
-            me.callParser("body", Ext.fly(quote).getHTML(), function(result) {
+            me.callParser("body", Ext.fly(quote).getHtml(), function(result) {
                 var jsonData = Ext.decode(result.responseText, true),
                     nodeToParse = quote, elName = DomUtils.getElementNameByNode(quote);
                 if (jsonData) {

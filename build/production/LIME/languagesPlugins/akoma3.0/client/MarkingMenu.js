@@ -56,6 +56,7 @@ Ext.define('LIME.ux.MarkingMenu', {
     },
     
     constructor: function() {
+        this.initConfig({});
         Config.addCustomView(this);
     },
     

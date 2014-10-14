@@ -440,7 +440,7 @@ Ext.define('LIME.Parsers', {
 				if ((elButton && (elButton.id === button.id)) || (extSib.is('.'+DomUtils.tempParsingClass))) {
 					break;
 				}
-			    content = extSib.getHTML();
+			    content = extSib.getHtml();
 				//TODO: a better way
 				/* If the content of sibling contains a date and a location or a final formula then stop the loop */
 				if ((dateMatch.test(content) && locationsMatch.test(content)) || data.re["finalFormula"].test(content)) {

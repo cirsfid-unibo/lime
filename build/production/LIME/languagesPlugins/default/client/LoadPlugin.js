@@ -58,6 +58,10 @@ Ext.define('LIME.ux.LoadPlugin', {
     },
 
     afterLoad : function(params) {
+    },
+
+    constructor: function() {
+        this.initConfig({});
     }
     
 }); 
