@@ -161,6 +161,7 @@ Ext.define('LIME.controller.Language', {
                 Ext.each(hrefElements, function(hrefElement) {
                     hrefElement.setAttribute(langPrefix+"href", "#"+newId);
                 });
+                element.removeAttribute("id");
                 Interpreters.wrappingRulesHandlerOnTranslate(element);
             }, this);
         } catch(e) {

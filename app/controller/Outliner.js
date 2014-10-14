@@ -130,10 +130,11 @@ Ext.define('LIME.controller.Outliner', {
                     iconStyle = 'height: 12px; width: 12px; -moz-border-radius: 6px; border-radius: 6px; background-color: '+iconColor+'; display: inline-block; vertical-align:middle; margin-right: 5px; margin-bottom: 1px; border: 1px solid #6D6D6D;';
                 // Adding explorer icon's style
                 DomUtils.addStyle('*[class="'+ this.iconBaseCls+' '+ wrapperClass + '"]', iconStyle, document);
+
                 if (elementClass) {
                     var classes = elementClass.split(" ");
                     var text = newIcon + classes[(classes.length - 1)];
-                    treeData.icon = Statics.treeIcon[classes[0]];
+                    //treeData.icon = Statics.treeIcon[classes[0]];
                     var info = DomUtils.getNodeExtraInfo(data.el, "hcontainer");
                     if (info) {
                         text += " (" + info + ")";
