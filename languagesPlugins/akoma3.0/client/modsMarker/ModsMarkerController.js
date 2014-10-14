@@ -1407,7 +1407,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },
     
     updateSubsMetadata: function(node, oldText) {
-        var me = this, extNode = new Ext.Element(node),
+        var me = this, extNode = Ext.get(node),
             elId = extNode.dom.getAttribute(DomUtils.elementIdAttribute),
             editorMeta = me.getDocumentMetadata(),
             parent = extNode.up(".hcontainer"),
@@ -1465,7 +1465,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },
     
     updateRenumberingMetadata: function(node, oldText, renumberedNode) {
-        var me = this, extNode = new Ext.Element(node),
+        var me = this, extNode = Ext.get(node),
             language = me.getController("Language"),
             elId = language.nodeGetLanguageAttribute(renumberedNode, "eId").value || renumberedNode.getAttribute(DomUtils.elementIdAttribute),
             editorMeta = me.getDocumentMetadata(),
@@ -1668,7 +1668,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
     
     substitutionUpdate: function(node, textMod) {
         var me = this, oldEl = textMod.querySelector("*[class='old']"),
-            extEl = new Ext.Element(node), nodeText = DomUtils.getTextOfNode(node);
+            extEl = Ext.get(node), nodeText = DomUtils.getTextOfNode(node);
             
         //extEl.setHTML(DomUtils.getTextOfNode(oldEl));
         me.createSubstitution(node, DomUtils.getTextOfNode(oldEl), true);

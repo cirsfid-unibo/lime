@@ -302,7 +302,7 @@ Ext.define('LIME.controller.ParsersController', {
                 if (markNode) {
                     editor.selectNode(markNode);
                     app.fireEvent('markingMenuClicked', itemButton, config);
-                    var extWrapper = new Ext.Element(markNode);
+                    var extWrapper = Ext.get(markNode);
                     extWrapper.setHTML(extWrapper.getHTML().replace(item.match, me.getParsingTemplate(item.match)));
                     var elementToMark = extWrapper.query("." + DomUtils.tempParsingClass)[0];
                     if (elementToMark) {
@@ -353,7 +353,7 @@ Ext.define('LIME.controller.ParsersController', {
             Ext.each(response, function(item) {
                 var docNumImpossible = me.docNumImpossibleParents;
                 me.searchInlinesToMark(node, item.match.trim(), config, function(n) {
-                    var extNode = new Ext.Element(n);
+                    var extNode = Ext.get(n);
                     for (var i = 0; i < docNumImpossible.length; i++) {
                         if (extNode.up(docNumImpossible[i])) {
                             return false;
@@ -503,7 +503,7 @@ Ext.define('LIME.controller.ParsersController', {
         Ext.each(parts, function(element) {
             if(!element.value.trim()) return; 
             var textNodes = DomUtils.findTextNodes(element.value, node), 
-                extNode = new Ext.Element(textNodes[0]), 
+                extNode = Ext.get(textNodes[0]), 
                 extParent = extNode.parent("." + DomUtils.tempParsingClass, true), parent,
                 partNode;
             if (extParent || textNodes.length == 0) {
@@ -518,7 +518,7 @@ Ext.define('LIME.controller.ParsersController', {
         }, this);
         Ext.each(nodesToMark, function(node) {
             me.wrapPartNodeSibling(node, function(sibling) {
-                var extSib = new Ext.Element(sibling), elButton = DomUtils.getButtonByElement(sibling);
+                var extSib = Ext.get(sibling), elButton = DomUtils.getButtonByElement(sibling);
                 /* If sibling is marked with the same button or it is temp element then stop the loop */
                 if ((elButton && (elButton.id === markButton.id)) || (extSib.is('.' + DomUtils.tempParsingClass))) {
                     return true;
@@ -570,7 +570,7 @@ Ext.define('LIME.controller.ParsersController', {
     wrapStructurePart : function(name, delimiter, prevPartNode) {
         var me = this, app = me.application, editor = me.getController("Editor"), 
             body = editor.getBody(), partNode, wrapNode, 
-            iterNode = Ext.query('*[class='+DocProperties.getDocClassList()+']', body)[0];
+            iterNode = Ext.query('*[class='+DocProperties.getDocClassList()+']', true, body)[0];
 
         if (!prevPartNode) {
             while (iterNode && iterNode.childNodes.length == 1) {
@@ -863,9 +863,6 @@ Ext.define('LIME.controller.ParsersController', {
             text : Locale.getString("parsing", me.getPluginName())
         });
         Ext.defer(function() {
-            // Clean docuement, removing white spaces, before parsing
-            /*var extNode = new Ext.Element(editor.getBody());
-             extNode.clean();*/
             app.fireEvent(Statics.eventsNames.progressUpdate, Locale.getString("parsing", me.getPluginName()));
             
             var callDocTypeParser = function() {

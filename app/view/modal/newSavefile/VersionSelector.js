@@ -148,7 +148,7 @@ Ext.define('LIME.view.modal.newSavefile.VersionSelector', {
         if (!evt) {
             return;
         }
-        extNode = new Ext.Element(evt.getTarget());
+        extNode = Ext.get(evt.getTarget());
         if (!(extNode.is('.x-form-field') || extNode.is('.x-form-date-trigger')) && this.langField.getSubmitValue()) {
             cmp.up('docVersionSelector').fireEvent('blur', evt, eOps);
         }

@@ -346,7 +346,7 @@ Ext.define('LIME.DomUtils', {
         var info = '';
         if (node && node.getAttribute("class") && node.getAttribute("class").indexOf(type) != -1) {
             var infoLength = limit || Statics.extraInfoLimit;
-            var wrapper = new Ext.Element(node);
+            var wrapper = Ext.get(node);
             //TODO: da file config
             var where = ["num", "heading", "subheading"];
             var infoNode;
@@ -405,7 +405,7 @@ Ext.define('LIME.DomUtils', {
      */
     getMarkedChildrenId : function(node) {
         var childrenIds = [];
-        Ext.each(Ext.query('[' + DomUtils.elementIdAttribute + ']', node), function(child) {
+        Ext.each(Ext.query('[' + DomUtils.elementIdAttribute + ']', true, node), function(child) {
             var id = child.getAttribute(DomUtils.elementIdAttribute);
             childrenIds.push(id);
         });
@@ -587,7 +587,7 @@ Ext.define('LIME.DomUtils', {
      */
     addStyle : function(selector, styleText, doc) {
         // Create a style element and append it into the head element
-        var head = Ext.query('head', doc)[0], styleEl = Ext.query('style', head)[0];
+        var head = Ext.query('head', true, doc)[0], styleEl = Ext.query('style', head)[0];
         if (!styleEl) {
             styleEl = doc.createElement('style');
             head.appendChild(styleEl);

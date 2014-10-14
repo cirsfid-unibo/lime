@@ -71,6 +71,9 @@ Ext.define('LIME.controller.Outliner', {
      */
     expandItem : function(node) {
         var tree = this.getOutliner(), root = tree.store.getRootNode(), row;
+        if(!root) {
+            return;
+        }
         if (!node) {
             tree.getSelectionModel().select(root, false, true);
         };
@@ -93,7 +96,7 @@ Ext.define('LIME.controller.Outliner', {
                     tree.getSelectionModel().select(storedNode, false, true);
                     row = Ext.query('#'+tree.items.items[0].getRowId(storedNode));
                     if (row.length>0) {
-                        row = new Ext.Element(row[0]);
+                        row = Ext.get(row[0]);
                         row.scrollIntoView(tree.items.items[0].getEl(), false, true);
                     }
                     
@@ -187,16 +190,16 @@ Ext.define('LIME.controller.Outliner', {
      * @param {String} [config] What kind of change has to be made
      */
     buildTree : function(node, config) {
-        console.log('build tree');
         var me = this,
             tree = Ext.getStore('Outliner'),
             treeView = this.getOutliner(),
             root = tree.getRootNode();
+
         try {
             //convert to tree format json the node
             if (config != "partial" || DomUtils.getFirstMarkedAncestor(node.parentNode) == null) {
                 var docClass = DocProperties.getDocClassList().split(" "), 
-                    foundNode = Ext.query("."+docClass[(docClass.length-1)],node.ownerDocument)[0], 
+                    foundNode = Ext.query("."+docClass[(docClass.length-1)], true, node.ownerDocument)[0], 
                     rawData = DomUtils.xmlToJson(foundNode), 
                     data = this.createTreeData(rawData), wrapper;
                 if (Ext.isArray(data)) {

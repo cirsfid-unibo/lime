@@ -122,7 +122,7 @@ Ext.define('LIME.Interpreters', {
 			 */ 
 			headingElement : function(rule, markedNode, buttonConfig) {
 				if (rule.conditions["parentClassContains"]) {
-					var extEl = new Ext.Element(markedNode),
+					var extEl = Ext.get(markedNode),
 						parent = extEl.parent('.'+rule.conditions["parentClassContains"]),
 						contentElement = extEl.parent('.content'),
 						contentChild = parent.down('.content');
@@ -177,7 +177,7 @@ Ext.define('LIME.Interpreters', {
 			// Add mod element
 			addWrapperElement : function(rule, markedNode) {
 				var config = Interpreters.getButtonConfig(rule.type),
-					extWrapper = new Ext.Element(markedNode);
+					extWrapper = Ext.get(markedNode);
 				if(rule.type && rule.type=='mod'){
 						var modElement = extWrapper.parent(".mod"),
 						idPrefix = config.rules[Utilities.buttonFieldDefault].attributePrefix || '',
@@ -187,7 +187,7 @@ Ext.define('LIME.Interpreters', {
 							content : ''
 						});
 						var newElement = Ext.DomHelper.insertHtml('beforeBegin',contentElement.dom,parsedHtml),
-						extNewElement = new Ext.Element(newElement);
+						extNewElement = Ext.get(newElement);
 						while(contentElement.dom.firstChild){
 							var removed  = contentElement.dom.removeChild(contentElement.dom.firstChild);
 							newElement.appendChild(removed);

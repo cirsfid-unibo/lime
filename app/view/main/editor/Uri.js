@@ -53,7 +53,7 @@ Ext.define('LIME.view.main.editor.Uri', {
     alias : 'widget.mainEditorUri',
     frame : true,
     
-    linkTemplate: '<a id="{id}" class="uriSelector" style="" href="javascript:;">{text}</a>',
+    linkTemplate: '<a path="{id}" class="uriSelector" style="" href="javascript:;">{text}</a>',
     style : {
         borderRadius : "0px",
         margin : "0px",
@@ -81,6 +81,8 @@ Ext.define('LIME.view.main.editor.Uri', {
     
     applyHtml: function(html) {
         var me = this;
-        me.update(html,false,function(){me.fireEvent("update");});
+        me.update(html,false,function(){
+            me.fireEvent("update");
+        });
     }
 });

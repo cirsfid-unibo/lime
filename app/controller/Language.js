@@ -311,11 +311,11 @@ Ext.define('LIME.controller.Language', {
     parseMetadata : function(xmlDom, xmlString) {
         var metaObject = {}, extDom;
         try {
-            extDom = new Ext.Element(xmlDom);
+            extDom = Ext.get(xmlDom);
         } catch(e) { //Ext.Element sometimes fails with IE browsers.
             var parser = new DOMParser();
             var doc = parser.parseFromString(xmlString, "application/xml");
-            extDom = new Ext.Element(doc);
+            extDom = Ext.get(doc);
         }    
          var internalMetadata = extDom.down('*[class=internalMetadata]'), 
              docLang, docLocale, docType, nationality, frbrDom;
@@ -402,7 +402,8 @@ Ext.define('LIME.controller.Language', {
     
     parseFrbrMetadata : function(dom) {
         var frbr = DocProperties.frbr, 
-            frbrDom = new Ext.Element(dom);
+            frbrDom = Ext.get(dom);
+
         frbr.work = {};
         frbr.expression = {};
         frbr.manifestation = {};

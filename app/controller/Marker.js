@@ -129,7 +129,7 @@ Ext.define('LIME.controller.Marker', {
             }
         }
         
-        tempElements = Ext.query('span[class~='+tmpClass+']', wrapElement);
+        tempElements = Ext.query('span[class~='+tmpClass+']', true, wrapElement);
         // Unwrap text from temporary elements
         Ext.each(tempElements, function(node) {
             if(node.getAttribute("class") == tmpClass) {
@@ -168,7 +168,7 @@ Ext.define('LIME.controller.Marker', {
                 html : parsedHtml
             }),
             // Get a reference to the temporary element to be replaced from the actual content (the wrapped elements)
-            tempSelection = Ext.query('*[class*='+DomUtils.tempSelectionClass+']', newElement)[0];
+            tempSelection = Ext.query('*[class*='+DomUtils.tempSelectionClass+']', true, newElement)[0];
             
         // Check for data integrity
         if (!selectedNodes || selectedNodes.length == 0) {
@@ -231,7 +231,7 @@ Ext.define('LIME.controller.Marker', {
         
         for(var i = 0; i < nodesLength; i+=numberOfEls) {
             var node = toMarkNodes[i],
-                extNode = new Ext.Element(node),
+                extNode = Ext.get(node),
                 //Get html of wrapperElement
                 htmlContent = Interpreters.parseElement(button.waweConfig.pattern.wrapperElement, {
                     content : ''
@@ -250,7 +250,7 @@ Ext.define('LIME.controller.Marker', {
                 // Creation of group as dom element and put it before "node" that is the first element of this group
                 inlineWrapper = Ext.DomHelper.insertHtml("beforeBegin", node, htmlContent);
             }
-            var inlineExt = new Ext.Element(inlineWrapper),
+            var inlineExt = Ext.get(inlineWrapper),
                 next = extNode.next();
             
             //set the number of elements of this group to 1 this is the first element "node"
@@ -325,7 +325,7 @@ Ext.define('LIME.controller.Marker', {
         // Common finilizing operations
         Ext.each(newElements, function(newElement) {
             // Wrap the element inside an Ext.Element
-            var extNode = new Ext.Element(newElement),
+            var extNode = Ext.get(newElement),
                 oldElement = newElement.cloneNode(true),
                 // Get a unique id for the marked element
                 markingId = this.getMarkingId(button.id), 
@@ -392,7 +392,7 @@ Ext.define('LIME.controller.Marker', {
     unmarkNode : function(markedNode, unmarkChildren) {
         var unmarkedChildIds = [];
         if (unmarkChildren) {
-            var discendents = Ext.query("["+DomUtils.elementIdAttribute+"]", markedNode);
+            var discendents = Ext.query("["+DomUtils.elementIdAttribute+"]", true, markedNode);
             // Find all the marked children and unmark them
             Ext.each(discendents, function(child){
                 unmarkedChildIds = Ext.Array.merge(unmarkedChildIds, this.unmarkNode(child));
@@ -400,7 +400,7 @@ Ext.define('LIME.controller.Marker', {
         }
         var markedParent = markedNode.parentNode,
             markedId = markedNode.getAttribute(DomUtils.elementIdAttribute),
-            extNode = new Ext.Element(markedNode),
+            extNode = Ext.get(markedNode),
             nextSpaceP = extNode.next('.'+DomUtils.breakingElementClass),
             prevSpaceP = extNode.prev('.'+DomUtils.breakingElementClass);
         // Replace all the 
@@ -649,7 +649,7 @@ Ext.define('LIME.controller.Marker', {
     },
     
     getNumberOfChildrenByClass: function(node, childClass, includeDescendant) {
-        var extNode = new Ext.Element(node),
+        var extNode = Ext.get(node),
            childrenNumber = 0,
            children = extNode.query("*[class~="+childClass+"]");
         
