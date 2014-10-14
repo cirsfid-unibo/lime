@@ -84,10 +84,7 @@ Ext.define('LIME.controller.Editor', {
 	},{
 		ref : 'mainToolbar',
 		selector : 'mainToolbar'
-	},{
-        ref : 'codemirror',
-        selector : 'codemirror'
-    }],
+	}],
 
 	constructor : function(){
 		/**
