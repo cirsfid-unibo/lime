@@ -60,10 +60,10 @@ Ext.define('LIME.view.Outliner', {
     cls : 'x-tree-noicon',
 
     // The contanined three must not be expanded
-    expanded : false,
+    expanded : true,
 
     // The root must not be visible
-    rootVisible : false,
+    rootVisible : true,
 
     // the view configuration
     //viewConfig: {baseCls: 'elements_tree'},
