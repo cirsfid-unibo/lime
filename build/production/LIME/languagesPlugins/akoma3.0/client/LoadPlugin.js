@@ -48,7 +48,7 @@
  * This is the plugin for loading documents
  */
 
-Ext.define('LIME.ux.LoadPlugin', {
+Ext.define('LIME.ux.akoma3.LoadPlugin', {
     singleton : true,
     alternateClassName : 'LoadPlugin',
     
@@ -63,7 +63,7 @@ Ext.define('LIME.ux.LoadPlugin', {
     beforeLoad : function(params) {
         var metaResults = [], extdom, documents, treeData = [];
         if (params.docDom) {
-            extdom = new Ext.Element(params.docDom);
+            extdom = Ext.get(params.docDom);
             documents = extdom.query("*[class~=" + DocProperties.documentBaseClass + "]");
             if(documents.length) {
                 Ext.each(documents, function(doc, index) {
@@ -152,13 +152,12 @@ Ext.define('LIME.ux.LoadPlugin', {
     
     processMeta: function(doc, params) {
         var extdom, meta, result = {}, ownDoc;
-        
         result.docMarkingLanguage = params.docMarkingLanguage;
         
         if(!doc || !doc.querySelector("*[class="+this.getMetadataClass()+"]")) {
             result.metaDom = this.createBlankMeta();
         }  else {
-            extdom = new Ext.Element(doc);
+            extdom = Ext.get(doc);
             meta = extdom.down("*[class=" + this.getMetadataClass() + "]");
             result = {}, ownDoc = doc.ownerDocument;
             result.docType = DomUtils.getDocTypeByNode(doc);
@@ -205,5 +204,9 @@ Ext.define('LIME.ux.LoadPlugin', {
                 element.parentNode.appendChild(element);
             }
         }, this);
+    },
+
+    constructor: function() {
+        this.initConfig({});
     }
 });

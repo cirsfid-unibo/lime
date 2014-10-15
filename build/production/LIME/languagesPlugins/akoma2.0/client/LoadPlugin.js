@@ -63,7 +63,7 @@ Ext.define('LIME.ux.LoadPlugin', {
     beforeLoad : function(params) {
         var metaResults = [], extdom, documents, treeData = [];
         if (params.docDom) {
-            extdom = new Ext.Element(params.docDom);
+            extdom = Ext.get(params.docDom);
             documents = extdom.query("*[class~=" + DocProperties.documentBaseClass + "]");
             Ext.each(documents, function(doc, index) {
                 metaResults.push(Ext.Object.merge(this.processMeta(doc, params), {docDom: doc}));
@@ -93,7 +93,7 @@ Ext.define('LIME.ux.LoadPlugin', {
     },
     
     processMeta: function(doc, params) {
-        var extdom = new Ext.Element(doc),
+        var extdom = Ext.get(doc),
             meta = extdom.down("*[class=" + this.metadataClass + "]"),
             result = {};
             

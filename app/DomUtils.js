@@ -365,7 +365,7 @@ Ext.define('LIME.DomUtils', {
                 }
             }
             if (infoNode) {
-                info = infoNode.getHTML();
+                info = infoNode.getHtml();
                 info = info.replace(/<(?:.|\n)*?>/gm, '');
             }
             if (info.length > infoLength) {
@@ -587,7 +587,7 @@ Ext.define('LIME.DomUtils', {
      */
     addStyle : function(selector, styleText, doc) {
         // Create a style element and append it into the head element
-        var head = Ext.query('head', true, doc)[0], styleEl = Ext.query('style', head)[0];
+        var head = doc.querySelector("head"), styleEl = doc.querySelector("style");
         if (!styleEl) {
             styleEl = doc.createElement('style');
             head.appendChild(styleEl);

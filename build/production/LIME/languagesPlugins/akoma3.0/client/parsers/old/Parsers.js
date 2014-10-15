@@ -308,7 +308,7 @@ Ext.define('LIME.Parsers', {
 			newContent = newContent.replace(reObj,"<span class=\""+DomUtils.tempParsingClass+"\"  "+reTypeAttributeName+"=\""+reConfig[i].type+"\" "+tmpDateAttribute+"=\"$3-$4-$5\">$1</span>");
 		}
 		editor.setContent(newContent,{ no_events: true });
-		var tmpParsingNodes = Ext.query("."+DomUtils.tempParsingClass,editor.getBody()),
+		var tmpParsingNodes = Ext.query("."+DomUtils.tempParsingClass, true, editor.getBody()),
 			nodesToMark = [];
 		
 		
@@ -377,7 +377,7 @@ Ext.define('LIME.Parsers', {
 		numButton = button.getChildByName("num");
 		function addNodes(node, onlyWrapper) {
             var newWrapper, elButton, markedParent,
-                extNode = new Ext.Element(node); 
+                extNode = Ext.get(node); 
             markedParent = extNode.parent("."+button.getPattern(), true);
             elButton = DomUtils.getButtonByElement(markedParent);
             if (elButton && (elButton.id === button.id)) {
@@ -414,7 +414,7 @@ Ext.define('LIME.Parsers', {
 		Ext.each(matches, function(match,index) {
 			var textNodes = DomUtils.findTextNodes(match,editorBody);
 			Ext.each(textNodes, function(tNode) {
-			    var extNode = new Ext.Element(tNode),
+			    var extNode = Ext.get(tNode),
 			        extParent = extNode.parent("."+DomUtils.tempParsingClass, true);  
 			    if (extParent) { 
 			        return;
@@ -434,7 +434,7 @@ Ext.define('LIME.Parsers', {
 		Ext.each(nodesToMark,function(node) {
 			var sibling = node.nextSibling, extSib, child, content;
 			while (sibling) {
-			    extSib = new Ext.Element(sibling);
+			    extSib = Ext.get(sibling);
 				elButton = DomUtils.getButtonByElement(sibling);
                 /* If sibling is marked with the same button or it is temp element then stop the loop */
 				if ((elButton && (elButton.id === button.id)) || (extSib.is('.'+DomUtils.tempParsingClass))) {
@@ -567,7 +567,7 @@ Ext.define('LIME.Parsers', {
 				elConf = (type_date == DomUtils.tempParsingClass)? config : config[type_date];
 			if(elConf){	
 				if(elConf.mark=='parent'){
-					var tempWrapper = new Ext.Element(tempElement),
+					var tempWrapper = Ext.get(tempElement),
 						parent = tempWrapper.parent();
 					tempWrapper.remove();
 					editor.selectNode(parent.dom);

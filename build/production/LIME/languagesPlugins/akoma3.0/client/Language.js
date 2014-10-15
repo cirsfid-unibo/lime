@@ -47,7 +47,7 @@
 /**
  * Language dependent utilities
  */
-Ext.define('LIME.ux.Language', {
+Ext.define('LIME.ux.akoma3.Language', {
     /* Since this is merely a utility class define it as a singleton (static members by default) */
     singleton : true,
     alternateClassName : 'Language',
@@ -184,5 +184,9 @@ Ext.define('LIME.ux.Language', {
             markingId += elName+me.getNumSeparator()+elNum;
         }
         return markingId;
+    },
+
+    constructor: function (config) {
+        this.initConfig({});
     }
 });
