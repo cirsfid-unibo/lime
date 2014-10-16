@@ -83,7 +83,7 @@ Ext.define('Ext.ux.Iframe', {
         var iframe = this.getIframe(),
             onLoad = function() {
                 iframe.removeEventListener( 'load', onLoad );
-                callback(this.contentDocument);
+                callback(this.contentDocument, this.contentWindow);
             };
         if(url){
             if(Ext.isFunction(callback)) {
@@ -92,7 +92,12 @@ Ext.define('Ext.ux.Iframe', {
                     iframe.addEventListener( 'load', onLoad );    
                 }
             }
-            iframe.setAttribute("src", url);
+            if(iframe) {
+                iframe.setAttribute("src", url);    
+            } else {
+                this.setSrc(url);
+            }
+            
             this.url = url;
         }
     },

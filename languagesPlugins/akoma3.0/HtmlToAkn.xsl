@@ -3,7 +3,7 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:html="http://www.w3.org/1999/xhtml"
-    xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD10"
+    xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD11"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     exclude-result-prefixes="xs"
     version="1.0">
@@ -88,6 +88,35 @@
         	</xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+    
+    <xsl:template match="div[contains(@class,'preface')] |
+    					 div[contains(@class,'preamble')] |
+    					 div[contains(@class,'conclusions')]">
+		<xsl:variable name="aknName">
+            <xsl:if test="substring-after(./@class,' ') != ''">
+                <xsl:value-of select="translate(substring-after(./@class,' '),'_','')" />
+            </xsl:if>
+            <xsl:if test="substring-after(./@class,' ') = ''">
+                <xsl:value-of select="translate(@class,'_','')" />
+            </xsl:if>
+            <xsl:if test="./@class = ''">
+            	<xsl:value-of select="name(.)" />
+            </xsl:if>
+        </xsl:variable>
+		<xsl:element name="{$aknName}">
+			<xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
+			<xsl:choose>
+	    		<xsl:when test="(count(div[contains(@class, 'block p')]) = 0)">
+	    			<xsl:element name="p">
+	    				<xsl:apply-templates />
+	    			</xsl:element>
+	    		</xsl:when>
+	    		<xsl:otherwise>
+	    			<xsl:apply-templates />
+	    		</xsl:otherwise>
+	 		</xsl:choose>	
+		</xsl:element>
+	</xsl:template>
     
     <xsl:template match="p[@internalid]">
         <xsl:variable name="aknName">
