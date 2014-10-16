@@ -1,4 +1,0 @@
-{
-	"views": ["PdfPreviewPanel"],
-	"controllers": ["PdfPreviewController"]
-}

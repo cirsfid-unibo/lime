@@ -1,3 +1,0 @@
-{
-	"plugins": ["xmlValidation", "xmlDiff", "importDocument", "exportDocument", "newPdfPreview"]
-}

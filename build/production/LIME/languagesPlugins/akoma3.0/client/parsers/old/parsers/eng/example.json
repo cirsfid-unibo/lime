@@ -1,6 +1,0 @@
-{
-    "name" : "example",
-    "day" : "\\d{1,2}",
-    "year" : "\\d{4}|'?\\d{2}",
-    "patterns" : ["{{day}} {{months}} {{year}}","{{months}} {{day}} {{year}}"]
-}
