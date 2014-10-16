@@ -57,7 +57,7 @@ Ext.define('LIME.controller.Editor', {
 
     extend : 'Ext.app.Controller',
 
-    views : ['main.Editor', 'Explorer', 'main.editor.Path', 'main.editor.Uri','modal.NewDocument'],
+    views : ['main.Editor', 'Outliner', 'main.editor.Path', 'main.editor.Uri','modal.NewDocument'],
 
     refs : [{
         ref : 'mainEditor',
@@ -77,8 +77,8 @@ Ext.define('LIME.controller.Editor', {
         selector : 'menuitem[cls=editor]'
     },
     {
-        ref : 'explorer',
-        selector : 'explorer'
+        ref : 'outliner',
+        selector : 'outliner'
     }, {
         ref : 'mainEditorPath',
         selector : 'mainEditorPath'
@@ -245,7 +245,7 @@ Ext.define('LIME.controller.Editor', {
         tinymce.activeEditor.formatter.register(patternName, patternProperties);
         tinymce.activeEditor.formatter.apply(patternName);
         var searchRoot = this.getBody();
-        var marked = Ext.query('span[class*=' + patternProperties.classes + ']', searchRoot);
+        var marked = searchRoot.querySelectorAll('span[class*="' + patternProperties.classes + '"]');
         return marked;
     },
 
@@ -263,7 +263,7 @@ Ext.define('LIME.controller.Editor', {
                 lastNode;
             if (Ext.isString(nodes)){
                 //This means that "nodes" is an node id
-                nodes = Ext.query("#"+nodes,this.getBody());
+                nodes = this.getBody().querySelectorAll('#'+nodes);
             }else if(!Ext.isArray(nodes)){
                 // Uniform to a single type
                 nodes = [nodes];
@@ -367,19 +367,28 @@ Ext.define('LIME.controller.Editor', {
      * @returns {Boolean} true if the attribute was changed, false otherwise
      */
     setElementAttribute : function(elementId, name, value) {
-        var element = elementId, oldValue, chaged = false;
-        var newElement = (Ext.isString(element))? Ext.query("*["+DomUtils.elementIdAttribute+"="+element+"]", this.getDom())[0] : element;
-        if (newElement) {
-            oldValue = newElement.getAttribute(name);
+        var element = elementId, oldValue, chaged = false, 
+            dom = this.getDom(), query;
+
+        if(Ext.isString(element)) {
+            query = new Ext.Template('*[{attr}="{value}"]').apply({
+                attr: DomUtils.elementIdAttribute,
+                value: element
+            });
+            element = dom.querySelector(query);
+        }
+
+        if (element) {
+            oldValue = element.getAttribute(name);
             if(oldValue != value) {
                 //set attribute that has the same name of field
-                newElement.setAttribute(name, value);
+                element.setAttribute(name, value);
                 /* Prevent from inserting empty attributes */
                 if (value == "") {
-                    newElement.removeAttribute(name);
+                    element.removeAttribute(name);
                 }
                 this.getEditorComponent().fireEvent('change', this.getEditor());
-                chaged = newElement;
+                chaged = element;
             }
         }
         return chaged;
@@ -695,13 +704,18 @@ Ext.define('LIME.controller.Editor', {
 
     linkNotes: function(body) {
         var app = this.application, 
-            noteLinkers = Ext.query("*[class=linker]", body);
+            noteLinkers = body.querySelectorAll('*[class="linker"]');
         clickLinker = function() {
-            var marker = this.getAttribute(LoadPlugin.refToAttribute), note;
+            var marker = this.getAttribute(LoadPlugin.refToAttribute),
+                note, query;
             if (marker) {
-                note = Ext.query("*["+LoadPlugin.changePosTargetAttr+"="+marker+"]", body);
-                if(note.length > 0) {
-                    app.fireEvent('nodeFocusedExternally', note[0], {
+                query = new Ext.Template('*[{attr}="{value}"]').apply({
+                    attr: LoadPlugin.changePosTargetAttr,
+                    value: marker
+                });
+                note = editorBody.querySelector(query);
+                if(note) {
+                    app.fireEvent('nodeFocusedExternally', note, {
                         select : true,
                         scroll : true,
                         click : true
@@ -719,7 +733,7 @@ Ext.define('LIME.controller.Editor', {
         var LanguageController = this.getController('Language'),
             markingMenu = this.getController('MarkingMenu'),
             marker = this.getController('Marker'),
-            markedElements = Ext.query("*[" + DomUtils.elementIdAttribute + "]", body);
+            markedElements = body.querySelectorAll('*[' + DomUtils.elementIdAttribute + ']');
         
         //Parse the new document and build documentProprieties 
         Ext.each(markedElements, function(element, index) {
@@ -1196,7 +1210,6 @@ Ext.define('LIME.controller.Editor', {
             // Handle the path panel
             'mainEditorPath' : {
                 update : function() {
-                    var pathSelectors = Ext.query(".pathSelectors");
                     var selectorsConfig = this.getMainEditorPath().elements;
                     Ext.select(".pathSelectors", true).on("click", function(evt, el) {
                         var elId = el.getAttribute("id");
@@ -1216,7 +1229,7 @@ Ext.define('LIME.controller.Editor', {
                 update : function() {
                     var me = this;
                     Ext.select(".uriSelector", true).on("click", function(evt, el) {
-                        var elId = el.getAttribute("id");
+                        var elId = el.getAttribute("path");
                         if (elId) {
                             me.application.fireEvent(Statics.eventsNames.openDocument, config = {path: elId});
                         }
@@ -1276,11 +1289,8 @@ Ext.define('LIME.controller.Editor', {
                     /* If the body node is not the default one wrap it */
                     var body = ed.getBody(),
                         docCls = DocProperties.getDocClassList(),
-                        documentTypeNode = Ext.query('*[class='+docCls+']', body)[0],
-                        explorer = this.getExplorer();
+                        documentTypeNode = body.querySelector('*[class="'+docCls+'"]');
                     if (!documentTypeNode) {
-                        /* Save a bookmark of the selection */
-                        //var bookmark = this.getBookmark();
                         /* Re/Wrap the whole editor content into the correct div */
                         var bodyInnerHtml = body.innerHTML;
                         // get a copy of the content
@@ -1288,8 +1298,6 @@ Ext.define('LIME.controller.Editor', {
                         // erase the whole content
                         var wrappingElement = Ext.DomHelper.createDom(Ext.Object.merge(this.defaultElement, {cls: docCls, html:bodyInnerHtml}));
                         body.appendChild(wrappingElement);
-                        /* Restore the selection bookmark */
-                        //this.restoreBookmark(bookmark);
                     }
                     /* Add a new undo level */
                     ed.undoManager.add();
@@ -1307,24 +1315,20 @@ Ext.define('LIME.controller.Editor', {
                     // Prevent the default context menu to show
                     e.preventDefault();
                     // Compute the coordinates
-                    //coordinates = [e.pageX+offsetPosition[0], e.pageY+offsetPosition[1]];
                     coordinates = [e.clientX+offsetPosition[0], e.clientY+offsetPosition[1]];
                     // Can't use Ext getXY because it's a tinymce event!
                     this.application.fireEvent(Statics.eventsNames.showContextMenu, coordinates);
                 },
 
                 setcontent : function(ed, e) {
-                    var explorer = this.getExplorer(),
-                        body = this.getBody(),
+                    var body = this.getBody(),
                         docCls = DocProperties.getDocClassList(),
                         docBaseCls = DocProperties.documentBaseClass,
-                        documentTypeNode = Ext.query('*[class~='+docBaseCls+']', body)[0];
+                        documentTypeNode = body.querySelector('*[class="'+docCls+'"]');
                     if(!DocProperties.getDocType()) {
                         return;
                     }
                     if (!documentTypeNode) {
-                        /* Save a bookmark of the selection */
-                        //var bookmark = this.getBookmark();
                         /* Re/Wrap the whole editor content into the correct div */
                         var bodyInnerHtml = body.innerHTML;
                         // get a copy of the content
@@ -1332,8 +1336,6 @@ Ext.define('LIME.controller.Editor', {
                         // erase the whole content
                         var wrappingElement = Ext.DomHelper.createDom(Ext.Object.merge(this.defaultElement, {cls: docCls, html: bodyInnerHtml}));
                         body.appendChild(wrappingElement);
-                        /* Restore the selection bookmark */
-                        //this.restoreBookmark(bookmark);
                     } else {
                         var classAtt = documentTypeNode.getAttribute('class');
                         if (!classAtt || classAtt.indexOf(docCls)==-1) {
