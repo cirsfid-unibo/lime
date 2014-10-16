@@ -405,7 +405,7 @@ Ext.define('LIME.DomUtils', {
      */
     getMarkedChildrenId : function(node) {
         var childrenIds = [];
-        Ext.each(Ext.query('[' + DomUtils.elementIdAttribute + ']', true, node), function(child) {
+        Ext.each(node.querySelectorAll('[' + DomUtils.elementIdAttribute + ']'), function(child) {
             var id = child.getAttribute(DomUtils.elementIdAttribute);
             childrenIds.push(id);
         });

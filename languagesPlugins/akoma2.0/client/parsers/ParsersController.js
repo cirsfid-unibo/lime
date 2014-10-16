@@ -485,7 +485,7 @@ Ext.define('LIME.controller.ParsersController', {
     wrapStructurePart : function(name, delimiter, prevPartNode) {
         var me = this, app = me.application, editor = me.getController("Editor"), 
             body = editor.getBody(), partNode, wrapNode, 
-            iterNode = Ext.query('*[class='+DocProperties.getDocClassList()+']', true, body)[0];
+            iterNode = body.querySelector('*[class="'+DocProperties.getDocClassList()+'"]');
 
         if (!prevPartNode) {
             while (iterNode && iterNode.childNodes.length == 1) {

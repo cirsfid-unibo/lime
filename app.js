@@ -89,7 +89,7 @@ Ext.application({
 		this.callParent();
 		
 		// Remove the loading icon
-		var loadingDiv = Ext.query('#loading')[0];
+		var loadingDiv = document.querySelector("#loading");
 		loadingDiv.parentNode.removeChild(loadingDiv);
 	}
 });

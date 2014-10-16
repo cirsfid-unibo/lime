@@ -93,9 +93,9 @@ Ext.define('LIME.controller.Outliner', {
                     }
                     //select the node
                     tree.getSelectionModel().select(storedNode, false, true);
-                    row = Ext.query('#'+tree.items.items[0].getRowId(storedNode));
-                    if (row.length>0) {
-                        row = Ext.get(row[0]);
+                    row = document.querySelector('#'+tree.items.items[0].getRowId(storedNode));
+                    if (row) {
+                        row = Ext.get(row);
                         row.scrollIntoView(tree.items.items[0].getEl(), false, true);
                     }
                     
@@ -201,7 +201,7 @@ Ext.define('LIME.controller.Outliner', {
             //convert to tree format json the node
             if (config != "partial" || DomUtils.getFirstMarkedAncestor(node.parentNode) == null) {
                 var docClass = DocProperties.getDocClassList().split(" "), 
-                    foundNode = Ext.query("."+docClass[(docClass.length-1)], true, node.ownerDocument)[0], 
+                    foundNode = node.ownerDocument.querySelector("."+docClass[(docClass.length-1)]), 
                     rawData = DomUtils.xmlToJson(foundNode), 
                     data = this.createTreeData(rawData), wrapper;
                 if (Ext.isArray(data)) {

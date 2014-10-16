@@ -129,7 +129,7 @@ Ext.define('LIME.controller.Marker', {
             }
         }
         
-        tempElements = Ext.query('span[class~='+tmpClass+']', true, wrapElement);
+        tempElements = wrapElement.querySelectorAll('span[class~="'+tmpClass+'"]');
         // Unwrap text from temporary elements
         Ext.each(tempElements, function(node) {
             if(node.getAttribute("class") == tmpClass) {
@@ -168,7 +168,7 @@ Ext.define('LIME.controller.Marker', {
                 html : parsedHtml
             }),
             // Get a reference to the temporary element to be replaced from the actual content (the wrapped elements)
-            tempSelection = Ext.query('*[class*='+DomUtils.tempSelectionClass+']', true, newElement)[0];
+            tempSelection = newElement.querySelector('.'+DomUtils.tempSelectionClass);
             
         // Check for data integrity
         if (!selectedNodes || selectedNodes.length == 0) {
@@ -387,7 +387,7 @@ Ext.define('LIME.controller.Marker', {
     unmarkNode : function(markedNode, unmarkChildren) {
         var unmarkedChildIds = [];
         if (unmarkChildren) {
-            var discendents = Ext.query("["+DomUtils.elementIdAttribute+"]", true, markedNode);
+            var discendents = markedNode.querySelectorAll('['+DomUtils.elementIdAttribute+']');
             // Find all the marked children and unmark them
             Ext.each(discendents, function(child){
                 unmarkedChildIds = Ext.Array.merge(unmarkedChildIds, this.unmarkNode(child));
