@@ -61,8 +61,12 @@ Ext.define('LIME.controller.Editor', {
 
 	refs : [{
 		ref : 'mainEditor',
-		selector : 'mainEditor'
+		selector : '#mainEditor mainEditor'
 	}, {
+		ref: 'secondEditor',
+		selector: '#secondEditor mainEditor'
+	},
+	{
 		ref : 'main',
 		selector : 'main'
 	}, {
@@ -110,8 +114,9 @@ Ext.define('LIME.controller.Editor', {
 	 * that contains the editor plugin.
 	 * @returns {LIME.view.main.Editor} The component that contains the editor
 	 */
-	getEditorComponent : function() {
-		return this.getMainEditor().down('tinymcefield');
+	getEditorComponent : function(cmp) {
+		cmp = cmp || this.getMainEditor();
+		return cmp.down('tinymcefield');
 	},
 
 	/**
@@ -119,8 +124,8 @@ Ext.define('LIME.controller.Editor', {
 	 * use its own interface (that depends on what editor is currently installed e.g. tinyMCE).
 	 * @returns {Object} A reference to the editor object
 	 */
-	getEditor : function() {
-		return this.getEditorComponent().getEditor();
+	getEditor : function(cmp) {
+		return this.getEditorComponent(cmp).getEditor();
 	},
 
 	/**
@@ -217,7 +222,8 @@ Ext.define('LIME.controller.Editor', {
 	},
 
 	showDocumentUri: function(docId) {
-	    var editorContainer = this.getMainEditor().up(), title, main = this.getMain(),
+	    var editorContainer = this.getMainEditor().up(), 
+	    	title, main = this.getMain(),
 	        uri = DocProperties.getDocumentUri();
 	    //!docId || !Ext.isString(docId) || DocProperties.isAutosaveId(docId) ||
         uri = (!uri) ? Locale.getString("newDocument") : uri;
@@ -322,7 +328,6 @@ Ext.define('LIME.controller.Editor', {
 			this.getEditor().undoManager.add();
 			/* Warn of the change */
 			this.changed = true;
-			console.log(node, "partial");
 			this.application.fireEvent("editorDomChange", node, "partial");
 		}
 		if (actions.click) {
@@ -415,8 +420,8 @@ Ext.define('LIME.controller.Editor', {
 	 * This method is very useful when separated-dom editors are used (such as tinyMCE).
 	 * @returns {HTMLDocument} A reference to the dom
 	 */
-	getDom : function() {
-		return this.getEditor().dom.doc;
+	getDom : function(cmp) {
+		return this.getEditor(cmp).dom.doc;
 	},
 	/**
      * Returns the Html string of entire dom
@@ -573,23 +578,23 @@ Ext.define('LIME.controller.Editor', {
 	 * @param {Object} styleObj An object with some css properties
 	 * @param {String} buttonName The name of the button
 	 */
-	applyAllStyles : function(selector, styleObj, buttonName) {
+	applyAllStyles : function(selector, styleObj, buttonName, cmp) {
 		for (var i in styleObj) {
 			// Apply the style on the simple selector
 			if (i == "this") {
-				this.addContentStyle(selector, styleObj[i]);
+				this.addContentStyle(selector, styleObj[i], cmp);
 			// Otherwise a complex selector was given
 			} else if (i.indexOf("this") != -1) {
 				var styleCss = styleObj[i];
 				selector = i.replace("this", selector);
-				this.applyAllStyles(selector, styleObj[i], buttonName);
+				this.applyAllStyles(selector, styleObj[i], buttonName, cmp);
 			// This means that another element was selected
 			} else {
 				var styleCss = styleObj[i];
 				if (styleCss.indexOf("content:") == -1) {
 					styleCss = "content:'" + buttonName.toUpperCase() + "';" + styleCss;
 				}
-				this.addContentStyle(selector + ':' + i, styleCss);
+				this.addContentStyle(selector + ':' + i, styleCss, cmp);
 			}
 
 		}
@@ -602,7 +607,7 @@ Ext.define('LIME.controller.Editor', {
 	    this.addStyles(styleUrls);
 		app.fireEvent(Statics.eventsNames.languageLoaded, data);
         app.fireEvent(Statics.eventsNames.progressUpdate, Locale.strings.progressBar.loadingDocument);
-        this.loadDocument(config.docText, config.docId, config.callback, config.initial);
+        this.loadDocument(config.docText, config.docId);
         app.fireEvent(Statics.eventsNames.progressEnd);
         config.docDom = this.getDom();
         app.fireEvent(Statics.eventsNames.afterLoad, config);
@@ -628,8 +633,8 @@ Ext.define('LIME.controller.Editor', {
 	 * @param {String} selector The css selector
 	 * @param {String} styleText The string representing the property
 	 */
-	addContentStyle : function(selector, styleText) {
-		DomUtils.addStyle(selector, styleText, this.getDom());
+	addContentStyle : function(selector, styleText, cmp) {
+		DomUtils.addStyle(selector, styleText, this.getDom(cmp));
 	},
 
 	beforeLoadDocument: function(config) {
@@ -688,38 +693,9 @@ Ext.define('LIME.controller.Editor', {
         }, 200, me);
     },
 
-	/**
-	 * This method ensures that the given text is loaded after
-	 * some built-in preconditions are met. For example a default
-	 * content that must wrap the newly loaded text.
-	 * @param {String} docText The text that has to be loaded
-	 * @param {String} [docId] The id of the document
-	 * @param {Function} [callback] Function to call when finished
-	 * @param {Boolean} [initial] If true removing previous document properties
-	 * will be skipped
-	 */
-	loadDocument : function(docText, docId) {
-		var editor = this.getEditor();
-		var markingMenu = this.getController('MarkingMenu'),
-		    LanguageController = this.getController('Language'),
-		    marker = this.getController('Marker'),
-		    editorBody = this.getBody(),
-		    app = this.application;
-		//set new content to the editor
-		if (Ext.isEmpty(docText)){
-		    docText = '&nbsp;';
-		}
-		//Remove all previous document proprieties
-		DocProperties.removeAll();
-		// Clear previous undo levels
-		editor.undoManager.clear();
-		editor.setContent(docText); // Add a space, empty content prevents other views from updating
-
-		// Add an undo level
-		editor.undoManager.add();
-		//Parse the new document and build documentProprieties
-		var markedElements = Ext.query("*[" + DomUtils.elementIdAttribute + "]", true, this.getBody()),
-            noteLinkers = Ext.query("*[class=linker]", true, this.getBody());
+	linkNotes: function(body) {
+		var app = this.application, 
+			noteLinkers = Ext.query("*[class=linker]", true, body);
         clickLinker = function() {
             var marker = this.getAttribute(LoadPlugin.refToAttribute),
                 note;
@@ -737,14 +713,22 @@ Ext.define('LIME.controller.Editor', {
         Ext.each(noteLinkers, function(linker) {
             linker.onclick = clickLinker;
         }, this);
+	},
 
+
+	searchAndManageMarkedElements: function(body, cmp, noSideEffects, customStyleFn) {
+		var LanguageController = this.getController('Language'),
+			markingMenu = this.getController('MarkingMenu'),
+			marker = this.getController('Marker'),
+			markedElements = Ext.query("*[" + DomUtils.elementIdAttribute + "]", true, body);
+		
+        //Parse the new document and build documentProprieties 
 		Ext.each(markedElements, function(element, index) {
 			var elId = element.getAttribute(DomUtils.elementIdAttribute),
 			    newElId;
 			var nameAttr = element.getAttribute(LanguageController.getLanguagePrefix()+'name');
 			var buttonId = DomUtils.getButtonIdByElementId(elId);
 			var button = Ext.getCmp(buttonId);
-
 			if (!button) {
 			    if (elId.indexOf(DomUtils.elementIdSeparator)==-1) {
 			        var parent = DomUtils.getFirstMarkedAncestor(element.parentNode);
@@ -770,34 +754,81 @@ Ext.define('LIME.controller.Editor', {
                         elId = marker.getMarkingId(button.id);
                     }
 			    }
-			    if (!button) {
-			       Ext.MessageBox.alert("FATAL ERROR!!", "The button with id " + buttonId + " is missing!");
-                    return;
-			    }
+				if (!button) {
+					if(!noSideEffects) {
+						Ext.MessageBox.alert("FATAL ERROR!!", "The button with id " + buttonId + " is missing!");	
+					}
+					return;
+				}
 			}
 
-			DocProperties.setMarkedElementProperties(elId, {
-				button : button,
-				htmlElement : element
-			});
+			if(!noSideEffects) {
+				DocProperties.setMarkedElementProperties(elId, {
+					button : button,
+					htmlElement : element
+				});	
+			}
+
 			//remove inline style
 			element.removeAttribute('style');
 			element.setAttribute(DomUtils.elementIdAttribute, elId);
 			// Widget is created on demand for performance reasons
 			var styleClass = button.waweConfig.pattern.wrapperClass;
-			this.applyAllStyles('*[class="' + styleClass + '"]', button.waweConfig.pattern.wrapperStyle, button.waweConfig.shortLabel);
+			var styleValue = button.waweConfig.pattern.wrapperStyle;
+			if(Ext.isFunction(customStyleFn)) {
+				styleValue = customStyleFn(styleValue);
+			}
+			this.applyAllStyles('*[class="' + styleClass + '"]', styleValue, button.waweConfig.shortLabel, cmp);
 			var isBlock = DomUtils.blockTagRegex.test(button.waweConfig.pattern.wrapperElement);
 			if(isBlock){
                 marker.addBreakingElements(element);
             }
 		}, this);
+	},
 
-		if (Ext.isString(docId)) {
-		    // save the id of the currently opened file
-		    DocProperties.setDocId(docId);
+	/**
+	 * This method ensures that the given text is loaded after
+	 * some built-in preconditions are met. For example a default
+	 * content that must wrap the newly loaded text.
+	 * @param {String} docText The text that has to be loaded
+	 * @param {String} [docId] The id of the document
+	 * @param {Function} [callback] Function to call when finished
+	 * @param {Boolean} [initial] If true removing previous document properties
+	 * will be skipped
+	 */
+	loadDocument : function(docText, docId, cmp, noSideEffects, customStyleFn) {
+		var editor = this.getEditor(cmp), editorBody,
+		    app = this.application;
+
+		//set new content to the editor
+		if (Ext.isEmpty(docText)) {
+		    docText = '&nbsp;';
 		}
-		this.application.fireEvent('editorDomChange', editor.getBody());
-		this.application.fireEvent(Statics.eventsNames.documentLoaded);
+		
+		// Clear previous undo levels
+		editor.undoManager.clear();
+		editor.setContent(docText); // Add a space, empty content prevents other views from updating
+		// Add an undo level
+		editor.undoManager.add();
+
+		if(!noSideEffects) {
+			//Remove all previous document proprieties
+			DocProperties.removeAll();
+			if (Ext.isString(docId)) {
+			    // save the id of the currently opened file
+			    DocProperties.setDocId(docId);
+			}	
+		}
+
+		editorBody = editor.getBody();
+
+		this.linkNotes(editorBody);
+		this.searchAndManageMarkedElements(editorBody, cmp, noSideEffects, customStyleFn);
+
+		if(!noSideEffects) {
+			app.fireEvent('editorDomChange', editorBody);
+			app.fireEvent(Statics.eventsNames.documentLoaded);
+		}
 	},
 
 	/**
@@ -908,8 +939,6 @@ Ext.define('LIME.controller.Editor', {
         } catch(e) {
             metadataString = Ext.emptyString;
         }
-
-
 
         params = {
             userName : userInfo.username,
@@ -1108,9 +1137,48 @@ Ext.define('LIME.controller.Editor', {
         this.getBody().setAttribute('contenteditable', true);
     },
 
+    getTinyMceConfig: function() {
+    	var config = {
+                doctype : '<!DOCTYPE html>',
+                theme : "modern",
+                schema: "html5",
+                element_format : "xhtml",
+                force_br_newlines : true,
+                force_p_newlines : false,
+                forced_root_block : '',
+                // Custom CSS
+                content_css : 'resources/tiny_mce/css/content.css',
+
+                // the editor mode
+                mode : 'textareas',
+
+                entity_encoding : 'raw',
+
+                // Sizes
+                width : '100%',
+                height : '100%',
+                resizable : false,
+                relative_urls: false,
+                nonbreaking_force_tab: true,
+                statusbar : false,
+                // the enabled plugins in the editor
+                plugins : "compat3x, code, tinyautosave, table, link, image, searchreplace, jbimages, paste, noneditable",
+
+                noneditable_leave_contenteditable: true,
+
+                valid_elements : "*[*]",
+
+                // the language of tinymce
+                language : Locale.getLang(),
+                toolbar: "undo redo | bold italic strikethrough | superscript subscript | bullist numlist outdent indent | table | searchreplace | link image"  
+            };
+
+		return config;
+    },
+
 	/* Initialization of the controller */
 	init : function() {
-
+		var me = this;
 		// Set the event listeners
 		this.application.on({
 			nodeFocusedExternally : this.focus,
@@ -1129,7 +1197,7 @@ Ext.define('LIME.controller.Editor', {
 			// Handle the path panel
 			'mainEditorPath' : {
 				update : function() {
-					var pathSelectors = Ext.query(".pathSelectors");
+					var pathSelectors = Ext.query(".pathSelectors", true);
 					var selectorsConfig = this.getMainEditorPath().elements;
 					Ext.select(".pathSelectors", true).on("click", function(evt, el) {
 						var elId = el.getAttribute("id");
@@ -1149,7 +1217,7 @@ Ext.define('LIME.controller.Editor', {
                 update : function() {
                     var me = this;
                     Ext.select(".uriSelector", true).on("click", function(evt, el) {
-                        var elId = el.getAttribute("path");
+                        var elId = el.getAttribute("id");
                         if (elId) {
                             me.application.fireEvent(Statics.eventsNames.openDocument, config = {path: elId});
                         }
@@ -1158,7 +1226,7 @@ Ext.define('LIME.controller.Editor', {
             },
 
 			// Handle the viewable events on the editor (click, contextmenu etc.)
-			'mainEditor' : {
+			'#mainEditor mainEditor' : {
 				click : function(ed, e, selectedNode) {
 					var me = this,
 					   toMarkNodes = me.getBody().querySelectorAll("."+DomUtils.toMarkNodeClass);
@@ -1209,7 +1277,8 @@ Ext.define('LIME.controller.Editor', {
 					/* If the body node is not the default one wrap it */
 					var body = ed.getBody(),
 					    docCls = DocProperties.getDocClassList(),
-    					documentTypeNode = Ext.query('*[class='+docCls+']', true, body)[0];
+    					documentTypeNode = Ext.query('*[class='+docCls+']', true, body)[0],
+						explorer = this.getOutliner();
 					if (!documentTypeNode) {
 						/* Save a bookmark of the selection */
 						//var bookmark = this.getBookmark();
@@ -1246,7 +1315,8 @@ Ext.define('LIME.controller.Editor', {
                 },
 
 				setcontent : function(ed, e) {
-					var body = this.getBody(),
+					var explorer = this.getOutliner(),
+						body = this.getBody(),
 						docCls = DocProperties.getDocClassList(),
 						docBaseCls = DocProperties.documentBaseClass,
 						documentTypeNode = Ext.query('*[class~='+docBaseCls+']', true, body)[0];
@@ -1276,88 +1346,91 @@ Ext.define('LIME.controller.Editor', {
 					this.application.fireEvent('editorDomChange', body);
 				},
 
-				beforerender : function() {
-                    var me = this, editorView = me.getMainEditor(), tinyView = me.getEditorComponent(),
-                        marker = me.getController("Marker");
+				beforerender : function(cmp) {
+                    var me = this, 
+                    	editorView = cmp, 
+                    	tinyView = me.getEditorComponent(cmp),
+                    	tinyConfig = me.getTinyMceConfig();
 
-					// trick for a global scope (needed by the autosave plugin)
+
+                    // trick for a global scope (needed by the autosave plugin)
 					__tinyInit = function() {
 					   var plugin = this;
 					   // Call 'tinyInit' with the plugin scope, pass 'autoSaveContent' with editor scope
 					   Ext.bind(me.tinyInit, plugin, [me, Ext.bind(me.autoSaveContent, me)])();
 					};
+						
+					tinyConfig = Ext.merge(tinyConfig, {
+						// set the controller of the autosave
+	                    tinyautosave_oninit : '__tinyInit', // global reference to a local method
+	                    tinyautosave_minlength : 10,
+	                    tinyautosave_interval_seconds : 10,
 
-					var tinyConfig = {
-                        tinymceConfig : {
-                            doctype : '<!DOCTYPE html>',
-                            theme : "modern",
-                            schema: "html5",
-                            element_format : "xhtml",
-                            force_br_newlines : true,
-                            force_p_newlines : false,
-                            forced_root_block : '',
-                            // Custom CSS
-                            content_css : 'resources/tiny_mce/css/content.css',
+	                    // Events and callbacks
+	                    mysetup : function(editor) {
+	                        editor.on('change', function(e) {
+	                            editorView.fireEvent('change', editor, e);
+	                        });
 
-                            // the editor mode
-                            mode : 'textareas',
+	                        editor.on('setcontent', function(e) {
+	                            editorView.fireEvent('setcontent', editor, e);
+	                        });
 
-                            entity_encoding : 'raw',
+	                        editor.on('click', function(e) {
+	                            // Fire a click event only if left mousebutton was used
+	                            //if (e.which == 1){
+	                                editorView.fireEvent('click', editor, e);
+	                            //}
+	                        });
 
-                            // Sizes
-                            width : '100%',
-                            height : '100%',
-                            resizable : false,
-                            relative_urls: false,
-                            nonbreaking_force_tab: true,
-                            statusbar : false,
-                            // the enabled plugins in the editor
-                            plugins : "compat3x, code, tinyautosave, table, link, image, searchreplace, jbimages, paste, noneditable",
-
-                            noneditable_leave_contenteditable: true,
-
-                            valid_elements : "*[*]",
-
-                            // the language of tinymce
-                            language : Locale.getLang(),
-
-                            toolbar: "undo redo | bold italic strikethrough | superscript subscript | bullist numlist outdent indent | table | link image jbimages | searchreplace",
-
-                            // Events and callbacks
-
-                            mysetup : function(editor) {
-                                editor.on('change', function(e) {
-                                    editorView.fireEvent('change', editor, e);
-                                });
-
-                                editor.on('setcontent', function(e) {
-                                    editorView.fireEvent('setcontent', editor, e);
-                                });
-
-                                editor.on('click', function(e) {
-                                    // Fire a click event only if left mousebutton was used
-                                    //if (e.which == 1){
-                                        editorView.fireEvent('click', editor, e);
-                                    //}
-                                });
-
-                                editor.on('contextmenu', function(e) {
-                                    editorView.fireEvent('contextmenu', editor, e);
-                                });
-                            },
-
-                            // set the controller of the autosave
-                            tinyautosave_oninit : '__tinyInit', // global reference to a local method
-                            tinyautosave_minlength : 10,
-                            tinyautosave_interval_seconds : 10
-                        }
-					};
+	                        editor.on('contextmenu', function(e) {
+	                            editorView.fireEvent('contextmenu', editor, e);
+	                        });
+	                    }});
 
 					if (!WaweDebug) {
-                        tinyConfig.tinymceConfig.menubar = false;
+                        tinyConfig.menubar = false;
                     }
+
 					/* Set the editor custom configuration */
-                    Ext.apply(tinyView, tinyConfig);
+                    Ext.apply(tinyView, {tinymceConfig: tinyConfig});
+				}
+			},
+			'#mainEditor mainEditor tinymcefield': {
+				editorcreated: function(editor) {
+					/*Ext.fly(editor.getWin()).addListener("scroll", function(e, t) {
+						var scroll = t.documentElement.scrollTop || editor.getWin().pageYOffset,
+							secondEditor = me.getSecondEditor();
+
+						if(secondEditor) {
+							secondEditor = me.getEditor(secondEditor);
+							secondEditor.getDoc().documentElement.scrollTop = scroll;
+						}
+					});*/
+				}
+			},
+			'#secondEditor mainEditor' : {
+				beforerender: function(cmp) {
+					var me = this,
+                    	tinyView = me.getEditorComponent(cmp),
+                    	tinyConfig = me.getTinyMceConfig();
+
+					if (!WaweDebug) {
+                        tinyConfig.menubar = false;
+                    }
+
+                    tinyConfig.plugins = tinyConfig.plugins.replace("tinyautosave,", "");
+                    tinyConfig.readonly = 1;
+
+					/* Set the editor custom configuration */
+                    Ext.apply(tinyView, {tinymceConfig: tinyConfig});
+				}
+			},
+			'#secondEditor mainEditor tinymcefield': {
+				editorcreated: function(editor) {
+					Ext.Object.each(editor.controlManager.buttons, function(name) {
+						editor.controlManager.setDisabled(name, true);
+					});
 				}
 			}
 		});

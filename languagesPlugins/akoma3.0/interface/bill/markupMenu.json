@@ -193,7 +193,7 @@
 		"pattern": "inline"
 	},
 	"mod": {
-		"pattern": "container"
+		"pattern": "inline"
 	},
 	"mref": {
 		"pattern": "inline"

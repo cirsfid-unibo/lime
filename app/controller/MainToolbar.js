@@ -51,23 +51,23 @@
  */
 Ext.define('LIME.controller.MainToolbar', {
 
-	// extend the ext controller
-	extend : 'Ext.app.Controller',
-	// set the references for this controller
+    // extend the ext controller
+    extend : 'Ext.app.Controller',
+    // set the references for this controller
 
-	refs : [{
-		// the open document button
-		selector : 'openDocumentButton',
-		ref : 'openDocumentButton'
-	}, {
-		// The reference to the open file window
-		selector : 'modalOpenfileMain',
-		ref : 'openFileWindowMain'
-	}, {
-		// The reference to the open file window
-		selector : 'languageSelectionBox',
-		ref : 'LanguagesComboBox'
-	},{
+    refs : [{
+        // the open document button
+        selector : 'openDocumentButton',
+        ref : 'openDocumentButton'
+    }, {
+        // The reference to the open file window
+        selector : 'modalOpenfileMain',
+        ref : 'openFileWindowMain'
+    }, {
+        // The reference to the open file window
+        selector : 'languageSelectionBox',
+        ref : 'LanguagesComboBox'
+    },{
         ref : 'downloadManager',
         selector : 'downloadManager'
     },{
@@ -99,43 +99,43 @@ Ext.define('LIME.controller.MainToolbar', {
         selector : 'mainToolbar'
     }],
 
-	// set up the views
-	views : ['MainToolbar', 
+    // set up the views
+    views : ['MainToolbar', 
                'Main',
-	           'maintoolbar.OpenDocumentButton', 
-	           'maintoolbar.LocaleSelector', 
-	           'maintoolbar.LanguageSelectionBox', 
-	           'maintoolbar.LanguageSelectionMenu',
-	           'modal.newOpenfile.Main',
-	           'modal.newSavefile.Main',
-	           'maintoolbar.FileMenuButton', 
-	           'maintoolbar.DocumentMenuButton',
-	           'maintoolbar.WindowMenuButton',
-	           'modal.SaveAs',
-	           'modal.NewDocument'],
-	           
-	/**
-	 * Create a new document by performing all the necessary
-	 * operations (replace editor's content and document's id) 
-	 */
-	createNewDocument : function(params){
-	   var app = this.application,
-	       documentId = DocProperties.currentEditorFile.id,
-	       config = {
-	           docText: params.docText || '',
-	           docId: ''
-	       };
-	   // If a document's id is not specified it means the document is saved
-	   // in a temporary file on the server, we have to make the user save it with save as
-	   if (Ext.isEmpty(documentId)) {
-	       // TODO Dialog for save as
-	   }
-	   // Load an empty document with empty id
-	   app.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(config, params));
-	},
-	
+               'maintoolbar.OpenDocumentButton', 
+               'maintoolbar.LocaleSelector', 
+               'maintoolbar.LanguageSelectionBox', 
+               'maintoolbar.LanguageSelectionMenu',
+               'modal.newOpenfile.Main',
+               'modal.newSavefile.Main',
+               'maintoolbar.FileMenuButton', 
+               'maintoolbar.DocumentMenuButton',
+               'maintoolbar.WindowMenuButton',
+               'modal.SaveAs',
+               'modal.NewDocument'],
+               
+    /**
+     * Create a new document by performing all the necessary
+     * operations (replace editor's content and document's id) 
+     */
+    createNewDocument : function(params){
+       var app = this.application,
+           documentId = DocProperties.currentEditorFile.id,
+           config = {
+               docText: params.docText || '',
+               docId: ''
+           };
+       // If a document's id is not specified it means the document is saved
+       // in a temporary file on the server, we have to make the user save it with save as
+       if (Ext.isEmpty(documentId)) {
+           // TODO Dialog for save as
+       }
+       // Load an empty document with empty id
+       app.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(config, params));
+    },
     
-	/**
+    
+    /**
      * Highlight file menu
      * TODO Generalize for different buttons
      */
@@ -147,13 +147,13 @@ Ext.define('LIME.controller.MainToolbar', {
             domEl.frame("#ff0000", 1, { duration: 1000 });
         }, 1000);
     },
-	
-	
-	/**
-	 * This function is called on selection of a language in the menu
-	 * @param {Ext.menu.Menu} item, the clicked menu item
-	 */
-	selectLanguage: function(item) {
+    
+    
+    /**
+     * This function is called on selection of a language in the menu
+     * @param {Ext.menu.Menu} item, the clicked menu item
+     */
+    selectLanguage: function(item) {
         var langCode = item.record.get("code"),
             preferencesManager = this.getController('PreferencesManager');
             
@@ -167,14 +167,14 @@ Ext.define('LIME.controller.MainToolbar', {
             defaultLanguage : langCode
         }, false, callback);
         
-	},
-	
-	
-	/**
+    },
+    
+    
+    /**
      * This function is called on selection of a locale in the menu
      * @param {Ext.menu.Menu} item, the clicked menu item
      */
-	selectLocale: function(item) {
+    selectLocale: function(item) {
         var selectedLocale = item.record.get("locale");
         var preferencesManager = this.getController('PreferencesManager');
         var params = Ext.urlDecode(window.location.search);
@@ -291,43 +291,43 @@ Ext.define('LIME.controller.MainToolbar', {
         return newMenu;
     },
 
-	init : function() {
-		// save a reference to the controller
-		var toolbarController = this;
-		
-		this.application.on(Statics.eventsNames.frbrChanged, this.onMetadataChange, this);
-		this.application.on(Statics.eventsNames.languageLoaded, this.onLanguageLoaded, this);
-		
-		// set up the control
-		this.control({
-			'openDocumentButton' : {
-				// when the button is clicked
-				click : function() {
+    init : function() {
+        // save a reference to the controller
+        var toolbarController = this;
+        
+        this.application.on(Statics.eventsNames.frbrChanged, this.onMetadataChange, this);
+        this.application.on(Statics.eventsNames.languageLoaded, this.onLanguageLoaded, this);
+        
+        // set up the control
+        this.control({
+            'openDocumentButton' : {
+                // when the button is clicked
+                click : function() {
                     Ext.widget('newOpenfileMain').show();
-				}
-			},
-			'languageSelectionBox' : {
-				afterrender : function(cmp) {
-					var record = Ext.getStore('Languages').findRecord('code', Locale.strings.languageCode, null, null, null, true);
-					// if language was found in store, assign it as current value in combobox
-					if (record) {
-						cmp.setValue(record.data.language);
-					}
-				},
-				// when a language is selected
-				select : {
-					// register the function
-					fn : function(cb, records) {
-						// get the store record of the language
-						var langCode = records[0].get("code");
-						
-						// Change the language
-						Utilities.changeLanguage(langCode);
-						    
-					}
-				}
-			},
-			'languageSelectionMenu': {
+                }
+            },
+            'languageSelectionBox' : {
+                afterrender : function(cmp) {
+                    var record = Ext.getStore('Languages').findRecord('code', Locale.strings.languageCode, null, null, null, true);
+                    // if language was found in store, assign it as current value in combobox
+                    if (record) {
+                        cmp.setValue(record.data.language);
+                    }
+                },
+                // when a language is selected
+                select : {
+                    // register the function
+                    fn : function(cb, records) {
+                        // get the store record of the language
+                        var langCode = records[0].get("code");
+                        
+                        // Change the language
+                        Utilities.changeLanguage(langCode);
+                            
+                    }
+                }
+            },
+            'languageSelectionMenu': {
                 beforerender: function(cmp) {
                     var menu = Ext.create('Ext.menu.Menu'),
                         languageStore = this.getStore(cmp.store),
@@ -349,9 +349,9 @@ Ext.define('LIME.controller.MainToolbar', {
                     }, this);
                     cmp.setMenu(menu);
                 }
-			},
-			'localeSelector' : {
-			    beforerender: function(cmp) {
+            },
+            'localeSelector' : {
+                beforerender: function(cmp) {
                     var menu = Ext.create('Ext.menu.Menu'),
                         localeStore = this.getStore(cmp.store),
                         currentLocale = Ext.urlDecode(window.location.search).locale;
@@ -371,21 +371,21 @@ Ext.define('LIME.controller.MainToolbar', {
                     }, this);
                     cmp.setMenu(menu);
                 }
-				
-			},
-			
-			'logoutButton': {
-			     click: function() {
-			         var loginManager = this.getController('LoginManager');
-			             confirm = Ext.Msg.confirm(Locale.strings.warning, Locale.strings.logoutWarning,
-			             function(buttonId){
-			                 if (buttonId == 'yes'){
-			                    // If the user confirmed perform a logout
-    			                loginManager.logout();
+                
+            },
+            
+            'logoutButton': {
+                 click: function() {
+                     var loginManager = this.getController('LoginManager');
+                         confirm = Ext.Msg.confirm(Locale.strings.warning, Locale.strings.logoutWarning,
+                         function(buttonId){
+                             if (buttonId == 'yes'){
+                                // If the user confirmed perform a logout
+                                loginManager.logout();
                              }
-			             });
-			     }  
-			},
+                         });
+                 }  
+            },
             
             'saveAsMenu menuitem' : {
                 click : function(cmp){
@@ -422,8 +422,8 @@ Ext.define('LIME.controller.MainToolbar', {
                         xtype = cmp.getXType(),
                         menuItem = menu.menu.down('*[openElement='+cmp.xtype+']');
                         if (menuItem) {
-                        	// Just set the icon (it will be rendered later)
-                        	menuItem.icon = menu.checkedIcon;
+                            // Just set the icon (it will be rendered later)
+                            menuItem.icon = menu.checkedIcon;
                         }
                         // If the view is not in the preferences add it
                         if (openViews && openViews.indexOf(xtype) == -1){
@@ -443,17 +443,17 @@ Ext.define('LIME.controller.MainToolbar', {
                     var preferencesManager = this.getController('PreferencesManager'),
                         menu = this.getWindowMenuButton();
                     try {
-	                    preferencesManager.setUserPreferences({
-	                        views : preferencesManager.userPreferences.views.filter(function(el){
-	                            if (el == cmp.getXType()){
-	                                return false;
-	                            } else {
-	                                return true;
-	                            }
-	                        }) 
-	                    });
+                        preferencesManager.setUserPreferences({
+                            views : preferencesManager.userPreferences.views.filter(function(el){
+                                if (el == cmp.getXType()){
+                                    return false;
+                                } else {
+                                    return true;
+                                }
+                            }) 
+                        });
                     } catch (e) {
-                    	Ext.log({level: "error"}, e);
+                        Ext.log({level: "error"}, e);
                     }
                     
                 }
@@ -623,9 +623,9 @@ Ext.define('LIME.controller.MainToolbar', {
             },
             
             'windowMenuButton *[id=showViews]' : {
-            	beforerender: function() {
-            		this.setAllowedViews();
-            	}
+                beforerender: function() {
+                    this.setAllowedViews();
+                }
             },
             
             'windowMenuButton menuitem': {
@@ -670,6 +670,6 @@ Ext.define('LIME.controller.MainToolbar', {
                     }
                 }
             }
-		});
-	}
+        });
+    }
 });

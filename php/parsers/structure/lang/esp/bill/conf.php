@@ -51,13 +51,13 @@ $rules = Array(
     							"CÁMARA DE SENADORES",
     							"Modificaciones de la Cámara de Senadores"),
     
-    /*						
+    					
     "preambleEndList" => Array("PROYECTO DE LEY",
     						   "TEXTO APROBADO",
     						   "PROYECTO DE LEY SUSTITUTIVO",
     						   "EXPOSICIÓN DE MOTIVOS", 
     						   "INFORME"),
-    */
+   
     						   
     "conclusionsInitList" => Array("Dios guarde a V.E.,",
     							   "Sala de Sesiones de la Cámara de Representantes",

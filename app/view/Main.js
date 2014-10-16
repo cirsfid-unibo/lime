@@ -51,15 +51,15 @@
 Ext.define('LIME.view.Main', {
 
     extend : 'Ext.tab.Panel',
-    id : 'editorTab',
+    //id : 'editorTab',
     requires : ['Ext.ux.TabCloseMenuImproved',
-    			'Ext.ux.form.field.TinyMCE',
-    			'LIME.view.main.Editor',
-    			'LIME.view.ContextMenu',
-    			'LIME.view.main.editor.Path',
-    			'LIME.view.main.editor.Uri',
-    			'LIME.view.DocumentLangSelector',
-    			'LIME.view.main.ContextPanel'],
+                'Ext.ux.form.field.TinyMCE',
+                'LIME.view.main.Editor',
+                'LIME.view.ContextMenu',
+                'LIME.view.main.editor.Path',
+                'LIME.view.main.editor.Uri',
+                'LIME.view.DocumentLangSelector',
+                'LIME.view.main.ContextPanel'],
 
     // set the alias
     alias : 'widget.main',
@@ -106,7 +106,7 @@ Ext.define('LIME.view.Main', {
                     xtype : 'mainEditorPath'
                 }]
             },{
-            	xtype: 'contextPanel',
+                xtype: 'contextPanel',
                 region : "south"
             }]
         }];

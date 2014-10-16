@@ -106,13 +106,13 @@
 					     akn:recital |
 					     akn:citation |
 					     akn:conclusions |
-					     akn:body |
-					     akn:mainBody |
 					     akn:administrationOfOath |
 					     akn:speechGroup |
 					     akn:speech |
 					     akn:question |
 					     akn:answer |
+					     akn:body |
+					     akn:mainBody |
 					     akn:amendmentHeading |
 						 akn:amendmentContent |
 						 akn:amendmentReference |
@@ -126,7 +126,6 @@
 						 akn:remedias |
 						 akn:motivation |
 						 akn:decision |
-						 akn:mod |
 						 akn:fragmentBody
 						">
 	        <div>
@@ -147,6 +146,7 @@
 	<xsl:template match="akn:block |
 						akn:longTitle |
 						akn:formula |
+						akn:p |
 						akn:interstitial |
 						akn:other
 						">
@@ -197,6 +197,22 @@
 			<div>
 	        	<xsl:attribute name="class">
 		         	<xsl:value-of select="concat('popup ',name(.))" />
+		         </xsl:attribute>
+		         <xsl:attribute name="internalid">
+		         	<xsl:value-of select="name(.)" />
+		         </xsl:attribute>
+	        	
+	        	<!-- ATTRIBUTE'S GENERIC TEMPLATE -->
+	        	<xsl:apply-templates select="@*" mode="elementAttributes" />
+	        	<xsl:apply-templates />
+	        </div>
+	</xsl:template>
+
+	<!-- Mod elements -->
+	<xsl:template match="akn:mod">
+			<div>
+	        	<xsl:attribute name="class">
+		         	<xsl:value-of select="concat('inline ',name(.))" />
 		         </xsl:attribute>
 		         <xsl:attribute name="internalid">
 		         	<xsl:value-of select="name(.)" />
@@ -476,22 +492,6 @@
 	        	<xsl:apply-templates select="@*" mode="elementAttributes" />
 	        	<xsl:apply-templates />
 	        </span>
-	</xsl:template>
-	
-	
-	<xsl:template match="akn:p">
-	        <p>
-	        	<xsl:attribute name="class">
-		         	<xsl:value-of select="concat('inline ',name(.))" />
-		         </xsl:attribute>
-		         <xsl:attribute name="internalid">
-		         	<xsl:value-of select="name(.)" />
-		         </xsl:attribute>
-	        	
-	        	<!-- ATTRIBUTE'S GENERIC TEMPLATE -->
-	        	<xsl:apply-templates select="@*" mode="elementAttributes" />
-	        	<xsl:apply-templates />
-	        </p>
 	</xsl:template>
 	
 	<xsl:template match="akn:componentRef">

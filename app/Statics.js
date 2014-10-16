@@ -142,7 +142,9 @@ Ext.define('LIME.Statics', {
          registerContextMenuBeforeShow: "registerContextMenuBeforeShow",
          openCloseContextPanel: "openCloseContextPanel",
          addContextPanelTab: "addContextPanelTab",
-         removeGroupContextPanel: "removeGroupContextPanel"
+         removeGroupContextPanel: "removeGroupContextPanel",
+         addMenuItem: "addMenuItem",
+         enableDualEditorMode: "enableDualEditorMode"
 	 },
 	 
 	 services: {

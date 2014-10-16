@@ -109,6 +109,7 @@ Ext.define('LIME.view.Viewport', {
     }, {
         xtype : 'main',
         region : 'center',
+        id: 'mainEditor',
         //draggable : true,
         expandable : true,
         resizable : true,

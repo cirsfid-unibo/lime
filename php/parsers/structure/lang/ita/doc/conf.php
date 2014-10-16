@@ -45,23 +45,28 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 $rules = Array(
-    "preambleInitList" => Array("PREMESSO CHE",
-    							"Premesso",
-    							"PREMESSO",
-								"Premesso e considerato",
-								"PREMESSO E CONSIDERATO CHE",
-								"Considerato"),
+    "preambleInitList" => Array("INTERROGAZIONE URGENTE A RISPOSTA SCRITTA",
+    							"INTERROGAZIONE URGENTE",
+    							"INTERPELLANZA",
+    							"RELAZIONE",
+								"Premesso\s+e\s+considerato:",
+    							"PREMESSO CHE",
+    							"Premesso:",
+								),
 								
-    "preambleEndList" => Array("TUTTO CI.+ PREMESSO E CONSIDERATO",
+    "preambleEndList" => Array("TANTO\s+PREMESSO\s+E\s+CONSIDERATO\s+SI\s+INTERPELLA:",
+    						   "TUTTO CI.+ PREMESSO E CONSIDERATO",
     						   "TUTTO CI.+ VISTO E PREMESSO",
     						   "TUTTO CI.+ CONSIDERATO E PREMESSO",
     						   "TUTTO CI.+ PREMESSO",
-    						   "SI INTERPELLA",
-							   "INTERROGANO"),
+							   "INTERROGANO",
+							   "\s*con i seguenti testi:"),
 							   
 	"mainBodyInitList" => Array("Tutt.+ ci.+ premesso e considerato,"),
     						   
-    "conclusionsInitList" => Array("I CONSIGLIERI SOTTOSCRITTORI")
+    "conclusionsInitList" => Array("I CONSIGLIERI SOTTOSCRITTORI",
+								   "I consiglieri regionali",
+								   "Dall’entrata in vigore della presente legge,")
 );
 
 ?>

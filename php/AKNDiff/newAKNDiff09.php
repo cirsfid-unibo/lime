@@ -1008,6 +1008,10 @@ class newAKNDiff09 extends AKNDiff {
 			$this->xml_old = $doc1;
 			$this->leftToRight = FALSE;
 		}
+
+		$this->newUrl = ($this->leftToRight) ? $this->doc1Url : $this->doc2Url;
+		$this->oldUrl = ($this->leftToRight) ? $this->doc2Url : $this->doc1Url;
+
 		$html = aknToHtml($this->xml_new,'data/AknToXhtml309.xsl');
 		$this->html_new = new DOMDocument();
 		$this->html_new->loadXML($html);
@@ -1096,16 +1100,42 @@ class newAKNDiff09 extends AKNDiff {
 			
 			$this->applyNotes($table);
 			$this->finalCleanUp($table);
-			///////////////////////////////////////////////////////
-			///////////////////////////////////////////////////////
-			///////////////////////////////////////////////////////
-			
+
 			$imported = $html->importNode($this->tableDOM->documentElement, TRUE);
 			$root->appendChild($headNode);
 			$body->appendChild($imported);
 			$root->appendChild($body);
 			$html->appendChild($root);
 			$html->formatOutput = TRUE;
+
+			if($this->edit) {
+				$finder = new DomXPath($html);
+				$first = $finder->query("//*[contains(@class, 'newVersion')]")->item(0);
+				if($first) {
+					$posInParent = $this->getPosInParent($first);
+					$table = $finder->query("./ancestor::table", $first)->item(0);
+					$trHeader = $html->createElement('tr');
+					$tdOldHeader = $html->createElement('td');
+					$tdNewHeader = $html->createElement('td');
+
+					$tdOldHeader->setAttribute("url", $this->oldUrl);
+					$tdOldHeader->setAttribute("class", "oldDocVersion");
+					$tdOldHeader->setAttribute("style", "display:none;");
+					$tdNewHeader->setAttribute("url", $this->newUrl);
+					$tdNewHeader->setAttribute("class", "newDocVersion");
+					$tdNewHeader->setAttribute("style", "display:none;");
+
+					if($posInParent) {
+						$trHeader->appendChild($tdOldHeader);
+						$trHeader->appendChild($tdNewHeader);
+					} else {
+						$trHeader->appendChild($tdNewHeader);
+						$trHeader->appendChild($tdOldHeader);
+					}
+
+					$table->appendChild($trHeader);
+				}
+			}
 			
 			echo $html->saveHTML();
 		}

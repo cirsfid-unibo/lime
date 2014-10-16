@@ -70,10 +70,9 @@ Ext.define('LIME.controller.Outliner', {
      * @param {Ext.data.NodeInterface} node A reference the node that has to be expanded
      */
     expandItem : function(node) {
-        var tree = this.getOutliner(), root = tree.store.getRootNode(), row;
-        if(!root) {
-            return;
-        }
+        var tree = this.getOutliner(), root, row;
+        if (!tree || tree.isHidden()) return;
+        root = tree.store.getRootNode();
         if (!node) {
             tree.getSelectionModel().select(root, false, true);
         };
@@ -195,6 +194,9 @@ Ext.define('LIME.controller.Outliner', {
             tree = Ext.getStore('Outliner'),
             treeView = this.getOutliner(),
             root = tree.getRootNode();
+
+        if(!treeView) return;
+
         try {
             //convert to tree format json the node
             if (config != "partial" || DomUtils.getFirstMarkedAncestor(node.parentNode) == null) {

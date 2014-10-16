@@ -55,7 +55,13 @@ $rules = Array(
     "conclusionsInitList" => Array("Dios guarde a V.E.,", 
     							   "Sala de Sesiones de la Cámara de Representantes",
     							   "Sala de Sesiones de la Cámara de Senadores",
-    							   "Sala de Sesiones de la Asamblea General")
+    							   "Sala de Sesiones de la Asamblea General"),
+								   
+	"preambleEndList" => Array("PROYECTO DE LEY",
+    						   "TEXTO APROBADO",
+    						   "PROYECTO DE LEY SUSTITUTIVO",
+    						   "EXPOSICIÓN DE MOTIVOS", 
+    						   "INFORME"),
 );
 
 ?>

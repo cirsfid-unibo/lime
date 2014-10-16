@@ -161,7 +161,6 @@ Ext.define('LIME.controller.Language', {
                 Ext.each(hrefElements, function(hrefElement) {
                     hrefElement.setAttribute(langPrefix+"href", "#"+newId);
                 });
-                element.removeAttribute("id");
                 Interpreters.wrappingRulesHandlerOnTranslate(element);
             }, this);
         } catch(e) {
@@ -309,7 +308,7 @@ Ext.define('LIME.controller.Language', {
      * Store metadata in an object by parsing the
      * given XML DOM.
      */
-    parseMetadata : function(xmlDom, xmlString) {
+    parseMetadata : function(xmlDom, xmlString, noSideEffects) {
         var metaObject = {}, extDom;
         try {
             extDom = Ext.get(xmlDom);
@@ -341,7 +340,8 @@ Ext.define('LIME.controller.Language', {
             
             frbrDom = extDom.down("*[class=frbr]", true);
             if (frbrDom) {
-                this.parseFrbrMetadata(frbrDom);
+                metaObject.frbrObj = this.parseFrbrMetadata(frbrDom, noSideEffects);
+                metaObject.frbrDom = frbrDom;
                 metaObject.nationality =  DocProperties.frbr.work.nationality;
             }
         return metaObject;
@@ -401,14 +401,15 @@ Ext.define('LIME.controller.Language', {
         return newId;
     },
     
-    parseFrbrMetadata : function(dom) {
-        var frbr = DocProperties.frbr, 
+    parseFrbrMetadata : function(dom, noSideEffects) {
+        var frbr, 
             frbrDom = Ext.get(dom);
 
+        frbr = (noSideEffects) ? {} : DocProperties.frbr;
         frbr.work = {};
         frbr.expression = {};
         frbr.manifestation = {};
-        DocProperties.frbrDom = dom;
+
         var nationality = frbrDom.down('*[class=FRBRWork] *[class=FRBRcountry]', true);
         if (nationality) {
             frbr.work.nationality = nationality.getAttribute('value');  
@@ -447,8 +448,12 @@ Ext.define('LIME.controller.Language', {
         if (manUri) {
             frbr.manifestation.FRBRuri = manUri.getAttribute('value');    
         }
-        
-        this.application.fireEvent(Statics.eventsNames.frbrChanged);           
+
+        if(!noSideEffects) {
+            DocProperties.frbrDom = dom;   
+            this.application.fireEvent(Statics.eventsNames.frbrChanged);  
+        }
+        return frbr;
     },
     
     getLanguagePrefix: function() {
@@ -494,7 +499,7 @@ Ext.define('LIME.controller.Language', {
         });
     },
     
-    beforeLoad: function(params, callback) {
+    beforeLoad: function(params, callback, noSideEffects) {
         var me = this, app = this.application, beforeLoad = LoadPlugin.beforeLoad,
             XMLS = new XMLSerializer(),
             editorController = me.getController("Editor"),
@@ -504,19 +509,19 @@ Ext.define('LIME.controller.Language', {
         // Checking that before load will be called just one time per document
         if (beforeLoad && !newParams.beforeLoaded) {
             if (params.docText) {
-            	// IE exception
-            	try {
-	                docDom = parser.parseFromString(params.docText, "application/xml");
-	                if (docDom.documentElement.tagName == "parsererror" || docDom.documentElement.querySelector("parseerror") || docDom.documentElement.querySelector("parsererror")) {
+                // IE exception
+                try {
+                    docDom = parser.parseFromString(params.docText, "application/xml");
+                    if (docDom.documentElement.tagName == "parsererror" || docDom.documentElement.querySelector("parseerror") || docDom.documentElement.querySelector("parsererror")) {
                         callback(params);
                         return;
                     } else {
-	                    params.docDom = docDom;
-	                }
+                        params.docDom = docDom;
+                    }
                 } catch(e) {
-                	Ext.log({level: "error"}, e);
-                	callback(params);
-	                return;
+                    Ext.log({level: "error"}, e);
+                    callback(params);
+                    return;
                 }
             }
             
@@ -525,7 +530,7 @@ Ext.define('LIME.controller.Language', {
             if (newParams) {
                 newParams.beforeLoaded = true;
                 
-                if (newParams.metaResults) {
+                if (newParams.metaResults && !noSideEffects) {
                     DocProperties.docsMeta = {};
                     Ext.each(newParams.metaResults, function(metaObj, index) {
                         var name = metaObj.docType;
@@ -547,7 +552,7 @@ Ext.define('LIME.controller.Language', {
                     }
                     params.docText = docText || XMLS.serializeToString(newParams.docDom);
                 }
-                if (newParams.metaDom) {
+                if (newParams.metaDom && !noSideEffects) {
                     this.parseFrbrMetadata(newParams.metaDom);
                 }
             } else {
@@ -595,12 +600,14 @@ Ext.define('LIME.controller.Language', {
             'main' : {
                 tabchange: function(panel, newC, oldC) {
                     var me = this;
-                    Ext.defer(function() {
-                        me.application.fireEvent(Statics.eventsNames.changedEditorMode, {
-                            sidebarsHidden: newC.notEditMode,
-                            markingMenu: newC.markingMenu
-                        });            
-                    }, 100);
+                    if(!newC.noChangeModeEvent) {
+                        Ext.defer(function() {
+                            me.application.fireEvent(Statics.eventsNames.changedEditorMode, {
+                                sidebarsHidden: newC.notEditMode,
+                                markingMenu: newC.markingMenu
+                            });            
+                        }, 100);    
+                    }
                 }
             }
         });

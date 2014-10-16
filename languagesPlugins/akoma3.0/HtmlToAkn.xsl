@@ -124,8 +124,9 @@
 		<xsl:element name="{$aknName}">
         	<xsl:attribute name="eId"><xsl:value-of select="concat('ctn', generate-id(.))" /></xsl:attribute>
         	<!-- Content element can not contains directly text so add a p element if it's needed -->
+            <!--  and (count(child::text()) > 0) -->
         	<xsl:choose>
-	    		<xsl:when test="(count(p) = 0) and (count(child::text()) > 0)">
+	    		<xsl:when test="(count(div[contains(@class, 'block p')]) = 0)">
 	    			<xsl:element name="p">
 	    				<xsl:apply-templates />
 	    			</xsl:element>
@@ -228,8 +229,11 @@
     
     <!-- HTML elements -->
     <xsl:template match="br">
-    	<eol />
+        <xsl:if test="contains(../@class, 'block') or contains(../@class, 'inline')">
+            <eol />
+        </xsl:if>
     </xsl:template>
+
 	<xsl:template match="img">
 		<xsl:element name="{name(.)}">
 			<xsl:apply-templates select="@*" mode="allAttributes" />
@@ -289,7 +293,7 @@
                             p[contains(@class, 'breaking')] |
                             span[contains(@class, 'breaking')] |
                             div[contains(@class, 'toMarkNode')] |
-                            p[contains(../@class, 'hcontainer') and not(contains(../@class, 'item'))] |
+                            div[contains(@class, 'block p') and contains(../@class, 'hcontainer') and not(contains(../@class, 'item'))] |
                             div[contains(@class,'notesContainer')] |
                             span[not(@*)]">
         <xsl:apply-templates />

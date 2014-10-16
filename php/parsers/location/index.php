@@ -1,3 +1,4 @@
+<?php
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
@@ -44,65 +45,15 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- * This view implements a path viewer of the document.
- */
-Ext.define('LIME.view.main.editor.Path', {
-    extend: 'Ext.Panel',
-    // set the alias
-    alias : 'widget.mainEditorPath',
-    //id : "path",   
-    // set the layout type
-    layout: {
-        type: 'hbox',
-        align: 'stretch'
-    },
-    width: '100%',
-    frame: true,
-    style:{borderRadius:"0px",margin:"0px"},
-    separator:'<span style="padding:0 2 0 2"> > </span>',
-    selectorsInitId: 'pathSelector_',
-    elementLinkTemplate : '<a id="%id" class="pathSelectors" style="color:black;text;text-decoration:none;" href="javascript:;">%el</a>',
-    elementTemplate : '<span>%el</span>',
-    items:[{
-        xtype: "panel",
-        margin: 0,
-        padding: 0,
-        style: {borderRadius:"0px",margin:"0px", border:'0px'},
-        frame: true,
-        flex: 1
-    }],
-    /**
-     * This function builds a path from elements and set it to the view.
-     * @param {Object[]} elements
-     */
-    setPath:function(elements){
-        var new_html = "";
-        var counter=0;
-        for(var i = (elements.length-1);i>=0;i--){
-            var elementName = elements[i].name;
-            var elementId = this.selectorsInitId+counter;
-            var info = DomUtils.getNodeExtraInfo(elements[i].node,"hcontainer");
-            if(info)
-                elementName+=" ("+info+")";
-            if(elements[i].node){   
-                new_html += this.elementLinkTemplate.replace("%el",elementName).replace("%id",elementId);
-            }else{
-                new_html += this.elementTemplate.replace("%el",elementName);
-            }
-            
-            if(i!=0){
-                new_html+= this.separator;
-            }
-            if(!this.elements) this.elements = {};
-            this.elements[elementId] =  elements[i].node;
-            counter++;
-        }
-        var pathView = this;
-        this.down("panel").update(this.initialPath+new_html,false,function(){pathView.fireEvent("update");});
-    },
-    initComponent: function(){
-        this.initialPath = Locale.strings.mainEditorPath +': ';
-        this.callParent(arguments);
-    }
-}); 
+require_once("LocationParser.php");
+
+$debug = isset($_GET['debug']) ? true : false;
+$string = stripcslashes(isset($_POST['s']) ? $_POST['s'] : "");
+$format = isset($_POST['f']) ? $_POST['f'] : "json";
+$lang = isset($_POST['l'])?$_POST['l']: TRUE;
+$documentType = isset($_POST['doctype'])? $_POST['doctype']:TRUE;
+
+$parser = new LocationParser($lang, $documentType);
+echo $parser->parse($string, TRUE);
+
+?>

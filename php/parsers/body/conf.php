@@ -53,7 +53,10 @@ $rules = Array(
     "chapter" => "/({{chapterList}})\s*({{number}})/",
     "article" => "/({{articleList}})\s*({{number}}\s*[º°\.]*)/",
     "section" => "/({{sectionList}})\s*({{number}}\s*[º°]*\.)/",
-    "book" => "/({{bookList}})\s*({{number}}\s*[º°]*\.)/"
+    "book" => "/({{bookList}})\s*({{number}}\s*[º°]*\.)/",
+    
+    "hierarchy" => Array("book","title","section","chapter","article")
+    
 );
 
 ?>

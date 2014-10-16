@@ -81,8 +81,6 @@ Ext.define('LIME.view.main.editor.Uri', {
     
     applyHtml: function(html) {
         var me = this;
-        me.update(html,false,function(){
-            me.fireEvent("update");
-        });
+        me.update(html,false,function(){me.fireEvent("update");});
     }
 });

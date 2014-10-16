@@ -54,7 +54,6 @@ Ext.define('LIME.ux.xmlDiff.DiffPanel', {
     cls : 'editorTab',
 
     notEditMode : true,
-    markingMenu: true,
 
     config : {
         pluginName : "xmlDiff"
@@ -107,6 +106,11 @@ Ext.define('LIME.ux.xmlDiff.DiffPanel', {
                 xtype : 'button',
                 cls : 'resetButton',
                 text : Locale.getString("resetDocument", me.getPluginName())
+            },{
+                xtype : 'button',
+                cls : 'editButton',
+                text : "Edit",
+                margin: "0px 0px 0px 5px"
             }, {
                 xtype : 'fieldset',
                 collapsible : false,
@@ -126,6 +130,11 @@ Ext.define('LIME.ux.xmlDiff.DiffPanel', {
                         cls : 'selectButton'
                     }]
                 }]
+            }, {
+                xtype : 'button',
+                cls : 'printButton',
+                text : "Print",
+                margin: "0px 0px 0px 5px"
             }]
         }, {
             xtype : "tabpanel",

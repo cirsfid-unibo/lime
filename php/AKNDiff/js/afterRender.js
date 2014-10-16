@@ -1,8 +1,16 @@
 function addVisualizationLayouts() {
+    if(isPrintMode()) {
+        document.body.style.width = '595px';
+        setTimeout(function () { window.print(); }, 100);
+    }
     applySplits();
     applyJoins();
     //applyEqualCells();
     applyRenumbering();
+}
+
+function isPrintMode() {
+    return !window.frameElement;
 }
 
 function applyRenumbering() {

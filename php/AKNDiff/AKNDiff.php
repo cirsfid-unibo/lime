@@ -80,9 +80,13 @@ class AKNDiff {
 	public function __construct() {
 		$doc_1 = (isset($_GET['from'])) ? $_GET['from'] : 'http://localhost/26318-Panes/4.uy_bill_2005-05-03.xml';
 		$doc_2 = (isset($_GET['to'])) ? $_GET['to'] : 'http://localhost/26318-Panes/3.uy_bill_2005-05-02-ejecutivo.xml';
+
+		$this->edit = (isset($_GET['edit'])) ? TRUE : FALSE;
 		
 		if ($doc_1 && $doc_2) {
-		
+			$this->doc1Url = $doc_1;
+			$this->doc2Url = $doc_2;
+			
 			$doc1 = new DOMDocument();
 			$doc1->preserveWhiteSpace = FALSE;
 			$doc1->load($doc_1);
