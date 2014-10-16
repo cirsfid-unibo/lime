@@ -47,13 +47,18 @@
  
 $rules = Array(
 
-	"references" => Array("ref_1","ref_2"),
-	"ref_1" => "/{{type}}\s+Nº\s+\d+\.?\d*\,?\s*{{date}}/",
-	"ref_2" => "/{{partition}}\s+\d+(\s+(de la|del|de)\s+{{source}})?/",
+	"references" => Array("ref_3",
+						  "ref_2"
+						  ),
+
+	"ref_2" => "/{{partition}}\s+\d+(º|°)?\s+(de la|del|de)\s+{{source}}/",
+	"ref_3" => "/({{partition}}\s+\d+(º|°)?(\s+(de la|del|de)\s+))?{{type}}\s+Nº\s+\d+\.?\d*\,?\s*{{date}}/",
+	//"ref_3" => "/({{partition}}\s+\d+(º|°)?(\s+(de la|del|de)\s+))?[<>span\/]+{{type}}\s+Nº\s+\d+\.?\d*[<>span\/]+\,?\s*{{date}}/",
 
     "type" => Array("Ley",
     				"LEY",
-					"Decreto Ley"),
+					"Decreto Ley",
+					"Decreto-Ley"),
 						
 	"date" => "[\w\d\s]+\d{4}",
 	
@@ -63,7 +68,8 @@ $rules = Array(
 	"source" => Array("Constitución de la República",
 					  "Constitución",
 					  "Carta",
-					  "Código Penal")
+					  "Código Penal",
+					  "presente ley")
 );
 
 ?>

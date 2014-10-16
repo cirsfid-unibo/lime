@@ -52,6 +52,8 @@ require_once('quote/QuoteParser.php');
 require_once("body/BodyParser.php");
 require_once("structure/StructureParser.php");
 require_once("reference/ReferenceParser.php");
+require_once("authority/AuthorityParser.php");
+require_once("location/LocationParser.php");
 
 class MetaParser {
     
@@ -73,9 +75,12 @@ class MetaParser {
         $referenceRes = $this->parseReference();
         $docRes = $this->parseDocNum();
         $docTypeRes = $this->parseDocType();
+		$authorityRes = $this->parseAuthority();
+		$locationRes = $this->parseLocation();
 
         //print_r($structureRes);
-
+		$this->handleParserLocationResult($locationRes, $return);
+        $this->handleParserAuthorityResult($authorityRes, $return);
         $this->handleParserDocTypeResult($docTypeRes, $return);
         $this->handleParserDocNumResult($docRes, $return);
         $this->handleParserRefResult($referenceRes, $return);
@@ -128,14 +133,42 @@ class MetaParser {
         $parser = new DocTypeParser($this->lang, $this->docType);
         return $parser->parse($this->content);
     }
+	
+	public function parseAuthority() {
+        $parser = new AuthorityParser($this->lang, $this->docType);
+        return $parser->parse($this->content);
+    }
+	
+	public function parseLocation() {
+        $parser = new LocationParser($this->lang, $this->docType);
+        return $parser->parse($this->content);
+    }
 
     private function handleParserResult($name, $result, &$completeResult) {
         $completeResult[$name] = $result;
     }
+	
+	private function handleParserAuthorityResult($result, &$completeResult) {
+		foreach ($result["response"] as $match) {
+            if($match) {
+                $completeResult[] = array_merge(Array("name"=> "authority"), $match);    
+            }
+        }
+	}
+	
+	
+	private function handleParserLocationResult($result, &$completeResult) {
+		foreach ($result["response"] as $match) {
+            if($match) {
+                $completeResult[] = array_merge(Array("name"=> "location"), $match);    
+            }
+        }
+	}
 
     private function handleParserDocTypeResult($result, &$completeResult) {
         foreach ($result["response"] as $match) {
             $completeResult[] = array_merge(Array("name"=> "docType"), $match);
+			break;
         }
     }
 
@@ -144,6 +177,7 @@ class MetaParser {
             $match["string"] = $match["match"];
             unset($match["match"]);
             $completeResult[] = array_merge(Array("name"=> "docNum"), $match);
+			break;
         }
     }
 
@@ -177,7 +211,7 @@ class MetaParser {
                                                "date" => $match["date"],
                                                "start" => $offset["start"],
                                                "end" => $offset["end"]);
-                     $completeResult[] = $newElement;
+                    $completeResult[] = $newElement;
                     if(!array_key_exists($match["match"], $datesGroup)) {
                         $datesGroup[$match["match"]] = array();
                     }
@@ -323,7 +357,14 @@ class MetaParser {
             $subStr = substr($this->content, 0, $element["end"]);
             $element["end"] = mb_strlen($subStr, $encoding);
             if($element["end"] >= $element["start"]) {
-                $result[] = $element;
+                if($element["name"] == "date") {
+                    $parent = $this->getElementParent($element, $completeResult);
+                    if($parent["name"] != "ref") {
+                        $result[] = $element;
+                    }
+                } else {
+                    $result[] = $element;
+                }
             }
         }
         return $result;

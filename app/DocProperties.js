@@ -242,6 +242,24 @@ Ext.define('LIME.DocProperties', {
         return;
     },
     
+    insertChildInOrder: function(parent, child, parentStructure, childStructure) {
+        var indexInParent = parentStructure.children.indexOf(childStructure),
+            refNode, tmpNode;
+        if(indexInParent == -1 || indexInParent == parentStructure.children.length-1) {
+            parent.appendChild(child);
+        } else {
+            for(var i = indexInParent+1; i < parentStructure.children.length; i++) {
+                refNode = parent.querySelector("[class='" + parentStructure.children[i].name + "']");
+                if(refNode) break;
+            }
+            if(refNode) {
+                parent.insertBefore(child, refNode);
+            } else {
+                parent.appendChild(child);
+            }
+        }
+    },
+
     updateMetadata: function(config) {
         var obj = config.metadata.obj,
             nodes = config.path.split("/"),
@@ -250,14 +268,38 @@ Ext.define('LIME.DocProperties', {
             afterNode,
             result = 0;
         Ext.Array.remove(nodes, targetNode);
+
+            // var parent = Language.getMetadataStructure();
+            // if (parentTarget[el] == undefined) {
+            //     console.log('creating ', el);
+            //     var child = document.createElement('div');
+            //     child.setAttribute('class', el);
+            //     for(var i = 0; i < parent.children; i++)
+            //         if (parent.children[i].name == el) {
+            //             this.insertChildInOrder(parentTarget.el, child, parent, parent.children[i]);
+            //             parent = parent.children[i];
+            //             break;
+            //         }
+            //     parentTarget[el];
+            // }
+            // parentTarget = parentTarget[el];
         Ext.each(nodes, function(el) {
+            if (parentTarget[el] == undefined) {
+                var child = document.createElement('div');
+                child.setAttribute('class', el);
+                parentTarget.el.appendChild(child);
+                parentTarget[el] = {
+                    el: child
+                }
+            }
             parentTarget = parentTarget[el];
         });
+
         if (parentTarget) {
             try {
-            	if(config.overwrite) {
-            		config.after = targetNode;
-            	} else if (!config.append) {
+                if(config.overwrite) {
+                    config.after = targetNode;
+                } else if (!config.append) {
                     /* Using Ext.Array.push is a trick to transform the value
                      * in array if it isn't an array and array remain the same */
                     Ext.each(Ext.Array.push(parentTarget[targetNode]), function(child) {
@@ -280,8 +322,8 @@ Ext.define('LIME.DocProperties', {
                     }
                 });
                 if(config.overwrite && firstAfterNode) {
-            		afterNode.parentNode.removeChild(firstAfterNode);
-            	}
+                    afterNode.parentNode.removeChild(firstAfterNode);
+                }
             } catch(e) {
                 Ext.log({level: "error"}, e);
                 result = 2;

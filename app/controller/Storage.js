@@ -104,8 +104,15 @@ Ext.define('LIME.controller.Storage', {
         },
         fieldName: 'date',
         getValue: function() {
-            return (DocProperties.frbr && DocProperties.frbr.work) ? 
-                    Ext.Date.format(DocProperties.frbr.work['date'], this.editor.format) : "";
+            var date;
+            if (DocProperties.frbr && DocProperties.frbr.work) {
+                date = DocProperties.frbr.work['date'];
+                if(isNaN(date.getTime())) {
+                    date = new Date();
+                }
+                return Ext.Date.format(date, this.editor.format);
+            }
+            return date || "";
         }
     },{
         text: Locale.strings.docNumberLabel,
@@ -183,14 +190,19 @@ Ext.define('LIME.controller.Storage', {
         }
     },
 
+    openDocumentNoEditor: function(path, callback) {
+        var me = this;
+        me.openDocument(path, null, callback);
+    },
+
     /**
      * Request and load the document by using proper methods of the Editor controller.
      */
-    openDocument : function(filePath, openWindow) {
+    openDocument : function(filePath, openWindow, openNoEffectCallback) {
         var me = this, 
-            editor = me.getController('Editor'), 
             app = this.application, 
-            LanguageController = this.getController('Language');
+            LanguageController = this.getController('Language'),
+            noOpeningEffects = Ext.isFunction(openNoEffectCallback);
 
         this.application.fireEvent(Statics.eventsNames.progressStart, null, {
             value : 0.1,
@@ -210,14 +222,16 @@ Ext.define('LIME.controller.Storage', {
             url : requestMetaUrl,
             async : false,
             success : function(response, opts) {
-                DocProperties.clearMetadata(app);
-                var config = LanguageController.parseMetadata(response.responseXML, response.responseText);
-                if(config.docMarkingLanguage) {
+                var config = LanguageController.parseMetadata(response.responseXML, response.responseText, noOpeningEffects);
+                if(!noOpeningEffects) {
+                    DocProperties.clearMetadata(app);    
+                }
+                if(config.docMarkingLanguage && !noOpeningEffects) {
                     Config.setLanguage(config.docMarkingLanguage, function() {
                         me.requestDoc(filePath, config, openWindow);
                     });
                 } else {
-                    me.requestDoc(filePath, config, openWindow);
+                    me.requestDoc(filePath, config, openWindow, openNoEffectCallback);
                 }
             },
             failure : function(response, opts) {
@@ -228,7 +242,7 @@ Ext.define('LIME.controller.Storage', {
 
     },
     
-    requestDoc: function(filePath, config, openWindow) {
+    requestDoc: function(filePath, config, openWindow, openNoEffectCallback) {
         config = config || {};
         var app = this.application, 
             transformFile = (config.docMarkingLanguage) ? Config.getLanguageTransformationFile("languageToLIME", config.docMarkingLanguage) : "",
@@ -256,18 +270,25 @@ Ext.define('LIME.controller.Storage', {
                     config.docMarkingLanguage =  response.responseXML.documentElement.getAttribute(DocProperties.markingLanguageAttribute);
                 }
 
-                // If the service is called with empty name the file will be saved in a temporary location
-                app.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(config, {
+                config = Ext.Object.merge(config, {
                     docText : response.responseText,
                     docId : documentId,
                     originalDocId: filePath
-                }));
-
-                // Set the last opened document into the user's preferences
-                prefManager.setUserPreferences({
-                    lastOpened : documentId
                 });
 
+                if(Ext.isFunction(openNoEffectCallback)) {
+                    Ext.callback(openNoEffectCallback, this, [config]);
+                    app.fireEvent(Statics.eventsNames.progressEnd);
+                } else {
+                    // If the service is called with empty name the file will be saved in a temporary location
+                    app.fireEvent(Statics.eventsNames.loadDocument, config);
+
+                    // Set the last opened document into the user's preferences
+                    prefManager.setUserPreferences({
+                        lastOpened : documentId
+                    });
+                }
+                
                 //Close the Open Document window
                 if (openWindow) {
                     openWindow.close();

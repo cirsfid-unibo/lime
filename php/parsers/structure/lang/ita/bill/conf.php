@@ -58,10 +58,11 @@ $rules = Array(
 							   "Attesto che"),
     
 	"preambleEndList" => Array (
-								"\s*E\s*m\s*a\s*n\s*a\s+((I|i)l seguente decreto legislativo|(I|i)l\*seguente\s*(R|r)egolamento|la seguente legge):",
-								"EMANA\s+((I|i)l seguente decreto legislativo|(I|i)l\*seguente\s*(R|r)egolamento|la seguente legge)",
-								"Promulga\s+((I|i)l seguente decreto legislativo|(I|i)l\*seguente\s*(R|r)egolamento|la seguente legge)",
+								"\s*E\s*m\s*a\s*n\s*a\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|la seguente legge):?",
+								"EMANA\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|la seguente legge):?",
+								"(P|p)romulga\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|la seguente legge):?",
 								"Attesto che",
+								"Decreta:?"
 								),
     
     "conclusionsInitList" => Array("Il presente decreto,",

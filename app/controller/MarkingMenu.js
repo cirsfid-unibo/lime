@@ -68,6 +68,9 @@ Ext.define('LIME.controller.MarkingMenu', {
     },{
 	    selector: 'appViewport',
 	    ref: 'appViewport'
+	},{
+		ref: 'secondEditor',
+		selector: '#secondEditor mainEditor'
 	}],
 
 	/**
@@ -266,15 +269,21 @@ Ext.define('LIME.controller.MarkingMenu', {
 	addMarkingMenu : function(pluginData) {
         var me = this, vp = this.getAppViewport(),
             markingMenu = vp.down('*[cls=markingMenuContainer]'),
+            secondEditor = this.getSecondEditor(),
             collapsed;
         if (markingMenu) {
             collapsed = markingMenu.collapsed;
-            vp.remove(markingMenu);
         }
+
         this.application.fireEvent(Statics.eventsNames.beforeCreation, "MarkingMenu", vp.markingMenu, function(config) {
-            vp.add(Ext.merge(config, {
-                collapsed: collapsed
-            }));
+            if(!secondEditor) {
+            	if(markingMenu) {
+            		vp.remove(markingMenu);	
+            	}
+            	vp.add(Ext.merge(config, {
+		            collapsed: collapsed
+		        }));	
+            }
             me.buildButtonsStructure(pluginData);
         });
     },

@@ -306,12 +306,10 @@ Ext.define('LIME.controller.Marker', {
             selectedNode = editorController.getSelectedNode(), 
             firstMarkedNode = DomUtils.getFirstMarkedAncestor(selectedNode);
         
-        if (!this.isAllowedElement(firstMarkedNode, button.waweConfig)) {
-            this.application.fireEvent(Statics.eventsNames.showNotification, {
-                content: new Ext.Template(Locale.strings.semanticError).apply({'name': "<b>"+button.waweConfig.name+"</b>"})
-            });
+        if(!this.isAllowedMarking(firstMarkedNode, button.waweConfig)) {
             return;
         }
+
         // If the nodes have already been marked just exit
         if (firstMarkedNode && DomUtils.getButtonIdByElementId(firstMarkedNode.getAttribute(DomUtils.elementIdAttribute)) == button.id) {
             //Return a list contains the node
@@ -325,10 +323,7 @@ Ext.define('LIME.controller.Marker', {
         // Common finilizing operations
         Ext.each(newElements, function(newElement) {
             // Wrap the element inside an Ext.Element
-            var extNode = Ext.get(newElement),
-                oldElement = newElement.cloneNode(true),
-                // Get a unique id for the marked element
-                markingId = this.getMarkingId(button.id), 
+            var markingId = this.getMarkingId(button.id), // Get a unique id for the marked element
                 idPrefix = button.waweConfig.rules[Utilities.buttonFieldDefault].attributePrefix || '', 
                 styleClass = buttonPattern.wrapperClass;
             // Set the internal id
@@ -485,9 +480,7 @@ Ext.define('LIME.controller.Marker', {
         this.application.fireEvent('nodeChangedExternally', markedParent, eventConfig);
         this.application.fireEvent(Statics.eventsNames.unmarkedNodes, unmarkedNodeIds);
     },
-    
-    
-    
+
     unmarkNodes: function(nodes, unmarkChildren) {
         var me = this, parents = [], documentEl = me.getController("Editor").getDocumentElement(),
             unmarkedNodeIds = [];
@@ -610,9 +603,86 @@ Ext.define('LIME.controller.Marker', {
             Ext.DomHelper.insertHtml('beforeBegin',node, breakingElementString);
         }
     },
+
+    applyWrappingRuleWithoutEffects: function(node) {
+        var cloned = Ext.clone(node);
+        Interpreters.wrappingRulesHandlerOnTranslate(cloned);
+        return cloned;
+    },
+
+    getParentOfSelectionAfterWrappingRules: function(node) {
+        var editorController = this.getController('Editor'),
+            startSelection, tmpNode, tmpStart;
+
+        // Save a reference of the selection
+        editorController.getBookmark();
+        startSelection = editorController.getEditor().selection.getStart();
+
+        tmpNode = this.applyWrappingRuleWithoutEffects(node);
+
+        tmpStart = tmpNode.querySelector("#"+startSelection.getAttribute("id"));
+        return tmpStart.parentNode;
+    },
+
+    isAllowedMarking: function(node, config) {
+        var patterns = this.getStore("LanguagesPlugin").getDataObjects().patterns,
+            newParent, patternError = false, pattern,
+            nodePattern = this.getPatternConfigByNode(node);
+
+        if(!nodePattern) {
+            return true;
+        }
+
+        if (!this.isAllowedPattern(nodePattern, 
+                                   config.pattern)) {
+            // There is a pattern incompatibility
+            patternError = true;
+            // Trying to apply wrapping rules to check if the incompatibility still persists
+            newParent = this.getParentOfSelectionAfterWrappingRules(node);
+            if(newParent && !node.isEqualNode(newParent)) {
+                pattern = DomUtils.getPatternByNode(newParent);
+                if(pattern && patterns[pattern] && 
+                    this.isAllowedPattern(patterns[pattern], config.pattern)) {
+                    patternError = false;
+                }
+            }
+        }
+
+        if (!Ext.isEmpty(nodePattern.exceptionalAllowedElements) &&
+            nodePattern.exceptionalAllowedElements.indexOf(config.name) != -1) {
+
+            patternError = false;
+        }
+
+        if(patternError) {
+            this.application.fireEvent(Statics.eventsNames.showNotification, {
+                title: Locale.strings.notAllowedMarking,
+                content: new Ext.Template(Locale.strings.semanticError).apply({'name': "<b>"+config.name+"</b>"}),
+                moreInfo: new Ext.Template(Locale.strings.patternNotAllowed).apply({
+                    'elementPattern': config.pattern.pattern,
+                    'parentPattern': nodePattern.pattern
+                })
+            });   
+        }
+        return !patternError;
+    },
     
+    isAllowedPattern: function(parentPatternConfig, patternConfig) {
+        if(!Ext.isEmpty(parentPatternConfig.allowedPatterns)
+            && parentPatternConfig.allowedPatterns.indexOf(patternConfig.pattern) == -1) {
+            return false;
+        }
+        return true;
+    },
+
+    getPatternConfigByNode: function(node) {
+        var button = DomUtils.getButtonByElement(node);
+        if(button) {
+            return button.waweConfig.pattern;
+        }
+    },
+
     isAllowedElement: function(parent, buttonConfig) {
-        return true; //Temporary disable rules
         var languageData = this.getStore("LanguagesPlugin").getDataObjects(),
             documentRoot = this.getController("Editor").getBody(),
             semanticRules = languageData.semanticRules,
@@ -677,3 +747,4 @@ Ext.define('LIME.controller.Marker', {
         this.application.on(Statics.eventsNames.unmarkNodes, this.unmarkNodes, this);
     }
 });
+

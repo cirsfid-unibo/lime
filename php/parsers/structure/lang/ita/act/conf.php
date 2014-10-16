@@ -57,15 +57,13 @@ $rules = Array(
 							   "IL PRESIDENTE DELLA REPUBBLICA",
 							   "Attesto che"),
     
-	"preambleEndList" => Array ("Emana il seguente decreto legislativo",
+	"preambleEndList" => Array (
+								"\s*E\s*m\s*a\s*n\s*a\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|la seguente legge):?",
+								"EMANA\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|la seguente legge):?",
+								"(P|p)romulga\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|la seguente legge):?",
 								"Attesto che",
-								"\s*E\s*m\s*a\s*n\s*a\s*.*({{followingDoctype}}:)?",
-								"EMANA\s*({{followingDoctype}}:)?",
-								"Promulga\s*({{followingDoctype}}:)?"),
-    
-	"followingDoctype" => Array("(I|i)l\*seguente\s*(R|r)egolamento)",
-					            "(I|i)l seguente decreto legislativo",
-					            "la seguente legge"),
+								"Decreta:?"
+								),
 			   
     "conclusionsInitList" => Array("Il presente decreto,",
 								   "La presente legge,")

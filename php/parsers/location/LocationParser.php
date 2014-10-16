@@ -44,21 +44,56 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-// the exist admin user
-define('EXIST_ADMIN_USER', 'admin');
 
-// the exist admin password
-define('EXIST_ADMIN_PASSWORD', 'exist');
+require_once(dirname(__FILE__)."/../utils.php");
 
-// the exist db base url
-define('EXIST_URL','http://sinatra.cirsfid.unibo.it:8080/exist/');
-//define('EXIST_URL','http://sinatra.cirsfid.unibo.it:8080/exist/');
+class LocationParser {
+    
+    public $lang, $docType;
+    private $parserRules = array();
+    
+    public function __construct($lang, $docType) {
+        $this->lang = $lang;
+        $this->docType = $docType;
+        $this->dirName = dirname(__FILE__);
 
-// the server url 
-define('SERVER_NAME', 'http://sinatra.cirsfid.unibo.it');
-//define('SERVER_NAME', 'http://sinatra.cirsfid.unibo.it');
+        $this->loadConfiguration();
+    }
 
-// absolute path to AbiWord utility
-define('ABIWORD_PATH', '/usr/bin/abiword');
+    public function parse($content, $jsonOutput = FALSE) {
+        $return = array();
+		if($this->lang && $this->docType && !empty($this->parserRules)) {
+			$resolved = resolveRegex($this->parserRules['main'],$this->parserRules,$this->lang, $this->docType, $this->dirName);
+			$success = preg_match_all($resolved['value'], $content, $result, PREG_OFFSET_CAPTURE);
+			if ($success) {
+				//print_r($result);
+				for ($i = 0; $i < $success; $i++) {
+                    $match = $result["location"][$i][0];
+                    $offset = $result["location"][$i][1];
+					$entry = Array (
+						"string" => $match,
+						"start" => $offset,
+                        "end" => $offset+strlen($match)
+					);
+					
+					$return[] = $entry;
+				}
+			}
+		} else {
+			$return = Array('success' => FALSE);
+		}
+
+        $ret = array("response" => $return);
+        if($jsonOutput) {
+            return json_encode($ret);    
+        } else {
+            return $ret;
+        }
+    }
+
+    public function loadConfiguration() {
+        $this->parserRules = importParserConfiguration($this->lang,$this->docType, $this->dirName);
+    }
+}
 
 ?>

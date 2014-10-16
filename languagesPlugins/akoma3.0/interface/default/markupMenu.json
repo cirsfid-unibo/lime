@@ -270,7 +270,7 @@
 		"pattern": "inline"
 	},
 	"mod": {
-		"pattern": "container"
+		"pattern": "inline"
 	},
 	"motivation": {
 		"pattern": "container"
@@ -318,7 +318,7 @@
 		"pattern": "inline"
 	},
 	"p": {
-		"pattern": "inline"
+		"pattern": "block"
 	},
 	"papers": {
 		"pattern": "hcontainer"

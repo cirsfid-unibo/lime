@@ -48,14 +48,14 @@
  * This view is the editor that uses [TinyMce](https://github.com/harrydeluxe/extjs-ux/blob/master/ux/form/field/TinyMCE.js) plugin.
  */
 Ext.define('LIME.view.main.Editor', {
-	extend : 'Ext.container.Container',
-	// cls : 'editorTab', // Removed because it's shown by default and not closable
+    extend : 'Ext.container.Container',
+    // cls : 'editorTab', // Removed because it's shown by default and not closable
 
-	// set the alias
-	alias : 'widget.mainEditor',
-	layout: 'fit',
-	items: [{
-	    xtype: 'tinymcefield',
-	    hideBorder: true
-	}]
+    // set the alias
+    alias : 'widget.mainEditor',
+    layout: 'fit',
+    items: [{
+        xtype: 'tinymcefield',
+        hideBorder: true,
+    }]
 });

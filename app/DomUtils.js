@@ -636,6 +636,13 @@ Ext.define('LIME.DomUtils', {
         }
         return false;
     },
+
+    getPatternByNode: function(node) {
+        var cls = node.getAttribute("class");
+        if(cls) {
+            return cls.split(" ")[0];
+        }
+    },
     
     allNodesHaveClass : function(nodes, cls) {
         for (var i = 0; i < nodes.length; i++) {

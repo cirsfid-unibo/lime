@@ -195,6 +195,7 @@ Ext.define('LIME.Interpreters', {
 						newElement.setAttribute('class', config.pattern.wrapperClass);
 						//TODO: add the right id
 						newElement.setAttribute(idPrefix + DomUtils.langElementIdAttribute, 'mod1');
+						addedNode = newElement;
 						contentElement.appendChild(newElement);
 					}
 				}else if(rule.type && rule.type=='content'){
@@ -217,18 +218,26 @@ Ext.define('LIME.Interpreters', {
 							while(markedNode.hasChildNodes()){
 								tmpElement.firstChild.appendChild(markedNode.firstChild);				
 							}
+							addedNode = tmpElement.firstChild;
 							markedNode.appendChild(tmpElement.firstChild);	
 						}
 					}
 				}
+				return addedNode;
 			}
 		};
 		// Apply the rules
 		for (rule in rules) {
 			var ruleReference = rulesReference[rule];
-			if (ruleReference)
-				ruleReference(rules[rule], markedNode, button.waweConfig);
+			if (ruleReference) {
+				var elementAdded = ruleReference(rules[rule], markedNode, button.waweConfig);
+				if(elementAdded) {
+					elements = Ext.Array.push(elements, elementAdded);
+				}
+			}
 		}
+
+		return elements;
 	},
 	/**
 	 * Return the custom configuration of a button taken from the

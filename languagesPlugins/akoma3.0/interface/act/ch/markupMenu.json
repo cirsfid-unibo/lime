@@ -193,7 +193,7 @@
 		"pattern": "inline"
 	},
 	"mod": {
-		"pattern": "container"
+		"pattern": "inline"
 	},
 	"mref": {
 		"pattern": "inline"
@@ -217,7 +217,7 @@
 		"pattern": "inline"
 	},
 	"p": {
-		"pattern": "inline"
+		"pattern": "block"
 	},
 	"paragraph": {
 		"pattern": "hcontainer"

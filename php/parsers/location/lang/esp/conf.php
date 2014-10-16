@@ -46,7 +46,9 @@
  */
  
 $rules = Array(
-	"hierarchy" => Array("book","title","section","chapter","article")
+
+	"main" => "/{{location}}/",
+	"location" => "en Montevideo"
 );
 
 ?>

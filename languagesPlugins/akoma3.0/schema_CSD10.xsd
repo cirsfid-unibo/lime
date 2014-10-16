@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD11"
+<xsd:schema xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD10"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD11"
+            targetNamespace="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD10"
             elementFormDefault="qualified">
 
 
@@ -12,7 +12,7 @@
 		 =====================================================================
 		Akoma Ntoso main schema
 		
-		Release 23/06/2014 - Akoma Ntoso 3.0 CSD11
+		Release 16/04/2014 - Akoma Ntoso 3.0 CSD10
 		Complete version.
 		
 		
@@ -1001,11 +1001,11 @@ This attribute list are used to specify the fact that any attribute can be speci
 			         <type>Attlist</type>
             <name>idreq</name>
             <comment>
-These attributes identify the element in an absolute manner. In elements using this attribute definition the eId attribute is required whenever the Akoma Ntoso naming Convention is used. The wId is used to mark the identifier that the structure used to have in the original version, and is only needed when a renumbering occurred.</comment>
+These attributes identify the element in an absolute manner. In elements using this attribute definition the eId attribute is required. The wId is used to mark the identifier that the structure used to have in the original version, and is only needed when a renumbering occurred.</comment>
 				     </xsd:documentation>
 		    </xsd:annotation>
 
-		    <xsd:attribute name="eId" type="noWhiteSpace"/>
+		    <xsd:attribute name="eId" type="noWhiteSpace" use="required"/>
 		    <xsd:attribute name="wId" type="noWhiteSpace"/>
 		    <xsd:attribute name="GUID" type="noWhiteSpace"/>
 	  </xsd:attributeGroup>

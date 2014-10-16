@@ -143,6 +143,67 @@ Ext.define('LIME.controller.MetadataManagerController', {
                 };
     		}
     	});
+
+        me.addLifecycle();
+        me.addWorkflow();
+        me.addClassification();
+    },
+
+    // Add lifecycle tab
+    addLifecycle: function() {
+        this.addMetaTab("lifecycle", "lifecycle", [
+            this.createFieldsetItem ("lifecycle", ["source"]),
+            this.createMetaGrid (
+                "Lifecycle",
+                ["eId", "date", "source", "type"],
+                {
+                    // Custom columns
+                    "type": ["generation", "amendment", "repeal"]
+                },
+                "lifecycle/eventRef"
+            )
+        ]);
+    },
+
+    // Add workflow tab
+    addWorkflow: function() {
+        this.addMetaTab("workflow", "workflow", [
+            this.createFieldsetItem ("workflow", ["source"]),
+            this.createMetaGrid (
+                "Workflow",
+                ["date", "actor", "outcome", "refersTo"],
+                {
+                    "type": ["generation", "amendment", "repeal"]
+                },
+                "workflow/step"
+            )
+        ]);
+    },
+
+    // Add classification tab
+    addClassification: function() {
+        this.addMetaTab("classification", "classification", [
+            this.createFieldsetItem ("classification", ["source"]),
+            this.createMetaGrid (
+                "Classification",
+                ["value", "showAs", "dictionary", "href"],
+                {
+                },
+                "classification/keyword"
+            )
+        ]);
+    },
+
+    // Add a tab with title tabname and containing items, responsible for the metadataTag
+    addMetaTab: function (tabName, metadataTag, items) {
+        var tab = this.addTab({
+            name: metadataTag,
+            title: tabName,
+            items: items
+        });
+        this.tabMetaMap[metadataTag] = {
+            tab: tab
+        };
     },
 
     storeGridChanged: function(store) {
@@ -171,7 +232,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
       });
     },
 
-    createMetaGrid: function(name, values, customColumns) {
+    createMetaGrid: function(name, values, customColumns, customPath) {
         var me = this;
         return Ext.widget("metaGrid", {
                 title: name,
@@ -180,6 +241,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
                 name: name,
                 columnsNames: values,
                 customColumns: customColumns,
+                customPath: customPath,
                 store: Ext.create('Ext.data.Store', {
                     fields : values,
                     listeners: {
@@ -214,12 +276,17 @@ Ext.define('LIME.controller.MetadataManagerController', {
         items = [me.createFieldsetItem(name, me.getValuesFromObj(conf))];
       }
 
-      if(possibleChildren) {
-          values = Ext.Array.push("type", me.getValuesFromObj(possibleChildren.attributes));
-          items.push(me.createMetaGrid("Children", values, {
-              "type": possibleChildren.names
-          }));
-      }
+        if(possibleChildren) {
+            // if(possibleChildren.names) {
+                values = Ext.Array.push("type", me.getValuesFromObj(possibleChildren.attributes));
+                items.push(me.createMetaGrid("Children", values, {
+                    "type": possibleChildren.names
+                }));
+            // } else {
+            //     values = me.getValuesFromObj(possibleChildren.attributes);
+            //     items.push(me.createMetaGrid("Children", values, {}));
+            // }
+        }
   		return me.addTab({
   			name: name,
   			title: name,
@@ -244,10 +311,10 @@ Ext.define('LIME.controller.MetadataManagerController', {
               return {
                 xtype: (attr == "date") ? "datefield" : "textfield",
                 format: (attr == "date") ? "Y-m-d" : "",
-                fieldLabel: Ext.String.capitalize(attr.replace("akn_", "")),
+                fieldLabel: (values[0] == 'source') ? 'Provenance' : Ext.String.capitalize(attr.replace("akn_", "")),
                 labelAlign : 'right',
                 anchor: '30%',
-                labelWidth: 50,
+                labelWidth: 80,
                 name: attr
               };
             })
@@ -267,9 +334,21 @@ Ext.define('LIME.controller.MetadataManagerController', {
         		var cmpToFill = tabMap.tab.down("*[name='"+el.attr.class+"']");
 
         		if(tabMap.tab.down("*[name='Children']")) {
-        		    cmpToFill = tabMap.tab.down("*[name='Children']");
+                    cmpToFill = tabMap.tab.down("*[name='Children']");
                     el.attr["type"] = el.attr["class"];
-        		}
+                }
+                if(tabMap.tab.down("*[name='Lifecycle']")) {
+                    cmpToFill = tabMap.tab.down("*[name='Lifecycle']");
+                    el.attr["type"] = el.attr["class"];
+                }
+                if(tabMap.tab.down("*[name='Workflow']")) {
+                    cmpToFill = tabMap.tab.down("*[name='Workflow']");
+                    el.attr["type"] = el.attr["class"];
+                }
+                if(tabMap.tab.down("*[name='Classification']")) {
+                    cmpToFill = tabMap.tab.down("*[name='Classification']");
+                    el.attr["type"] = el.attr["class"];
+                }
 
         		if(cmpToFill) {
 					if(cmpToFill.xtype == "metaGrid") {
@@ -278,7 +357,6 @@ Ext.define('LIME.controller.MetadataManagerController', {
 						me.fillFormFields(cmpToFill, el);
 					}
         		} else {
-        		    //console.log(tab, el);
         		}
         	});
         }
@@ -374,7 +452,20 @@ Ext.define('LIME.controller.MetadataManagerController', {
                         editor.changed = true;
                     }
     	       });
-    	    } else {
+    	    } else if (name == "Lifecycle" || name == "Workflow" || name == "Classification") {
+                var result = DocProperties.updateMetadata(Ext.merge({
+                    metadata : editor.getDocumentMetadata(),
+                    path : cmp.customPath,
+                    data : data,
+                    overwrite: true
+                }, conf));
+                if (result) {
+                    Ext.MessageBox.alert("Error", "Error " + result);
+                } else {
+                    //remove this
+                    editor.changed = true;
+                }
+            } else {
                 path += (tab.name != name) ? tab.name + "/" + name : tab.name;
                 //move this to a controller
                 var result = DocProperties.updateMetadata(Ext.merge({

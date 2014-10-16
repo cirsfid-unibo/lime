@@ -221,6 +221,24 @@ Ext.define('LIME.controller.ParsersController', {
                         }
                     });
 
+                } else if (button.waweConfig.name == 'conclusion') {
+                    if (viewport) {
+                        viewport.setLoading(true);
+                    }     
+                    me.callParser("docDate", contentToParse, function(result) {
+                        var jsonData = Ext.decode(result.responseText, true);
+                        if (jsonData) {
+                            me.parseDocDate(jsonData, markedNode, button);
+                        }
+                        if (viewport) {
+                            viewport.setLoading(false);
+                        }
+                    }, function() {
+                        if (viewport) {
+                            viewport.setLoading(false);
+                        }
+                    });
+
                 } else if (button.waweConfig.name == 'body') {
                     //contentToParse = contentToParse.replace(/&nbsp;/g,' ');
                     //markedWrapper.setHTML(contentToParse);
@@ -547,11 +565,11 @@ Ext.define('LIME.controller.ParsersController', {
         Ext.each(parts, function(element) {
             var contains = element.contains, containsPartName = Ext.Object.getKeys(contains)[0];
             if (containsPartName && contains[containsPartName]) {
-            	try {
-            		me.wrapBodyParts(containsPartName, contains[containsPartName], element.wrapper, button);	
-            	} catch (e) {
-            		Ext.log({level: "error"}, e);
-            	}
+                try {
+                    me.wrapBodyParts(containsPartName, contains[containsPartName], element.wrapper, button);    
+                } catch (e) {
+                    Ext.log({level: "error"}, e);
+                }
             }
         }, this);
     },
@@ -576,36 +594,56 @@ Ext.define('LIME.controller.ParsersController', {
             iterNode = body.querySelector('*[class="'+DocProperties.getDocClassList()+'"]');
 
         if (!prevPartNode) {
-            while (iterNode && iterNode.childNodes.length == 1) {
+            /*while (iterNode && iterNode.childNodes.length == 1) {
                 iterNode = iterNode.firstChild;
             }
-            partNode = iterNode.firstChild;
-            wrapNode = me.wrapPartNode(partNode, partNode.parentNode);
+            partNode = iterNode.firstChild;*/
+            var txtNode = DomUtils.findTextNodes(delimiter.value, iterNode)[0];
+            if(txtNode) {
+                wrapNode = Ext.DomHelper.createDom({
+                    tag : 'div',
+                    cls : DomUtils.tempParsingClass
+                });
+                while(txtNode.previousSibling) {
+                    if(wrapNode.firstChild) {
+                        wrapNode.insertBefore(txtNode.previousSibling, wrapNode.firstChild);
+                    } else {
+                        wrapNode.appendChild(txtNode.previousSibling);
+                    }
+                }
+                txtNode.parentNode.insertBefore(wrapNode, txtNode);
+            }
+            /*wrapNode = me.wrapPartNode(partNode, partNode.parentNode);
             me.wrapPartNodeSibling(wrapNode, function(sibling) {
                 var textNodes = DomUtils.findTextNodes(delimiter.value, sibling);
                 if (textNodes.length > 0) {
                     return true;
                 }
                 return false;
-            });
+            });*/
         } else if (prevPartNode.nextSibling) {
             partNode = prevPartNode.nextSibling;
             wrapNode = me.wrapPartNode(partNode, partNode.parentNode);
-
             if (delimiter.value) {
                 me.wrapPartNodeSibling(wrapNode, function(sibling) {
                     if (delimiter.flags && delimiter.flags.indexOf("i") != -1) {
                         sibling = sibling.previousSibling;
                     }
-                    var textNodes = DomUtils.findTextNodes(delimiter.value, sibling);
-                    if (textNodes.length > 0) {
-                        return true;
+                    if(sibling.nodeType == DomUtils.nodeType.TEXT) {
+                        return sibling.data.indexOf(delimiter.value) != -1;
+                    } else {
+                        var textNodes = DomUtils.findTextNodes(delimiter.value, sibling);
+                        if (textNodes.length > 0) {
+                            return true;
+                        }
+                        return false;    
                     }
-                    return false;
+                    
                 });
 
-            } else
+            } else {
                 me.wrapPartNodeSibling(wrapNode);
+            }
         }
         return wrapNode;
     },
@@ -866,6 +904,9 @@ Ext.define('LIME.controller.ParsersController', {
             text : Locale.getString("parsing", me.getPluginName())
         });
         Ext.defer(function() {
+            // Clean docuement, removing white spaces, before parsing
+            /*var extNode = new Ext.Element(editor.getBody());
+             extNode.clean();*/
             app.fireEvent(Statics.eventsNames.progressUpdate, Locale.getString("parsing", me.getPluginName()));
             
             var callDocTypeParser = function() {
@@ -903,7 +944,7 @@ Ext.define('LIME.controller.ParsersController', {
                 });
             };
             var callDateParser = function() {
-            	callDocTypeParser();
+                callDocTypeParser();
                 /*me.callParser("date", editor.getContent(), function(result) {
                 var jsonData = Ext.decode(result.responseText, true);
                     if (jsonData) {

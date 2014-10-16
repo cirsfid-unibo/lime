@@ -62,6 +62,21 @@ Ext.define('LIME.controller.CustomizationManager', {
     refs : [{
         selector: 'appViewport',
         ref: 'appViewport'
+    }, {
+        selector: 'mainToolbar',
+        ref: 'mainToolbar'
+    }, {
+        selector: 'main',
+        ref: 'main'
+    }, {
+        selector: 'mainEditor',
+        ref: 'mainEditor'
+    }, {
+        selector: 'explorer',
+        ref: 'explorer'
+    }, {
+        selector : '[cls=markingMenuContainer]',
+        ref : 'markingMenuContainer'
     }],
 
     onLanguageLoaded : function() {
@@ -127,12 +142,172 @@ Ext.define('LIME.controller.CustomizationManager', {
         me.customMenuItems[controller.id] = [];
     },
 
+    createSecondEditor: function() {
+        var secondEditor = Ext.widget("main", {
+            id: 'secondEditor',
+            resizable : true,
+            region : 'west',
+            width: '48%',
+            margin : 2
+        });
+
+        this.getAppViewport().add(secondEditor);
+        return secondEditor;
+    },
+
+    transformPatternStyle: function(styleObj) {
+        var returnStyle = Ext.clone(styleObj);
+        Ext.Object.each(styleObj, function(selector, styleCss) {
+            var style = Utilities.cssToJson(styleCss);
+            if(style["background-color"]) {
+                style["background-color"] = "#CCCCCC";
+            }
+            if(style["border"]) {
+                style["border"] = style["border"].replace(/#(?:[0-9a-f]{3}){1,2}/i, "#CCCCCC")
+            }
+            returnStyle[selector] = Utilities.jsonToCss(style);
+        });
+        return returnStyle;
+    },
+
+    finishEditingMode: function(editor, diff) {
+         var me = this,
+            mainTabPanel = me.getMain(),
+            viewport = me.getAppViewport(),
+            editorTab = me.getMainEditor().up(),
+            newExplorer;
+
+        me.getController("Editor").autoSaveContent(true);
+        
+        if(diff) {
+            diff.tab.show();
+            diff.enforceReload = true;
+            mainTabPanel.setActiveTab(diff);
+        }
+
+        editorTab.noChangeModeEvent = false;
+        viewport.remove(editor);
+
+        newExplorer = Ext.widget("explorer", {
+            region : 'west',
+            expandable : true,
+            resizable : true,
+            width : '15%',
+            autoScroll : true,
+            margin : 2
+        });
+        viewport.add(newExplorer);
+        if(me.finishEditBtn) {
+            me.finishEditBtn.up().remove(me.finishEditBtn);
+        }
+    },
+
+    addFinishEditingButton : function(cmp, xmlDiff) {
+        var me = this, toolbar = me.getMainToolbar();
+        if (!toolbar.down("[cls=finishEditingButton]")) {
+            //toolbar.add("->");
+            me.finishEditBtn = toolbar.insert(6, {
+                cls : "finishEditingButton",
+                margin : "0 10 0 240",
+                text : "Finish editing",
+                listeners : {
+                    click : Ext.bind(me.finishEditingMode, me, [cmp, xmlDiff])
+                }
+            });
+        }
+    },
+
+    enableDualEditorMode: function(dualConfig) {
+        var me = this,
+            mainTabPanel = me.getMain(),
+            explorer = me.getExplorer(),
+            markingMenu = me.getMarkingMenuContainer(),
+            editorTab = me.getMainEditor().up(),
+            storage = me.getController("Storage"),
+            editorController = me.getController("Editor"),
+            language = me.getController("Language"),
+            xmlDiff = mainTabPanel.down("xmlDiff"),
+            xmlDiffController = me.getController("XmlDiffController"),
+            secondEditor;
+
+        //me.getAppViewport().setLoading(true);
+
+        editorTab.noChangeModeEvent = true;
+
+        // Set active the editor tab
+        mainTabPanel.setActiveTab(editorTab);
+
+        if(xmlDiff) {
+            xmlDiff.tab.hide();  
+        }
+        
+        //explorer.setVisible(false);
+
+        explorer.up().remove(explorer);
+
+        //markingMenu.collapse();
+
+        if(markingMenu) {
+            markingMenu.placeholder.getEl().on('mouseenter', function(){ 
+                markingMenu.floatCollapsedPanel();
+            });
+        }
+        
+        secondEditor = me.createSecondEditor();
+
+        me.addFinishEditingButton(secondEditor, xmlDiff);
+
+        Ext.defer(function() {
+            storage.openDocumentNoEditor(dualConfig.notEditableDoc, function(config) {
+                language.beforeLoad(config, function(newConfig) {
+                    editorController.loadDocument(newConfig.docText, newConfig.docId, secondEditor, true, me.transformPatternStyle);
+                    if(newConfig.metaDom) {
+                        var manifestationUri = newConfig.metaDom.querySelector("*[class=FRBRManifestation] *[class=FRBRuri]");
+                        if(manifestationUri) {
+                            secondEditor.down("mainEditorUri").setUri(manifestationUri.getAttribute("value"));
+                        }
+                    }
+                    me.manageAfterLoad = function() {
+                        var newId = dualConfig.editableDoc.replace("/diff/", "/diff_modified/");
+                        DocProperties.documentInfo.docId = newId;
+                        Ext.each(xmlDiffController.selectedDocs, function(doc, index) {
+                            var textFields = xmlDiff.query("textfield");
+                            var oldPath = doc.path;
+                            if(doc.id == dualConfig.editableDoc) {
+                                doc.id = newId;
+                                doc.path = doc.path.replace("/diff/", "/diff_modified/");
+                            }
+                            Ext.each(textFields, function(text) {
+                                if(text.getValue() == oldPath) {
+                                    text.setValue(doc.path);
+                                }
+                            });
+                        }, me);
+                    };
+                    storage.openDocument(dualConfig.editableDoc);
+                }, true);
+            });    
+        }, 100);
+        
+    },
+
+    afterDocumentLoaded: function() {
+        var me = this;
+        if(Ext.isFunction(me.manageAfterLoad)) {
+            Ext.callback(me.manageAfterLoad);
+            me.manageAfterLoad = null;
+        }
+    },
+
     init : function() {
         var me = this;
         //Listening progress events
         me.application.on(Statics.eventsNames.languageLoaded, me.onLanguageLoaded, me);
         me.application.on(Statics.eventsNames.beforeCreation, me.beforeCreation, me);
-        me.application.on("addMenuItem", me.addMenuItem, me);
+        me.application.on(Statics.eventsNames.addMenuItem, me.addMenuItem, me);
+        me.application.on(Statics.eventsNames.enableDualEditorMode, me.enableDualEditorMode, me);
+        me.application.on(Statics.eventsNames.afterLoad, me.afterDocumentLoaded, me);
+        
                 
         Config.beforeSetLanguage = function(lang, callback) {
             if (Config.customControllers) {
@@ -146,8 +321,7 @@ Ext.define('LIME.controller.CustomizationManager', {
         };
 
         var loadDefaultPlugin = function () {
-            // TODO: remove this
-            // Ext.defer(me.onLanguageLoaded, 10000, me);
+            Ext.defer(me.onLanguageLoaded, 2000, me);
         }
         if (Config.loaded) {
             loadDefaultPlugin();

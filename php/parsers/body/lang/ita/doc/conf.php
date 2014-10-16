@@ -46,8 +46,9 @@
  */
  
 $rules = Array(
-	"hierarchy" => Array("book","title","section","chapter","article")
+    "titleList" => Array("Titolo","TITOLO"),
+    "chapterList" => Array("Capo","Capitolo"),
+    "articleList" => Array("Art\.?","Articolo")
 );
-
 
 ?>

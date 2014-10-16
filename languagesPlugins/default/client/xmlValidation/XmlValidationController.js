@@ -73,11 +73,19 @@ Ext.define('LIME.controller.XmlValidationController', {
     },
     
     validateXml : function(xml) {
-        var me = this, app = me.application;
+        var me = this, app = me.application, schema = Config.getLanguageSchemaPath(),
+            // temporary solution
+            aknVersion = xml.match('"http://docs.oasis-open.org/legaldocml/ns/akn/3.0/(CSD\\d\\d)"')[1];
         app.fireEvent(Statics.eventsNames.progressStart, null, {
             value : 0.2,
             text : " "
         });
+
+        // temporary solution
+        if(!Ext.isEmpty(aknVersion)) {
+            schema = schema.replace(".xsd", "_"+aknVersion+".xsd");
+        }
+
         Ext.Ajax.request({
             url : Utilities.getAjaxUrl(),
             method : 'POST',
@@ -85,7 +93,7 @@ Ext.define('LIME.controller.XmlValidationController', {
             params : {
                 requestedService : "XML_VALIDATION",
                 source : xml,
-                schema : Config.getLanguageSchemaPath()
+                schema : schema
             },
             // the scope of the ajax request
             scope : this,

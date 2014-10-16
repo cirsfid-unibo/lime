@@ -199,6 +199,21 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },
     
     beforeContextMenuShow: function(menu, node) {
+        if (DomUtils.getButtonByElement(node).name == 'ref') {
+            if(!menu.down("*[name=openlink]"))
+                menu.add({
+                    text : 'Resolve link',
+                    name: 'openlink',
+                    refNode: node,
+                    handler : function() {
+                        var href = node.getAttribute('akn_href');
+                        if (href && href.length > 3) {
+                            window.open('http://akresolver.cs.unibo.it/akn' + href);
+                        }
+                    }
+                });
+        }
+
         var me = this, elementName = DomUtils.getElementNameByNode(node),
             markedParent, language = me.getController("Language");
         if(!elementName) {
@@ -1823,5 +1838,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         me.application.on(Statics.eventsNames.editorDomNodeFocused, me.editorNodeFocused, me);
         me.application.on(Statics.eventsNames.unmarkedNodes, me.nodesUnmarked, me);
         me.application.fireEvent(Statics.eventsNames.registerContextMenuBeforeShow, Ext.bind(me.beforeContextMenuShow, me));
+
+
     }
 });
