@@ -239,7 +239,7 @@ Ext.define('LIME.controller.Editor', {
 		tinymce.activeEditor.formatter.register(patternName, patternProperties);
 		tinymce.activeEditor.formatter.apply(patternName);
 		var searchRoot = this.getBody();
-		var marked = Ext.query('span[class*=' + patternProperties.classes + ']', true, searchRoot);
+		var marked = searchRoot.querySelectorAll('span[class*="' + patternProperties.classes + '"]');
 		return marked;
 	},
 
@@ -257,7 +257,7 @@ Ext.define('LIME.controller.Editor', {
 				lastNode;
 			if (Ext.isString(nodes)){
 				//This means that "nodes" is an node id
-				nodes = Ext.query("#"+nodes, true, this.getBody());
+				nodes = this.getBody().querySelectorAll('#'+nodes);
 			}else if(!Ext.isArray(nodes)){
 				// Uniform to a single type
 				nodes = [nodes];
@@ -322,7 +322,6 @@ Ext.define('LIME.controller.Editor', {
 			this.getEditor().undoManager.add();
 			/* Warn of the change */
 			this.changed = true;
-			console.log(node, "partial");
 			this.application.fireEvent("editorDomChange", node, "partial");
 		}
 		if (actions.click) {
@@ -362,19 +361,28 @@ Ext.define('LIME.controller.Editor', {
 	 * @returns {Boolean} true if the attribute was changed, false otherwise
 	 */
 	setElementAttribute : function(elementId, name, value) {
-		var element = elementId, oldValue, chaged = false;
-		var newElement = (Ext.isString(element))? Ext.query("*["+DomUtils.elementIdAttribute+"="+element+"]", true, this.getDom())[0] : element;
-		if (newElement) {
-		    oldValue = newElement.getAttribute(name);
+		var element = elementId, oldValue, chaged = false, 
+			dom = this.getDom(), query;
+
+		if(Ext.isString(element)) {
+			query = new Ext.Template('*[{attr}="{value}"]').apply({
+				attr: DomUtils.elementIdAttribute,
+				value: element
+			});
+			element = dom.querySelector(query);
+		}
+
+		if (element) {
+		    oldValue = element.getAttribute(name);
 		    if(oldValue != value) {
                 //set attribute that has the same name of field
-                newElement.setAttribute(name, value);
+                element.setAttribute(name, value);
                 /* Prevent from inserting empty attributes */
                 if (value == "") {
-                    newElement.removeAttribute(name);
+                    element.removeAttribute(name);
                 }
                 this.getEditorComponent().fireEvent('change', this.getEditor());
-                chaged = newElement;
+                chaged = element;
 		    }
 		}
 		return chaged;
@@ -718,15 +726,19 @@ Ext.define('LIME.controller.Editor', {
 		// Add an undo level
 		editor.undoManager.add();
 		//Parse the new document and build documentProprieties
-		var markedElements = Ext.query("*[" + DomUtils.elementIdAttribute + "]", true, this.getBody()),
-            noteLinkers = Ext.query("*[class=linker]", true, this.getBody());
+		var markedElements = editorBody.querySelectorAll('*[' + DomUtils.elementIdAttribute + ']'),
+            noteLinkers = editorBody.querySelectorAll('*[class="linker"]');
         clickLinker = function() {
             var marker = this.getAttribute(LoadPlugin.refToAttribute),
-                note;
+                note, query;
             if (marker) {
-                note = Ext.query("*["+LoadPlugin.changePosTargetAttr+"="+marker+"]", true, editorBody);
-                if(note.length > 0) {
-                    app.fireEvent('nodeFocusedExternally', note[0], {
+            	query = new Ext.Template('*[{attr}="{value}"]').apply({
+					attr: LoadPlugin.changePosTargetAttr,
+					value: marker
+				});
+                note = editorBody.querySelector(query);
+                if(note) {
+                    app.fireEvent('nodeFocusedExternally', note, {
                         select : true,
                         scroll : true,
                         click : true
@@ -904,12 +916,10 @@ Ext.define('LIME.controller.Editor', {
         });
 
         try {
-        metadataString = xmlSerializer.serializeToString(metadataDom);
+            metadataString = xmlSerializer.serializeToString(metadataDom);
         } catch(e) {
             metadataString = Ext.emptyString;
         }
-
-
 
         params = {
             userName : userInfo.username,
@@ -1129,7 +1139,6 @@ Ext.define('LIME.controller.Editor', {
 			// Handle the path panel
 			'mainEditorPath' : {
 				update : function() {
-					var pathSelectors = Ext.query(".pathSelectors");
 					var selectorsConfig = this.getMainEditorPath().elements;
 					Ext.select(".pathSelectors", true).on("click", function(evt, el) {
 						var elId = el.getAttribute("id");
@@ -1209,10 +1218,8 @@ Ext.define('LIME.controller.Editor', {
 					/* If the body node is not the default one wrap it */
 					var body = ed.getBody(),
 					    docCls = DocProperties.getDocClassList(),
-    					documentTypeNode = Ext.query('*[class='+docCls+']', true, body)[0];
+    					documentTypeNode = body.querySelector('*[class="'+docCls+'"]');
 					if (!documentTypeNode) {
-						/* Save a bookmark of the selection */
-						//var bookmark = this.getBookmark();
 						/* Re/Wrap the whole editor content into the correct div */
 						var bodyInnerHtml = body.innerHTML;
 						// get a copy of the content
@@ -1220,8 +1227,6 @@ Ext.define('LIME.controller.Editor', {
 						// erase the whole content
 						var wrappingElement = Ext.DomHelper.createDom(Ext.Object.merge(this.defaultElement, {cls: docCls, html:bodyInnerHtml}));
 						body.appendChild(wrappingElement);
-						/* Restore the selection bookmark */
-						//this.restoreBookmark(bookmark);
 					}
 					/* Add a new undo level */
 					ed.undoManager.add();
@@ -1239,7 +1244,6 @@ Ext.define('LIME.controller.Editor', {
                     // Prevent the default context menu to show
                     e.preventDefault();
                     // Compute the coordinates
-                    //coordinates = [e.pageX+offsetPosition[0], e.pageY+offsetPosition[1]];
                     coordinates = [e.clientX+offsetPosition[0], e.clientY+offsetPosition[1]];
                     // Can't use Ext getXY because it's a tinymce event!
                     this.application.fireEvent(Statics.eventsNames.showContextMenu, coordinates);
@@ -1249,13 +1253,11 @@ Ext.define('LIME.controller.Editor', {
 					var body = this.getBody(),
 						docCls = DocProperties.getDocClassList(),
 						docBaseCls = DocProperties.documentBaseClass,
-						documentTypeNode = Ext.query('*[class~='+docBaseCls+']', true, body)[0];
+						documentTypeNode = body.querySelector('*[class="'+docCls+'"]');
 					if(!DocProperties.getDocType()) {
 					    return;
 					}
 					if (!documentTypeNode) {
-						/* Save a bookmark of the selection */
-						//var bookmark = this.getBookmark();
 						/* Re/Wrap the whole editor content into the correct div */
 						var bodyInnerHtml = body.innerHTML;
 						// get a copy of the content
@@ -1263,8 +1265,6 @@ Ext.define('LIME.controller.Editor', {
 						// erase the whole content
 						var wrappingElement = Ext.DomHelper.createDom(Ext.Object.merge(this.defaultElement, {cls: docCls, html: bodyInnerHtml}));
 						body.appendChild(wrappingElement);
-						/* Restore the selection bookmark */
-						//this.restoreBookmark(bookmark);
 					} else {
 					    var classAtt = documentTypeNode.getAttribute('class');
 					    if (!classAtt || classAtt.indexOf(docCls)==-1) {

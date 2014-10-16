@@ -354,11 +354,14 @@ Ext.define('LIME.controller.ParsersController', {
                 var docNumImpossible = me.docNumImpossibleParents;
                 me.searchInlinesToMark(node, item.match.trim(), config, function(n) {
                     var extNode = Ext.get(n);
-                    for (var i = 0; i < docNumImpossible.length; i++) {
-                        if (extNode.up(docNumImpossible[i])) {
-                            return false;
-                        }
+                    if(extNode) {
+                        for (var i = 0; i < docNumImpossible.length; i++) {
+                            if (extNode.up(docNumImpossible[i])) {
+                                return false;
+                            }
+                        }    
                     }
+                    
                     return true;
                 });
             }, me);
@@ -570,7 +573,7 @@ Ext.define('LIME.controller.ParsersController', {
     wrapStructurePart : function(name, delimiter, prevPartNode) {
         var me = this, app = me.application, editor = me.getController("Editor"), 
             body = editor.getBody(), partNode, wrapNode, 
-            iterNode = Ext.query('*[class='+DocProperties.getDocClassList()+']', true, body)[0];
+            iterNode = body.querySelector('*[class="'+DocProperties.getDocClassList()+'"]');
 
         if (!prevPartNode) {
             while (iterNode && iterNode.childNodes.length == 1) {

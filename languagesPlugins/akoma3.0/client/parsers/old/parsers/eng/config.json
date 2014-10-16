@@ -1,5 +1,0 @@
-{
-	//These files must have the .json extension
-	"vocabularies": ['months'],
-	"parsers": ["example"]
-}
