@@ -622,7 +622,7 @@ Ext.define('LIME.controller.Marker', {
         tmpNode = this.applyWrappingRuleWithoutEffects(node);
 
         tmpStart = tmpNode.querySelector("#"+startSelection.getAttribute("id"));
-        return tmpStart.parentNode;
+        return (tmpStart) ? tmpStart.parentNode : false;
     },
 
     isAllowedMarking: function(node, config) {
@@ -633,7 +633,6 @@ Ext.define('LIME.controller.Marker', {
         if(!nodePattern) {
             return true;
         }
-
         if (!this.isAllowedPattern(nodePattern, 
                                    config.pattern)) {
             // There is a pattern incompatibility
