@@ -270,6 +270,18 @@ Ext.define('LIME.controller.MainToolbar', {
     },
     
     addMenuItem: function(config, menuConfig) {
+        if(this.getMainToolbar()) {
+            this.addMenuItemRaw(config, menuConfig);
+        } else {
+            this.menuItemsToAdd = this.menuItemsToAdd || [];
+            this.menuItemsToAdd.push({
+                config: config,
+                menuConfig: menuConfig
+            });
+        }
+    },
+
+    addMenuItemRaw: function(config, menuConfig) {
         var mainMenu = this.getMainToolbar(), newMenu,
             menu = mainMenu.down(config.menu+" menu"),
             refItem = config.before || config.after, refItemIndex = -1,
@@ -288,12 +300,11 @@ Ext.define('LIME.controller.MainToolbar', {
                 } 
             }
         }
-        return newMenu;
     },
 
     init : function() {
         // save a reference to the controller
-        var toolbarController = this;
+        var me = this;
         
         this.application.on(Statics.eventsNames.frbrChanged, this.onMetadataChange, this);
         this.application.on(Statics.eventsNames.languageLoaded, this.onLanguageLoaded, this);
@@ -668,6 +679,14 @@ Ext.define('LIME.controller.MainToolbar', {
                     if (button && !menu.items.getCount()) {
                         button.hide();
                     }
+                }
+            },
+            'mainToolbar': {
+                afterrender: function() {
+                    Ext.each(me.menuItemsToAdd, function(config) {
+                        me.addMenuItemRaw(config.config, config.menuConfig);
+                    });
+                    me.menuItemsToAdd = [];
                 }
             }
         });

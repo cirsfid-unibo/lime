@@ -79,10 +79,16 @@ Ext.define('LIME.controller.CustomizationManager', {
         ref : 'markingMenuContainer'
     }],
 
-    onLanguageLoaded : function() {
-        var me = this, controllers = Ext.Array.merge(Config.customDefaultControllers, Config.customControllers);
-        me.customCallbacks = {};
-        
+    onLanguageLoaded : function(controllers) {
+        this.customCallbacks = {};
+        this.loadControllers(Config.customControllers);
+    },
+
+    //Config.customDefaultControllers
+    loadControllers : function(controllers) {
+        var me = this, 
+            controllers = controllers || [];
+
         if (controllers) {
             Ext.each(controllers, function(controller) {
                 var cntr = me.getController(controller);
@@ -321,7 +327,7 @@ Ext.define('LIME.controller.CustomizationManager', {
         };
 
         var loadDefaultPlugin = function () {
-            Ext.defer(me.onLanguageLoaded, 2000, me);
+            me.loadControllers(Config.customDefaultControllers);
         }
         if (Config.loaded) {
             loadDefaultPlugin();
