@@ -157,7 +157,8 @@ Ext.define('LIME.controller.ParsersController', {
             var elementId = markedNode.getAttribute(DomUtils.elementIdAttribute);
             if (elementId) {
                 var button = DocProperties.markedElements[elementId].button, 
-                    widgetConfig = button.waweConfig.widgetConfig, markedWrapper = new Ext.dom.Element(markedNode), 
+                    widgetConfig = button.waweConfig.widgetConfig, 
+                    markedWrapper = Ext.get(markedNode), 
                     contentToParse = markedWrapper.getHtml(), editor = this.getController("Editor"), 
                     app = this.application, viewport = this.getAppViewport();
                 //TODO: make an configuration file with all parsers avaible
@@ -904,9 +905,6 @@ Ext.define('LIME.controller.ParsersController', {
             text : Locale.getString("parsing", me.getPluginName())
         });
         Ext.defer(function() {
-            // Clean docuement, removing white spaces, before parsing
-            /*var extNode = new Ext.Element(editor.getBody());
-             extNode.clean();*/
             app.fireEvent(Statics.eventsNames.progressUpdate, Locale.getString("parsing", me.getPluginName()));
             
             var callDocTypeParser = function() {
