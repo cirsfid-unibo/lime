@@ -68,6 +68,59 @@
 	width: 300px;
 }
 
+.ux-notification-light .x-window-header {
+	background-color: transparent;
+}
+
+body .ux-notification-light {
+	background-color: #f2dede;
+    border-color: #ebccd1;
+	border-size: 3px;
+}
+
+.ux-notification-light .x-window-body {
+	text-align: center;
+	padding: 15px 5px 20px 5px;
+	background-color: transparent;
+	border: 0px solid white;
+	color: #a94442;
+}
+
+.ux-notification-light .moreInfoLink {
+	text-align: right;
+}
+
+.ux-notification-light .x-window-header-text {
+	color: #a94442;
+}
+
+
+.ux-notification-success .x-window-header {
+	background-color: transparent;
+}
+
+body .ux-notification-success {
+	background-color: #DFF0D8;
+    border-color: #d6e9c6;
+	border-size: 3px;
+}
+
+.ux-notification-success .x-window-body {
+	text-align: center;
+	padding: 15px 5px 20px 5px;
+	background-color: transparent;
+	border: 0px solid white;
+	color: #3c763d;
+}
+
+.ux-notification-success .moreInfoLink {
+	text-align: right;
+}
+
+.ux-notification-success .x-window-header-text {
+	color: #3c763d;
+}
+
 .ux-notification-icon-information {
 	background-image: url('../images/icons/information.png');
 }

@@ -688,7 +688,6 @@ Ext.define('LIME.controller.ParsersController', {
                         } catch(e) {
                             console.log(e);
                         }
-                        
                     }   
                 }
             }, me);

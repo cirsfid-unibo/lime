@@ -110,7 +110,7 @@ Ext.define('LIME.Interpreters', {
 	 * @param {HTMLElement} markedNode
 	 */
 	wrappingRulesHandlerOnTranslate : function(markedNode) {
-		var me = this,
+		var me = this, elements = [],
 			elementId = markedNode.getAttribute(DomUtils.elementIdAttribute);
 			button = (DocProperties.markedElements[elementId]) ? DocProperties.markedElements[elementId].button : null,
 			rules = (button) ? button.waweConfig.pattern.wrapperRules : [],  /* TODO vedere dove mettere ste regole */
@@ -177,7 +177,8 @@ Ext.define('LIME.Interpreters', {
 			// Add mod element
 			addWrapperElement : function(rule, markedNode) {
 				var config = Interpreters.getButtonConfig(rule.type),
-					extWrapper = Ext.get(markedNode);
+					extWrapper = Ext.fly(markedNode);
+
 				if(rule.type && rule.type=='mod'){
 						var modElement = extWrapper.parent(".mod"),
 						idPrefix = config.rules[Utilities.buttonFieldDefault].attributePrefix || '',
