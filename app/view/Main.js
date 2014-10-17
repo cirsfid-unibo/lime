@@ -68,9 +68,9 @@ Ext.define('LIME.view.Main', {
         margin : "0px"
     },
 
-    dockedItems : [{
+    tbar : [{
         xtype : 'toolbar',
-        dock : 'top',
+        border: 0,
         items : [{
             xtype : 'mainEditorUri'
         }]
