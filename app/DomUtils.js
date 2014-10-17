@@ -772,6 +772,17 @@ Ext.define('LIME.DomUtils', {
             secondParent: ascendants2[index2]
         };
     },
+
+    cleanNodeFromExtId : function(node, descendants) {
+        if(node.getAttribute("id")) {
+            node.removeAttribute("id");
+        }
+        if(descendants) {
+            Ext.each(node.querySelectorAll('[id]'), function(el) {
+                el.removeAttribute("id");
+            });
+        }
+    },
     
     constructor: function() {
         this.setBreakingElementHtml("<span class=\""+this.breakingElementClass+"\">&nbsp;</span>");

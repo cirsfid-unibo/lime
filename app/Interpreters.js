@@ -177,8 +177,7 @@ Ext.define('LIME.Interpreters', {
 			// Add mod element
 			addWrapperElement : function(rule, markedNode) {
 				var config = Interpreters.getButtonConfig(rule.type),
-					extWrapper = Ext.fly(markedNode);
-
+					extWrapper = Ext.fly(markedNode), addedNode;
 				if(rule.type && rule.type=='mod'){
 						var modElement = extWrapper.parent(".mod"),
 						idPrefix = config.rules[Utilities.buttonFieldDefault].attributePrefix || '',
@@ -207,10 +206,10 @@ Ext.define('LIME.Interpreters', {
 						var parsedHtml = Interpreters.parseElement(config.pattern.wrapperElement, {
 							content : ''
 						}),
-							tmpElement = Ext.DomHelper.createDom({
-								tag : 'div',
-								html : parsedHtml
-							});
+						tmpElement = Ext.DomHelper.createDom({
+							tag : 'div',
+							html : parsedHtml
+						});
 						if(tmpElement.firstChild){
 						    me.contentCounter = (me.contentCounter) ? me.contentCounter+1 : 1;
 							tmpElement.firstChild.setAttribute('class', config.pattern.wrapperClass);

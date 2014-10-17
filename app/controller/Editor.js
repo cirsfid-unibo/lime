@@ -613,7 +613,11 @@ Ext.define('LIME.controller.Editor', {
         var markingMenuController = this.getController('MarkingMenu'),
             mainToolbarController = this.getController('MainToolbar'),
            app = this.application, config = this.documentTempConfig;
-        this.addStyles(styleUrls);
+        
+        if(Ext.isArray(styleUrls)) {
+            this.addStyles(styleUrls);
+        }
+
         app.fireEvent(Statics.eventsNames.languageLoaded, data);
         app.fireEvent(Statics.eventsNames.progressUpdate, Locale.strings.progressBar.loadingDocument);
         this.loadDocument(config.docText, config.docId);

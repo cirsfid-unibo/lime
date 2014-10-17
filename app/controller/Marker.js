@@ -606,7 +606,7 @@ Ext.define('LIME.controller.Marker', {
 
     applyWrappingRuleWithoutEffects: function(node) {
         var cloned = Ext.clone(node);
-        cloned.removeAttribute("id");
+        DomUtils.cleanNodeFromExtId(cloned, true);
         Interpreters.wrappingRulesHandlerOnTranslate(cloned);
         return cloned;
     },

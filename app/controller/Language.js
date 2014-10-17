@@ -139,6 +139,8 @@ Ext.define('LIME.controller.Language', {
         
         // TODO: decide if this part is general for all languages or specific
         try {
+            DomUtils.cleanNodeFromExtId(tmpElement, true);
+
             //Remove all unused elements
             Ext.each(unusedElements, function(element) {
                 var classes = element.getAttribute("class");
@@ -167,6 +169,7 @@ Ext.define('LIME.controller.Language', {
             if (view && Ext.isFunction(view.setLoading)) {
                 view.setLoading(false);
             }
+            Ext.log({level: "error"}, e);
             return;
         }
         
