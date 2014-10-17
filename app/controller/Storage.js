@@ -576,8 +576,9 @@ Ext.define('LIME.controller.Storage', {
 
         if (allowOnlyInPaths.length || notAllowedPaths.length) {
             onLoad = function(store, cmp) {
-                var view = cmp.getView(), recordsForbidden = store.queryBy(function(record, id) {
-                    var allow = (allowOnlyInPaths.length) ? false : true, idLength = id.length;
+                var view = cmp.getView(), recordsForbidden = store.queryBy(function(record) {
+                    var id = record.id,
+                        allow = (allowOnlyInPaths.length) ? false : true, idLength = id.length;
                     for(var i = 0; i < allowOnlyInPaths.length; i++) {
                         var can = (allowOnlyInPaths[i].length > idLength) ? 
                                    (allowOnlyInPaths[i].indexOf(id) != -1) : (id.indexOf(allowOnlyInPaths[i]) != -1);
