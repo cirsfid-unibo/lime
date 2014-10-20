@@ -72,8 +72,8 @@ Ext.define('LIME.controller.CustomizationManager', {
         selector: 'mainEditor',
         ref: 'mainEditor'
     }, {
-        selector: 'explorer',
-        ref: 'explorer'
+        selector: 'outliner',
+        ref: 'outliner'
     }, {
         selector : '[cls=markingMenuContainer]',
         ref : 'markingMenuContainer'
@@ -181,7 +181,7 @@ Ext.define('LIME.controller.CustomizationManager', {
             mainTabPanel = me.getMain(),
             viewport = me.getAppViewport(),
             editorTab = me.getMainEditor().up(),
-            newExplorer;
+            newOutliner;
 
         me.getController("Editor").autoSaveContent(true);
         
@@ -194,7 +194,7 @@ Ext.define('LIME.controller.CustomizationManager', {
         editorTab.noChangeModeEvent = false;
         viewport.remove(editor);
 
-        newExplorer = Ext.widget("explorer", {
+        newOutliner = Ext.widget("outliner", {
             region : 'west',
             expandable : true,
             resizable : true,
@@ -202,7 +202,7 @@ Ext.define('LIME.controller.CustomizationManager', {
             autoScroll : true,
             margin : 2
         });
-        viewport.add(newExplorer);
+        viewport.add(newOutliner);
         if(me.finishEditBtn) {
             me.finishEditBtn.up().remove(me.finishEditBtn);
         }
@@ -226,7 +226,7 @@ Ext.define('LIME.controller.CustomizationManager', {
     enableDualEditorMode: function(dualConfig) {
         var me = this,
             mainTabPanel = me.getMain(),
-            explorer = me.getExplorer(),
+            outliner = me.getOutliner(),
             markingMenu = me.getMarkingMenuContainer(),
             editorTab = me.getMainEditor().up(),
             storage = me.getController("Storage"),
@@ -247,9 +247,9 @@ Ext.define('LIME.controller.CustomizationManager', {
             xmlDiff.tab.hide();  
         }
         
-        //explorer.setVisible(false);
+        //outliner.setVisible(false);
 
-        explorer.up().remove(explorer);
+        outliner.up().remove(outliner);
 
         //markingMenu.collapse();
 
