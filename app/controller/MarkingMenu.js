@@ -140,7 +140,7 @@ Ext.define('LIME.controller.MarkingMenu', {
 		try {
 			buttonConfig = me.getButtonConfig(name, buttons, rules);
 		} catch(e) {
-			Ext.log({level: "error"}, e);
+			Ext.log({level: "error"}, "MarkingMenu.createButton"+e);
 			throw "Error: There is some error in the configuration of the plugin, the button with name " + name + " couldn't be initialized";
 		}
 
@@ -474,7 +474,7 @@ Ext.define('LIME.controller.MarkingMenu', {
 			        try {
 			            this.expandButtons(node);
 			        } catch(e) {
-			            Ext.log({level: "error"}, e);
+			            Ext.log({level: "error"}, "MarkingMenu.editorDomNodeFocused"+e);
 			        }
 			    }, 20, this);
 		    },

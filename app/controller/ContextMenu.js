@@ -93,7 +93,7 @@ Ext.define('LIME.controller.ContextMenu', {
             } catch(e) {
                 Ext.log({
                     level : "error"
-                }, e);
+                }, "ContextMenu.showContextMenu - "+e);
             }
         });
         
@@ -137,7 +137,7 @@ Ext.define('LIME.controller.ContextMenu', {
                         } catch(e) {
                             Ext.log({
                                 level : "error"
-                            }, e);
+                            }, "ContextMenu.contextMenu menuitem.click - "+e);
                         }
                     } else {
                         /* TODO Don't let the menu hide when the main item is clicked */

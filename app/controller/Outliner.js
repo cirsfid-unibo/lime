@@ -274,7 +274,7 @@ Ext.define('LIME.controller.Outliner', {
                 try {
                     this.buildTree(node, config);   
                 } catch(e) {
-                    Ext.log({level: "error"}, e);
+                    Ext.log({level: "error"}, "Outliner.editorDomChange"+e);
                 }
             },
             editorDomNodeFocused : this.expandItem,

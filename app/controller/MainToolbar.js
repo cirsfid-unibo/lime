@@ -464,7 +464,7 @@ Ext.define('LIME.controller.MainToolbar', {
                             }) 
                         });
                     } catch (e) {
-                        Ext.log({level: "error"}, e);
+                        Ext.log({level: "error"}, "MainToolbar.removed"+e);
                     }
                     
                 }

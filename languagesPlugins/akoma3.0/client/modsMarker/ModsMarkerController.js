@@ -101,7 +101,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         try {
             this.detectExistingMods();    
         } catch(e) {
-            Ext.log({level: "error"}, e);
+            Ext.log({level: "error"}, "ModsMarkerController.onDocumentLoaded"+e);
         }
         __ME = this;
     },
@@ -1811,7 +1811,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             try {
                 me.detectModifications(node);    
             } catch(e) {
-                Ext.log({level: "error"}, e);
+                Ext.log({level: "error"}, "ModsMarkerController.editorNodeFocused"+e);
             }
         }
     },
@@ -1822,7 +1822,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             try {
                 me.detectModifications(null, nodeId, true);
             } catch(e) {
-                Ext.log({level: "error"}, e);
+                Ext.log({level: "error"}, "ModsMarkerController.nodesUnmarked"+e);
             }
         });
     },
