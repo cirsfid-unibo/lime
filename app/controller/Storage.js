@@ -588,18 +588,18 @@ Ext.define('LIME.controller.Storage', {
                         }
                     }
                     return Ext.Array.contains(notAllowedPaths, id) || !allow;
-                }), notAllowedRecords = store.queryBy(function(record, id) {
-                    return Ext.Array.contains(notAllowedPaths, id);
+                }), notAllowedRecords = store.queryBy(function(record) {
+                    return Ext.Array.contains(notAllowedPaths, record.id);
                 });
                 recordsForbidden.each(function(record) {
-                    view.addRowCls(record.index, 'forbidden-row');
+                    view.addRowCls(record, 'forbidden-row');
                     record.notSelectable = true;
                 });
                 notAllowedRecords.each(function(record) {
-                    var recordEl = cmp.getView().getEl().down("[data-recordindex="+record.index+"]"); 
-                    view.addRowCls(record.index, 'forbidden-cell');
-                    if(recordEl) {
-                        Ext.callback(config.notAllowedPathRender, false, [recordEl, record]);
+                    var recordDom = view.getRow(record); 
+                    view.addRowCls(record, 'forbidden-cell');
+                    if(recordDom) {
+                        Ext.callback(config.notAllowedPathRender, false, [recordDom, record]);
                     }
                     record.notSelectable = true;
                 });

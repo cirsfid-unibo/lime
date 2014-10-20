@@ -268,10 +268,10 @@ Ext.define('LIME.controller.DocumentCollectionController', {
     setDocumentTreeData: function(docConfig) {
         var openedDocumentsStore = this.getStore('OpenedDocuments'), treeData = [];  
         if (docConfig.docDom && docConfig.docType == "documentCollection") {
-            var currentDocument = docConfig.docDom.querySelector("*[class*="+docConfig.docType+"]"); 
+            var currentDocument = docConfig.docDom.querySelector("*[class*="+docConfig.docType+"]");
             treeData.push(this.docToTreeData(currentDocument, docConfig.docDom));
         }
-        openedDocumentsStore.setRootNode({children: treeData});
+        openedDocumentsStore.setRootNode({children: treeData, expanded: true});
     },
 
     onAddColumn : function(columnDescriptor) {
@@ -480,7 +480,6 @@ Ext.define('LIME.controller.DocumentCollectionController', {
                 afterrender: function(cmp) {
                     var collectionGrid = cmp.down("*[cls=dropArea] grid"), 
                     config, gridStore, components = [];
-                    CDD = collectionGrid;
                     if (!cmp.isModify) return;
                     components = this.getDocumentsFromSnapshot(me.completeEditorSnapshot);
                     if (collectionGrid) {

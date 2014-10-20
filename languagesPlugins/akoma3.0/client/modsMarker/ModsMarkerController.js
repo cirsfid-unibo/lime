@@ -199,7 +199,15 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },
     
     beforeContextMenuShow: function(menu, node) {
-        if (DomUtils.getButtonByElement(node).name == 'ref') {
+        var me = this, elementName = DomUtils.getElementNameByNode(node),
+            markedParent, language = me.getController("Language"),
+            button = DomUtils.getButtonByElement(node);
+        if(!elementName) {
+            node = DomUtils.getFirstMarkedAncestor(node.parentNode);
+            elementName = DomUtils.getElementNameByNode(node);
+        }
+
+        if(button && button.name == 'ref') {
             if(!menu.down("*[name=openlink]"))
                 menu.add({
                     text : 'Resolve link',
@@ -214,12 +222,6 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 });
         }
 
-        var me = this, elementName = DomUtils.getElementNameByNode(node),
-            markedParent, language = me.getController("Language");
-        if(!elementName) {
-            node = DomUtils.getFirstMarkedAncestor(node.parentNode);
-            elementName = DomUtils.getElementNameByNode(node);
-        }
         if(node && elementName) {
             markedParent = DomUtils.getFirstMarkedAncestor(node.parentNode);
             if(markedParent && (elementName == "quotedStructure"

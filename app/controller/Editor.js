@@ -320,7 +320,7 @@ Ext.define('LIME.controller.Editor', {
             node.scrollIntoView();
         }
         if(actions.highlight){
-            var extNode = new Ext.Element(node);
+            var extNode = Ext.fly(node);
             extNode.highlight("FFFF00", {duration: 800 });
         }
         if (actions.change) {
