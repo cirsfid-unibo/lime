@@ -266,36 +266,49 @@ Ext.define('LIME.DocProperties', {
             targetNode = nodes[nodes.length-1],
             parentTarget = obj,
             afterNode,
-            result = 0;
+            result = 0,
+            me = this;
         Ext.Array.remove(nodes, targetNode);
 
-            // var parent = Language.getMetadataStructure();
-            // if (parentTarget[el] == undefined) {
-            //     console.log('creating ', el);
-            //     var child = document.createElement('div');
-            //     child.setAttribute('class', el);
-            //     for(var i = 0; i < parent.children; i++)
-            //         if (parent.children[i].name == el) {
-            //             this.insertChildInOrder(parentTarget.el, child, parent, parent.children[i]);
-            //             parent = parent.children[i];
-            //             break;
-            //         }
-            //     parentTarget[el];
-            // }
-            // parentTarget = parentTarget[el];
+        if(config.isAttr) {
+            Ext.Array.push(nodes, targetNode);
+        }
+
+        //console.log('update metadata')
         Ext.each(nodes, function(el) {
+            var parent = Language.getMetadataStructure();
             if (parentTarget[el] == undefined) {
+                //console.log('creating ', el);
                 var child = document.createElement('div');
                 child.setAttribute('class', el);
-                parentTarget.el.appendChild(child);
+                var found = false;
+                for(var i = 0; i < parent.children.length; i++) {
+                    //console.log(parent.children[i].name, el)
+                    if (parent.children[i].name == el) {
+                        //console.log(this);
+                        me.insertChildInOrder(parentTarget.el, child, parent, parent.children[i]);
+                        //parent = parent.children[i];
+                        found = true;
+                        //console.log('updateMetadata, found', el);
+                        break;
+                    }
+                }
+                if (!found) {
+                    //console.log('updateMetadata, not found and creating', el);
+                    //console.log('parent', parent);
+                    parentTarget.el.appendChild(child);
+                }
                 parentTarget[el] = {
                     el: child
                 }
             }
             parentTarget = parentTarget[el];
         });
-
-        if (parentTarget) {
+        if(config.isAttr) {
+            if(parentTarget)
+                for(var key in config.data)
+                    parentTarget.el.setAttribute(key, config.data[key]);
+        } else if (parentTarget) {
             try {
                 if(config.overwrite) {
                     config.after = targetNode;

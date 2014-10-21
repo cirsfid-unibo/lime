@@ -428,8 +428,8 @@ Ext.define('LIME.controller.MetadataManagerController', {
     	conf = conf || {};
 
     	if(tabMap && cmp) {
-    	    path = (tabMap.metaParent) ? tabMap.metaParent + "/" : "";
-    	    if(name == "Children") {
+            path = (tabMap.metaParent) ? tabMap.metaParent + "/" : "";
+            if(name == "Children") {
     	       var groups = {};
     	       Ext.each(data, function(obj) {
     	           var type = obj.type;
@@ -472,7 +472,8 @@ Ext.define('LIME.controller.MetadataManagerController', {
                     metadata : editor.getDocumentMetadata(),
                     path : path,
                     data : data,
-                    overwrite: true
+                    isAttr: data.source ? true : false,
+                    overwrite: data.source ? false : true
                 }, conf));
                 if (result) {
                     Ext.MessageBox.alert("Error", "Error " + result);
