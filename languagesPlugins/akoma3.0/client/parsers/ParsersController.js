@@ -665,12 +665,13 @@ Ext.define('LIME.controller.ParsersController', {
         if (data && data.length) {
             Ext.each(data, function(quote) {
                 if(quote.start.string && quote.quoted.string && quote.end.string) {
-                    //var string = quote.start.string+quote.quoted.string+quote.end.string;
-                    var string = quote.quoted.string;
+                    var string = quote.start.string+quote.quoted.string+quote.end.string;
+                    //var string = quote.quoted.string;
                     // If the string doesn't contains tags
                     if(!string.match(DomUtils.tagRegex)) {
                         config.markButton = markButton;
                         me.searchInlinesToMark(body, string, config, null, function(node) {
+                            me.removeQuotesFromQutedTextNode(node, quote);
                             if(node.parentNode && node.parentNode.nodeName.toLowerCase() == "span"
                                     && node.parentNode.childNodes.length == 3 && node.parentNode.parentNode) {
                                 if(node.previousSibling) {
@@ -682,6 +683,7 @@ Ext.define('LIME.controller.ParsersController', {
                             }
                         });
                     } else {
+                        string = quote.quoted.string;
                         config.markButton = markButtonStructure;
                         try {
                             me.searchTextToMark(body, string, config);    
@@ -692,6 +694,30 @@ Ext.define('LIME.controller.ParsersController', {
                 }
             }, me);
         }
+    },
+
+    removeQuotesFromQutedTextNode: function(node, quote) {
+        var txtNode = this.searchAndSplitTextNode(node, quote.start.string);
+        if(txtNode) {
+            node.parentNode.insertBefore(txtNode.previousSibling, node);
+        }
+        txtNode = this.searchAndSplitTextNode(node, quote.end.string);
+        if(txtNode) {
+            DomUtils.insertAfter(txtNode, node);
+        }
+    },
+
+    searchAndSplitTextNode: function(node, string) {
+        var txtNode = DomUtils.findTextNodes(string, node)[0], strIndex;
+        if(txtNode) {
+            strIndex = txtNode.data.indexOf(string);
+            if (!strIndex) {
+                txtNode = txtNode.splitText(string.length);
+            } else if(strIndex > 0) {
+                txtNode = txtNode.splitText(strIndex);
+            }
+        }
+        return txtNode;
     },
 
     parseStructure : function(data) {
