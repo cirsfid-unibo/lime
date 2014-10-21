@@ -124,8 +124,8 @@ Ext.define('LIME.Interpreters', {
 				if (rule.conditions["parentClassContains"]) {
 					var extEl = Ext.get(markedNode),
 						parent = extEl.parent('.'+rule.conditions["parentClassContains"]),
-						contentElement = extEl.parent('.content'),
-						contentChild = parent.down('.content');
+                        contentElement = extEl.parent('.content'),
+						contentChild = (parent) ? parent.down('.content') : null;
 					//If content elements are the same	
 					if(parent && contentElement && contentChild && contentChild==contentElement){
 						extEl.insertBefore(contentElement);

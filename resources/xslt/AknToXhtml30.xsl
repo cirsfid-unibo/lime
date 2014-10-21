@@ -3,7 +3,7 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:akn="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD10"
+    xmlns:akn="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD11"
     exclude-result-prefixes="xs"
     version="1.0">
     <xsl:output method="xml" indent="yes" encoding="UTF-8" />
@@ -106,13 +106,13 @@
 					     akn:recital |
 					     akn:citation |
 					     akn:conclusions |
-					     akn:body |
-					     akn:mainBody |
 					     akn:administrationOfOath |
 					     akn:speechGroup |
 					     akn:speech |
 					     akn:question |
 					     akn:answer |
+					     akn:body |
+					     akn:mainBody |
 					     akn:amendmentHeading |
 						 akn:amendmentContent |
 						 akn:amendmentReference |
@@ -126,7 +126,6 @@
 						 akn:remedias |
 						 akn:motivation |
 						 akn:decision |
-						 akn:mod |
 						 akn:fragmentBody
 						">
 	        <div>
@@ -147,6 +146,7 @@
 	<xsl:template match="akn:block |
 						akn:longTitle |
 						akn:formula |
+						akn:p |
 						akn:interstitial |
 						akn:other
 						">
@@ -197,6 +197,22 @@
 			<div>
 	        	<xsl:attribute name="class">
 		         	<xsl:value-of select="concat('popup ',name(.))" />
+		         </xsl:attribute>
+		         <xsl:attribute name="internalid">
+		         	<xsl:value-of select="name(.)" />
+		         </xsl:attribute>
+	        	
+	        	<!-- ATTRIBUTE'S GENERIC TEMPLATE -->
+	        	<xsl:apply-templates select="@*" mode="elementAttributes" />
+	        	<xsl:apply-templates />
+	        </div>
+	</xsl:template>
+
+	<!-- Mod elements -->
+	<xsl:template match="akn:mod">
+			<div>
+	        	<xsl:attribute name="class">
+		         	<xsl:value-of select="concat('inline ',name(.))" />
 		         </xsl:attribute>
 		         <xsl:attribute name="internalid">
 		         	<xsl:value-of select="name(.)" />
@@ -478,7 +494,6 @@
 	        </span>
 	</xsl:template>
 	
-	
 	<xsl:template match="akn:componentRef">
 		<div>
 			<xsl:attribute name="class">
@@ -492,7 +507,7 @@
 	
 	<xsl:template match="akn:documentRef">
 	        <xsl:variable name="idref" select="substring-after(@href,'#')" />
-	        <xsl:variable name="uri" select="//akn:component[@currentId=$idref]//akn:FRBRManifestation//akn:FRBRthis/@value"/>
+	        <xsl:variable name="uri" select="//akn:component[@currentId=$idref or @eId=$idref]//akn:FRBRManifestation//akn:FRBRthis/@value"/>
 	        <span>
 	        	<xsl:attribute name="class">
 		         	<xsl:value-of select="concat('inline ',name(.))" />
@@ -504,14 +519,20 @@
 		         
 	        	<!-- ATTRIBUTE'S GENERIC TEMPLATE -->
 	        	<xsl:apply-templates select="@*" mode="elementAttributes" />
-	        	<xsl:value-of select="$uri" />
+	        	<xsl:choose>
+	        		<xsl:when test="$uri">
+	        			<xsl:value-of select="$uri" />
+	        		</xsl:when>
+	        		<xsl:otherwise>
+	        			<xsl:value-of select="' '" />
+	        		</xsl:otherwise>	
+	        	</xsl:choose>
 	        	<xsl:apply-templates />
 	        </span>
 	</xsl:template>
 	
 	<!-- Html elements -->
-	<xsl:template match="akn:p |
-						akn:span |
+	<xsl:template match="akn:span |
 						akn:a |
 						akn:b |
 						akn:i|

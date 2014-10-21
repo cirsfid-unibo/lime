@@ -101,7 +101,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         try {
             this.detectExistingMods();    
         } catch(e) {
-            Ext.log({level: "error"}, e);
+            Ext.log({level: "error"}, "ModsMarkerController.onDocumentLoaded"+e);
         }
         __ME = this;
     },
@@ -199,7 +199,15 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },
     
     beforeContextMenuShow: function(menu, node) {
-        if (DomUtils.getButtonByElement(node).name == 'ref') {
+        var me = this, elementName = DomUtils.getElementNameByNode(node),
+            markedParent, language = me.getController("Language"),
+            button = DomUtils.getButtonByElement(node);
+        if(!elementName) {
+            node = DomUtils.getFirstMarkedAncestor(node.parentNode);
+            elementName = DomUtils.getElementNameByNode(node);
+        }
+
+        if(button && button.name == 'ref') {
             if(!menu.down("*[name=openlink]"))
                 menu.add({
                     text : 'Resolve link',
@@ -214,12 +222,6 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 });
         }
 
-        var me = this, elementName = DomUtils.getElementNameByNode(node),
-            markedParent, language = me.getController("Language");
-        if(!elementName) {
-            node = DomUtils.getFirstMarkedAncestor(node.parentNode);
-            elementName = DomUtils.getElementNameByNode(node);
-        }
         if(node && elementName) {
             markedParent = DomUtils.getFirstMarkedAncestor(node.parentNode);
             if(markedParent && (elementName == "quotedStructure"
@@ -1809,7 +1811,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             try {
                 me.detectModifications(node);    
             } catch(e) {
-                Ext.log({level: "error"}, e);
+                Ext.log({level: "error"}, "ModsMarkerController.editorNodeFocused"+e);
             }
         }
     },
@@ -1820,7 +1822,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             try {
                 me.detectModifications(null, nodeId, true);
             } catch(e) {
-                Ext.log({level: "error"}, e);
+                Ext.log({level: "error"}, "ModsMarkerController.nodesUnmarked"+e);
             }
         });
     },

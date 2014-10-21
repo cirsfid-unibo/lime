@@ -320,7 +320,7 @@ Ext.define('LIME.controller.Editor', {
             node.scrollIntoView();
         }
         if(actions.highlight){
-            var extNode = new Ext.Element(node);
+            var extNode = Ext.fly(node);
             extNode.highlight("FFFF00", {duration: 800 });
         }
         if (actions.change) {
@@ -1383,12 +1383,13 @@ Ext.define('LIME.controller.Editor', {
 
                             editor.on('click', function(e) {
                                 // Fire a click event only if left mousebutton was used
-                                //if (e.which == 1){
+                                if (e.which == 1){
                                     editorView.fireEvent('click', editor, e);
-                                //}
+                                }
                             });
 
                             editor.on('contextmenu', function(e) {
+                                editorView.fireEvent('click', editor, e);
                                 editorView.fireEvent('contextmenu', editor, e);
                             });
                         }});

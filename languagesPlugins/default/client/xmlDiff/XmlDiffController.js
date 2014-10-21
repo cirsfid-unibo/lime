@@ -87,7 +87,10 @@ Ext.define('LIME.controller.XmlDiffController', {
                 break;
             }
         }
-        return (diff) ? this.getDocsUrl() : this.setEmptyPage();
+
+        this.setEmptyPage();
+
+        return (diff) ? this.getDocsUrl() : null;
     },
 
     setViewConfig : function() {
@@ -134,9 +137,9 @@ Ext.define('LIME.controller.XmlDiffController', {
         });
     },
 
-    setLoading : function() {
-        var plugin = this.getIframePlugin();
-        plugin.setLoading();
+    setLoading : function(loading) {
+        var diffContainer = this.getDiffPanel();
+        diffContainer.setLoading(loading);
     },
 
     getDiff : function(docsUrl) {
@@ -152,7 +155,8 @@ Ext.define('LIME.controller.XmlDiffController', {
             url = (format=="xml") ? me.getDiffXmlServiceUrl() : me.getDiffServiceUrl();
         url += '?' + Ext.urlEncode(params);
         me.setUrl(url, function() {
-            me.getEditButton().setDisabled(false);    
+            me.getEditButton().setDisabled(false);
+            me.setLoading(false);
         });
     },
 
@@ -162,6 +166,7 @@ Ext.define('LIME.controller.XmlDiffController', {
             params = {
                 requestedService : 'EXPORT_FILES'
             }, changed = false;
+        me.setLoading(true);
         Ext.each(me.selectedDocs, function(doc, index) {
             var name = "doc" + (index + 1);
             doc.id = (doc.id == 'editorDoc') ? DocProperties.documentInfo.docId : doc.id;
@@ -174,7 +179,6 @@ Ext.define('LIME.controller.XmlDiffController', {
         if (!changed && !diffPanel.enforceReload) {
             me.getDiff(me.previousDiff.docsUrl);
         } else {
-            me.setLoading();
             Ext.Ajax.request({
                 url : Utilities.getAjaxUrl(),
                 method : 'POST',
@@ -189,10 +193,12 @@ Ext.define('LIME.controller.XmlDiffController', {
                         diffPanel.enforceReload = false;
                     } else {
                         alert("no url");
+                        me.setLoading(false);
                     }
                 },
                 failure : function() {
                     alert("Ajax failure");
+                    me.setLoading(false);
                 }
             });
         }
@@ -213,7 +219,7 @@ Ext.define('LIME.controller.XmlDiffController', {
             notAllowedPaths: otherDoc,
             notAllowedPathRender: function(el, record) {
                 Ext.tip.QuickTipManager.register({
-                    target: el.dom.getAttribute('id'),
+                    target: el,
                     text: Locale.getString("forbiddenElement", me.getPluginName())
                 });
             },

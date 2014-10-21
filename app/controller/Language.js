@@ -169,7 +169,7 @@ Ext.define('LIME.controller.Language', {
             if (view && Ext.isFunction(view.setLoading)) {
                 view.setLoading(false);
             }
-            Ext.log({level: "error"}, e);
+            Ext.log({level: "error", stack: true}, "Language.translateContent - "+e);
             return;
         }
         
@@ -522,7 +522,7 @@ Ext.define('LIME.controller.Language', {
                         params.docDom = docDom;
                     }
                 } catch(e) {
-                    Ext.log({level: "error"}, e);
+                    Ext.log({level: "error"}, "Language.beforeLoad"+e);
                     callback(params);
                     return;
                 }

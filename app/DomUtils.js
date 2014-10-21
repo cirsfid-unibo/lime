@@ -501,7 +501,7 @@ Ext.define('LIME.DomUtils', {
         } catch(e) {
             Ext.log({
                 level : "error"
-            }, e);
+            }, "DomUtils.findTextNodes - "+e);
         };
         return nodes;
     },
@@ -532,8 +532,8 @@ Ext.define('LIME.DomUtils', {
             }
         } catch(e) {
             Ext.log({
-                level : "error"
-            }, e);
+                level : "info"
+            }, "DomUtils.getTextOfNode - "+e);
             return this.getTextOfNodeClassic(node);
         };
         return text;
@@ -554,7 +554,7 @@ Ext.define('LIME.DomUtils', {
         } catch(e) {
             Ext.log({
                 level : "error"
-            }, e);
+            }, "DomUtils.getTextNodes - "+e);
         };
         return nodes;
     },

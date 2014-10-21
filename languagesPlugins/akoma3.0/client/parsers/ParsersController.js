@@ -569,7 +569,7 @@ Ext.define('LIME.controller.ParsersController', {
                 try {
                     me.wrapBodyParts(containsPartName, contains[containsPartName], element.wrapper, button);    
                 } catch (e) {
-                    Ext.log({level: "error"}, e);
+                    Ext.log({level: "error"}, "ParsersController.wrapBodyParts"+e);
                 }
             }
         }, this);

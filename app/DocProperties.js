@@ -338,7 +338,7 @@ Ext.define('LIME.DocProperties', {
                     afterNode.parentNode.removeChild(firstAfterNode);
                 }
             } catch(e) {
-                Ext.log({level: "error"}, e);
+                Ext.log({level: "error", stack: true}, "DocProperties.updateMetadata - "+e);
                 result = 2;
             }
         } else {
