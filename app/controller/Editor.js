@@ -690,6 +690,8 @@ Ext.define('LIME.controller.Editor', {
             newDocumentWindow.show();
             return;
         }
+
+        DocProperties.documentInfo.docId = config.docId;
         DocProperties.documentInfo.docType = config.docType;
         DocProperties.documentInfo.docLang = config.docLang;
         DocProperties.documentInfo.docLocale = config.docLocale;
@@ -831,10 +833,8 @@ Ext.define('LIME.controller.Editor', {
         if(!noSideEffects) {
             //Remove all previous document proprieties
             DocProperties.removeAll();
-            if (Ext.isString(docId)) {
-                // save the id of the currently opened file
-                DocProperties.setDocId(docId);
-            }   
+            // save the id of the currently opened file
+            DocProperties.setDocId(docId);
         }
 
         editorBody = editor.getBody();

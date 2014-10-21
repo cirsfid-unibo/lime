@@ -243,18 +243,6 @@ Ext.define('LIME.controller.MainToolbar', {
         }   
     },
     
-    onMetadataChange : function() {
-        var saveButton = this.getSaveDocumentButton(),
-            saveAsMenu = this.getSaveAsDocumentButton();
-            /*saveAsMenu.enable();*/
-        if (DocProperties.getDocumentUri()) {
-            saveButton.enable();
-        } else {
-            saveButton.disable();
-        }
-    },
-    
-    
     onLanguageLoaded: function() {
         var me = this, main = me.getMain(), 
             customViews = Config.getLanguageConfig().customViews,
@@ -306,7 +294,6 @@ Ext.define('LIME.controller.MainToolbar', {
         // save a reference to the controller
         var me = this;
         
-        this.application.on(Statics.eventsNames.frbrChanged, this.onMetadataChange, this);
         this.application.on(Statics.eventsNames.languageLoaded, this.onLanguageLoaded, this);
         
         // set up the control
@@ -398,33 +385,6 @@ Ext.define('LIME.controller.MainToolbar', {
                  }  
             },
             
-            'saveAsMenu menuitem' : {
-                click : function(cmp){
-                    var saveAs,
-                        config = {};
-                    
-                    switch(cmp.metaType){
-                        case 'newWork':
-                            break;
-                            
-                        case 'newExpression':
-                            config = {
-                                toHide : ['work']
-                            };
-                            break;
-                            
-                        case 'newManifestation':
-                            config = {
-                                toHide : ['work','expression']
-                            };
-                            break;
-                    }
-                    
-                    saveAs = Ext.widget('saveAs', config);
-                    saveAs.show();
-                }
-            },
-            
             '[cls=editorTab]' : {
                 added : function(cmp){
                     var preferencesManager = this.getController('PreferencesManager'),
@@ -465,35 +425,6 @@ Ext.define('LIME.controller.MainToolbar', {
                         });
                     } catch (e) {
                         Ext.log({level: "error"}, "MainToolbar.removed"+e);
-                    }
-                    
-                }
-            },
-            
-            'saveAs button' : {
-                click : function(cmp){
-                    var saveWindow = cmp.up('window'),
-                        values = saveWindow.getData(),
-                        info = {};
-                        
-                    if (values){
-                        
-                        if (values.work){
-                            info.docType = values.work.docType;
-                        }
-                        
-                        if (values.expression){
-                            info.docLang = values.expression.docLang;
-                        }
-                        
-                        // The only thing here is to set the values of the form in the document properties
-                        DocProperties.setDocumentInfo(info);
-                        
-                        DocProperties.setFrbr(values);
-                        
-                        this.getController('Editor').saveDocument({
-                            view : saveWindow
-                        });
                     }
                 }
             },
@@ -622,14 +553,12 @@ Ext.define('LIME.controller.MainToolbar', {
             },            
             'saveDocumentButton' : {
                 click: function() {
-                    this.getController("Editor").autoSaveContent(true);
-                }
-            },
-            'fileMenuButton' : {
-                afterrender: function() {
-                    // Disable save buttons by default, they will be enabled when at loading a document
-                    this.getSaveDocumentButton().disable();
-                    //this.getSaveAsMenu().disable();
+                    if(!DocProperties.documentInfo.docId || 
+                        DocProperties.documentInfo.docId.match("/autosave/")) {
+                        Ext.widget('newSavefileMain').show();
+                    } else {
+                        this.getController("Editor").autoSaveContent(true);    
+                    }
                 }
             },
             
