@@ -330,6 +330,14 @@ Ext.define('LIME.controller.MetadataManagerController', {
         if(!tabMap || tabMap.filled ) return;
         metadata = (metadata && metadata.obj && tabMap.metaParent) ?  metadata.obj[tabMap.metaParent] : metadata.obj;
         if(metadata && metadata[tab.name]) {
+
+            // Populate source field.
+            var source = metadata[tab.name].attr["source"],
+                sourceField = tabMap.tab.down("*[name='source']");
+            if(source && sourceField) {
+                sourceField.setValue(source);
+            }
+
         	Ext.each(metadata[tab.name].children, function(el) {
         		var cmpToFill = tabMap.tab.down("*[name='"+el.attr.class+"']");
 
