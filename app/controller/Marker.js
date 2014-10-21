@@ -448,7 +448,7 @@ Ext.define('LIME.controller.Marker', {
             end = DomUtils.getFirstMarkedAncestor(selectedNodes.end),
             siblings = DomUtils.getSiblings(start, end),
             // Check what kind of operations we have to perform on the unmarked node
-            eventConfig = {change : true, click : true},
+            eventConfig = {change : true, click : true, unmark: true},
             markedParent = (start)? start.parentNode : end.parentNode,
             unmarkedNodeIds = [];
         // Check the siblings
@@ -483,7 +483,7 @@ Ext.define('LIME.controller.Marker', {
 
     unmarkNodes: function(nodes, unmarkChildren) {
         var me = this, parents = [], documentEl = me.getController("Editor").getDocumentElement(),
-            unmarkedNodeIds = [];
+            unmarkedNodeIds = [], config = {change : true, unmark: true};
         Ext.each(nodes, function(node) {
             var parent = DomUtils.getFirstMarkedAncestor(node.parentNode);
             if(parent && parents.indexOf(parent) == -1) parents.push(parent);
@@ -491,10 +491,10 @@ Ext.define('LIME.controller.Marker', {
         });
         if(parents.length) {
             Ext.each(parents, function(parent) {
-                me.application.fireEvent('nodeChangedExternally', parent, {change : true});    
+                me.application.fireEvent('nodeChangedExternally', parent, config);    
             });    
         } else {
-            me.application.fireEvent('nodeChangedExternally', documentEl, {change : true});
+            me.application.fireEvent('nodeChangedExternally', documentEl, config);
         }
         me.application.fireEvent(Statics.eventsNames.unmarkedNodes, unmarkedNodeIds);
     },

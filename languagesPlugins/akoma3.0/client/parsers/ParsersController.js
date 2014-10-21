@@ -144,6 +144,38 @@ Ext.define('LIME.controller.ParsersController', {
         }, menu);
     },
 
+    onNodeChanged: function(nodes, config) {
+        if(!config.unmark) {
+            this.addChildWrapper(nodes, config);
+            this.parseElements(nodes, config);    
+        }
+    },
+
+    addChildWrapper: function(nodes, config) {
+        var me = this, button, nodesToMark = [];
+        Ext.each(nodes, function(node) {
+            button = DomUtils.getButtonByElement(node);
+            if(button && (button.waweConfig.name == 'preface' ||
+                          button.waweConfig.name == 'preamble' ||
+                          button.waweConfig.name == 'conclusions')) {
+                if(!Ext.fly(node).child('[class~="p"]')) {
+                    var newWrapper = me.wrapPartNode(node.firstChild, node);
+                    me.wrapPartNodeSibling(newWrapper);
+                    nodesToMark.push(newWrapper);
+                }
+            }
+        });
+
+        if(nodesToMark.length) {
+            button = me.getController("MarkingMenu").getFirstButtonByName("p");
+            me.application.fireEvent('markingRequest', button, {
+                silent : true,
+                noEvent : true,
+                nodes : nodesToMark
+            });    
+        }
+    },
+
     /**
      * This function call parsers for passed elements
      * @param {HTMLElement[]} elements Elements to parse
@@ -1057,6 +1089,6 @@ Ext.define('LIME.controller.ParsersController', {
         var me = this;
         //Listening progress events
         me.application.on(Statics.eventsNames.afterLoad, me.onDocumentLoaded, me);
-        me.application.on(Statics.eventsNames.nodeChangedExternally, me.parseElements, me);
+        me.application.on(Statics.eventsNames.nodeChangedExternally, me.onNodeChanged, me);
     }
 });
