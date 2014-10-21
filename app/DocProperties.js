@@ -325,8 +325,7 @@ Ext.define('LIME.DocProperties', {
                 firstAfterNode = afterNode;
                 Ext.each(config.data, function(attributes) {
                     var newElConf = Ext.merge({
-                        tag : 'div',
-                        cls : targetNode
+                        tag : 'div'
                     }, attributes);
                     if(afterNode) {
                         afterNode = Ext.DomHelper.insertAfter(afterNode, newElConf);    
