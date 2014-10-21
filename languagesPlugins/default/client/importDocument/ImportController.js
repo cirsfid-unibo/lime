@@ -88,8 +88,7 @@ Ext.define('LIME.controller.ImportController', {
         }
         // Upload the editor's content
         app.fireEvent(Statics.eventsNames.loadDocument, {
-                        docText: content, 
-                        docId: new Date().getTime(),
+                        docText: content,
                         docMarkingLanguage: docMLang,
                         docLang: docLang
         });
