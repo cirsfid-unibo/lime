@@ -44,62 +44,10 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
-require_once(dirname(__FILE__)."/../utils.php");
-
-class AuthorityParser {
-    
-    public $lang, $docType;
-    private $parserRules = array();
-    
-    public function __construct($lang, $docType) {
-        $this->lang = $lang;
-        $this->docType = $docType;
-        $this->dirName = dirname(__FILE__);
-
-        $this->loadConfiguration();
-    }
-
-    public function parse($content, $jsonOutput = FALSE) {
-        $return = array();
-		if($this->lang && $this->docType && !empty($this->parserRules)) {
-			$resolved = resolveRegex($this->parserRules['main'],$this->parserRules,$this->lang, $this->docType, $this->dirName);
-			$success = preg_match_all($resolved['value'], $content, $result, PREG_OFFSET_CAPTURE);
-			if ($success) {
-				//print_r($result);
-				for ($i = 0; $i < $success; $i++) {
-                    $match = $result["authority"][$i][0];
-                    $offset = $result["authority"][$i][1];
-					$entry = Array (
-						"authority" => $match,
-						"start" => $offset,
-                        "end" => $offset+strlen($match)
-					);
-					
-					if (array_key_exists("signature", $result)) {
-						if(is_array($result["signature"])) {
-							$entry["signature"] = trim($result["signature"][$i][0]);
-						}
-					}
-					
-					$return[] = $entry;
-				}
-			}
-		} else {
-			$return = Array('success' => FALSE);
-		}
-
-        $ret = array("response" => $return);
-        if($jsonOutput) {
-            return json_encode($ret);    
-        } else {
-            return $ret;
-        }
-    }
-
-    public function loadConfiguration() {
-        $this->parserRules = importParserConfiguration($this->lang,$this->docType, $this->dirName);
-    }
-}
+ 
+$rules = Array(
+	"main" => "/{{signature}} +{{authority}}/u",
+	"signature" => "[ \w\.]+"
+);
 
 ?>

@@ -81,7 +81,19 @@ class ReferenceParser {
 						
 						if (array_key_exists("type", $result)) {
 							if(is_array($result["type"])) {
-								$result["type"] = $result["type"][$i][0];	
+								$entry["type"] = $result["type"][$i][0];
+							}
+						}
+						
+						if (array_key_exists("num", $result)) {
+							if(is_array($result["num"]) && !($result["num"][$i][0] ==  "")) {
+								$entry["num"] = $result["num"][$i][0];
+							}
+						}
+						
+						if (array_key_exists("docnum", $result)) {
+							if(is_array($result["docnum"])) {
+								$entry["docnum"] = $result["docnum"][$i][0];
 							}
 						}
 						

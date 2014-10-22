@@ -51,16 +51,20 @@ $rules = Array(
 						  "ref_2"
 						  ),
 
-	"ref_2" => "/{{partition}}\s+\d+(º|°)?\s+(de la|del|de)\s+{{source}}/",
-	"ref_3" => "/({{partition}}\s+\d+(º|°)?(\s+(de la|del|de)\s+))?{{type}}\s+Nº\s+\d+\.?\d*\,?\s*{{date}}/",
+	"ref_2" => "/{{partition}}\s+{{num}}\s+(de la|del|de)\s+{{source}}/",
+	"ref_3" => "/({{partition}}\s+{{num}}(\s+(de la|del|de)\s+))?{{type}}\s+{{docnum}}\,?\s*{{date}}/",
 	//"ref_3" => "/({{partition}}\s+\d+(º|°)?(\s+(de la|del|de)\s+))?[<>span\/]+{{type}}\s+Nº\s+\d+\.?\d*[<>span\/]+\,?\s*{{date}}/",
 
     "type" => Array("Ley",
     				"LEY",
 					"Decreto Ley",
 					"Decreto-Ley"),
+					
+	"num" => "\d+(º|°)?",
 						
 	"date" => "[\w\d\s]+\d{4}",
+	
+	"docnum" => "Nº\s+\d+\.?\d*",
 	
 	"partition" => Array("artículo",
 						 "inciso"),

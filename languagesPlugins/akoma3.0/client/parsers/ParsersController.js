@@ -100,6 +100,14 @@ Ext.define('LIME.controller.ParsersController', {
         'docType': {
             'url' : 'php/parsers/doctype/index.php',
             'method' : 'POST'
+        },
+        'authority': {
+            'url' : 'php/parsers/authority/index.php',
+            'method' : 'POST'
+        },
+        'location': {
+            'url' : 'php/parsers/location/index.php',
+            'method' : 'POST'
         }
     },
 
@@ -146,8 +154,12 @@ Ext.define('LIME.controller.ParsersController', {
 
     onNodeChanged: function(nodes, config) {
         if(!config.unmark) {
-            this.addChildWrapper(nodes, config);
-            this.parseElements(nodes, config);    
+            try {
+                this.addChildWrapper(nodes, config);
+                this.parseElements(nodes, config);
+            } catch(e) {
+                Ext.log({level: "error"}, e);
+            }
         }
     },
 
@@ -254,7 +266,7 @@ Ext.define('LIME.controller.ParsersController', {
                         }
                     });
 
-                } else if (button.waweConfig.name == 'conclusion') {
+                } else if (button.waweConfig.name == 'conclusions') {
                     if (viewport) {
                         viewport.setLoading(true);
                     }     
@@ -262,6 +274,20 @@ Ext.define('LIME.controller.ParsersController', {
                         var jsonData = Ext.decode(result.responseText, true);
                         if (jsonData) {
                             me.parseDocDate(jsonData, markedNode, button);
+                        }
+                    }, function() {
+                    });
+                    me.callParser("location", contentToParse, function(result) {
+                        var jsonData = Ext.decode(result.responseText, true);
+                        if (jsonData) {
+                            me.parseLocation(jsonData, markedNode, button);
+                        }
+                    }, function() {
+                    });
+                    me.callParser("authority", contentToParse, function(result) {
+                        var jsonData = Ext.decode(result.responseText, true);
+                        if (jsonData) {
+                            me.parseAuthorityElements(jsonData, markedNode, button);
                         }
                         if (viewport) {
                             viewport.setLoading(false);
@@ -320,6 +346,225 @@ Ext.define('LIME.controller.ParsersController', {
                 me.searchInlinesToMark(node, dateParsed.match, config);
             }, me);
         }
+    },
+
+    parseLocation: function(data, node, button) {
+        var me = this, locations = data.response, app = me.application, 
+            editor = me.getController("Editor"), markButton = button.getChildByName("location");
+        config = {
+            app : app,
+            editor : editor,
+            markButton : markButton,
+            marker: {
+                silent : true
+            }
+        };
+        if (locations.length) {
+            Ext.each(locations, function(item) {
+                if(!Ext.isEmpty(item.string)) {
+                    me.searchInlinesToMark(node, item.string, config);
+                }
+            }, me);
+        }
+    },
+
+    parseAuthorityElements: function(data, node, button) {
+        var me = this, signatures = data.response, app = me.application, 
+            editor = me.getController("Editor"), sigButton = button.getChildByName("signature"),
+            roleNodes = [], personNodes = [], sigNodes = [];
+        config = {
+            app : app,
+            editor : editor,
+            markButton : sigButton,
+            marker: {
+                silent : true
+            }
+        };
+        if (signatures.length) {
+            Ext.each(signatures, function(item) {
+                var roleNode = null, personNode = null, signature;
+                if(!Ext.isEmpty(item.authority)) {
+                    roleNode = me.detectRole(item.authority, node, Ext.clone(config));
+                    if(roleNode) {
+                        roleNodes.push(roleNode);
+                    }
+                }
+                if(!Ext.isEmpty(item.signature)) {
+                    personNode = me.detectPerson(item.signature, node, Ext.clone(config));
+                    if(personNode) {
+                        personNodes.push(personNode);
+                    }
+                }
+                signature = me.wrapSignature(roleNode, personNode);
+                if(signature) {
+                    sigNodes.push(signature);
+                }
+            }, me);
+            if (sigNodes.length) {
+                app.fireEvent('markingRequest', sigButton, {
+                    silent : true,
+                    noEvent : true,
+                    nodes : sigNodes
+                });
+            }
+            if (roleNodes.length) {
+                var roleButton = sigButton.getChildByName("role");
+                app.fireEvent('markingRequest', roleButton, {
+                    silent : true,
+                    noEvent : true,
+                    nodes : roleNodes
+                });
+            }
+            if (personNodes.length) {
+                var personButton = sigButton.getChildByName("person");
+                app.fireEvent('markingRequest', personButton, {
+                    silent : true,
+                    noEvent : true,
+                    nodes : personNodes
+                });
+            }
+            Ext.defer(function() {
+                me.addRoleMetadata(roleNodes);
+                me.addPersonMetadata(personNodes);
+                app.fireEvent('nodeChangedExternally', node, {
+                    change : true,
+                    silent: true
+                });
+            }, 100);
+        }
+    },
+
+    addMetaItem: function(parent, config) {
+        var docMeta = this.getController("Editor").getDocumentMetadata(),
+        langPrefix = Language.getAttributePrefix(),
+        metaDom = docMeta.originalMetadata.metaDom,
+        parent = metaDom.querySelector('[class~="'+parent+'"]'), metaNode;
+        if(parent) {
+            metaNode = this.objToDom(metaDom.ownerDocument, config);
+            parent.appendChild(metaNode);
+        }
+    },
+
+    addRoleMetadata: function(nodes) {
+        var me = this, prefix = Language.getAttributePrefix(),
+            attr = prefix+"refersTo";
+        Ext.each(nodes, function(node) {
+            var text = DomUtils.getTextOfNode(node);
+                id = text.replace(/\s/g, "").toLowerCase().trim();
+            node.setAttribute(attr, "#"+id);
+            me.addMetaItem("references", {
+                name: "TLCRole",
+                attributes: [{
+                    name: "showAs",
+                    value: text
+                },{
+                    name: prefix+"href",
+                    value: "/ontology/roles/"+DocProperties.documentInfo.docLocale+"/"+id
+                },{
+                    name: "eId",
+                    value: id
+                }]
+            });
+        });
+    }, 
+
+    addPersonMetadata: function(nodes) {
+        var me = this, prefix = Language.getAttributePrefix(),
+            attr = prefix+"refersTo";
+        Ext.each(nodes, function(node) {
+            var text = DomUtils.getTextOfNode(node);
+                id = text.replace(/\s/g, "").toLowerCase().trim();
+            node.setAttribute(attr, "#"+id);
+            //TODO: add as attribute
+            me.addMetaItem("references", {
+                name: "TLCPerson",
+                attributes: [{
+                    name: "showAs",
+                    value: text
+                },{
+                    name: prefix+"href",
+                    value: "/ontology/roles/"+DocProperties.documentInfo.docLocale+"/"+id
+                },{
+                    name: "eId",
+                    value: id
+                }]
+            });
+        });
+    },
+
+    wrapSignature: function(roleNode, personNode) {
+        var node = roleNode || personNode, parent, children,
+            firstNode = personNode, secondNode = roleNode, fIndex, sIndex;
+
+        if(node) {
+            parent = node.parentNode;
+            children = Ext.Array.toArray(parent.children);
+            fIndex = children.indexOf(roleNode);
+            sIndex = children.indexOf(personNode);
+            if(fIndex < sIndex) {
+                firstNode = roleNode;
+                secondNode = personNode;
+            } else if(fIndex == sIndex) {
+                return;
+            }
+            firstNode = firstNode || secondNode;
+            secondNode = secondNode || firstNode;
+            if(firstNode.parentNode && secondNode.parentNode && 
+                        firstNode.parentNode == secondNode.parentNode) {
+                var newWrapper = Ext.DomHelper.createDom({
+                    tag : 'span'
+                });
+                firstNode.parentNode.insertBefore(newWrapper, firstNode);
+                this.wrapPartNodeSibling(newWrapper, null, function(sibling) {
+                    if(sibling === secondNode) {
+                        return true;
+                    }
+                    return false;
+                });
+                return newWrapper;
+            }
+        }
+    },
+
+    detectRole: function(matchStr, node, config) {
+        var me = this, markButton = config.markButton.getChildByName("role");
+        config.markButton = markButton, returnNode = null;
+        me.searchInlinesToMark(node, matchStr, config, null, function(nodeToMark) {
+            returnNode = nodeToMark;
+        });
+        return returnNode;
+    },
+
+    detectPerson: function(matchStr, node, config) {
+        var me = this, markButton = config.markButton.getChildByName("person");
+        config.markButton = markButton, returnNode = null;
+        me.searchInlinesToMark(node, matchStr, config, null, function(nodeToMark) {
+            returnNode = nodeToMark;
+        });
+        return returnNode;
+    },
+
+    objToDom: function(doc, obj) {
+        var me = this, node, childNode;
+        if(obj.name) {
+            node = doc.createElement("div");
+            node.setAttribute("class", obj.name);
+            Ext.each(obj.attributes, function(attribute) {
+                node.setAttribute(attribute.name, attribute.value);
+            });
+            if(!Ext.isEmpty(obj.text)) {
+                childNode = doc.createTextNode(obj.text);
+                node.appendChild(childNode);               
+            } else {
+                Ext.each(obj.children, function(child) {
+                    childNode = me.objToDom(doc, child);
+                    if(childNode) {
+                        node.appendChild(childNode);
+                    }
+                });    
+            }
+        }
+        return node;
     },
 
     /**
@@ -463,7 +708,9 @@ Ext.define('LIME.controller.ParsersController', {
                 newNode.parentNode.insertBefore(newWrapper, newNode);
                 newWrapper.appendChild(newNode);
                 if (Ext.isFunction(beforeMarking)) {
-                    beforeMarking(newWrapper);
+                    if(!beforeMarking(newWrapper)) {
+                        break;
+                    }
                 }
                 
                 config.editor.selectNode(newWrapper);
@@ -713,6 +960,7 @@ Ext.define('LIME.controller.ParsersController', {
                                     DomUtils.insertAfter(node.nextSibling, node.parentNode);
                                 }
                             }
+                            return true;
                         });
                     } else {
                         string = quote.quoted.string;
@@ -782,7 +1030,11 @@ Ext.define('LIME.controller.ParsersController', {
                 if(!me.canPassNode(tNode,button.id,[DomUtils.tempParsingClass])){
                     return;
                 }
-                me.textNodeToSpans(tNode, matchStr, function(node){                   
+                me.textNodeToSpans(tNode, matchStr, function(node){   
+                    var date = obj.date || "";
+                    var docNum = obj.docnum || "";
+                    var href = "/"+DocProperties.documentInfo.docLocale+"/act/"+date+"/"+docNum;
+                    node.setAttribute("akn_href", href);                
                     nodesToMark.push(node); 
                 });
             }, this);
