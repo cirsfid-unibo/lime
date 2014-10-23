@@ -73,14 +73,39 @@ Ext.define('LIME.controller.WidgetManager', {
      * @return {markedElementWidget} Created widget
      * */    
     createWidget: function(id, config) {
-        var newWidget = Ext.widget('markedElementWidget', {
-            items : config.list,
-            id : id,
-            width: "40%",
-            title : config.title,
-            attributes : config.attributes
-        });
+        var me = this, 
+            newWidget = Ext.widget('markedElementWidget', {
+                items : config.list,
+                id : id,
+                width: "40%",
+                title : config.title,
+                attributes : config.attributes,
+                bbar: [{
+                    xtype: 'component',
+                    id: 'successSaveLabel',
+                    hidden: true,
+                    flex: 1,
+                    baseCls: 'form-success-state',
+                    cls: Ext.baseCSSPrefix + 'success-icon',
+                    html: 'Data have been saved'
+                },'->', {
+                    xtype: 'button',
+                    text: Locale.getString("saveDocumentButtonLabel"),
+                    handler: function() {
+                        me.saveWidgetData(this.up("markedElementWidget"), this);
+                    }    
+                }]
+            });
         return newWidget; 
+    },
+
+
+    saveWidgetData: function(widget, button) {
+        var me = this;
+        Ext.each(widget.query("textfield"), function(field) {
+            me.updateWidgetData(widget, field, false, true);
+        });
+        widget.down("#successSaveLabel").setVisible(true);
     },
     
     /*
@@ -101,7 +126,7 @@ Ext.define('LIME.controller.WidgetManager', {
                 this.tab.add(widget);    
             }
             // Calculates the height of the panel base on numer of fields in the widget
-            panelHeight = (widgetConfig.list.length*30)+70;
+            panelHeight = (widgetConfig.list.length*30)+102;
             this.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
                                     true, this.tabGroupName, panelHeight);
         } else {
@@ -255,6 +280,7 @@ Ext.define('LIME.controller.WidgetManager', {
      * */
     updateWidgetData: function(widget, field, value, updateAttributes) {
         var originalName = field.origName;
+        value = value || field.getValue();
         //check if field is a date and convert to the ISO format
         if (Ext.isDate(value)) {
             var newDate = Utilities.toISOString(value);
@@ -278,9 +304,8 @@ Ext.define('LIME.controller.WidgetManager', {
         me.control({
             "markedElementWidget textfield" : {
                 change : function(field) {
-                    var value = field.getValue(),
-                        widget = field.up('markedElementWidget');
-                    me.updateWidgetData(widget, field, value, true);
+                    var widget = field.up('markedElementWidget');
+                    widget.down("#successSaveLabel").setVisible(false);
                 },
                 focus : function(field) {
                     var widget = field.up('markedElementWidget'),
