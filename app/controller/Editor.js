@@ -1381,6 +1381,16 @@ Ext.define('LIME.controller.Editor', {
                                 editorView.fireEvent('setcontent', editor, e);
                             });
 
+                            editor.on('BeforeExecCommand', function(e) {
+                                if(e.value && e.value.indexOf('<table>') != -1) {
+                                    var node = me.getSelectedNode(true);
+                                    var config = Interpreters.getButtonConfig('table');
+                                    if (!me.getController('Marker').isAllowedMarking(node, config)) {
+                                        e.preventDefault();
+                                    }
+                                }
+                            });
+
                             editor.on('click', function(e) {
                                 // Fire a click event only if left mousebutton was used
                                 if (e.which == 1){
