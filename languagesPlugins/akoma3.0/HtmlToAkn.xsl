@@ -105,16 +105,7 @@
         </xsl:variable>
 		<xsl:element name="{$aknName}">
 			<xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
-			<xsl:choose>
-	    		<xsl:when test="(count(div[contains(@class, 'block p')]) = 0)">
-	    			<xsl:element name="p">
-	    				<xsl:apply-templates />
-	    			</xsl:element>
-	    		</xsl:when>
-	    		<xsl:otherwise>
-	    			<xsl:apply-templates />
-	    		</xsl:otherwise>
-	 		</xsl:choose>	
+			<xsl:call-template name="manageImplicitP" />
 		</xsl:element>
 	</xsl:template>
     
@@ -154,18 +145,41 @@
         	<xsl:attribute name="eId"><xsl:value-of select="concat('ctn', generate-id(.))" /></xsl:attribute>
         	<!-- Content element can not contains directly text so add a p element if it's needed -->
             <!--  and (count(child::text()) > 0) -->
-        	<xsl:choose>
-	    		<xsl:when test="(count(div[contains(@class, 'block p')]) = 0)">
-	    			<xsl:element name="p">
-	    				<xsl:apply-templates />
-	    			</xsl:element>
-	    		</xsl:when>
-	    		<xsl:otherwise>
-	    			<xsl:apply-templates />
-	    		</xsl:otherwise>
-	 		</xsl:choose>
-		</xsl:element>
-	</xsl:template>
+            <xsl:call-template name="manageImplicitP"/>
+        </xsl:element>
+    </xsl:template>
+
+    <xsl:template name="manageImplicitP">
+        <xsl:choose>
+            <xsl:when test="(count(div[contains(@class, 'block')]) = 0) and ./table">
+                <p>
+                    <xsl:apply-templates select="./table/preceding-sibling::node()"/>
+                </p>
+                <xsl:apply-templates select="./table"/>
+                <p>
+                    <xsl:apply-templates select="./table/following-sibling::node()"/>
+                </p>
+            </xsl:when>
+            <xsl:when test="count(div[contains(@class, 'block')]) = 0">
+                <p>
+                    <xsl:apply-templates />
+                </p>
+            </xsl:when>
+            <!-- If there is exactly one block, which contains a table, split it. -->
+            <xsl:when test="(count(div[contains(@class, 'block')]) = 1) and */table">
+                <p>
+                    <xsl:apply-templates select="*/table/preceding-sibling::node()"/>
+                </p>
+                <xsl:apply-templates select="*/table"/>
+                <p>
+                    <xsl:apply-templates select="*/table/following-sibling::node()"/>
+                </p>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:apply-templates />
+            </xsl:otherwise>
+        </xsl:choose> 
+    </xsl:template>
 	
 	<xsl:template match="span[contains(@class,'documentRef')]">
 		<xsl:variable name="aknName">
@@ -277,27 +291,43 @@
     	</xsl:element>
     </xsl:template>
 
-<!-- 
-    <xsl:template match="p">
-    	<xsl:element name="p">
-        	<xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
-    		<xsl:apply-templates />
-    	</xsl:element>
-    </xsl:template> -->
+    <xsl:template match="tbody">
+        <xsl:apply-templates/>
+    </xsl:template>
 
     <xsl:template match="td">
 		<xsl:element name="td">
-		    <xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
-			<xsl:if test="@rowspan">
-        		<xsl:attribute name="rowspan"><xsl:value-of select="@rowspan" /></xsl:attribute>
-        	</xsl:if>
-			<xsl:if test="@colspan">
-        		<xsl:attribute name="colspan"><xsl:value-of select="@colspan" /></xsl:attribute>
-        	</xsl:if>
-			<xsl:if test="@style">
-        		<xsl:attribute name="style"><xsl:value-of select="@style" /></xsl:attribute>
-        	</xsl:if>
-		    <xsl:apply-templates />
+            <!-- Add p wrapper if we contain only text nodes -->
+            <xsl:choose>
+                <xsl:when test="count(div[contains(@class, 'block')])=0">
+                    <xsl:element name="p">
+                        <xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
+                        <xsl:if test="@rowspan">
+                            <xsl:attribute name="rowspan"><xsl:value-of select="@rowspan" /></xsl:attribute>
+                        </xsl:if>
+                        <xsl:if test="@colspan">
+                            <xsl:attribute name="colspan"><xsl:value-of select="@colspan" /></xsl:attribute>
+                        </xsl:if>
+                        <xsl:if test="@style">
+                            <xsl:attribute name="style"><xsl:value-of select="@style" /></xsl:attribute>
+                        </xsl:if>
+                        <xsl:apply-templates />
+                    </xsl:element>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
+                    <xsl:if test="@rowspan">
+                        <xsl:attribute name="rowspan"><xsl:value-of select="@rowspan" /></xsl:attribute>
+                    </xsl:if>
+                    <xsl:if test="@colspan">
+                        <xsl:attribute name="colspan"><xsl:value-of select="@colspan" /></xsl:attribute>
+                    </xsl:if>
+                    <xsl:if test="@style">
+                        <xsl:attribute name="style"><xsl:value-of select="@style" /></xsl:attribute>
+                    </xsl:if>
+                    <xsl:apply-templates />
+                </xsl:otherwise>
+            </xsl:choose>
     	</xsl:element>
     </xsl:template>
 
@@ -338,7 +368,7 @@
 	    	<xsl:apply-templates select="@*[not(name() =  'class')]" mode="notAknPrefixAttributes" />
 			<xsl:apply-templates />
 		</xsl:element>
-</xsl:template>
+    </xsl:template>
     
     <!-- <xsl:template match="text()">
         <xsl:value-of select="normalize-space(.)"/>

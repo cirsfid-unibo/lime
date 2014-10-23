@@ -561,6 +561,10 @@
     	</xsl:element>
 	</xsl:template>
 	
+	<xsl:template match="akn:td[count(./*)=1]/akn:p">
+		<xsl:apply-templates select="@*" mode="undefinedElementAttributes" />
+		<xsl:apply-templates />
+	</xsl:template>
     
     <!-- <xsl:template match="text()">
         <xsl:value-of select="normalize-space(.)"/>
