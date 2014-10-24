@@ -26,10 +26,6 @@ hr[data-mce-selected] {
 .breaking:hover {
 }
 
-.bill {
-	-webkit-overflow-scrolling: touch;
-}
-
 *[focused = 'true'] {
 	-webkit-box-shadow: 0px 0px 10px 2px rgba(105,105,105,1);
 	-moz-box-shadow: 0px 0px 10px 2px rgba(105,105,105,1);
@@ -43,4 +39,24 @@ span.visibleBookmark {
     line-height: 20px  !important;
     width: 5px  !important;
     margin: 0 5px !important;
+}
+
+.noboxes *::before, .noboxes *::after {
+	border: initial;
+	line-height: initial; 
+	padding: initial;
+	background: initial;
+	margin: initial;
+	content: initial;
+	position: initial;
+	display: initial;
+}
+
+.noboxes * {
+	border: initial;
+	background: initial;
+}
+
+.nocolors * {
+	color: initial;
 }

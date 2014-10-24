@@ -336,6 +336,9 @@
 	"subtitle": {
 		"pattern": "hcontainer"
 	},
+	"table": {
+		"pattern": "block"
+	},
 	"tblock": {
 		"pattern": "container"
 	},

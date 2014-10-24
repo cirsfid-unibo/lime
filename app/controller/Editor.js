@@ -155,6 +155,22 @@ Ext.define('LIME.controller.Editor', {
     },
 
     /**
+     * Enables/Disables boxes, color and custom typography in the editor.
+     */
+    updateStyle : function(displayBox, displayColor, displayStyle) {
+        var el = Ext.fly(this.getEditor().getBody());
+
+        if(displayBox) el.removeCls('noboxes');
+        else el.addCls('noboxes');
+
+        if(displayColor) el.removeCls('nocolors');
+        else el.addCls('nocolors');
+
+        if(displayStyle) el.addCls('pdfstyle');
+        else el.removeCls('pdfstyle');
+    },
+
+    /**
      * Returns the editor DOM position inside the whole page (main DOM).
      * @returns {Array} The coordinates of the position as an array (i.e. [x,y])
      */
@@ -797,6 +813,9 @@ Ext.define('LIME.controller.Editor', {
             if(Ext.isFunction(customStyleFn)) {
                 styleValue = customStyleFn(styleValue);
             }
+            if (styleValue.pdf) {
+                this.addContentStyle('.pdfstyle *[class="' + styleClass + '"]', styleValue.pdf);
+            }
             this.applyAllStyles('*[class="' + styleClass + '"]', styleValue, button.waweConfig.shortLabel, cmp);
             var isBlock = DomUtils.blockTagRegex.test(button.waweConfig.pattern.wrapperElement);
             if(isBlock){
@@ -1379,6 +1398,16 @@ Ext.define('LIME.controller.Editor', {
 
                             editor.on('setcontent', function(e) {
                                 editorView.fireEvent('setcontent', editor, e);
+                            });
+
+                            editor.on('BeforeExecCommand', function(e) {
+                                if(e.value && e.value.indexOf('<table>') != -1) {
+                                    var node = me.getSelectedNode(true);
+                                    var config = Interpreters.getButtonConfig('table');
+                                    if (!me.getController('Marker').isAllowedMarking(node, config)) {
+                                        e.preventDefault();
+                                    }
+                                }
                             });
 
                             editor.on('click', function(e) {

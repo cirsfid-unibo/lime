@@ -87,6 +87,26 @@ Ext.define('LIME.view.maintoolbar.WindowMenuButton', {
             items : [{
                 id: 'showViews', //temporary
                 text : Locale.strings.menuShowView
+            }, {
+                id: 'showStyles',
+                text: Locale.strings.menuShowStyle,
+                menu: {
+                    items: [{
+                        xtype: 'menucheckitem',
+                        id: 'showBoxCheckbox',
+                        checked: true,
+                        text: Locale.strings.menuShowStyleBox,
+                    }, {
+                        xtype: 'menucheckitem',
+                        id: 'showColorCheckbox',
+                        checked: true,
+                        text: Locale.strings.menuShowStyleColor,
+                    }, {
+                        xtype: 'menucheckitem',
+                        id: 'showStyleCheckbox',
+                        text: Locale.strings.menuShowStylePdf,
+                    }]
+                }
             }]
         },
         this.callParent(arguments);
