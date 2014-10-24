@@ -155,6 +155,22 @@ Ext.define('LIME.controller.Editor', {
     },
 
     /**
+     * Enables/Disables boxes, color and custom typography in the editor.
+     */
+    updateStyle : function(displayBox, displayColor, displayStyle) {
+        var el = Ext.fly(this.getEditor().getBody());
+
+        if(displayBox) el.removeCls('noboxes');
+        else el.addCls('noboxes');
+
+        if(displayColor) el.removeCls('nocolors');
+        else el.addCls('nocolors');
+
+        if(displayBox) el.removeCls('nostyle');
+        else el.addCls('nostyle');
+    },
+
+    /**
      * Returns the editor DOM position inside the whole page (main DOM).
      * @returns {Array} The coordinates of the position as an array (i.e. [x,y])
      */

@@ -95,6 +95,15 @@ Ext.define('LIME.controller.MainToolbar', {
         ref : 'windowMenuButton',
         selector : 'windowMenuButton'
     },{
+        ref : 'showBoxCheckbox',
+        selector : '#showBoxCheckbox'
+    },{
+        ref : 'showColorCheckbox',
+        selector : '#showColorCheckbox'
+    },{
+        ref : 'showStyleCheckbox',
+        selector : '#showStyleCheckbox'
+    },{
         ref : 'mainToolbar',
         selector : 'mainToolbar'
     }],
@@ -568,7 +577,7 @@ Ext.define('LIME.controller.MainToolbar', {
                 }
             },
             
-            'windowMenuButton menuitem': {
+            'windowMenuButton *[id=showViews] menuitem': {
                 click: function(cmp) {
                     var main = this.getMain(),
                         menu = this.getWindowMenuButton(),
@@ -580,6 +589,16 @@ Ext.define('LIME.controller.MainToolbar', {
                         this.addTab(cmp.openElement);
                         menu.setCheckIcon(cmp);
                     }
+                }
+            },
+
+            'windowMenuButton *[id=showStyles] menuitem': {
+                checkchange: function(cmp) {
+                    var displayBox = this.getShowBoxCheckbox().checked,
+                        displayColor = this.getShowColorCheckbox().checked,
+                        displayStyle = this.getShowStyleCheckbox().checked,
+                        editor = this.getController('Editor');
+                    editor.updateStyle(displayBox, displayColor, displayStyle);
                 }
             },
             
