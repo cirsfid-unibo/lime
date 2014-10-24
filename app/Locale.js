@@ -57,8 +57,8 @@ Ext.define('LIME.Locale', {
 	pStrings: {},
 
     constructor: function() {
+        this.detectLanguage();
         this.initConfig();
-		this.detectLanguage();
 		this.loadLanguage();
     },
     
@@ -82,6 +82,7 @@ Ext.define('LIME.Locale', {
         if (!(lang == null || lang == undefined || Ext.isEmpty(lang))) {
             this.initConfig({lang : lang.toLowerCase()});
         }
+        console.log(lang);
     },
     
     loadLanguage: function() {
