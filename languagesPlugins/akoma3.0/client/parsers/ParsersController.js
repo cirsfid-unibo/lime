@@ -473,9 +473,16 @@ Ext.define('LIME.controller.ParsersController', {
             attr = prefix+"refersTo";
         Ext.each(nodes, function(node) {
             var text = DomUtils.getTextOfNode(node);
-                id = text.replace(/\s/g, "").toLowerCase().trim();
+                id = text.replace(/\s/g, "").toLowerCase().trim(),
+                signature = Ext.fly(node).parent(".signature"),
+                asAttribute = "", role = null;
+            
+
+            role = (signature) ? signature.down(".role", true) : null;
+            asAttribute = (role) ? role.getAttribute(attr) : "";
+            node.setAttribute(prefix+"as", asAttribute);
             node.setAttribute(attr, "#"+id);
-            //TODO: add as attribute
+
             me.addMetaItem("references", {
                 name: "TLCPerson",
                 attributes: [{

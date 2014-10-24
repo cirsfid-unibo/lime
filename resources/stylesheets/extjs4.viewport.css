@@ -129,6 +129,20 @@ body .ux-notification-success {
 	background-image: url('../images/icons/error.png');
 }
 
+.x-success-icon {
+	background-image: url('../images/icons/accept.png');
+}
+
+.form-success-state {
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    cursor: default;
+    font-size: 11px;
+    height: 16px;
+    line-height: 18px;
+    padding-left: 20px;
+}
+
 .draggableGrid .x-grid-cell {
 	/*border-bottom-width: 1px;
 	border-bottom-color: #A2FAB2; 
