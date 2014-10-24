@@ -166,8 +166,8 @@ Ext.define('LIME.controller.Editor', {
         if(displayColor) el.removeCls('nocolors');
         else el.addCls('nocolors');
 
-        if(displayBox) el.removeCls('nostyle');
-        else el.addCls('nostyle');
+        if(displayStyle) el.addCls('pdfstyle');
+        else el.removeCls('pdfstyle');
     },
 
     /**
@@ -812,6 +812,9 @@ Ext.define('LIME.controller.Editor', {
             var styleValue = button.waweConfig.pattern.wrapperStyle;
             if(Ext.isFunction(customStyleFn)) {
                 styleValue = customStyleFn(styleValue);
+            }
+            if (styleValue.pdf) {
+                this.addContentStyle('.pdfstyle *[class="' + styleClass + '"]', styleValue.pdf);
             }
             this.applyAllStyles('*[class="' + styleClass + '"]', styleValue, button.waweConfig.shortLabel, cmp);
             var isBlock = DomUtils.blockTagRegex.test(button.waweConfig.pattern.wrapperElement);
