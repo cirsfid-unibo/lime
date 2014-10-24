@@ -1187,25 +1187,79 @@ Ext.define('LIME.controller.ModsMarkerController', {
     splitHandler: function(button) {
         var me = this, editor = me.getController("Editor"),
             selection = editor.getSelectionObject(null, null, true),
-            language = me.getController("Language"),
             node = DomUtils.getFirstMarkedAncestor(selection.node),
-            splitNode = selection.node,
-            button, iternode, splitedData = [];
+            formTitle = "Select the element to split", button;
 
         if(node && selection.start == selection.node && selection.node == selection.start) {
-            button = DomUtils.getButtonByElement(node);
-            if(button) {
-                var newElement = Ext.DomHelper.createDom({
-                    tag : 'div'
+            // Save a reference of the selection
+            editor.getBookmark();
+            selection = editor.getSelectionObject();
+            if(selection.start) {
+                Ext.fly(selection.start).addCls("visibleBookmark");
+                var parents = DomUtils.getMarkedParents(selection.start, function(parent) {
+                    if(!DomUtils.getFirstMarkedAncestor(parent.parentNode)) {
+                        return false;
+                    }
+                    return true;
                 });
-                DomUtils.insertAfter(newElement, node);
-                iternode = splitNode.nextElementSibling;
-                while(iternode) {
-                    newElement.appendChild(iternode);
-                    iternode = iternode.nextElementSibling;
+                if (parents.length) {
+                    var elementSelector = {
+                        xtype: 'radiogroup',
+                        columns: 1,
+                        items: parents.reverse().map(function(parent) {
+                            var id = parent.getAttribute(DomUtils.elementIdAttribute),
+                                relBtn = DomUtils.getButtonByElement(parent);
+                            return {
+                                boxLabel: relBtn.waweConfig.shortLabel,
+                                name: 'splitParent',
+                                inputValue: id
+                            };
+                        })
+                    };
+
+                    Utilities.getLastItem(elementSelector.items).checked = true;
+
+                    var onClose = function(cmp) {
+                        cmp.close();
+                        Ext.fly(selection.start).removeCls("visibleBookmark");
+                    };
+
+                    me.createAndShowFloatingForm(selection.start, formTitle, false, false, function(cmp) {
+                        var parentId = cmp.getValues().splitParent;
+                        var tmpParent = Ext.fly(selection.start).parent(".toMarkNode, .beaking", true);
+                        var posNode = tmpParent || selection.start;
+                        me.splitElement(DocProperties.getMarkedElement(parentId).htmlElement, posNode);
+                        onClose(cmp);
+                    }, onClose, {
+                        items : [elementSelector],
+                        width: 200
+                    });
+                } else {
+                    Ext.fly(selection.start).removeCls("visibleBookmark");
+                    Ext.MessageBox.alert("Error", "You can't split this element!");
                 }
-                node.setAttribute(me.getSplitAttr(), "true");
-                newElement.setAttribute(me.getSplitAttr(), "true");
+            }
+        } else {
+            Ext.MessageBox.alert("Error", "You can split one element at time!");
+        } 
+    },
+
+    splitElement: function(node, posNode) {
+        var me = this;
+
+        if (posNode.parentNode == node) {
+            var button = DomUtils.getButtonByElement(node);
+            var newElement = Ext.DomHelper.createDom({
+                 tag : node.tagName
+            });
+            DomUtils.insertAfter(newElement, node);
+            while(posNode.nextSibling) {
+                newElement.appendChild(posNode.nextSibling);
+            }
+            node.setAttribute(me.getSplitAttr(), "true");
+            newElement.setAttribute(me.getSplitAttr(), "true");
+            
+            if(button) {
                 me.setElementStyles([node, newElement], button, button, {
                     shortLabel: button.waweConfig.shortLabel+" "+Locale.getString("splitted", me.getPluginName()),
                     modType: me.getSplitAttr(),
@@ -1217,11 +1271,13 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     noEvent : true,
                     nodes : [newElement]
                 });
-                me.setSplitMetadata(node, newElement);
-            }
-        } else {
-            Ext.MessageBox.alert("Error", "You can split one element at time!");
-        } 
+                //TODO: add metadata
+                //me.setSplitMetadata(node, newElement);
+            }    
+        } else if(node.compareDocumentPosition(posNode) & Node.DOCUMENT_POSITION_CONTAINED_BY) {
+            me.splitElement(posNode.parentNode, posNode);
+            me.splitElement(node, posNode.parentNode);
+        }
     },
     
     setSplitMetadata: function(node1, node2) {
@@ -1622,19 +1678,20 @@ Ext.define('LIME.controller.ModsMarkerController', {
         me.openedForm = panel;
     },
     
-    createAndShowFloatingForm: function(node, title ,text, readOnly, onAccept, onCancel) {
+    createAndShowFloatingForm: function(node, title ,text, readOnly, onAccept, onCancel, customConfig) {
+        customConfig = customConfig || {};
         var me = this, editor = me.getController("Editor"), 
             editorBoundingRect = editor.getIframe().dom.getBoundingClientRect(),
             elementBoundingRect = node.getBoundingClientRect(),
             boxMargin= {top: -150, left: -20},
-            boxWidth = 300,
+            boxWidth = customConfig.width || 300,
             boxPos = {x: (editorBoundingRect.left+elementBoundingRect.left+boxMargin.left),
                       y: (editorBoundingRect.top+elementBoundingRect.top+boxMargin.top)},
             panel, buttons; 
         
         
         if(!readOnly) {
-            buttons: [{
+            buttons = [{
                 text : Locale.getString("openFileWindowSouthCancelButtonLabel"),
                 icon : 'resources/images/icons/cancel.png',
                 handler : function() {
@@ -1659,7 +1716,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             floating : true,
             frame : true,
             layout : 'fit',
-            items : [{
+            items : customConfig.items || [{
                 xtype : "textareafield",
                 name : 'newText',
                 readOnly: readOnly,
