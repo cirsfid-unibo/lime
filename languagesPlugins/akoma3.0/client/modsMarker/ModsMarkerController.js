@@ -1244,9 +1244,9 @@ Ext.define('LIME.controller.ModsMarkerController', {
         } 
     },
 
-    splitElement: function(node, posNode) {
+    splitElement: function(node, posNode, initialSplitNode) {
         var me = this;
-
+        initialSplitNode = initialSplitNode || node;
         if (posNode.parentNode == node) {
             var button = DomUtils.getButtonByElement(node);
             var newElement = Ext.DomHelper.createDom({
@@ -1271,12 +1271,13 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     noEvent : true,
                     nodes : [newElement]
                 });
-                //TODO: add metadata
-                //me.setSplitMetadata(node, newElement);
-            }    
+                if(initialSplitNode == node) {
+                    me.setSplitMetadata(node, newElement);
+                }
+            }
         } else if(node.compareDocumentPosition(posNode) & Node.DOCUMENT_POSITION_CONTAINED_BY) {
-            me.splitElement(posNode.parentNode, posNode);
-            me.splitElement(node, posNode.parentNode);
+            me.splitElement(posNode.parentNode, posNode, initialSplitNode);
+            me.splitElement(node, posNode.parentNode, initialSplitNode);
         }
     },
     
