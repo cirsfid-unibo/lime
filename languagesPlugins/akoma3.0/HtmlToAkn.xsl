@@ -361,7 +361,14 @@
     <!-- Called template -->
     <xsl:template match="div[contains(@class,'meta')]//div">  	
     	<xsl:variable name="aknName">
-                <xsl:value-of select="@class" />
+            <xsl:choose>
+                <xsl:when test="substring-after(./@class,' ') != ''">
+                    <xsl:value-of select="translate(substring-after(./@class,' '),'_','')" />
+                </xsl:when>
+                <xsl:otherwise>
+                   <xsl:value-of select="@class" />
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:variable>
 	    <xsl:element name="{$aknName}">
 	    	<xsl:apply-templates select="@*" mode="aknPrefixAttributes" />

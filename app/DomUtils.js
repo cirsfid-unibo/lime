@@ -396,6 +396,26 @@ Ext.define('LIME.DomUtils', {
         return null;
     },
 
+    getMarkedParents: function(node, filterFunction) {
+        var parents = [], iterNode = node;
+
+        while(iterNode) {
+            var parent = DomUtils.getFirstMarkedAncestor(iterNode.parentNode);
+            if(parent) {
+                if(Ext.isFunction(filterFunction)) {
+                    if(filterFunction(parent)) {
+                        parents.push(parent);
+                    }
+                } else {
+                    parents.push(parent);
+                }
+            }
+            iterNode = parent;
+        }
+
+        return parents;
+    },
+
     /**
      * This function returns a list of all the marked children's ids
      * found starting from node.
