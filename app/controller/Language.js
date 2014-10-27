@@ -399,6 +399,7 @@ Ext.define('LIME.controller.Language', {
         newId = langSetId(markedElement, langPrefix, root, counters);
         if (newId != '') {
             markedElement.setAttribute(langPrefix + DomUtils.langElementIdAttribute, newId);
+            markedElement.setAttribute(langPrefix + Language.getElementIdAttribute(), newId);
         }
             
         return newId;

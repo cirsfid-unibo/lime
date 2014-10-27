@@ -1291,7 +1291,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             prevId = language.nodeGetLanguageAttribute(node1, "eId").value || node1.getAttribute(DomUtils.elementIdAttribute),
             expressionThis = metaDom.querySelector("[class=FRBRExpression] [class=FRBRthis]");
             
-        prevId = (expressionThis && expressionThis.getAttribute("value")) 
+        var prevId = (expressionThis && expressionThis.getAttribute("value")) 
                 ? expressionThis.getAttribute("value")+"#"+prevId : "#"+prevId;
             
         textModObj = {
@@ -1332,6 +1332,12 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 },{
                     name: langPrefix+"showAs",
                     value: "previous"
+                }]
+            }, {
+                name: "old",
+                attributes: [{
+                    name: langPrefix+"href",
+                    value: "#"+node1.getAttribute(DomUtils.elementIdAttribute)
                 }]
             }]
         };
