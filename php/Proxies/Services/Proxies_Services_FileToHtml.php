@@ -153,14 +153,22 @@ class Proxies_Services_FileToHtml implements Proxies_Services_Interface
         $xslt = new XSLTProcessor();
         $xslt->importStylesheet($this->cleaningXslDom);
         $htmlDom = new DOMDocument();
+        libxml_use_internal_errors(true);
         $htmlDom->loadHTML($htmlSource);
+        libxml_use_internal_errors(false);
         $result = $xslt->transformToXML($htmlDom);
+
+    	$result = str_replace("&#160", " ", $result);
+    	$result = str_replace("&#xa0", " ", $result);
+    	$result = str_replace("&nbsp", " ", $result);
+    	$result = str_replace(" ", " ", $result);
+    	$result = str_replace(chr(0xC2).chr(0xA0), " ", $result);
         return $result;
     }
 	
 	private function isTypeAllowed($mime) {
 		$allowedTypes = array("text/html", "application/msword", "application/pdf", "application/vnd.oasis.opendocument.text", "text/plain",
-							   "application/rtf","text/rtf");
+							   "application/rtf","text/rtf","application/vnd.ms-office", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 		$docxExtension = ".docx";
 		$fileExtension = (false === $pos = strrpos($this->_fileName, '.')) ? '' : substr($this->_fileName, $pos);
 		

@@ -125,6 +125,8 @@ Ext.define('LIME.controller.MarkingMenu', {
 		Ext.each(commonElements, function(button) {
             common.add(me.createButton(button));
         }, this);
+
+        this.application.fireEvent(Statics.eventsNames.markingMenuLoaded);
 	},
 
 	/**
@@ -263,6 +265,17 @@ Ext.define('LIME.controller.MarkingMenu', {
 		};
 		return config;
 	},
+
+    /* Return the list of all buttons */
+    getAllButtons : function() {
+        var refs = this.buttonsReferences;
+            buttons = [];
+        for (var k in refs)
+            if (refs.hasOwnProperty(k))
+                if(refs[k].hasOwnProperty(k + '0'))
+                    buttons.push(refs[k][k + '0']);
+        return buttons;
+    },
 
 	addMarkingMenu : function(pluginData) {
         var me = this, vp = this.getAppViewport(),

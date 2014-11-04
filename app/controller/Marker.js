@@ -324,8 +324,7 @@ Ext.define('LIME.controller.Marker', {
         Ext.each(newElements, function(newElement) {
             // Wrap the element inside an Ext.Element
             var markingId = this.getMarkingId(button.id), // Get a unique id for the marked element
-                idPrefix = button.waweConfig.rules[Utilities.buttonFieldDefault].attributePrefix || '', 
-                styleClass = buttonPattern.wrapperClass;
+                idPrefix = button.waweConfig.rules[Utilities.buttonFieldDefault].attributePrefix || '';
             // Set the internal id
             newElement.setAttribute(DomUtils.elementIdAttribute, markingId);
             
@@ -339,8 +338,6 @@ Ext.define('LIME.controller.Marker', {
             if (config.attribute && config.attribute.name && config.attribute.value) {// check if attribute has name and value
                 newElement.setAttribute(idPrefix + config.attribute.name, config.attribute.value);
             }
-            // Add the style
-            editorController.applyAllStyles('*[class="' + styleClass + '"]', buttonPattern.wrapperStyle, button.waweConfig.shortLabel);
             //var explorer = this.getController("Explorer");
             // Set the document properties
             DocProperties.setMarkedElementProperties(markingId, {
@@ -529,7 +526,7 @@ Ext.define('LIME.controller.Marker', {
             buttonPattern = button.waweConfig.pattern,
             isBlock = DomUtils.blockTagRegex.test(buttonPattern.wrapperElement),
             idPrefix = button.waweConfig.rules[Utilities.buttonFieldDefault].attributePrefix || '',
-            styleClass = buttonPattern.wrapperClass, markedElements = [];
+            markedElements = [];
           
         Ext.each(config.nodes,function(newElement,index){
             var markingId = this.getMarkingId(button.id),
@@ -561,8 +558,6 @@ Ext.define('LIME.controller.Marker', {
             if (config.attributes && (attrName = config.attributes[index].name) && (attrValue = config.attributes[index].value)) {// check if attribute has name and value
                 newElement.setAttribute(idPrefix + attrName, attrValue);
             }
-            // Add the style
-            editorController.applyAllStyles('*[class="' + styleClass + '"]', buttonPattern.wrapperStyle, button.waweConfig.shortLabel);
 
             if(isBlock){
                 this.addBreakingElements(newElement);

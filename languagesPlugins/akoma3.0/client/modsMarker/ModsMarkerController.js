@@ -782,7 +782,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         
         style["this"]+= ";"+buttonCfg.elementStyle;
         style["before"]+= ";"+buttonCfg.labelStyle;
-        editor.applyAllStyles('*[class="' + styleClass + '"]['+buttonCfg.modType+']', style, buttonCfg.shortLabel);
+        editor.applyAllStyles('body:not(.noboxes) *[class="' + styleClass + '"]['+buttonCfg.modType+']', style, buttonCfg.shortLabel);
     },
     
     activeInsertionHandler: function(button, markedElements, originalButton) {

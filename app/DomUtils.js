@@ -604,21 +604,29 @@ Ext.define('LIME.DomUtils', {
      * @param {String} selector The css selector
      * @param {String} styleText The string representing the property
      * @param {String} doc Document to apply the style
+     * @param {String} styleId (Optional) id the style element you want to add to
      */
-    addStyle : function(selector, styleText, doc) {
+    addStyle : function(selector, styleText, doc, styleId) {
         // Create a style element and append it into the head element
-        var head = doc.querySelector("head"), styleEl = doc.querySelector("style");
+        var head = doc.querySelector('head'),
+            styleEl = head.querySelector('style');
+
+        if (styleId)
+            styleEl = head.querySelector('#' + styleId);
+
         if (!styleEl) {
             styleEl = doc.createElement('style');
-            head.appendChild(styleEl);
+            if (styleId)
+                styleEl.setAttribute('id', styleId);
+            head.insertBefore(styleEl, head.firstChild);
         }
+
         // Append all the style properties to the style element just created
-        if (styleEl.innerHTML.indexOf(selector + " {") == -1) {
-            var styleTxt = selector + " {" + styleText + "}";
-            var cssText = doc.createTextNode(styleTxt);
-            styleEl.appendChild(cssText);
-        }
+        var styleTxt = selector + " {" + styleText + "}";
+        var cssText = doc.createTextNode(styleTxt);
+        styleEl.appendChild(cssText);
     },
+
     /**
      * Wrapper for DOMParser.parseFromString
      */

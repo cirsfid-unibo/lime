@@ -408,6 +408,9 @@
           "priority": 0
         }
       }
+    },
+    "wrapperStyle": {
+      "pdf": "text-decoration: underline;"
     }
   },
   "object": {
@@ -442,8 +445,9 @@
       ]
     },
     "wrapperStyle": {
-      "before": "border: 1px solid #C0E0DA; background-color:#C0E0DA;color:#000000;font-size:8pt;position:relative;left:85%;margin:0px;padding:2px 4px 2px 4px;border-radius: 3px;width:90px;display: block;text-align:center; margin-bottom:5px;",
-      "this": "border-radius: 3px; border:1px solid #C0E0DA; padding:3px; margin:3px 0px 3px 0px;"
+      "before":"border: 1px solid #C0E0DA; background-color:#C0E0DA;color:#000000;font-size:8pt;position:relative;left:85%;margin:0px;padding:2px 4px 2px 4px;border-radius: 3px;width:90px;display: block;text-align:center; margin-bottom:5px;",
+      "this": "border-radius: 3px; border:1px solid #C0E0DA; padding:3px; margin:3px 0px 3px 0px; display: block",
+      "pdf": "display: inline"
     }
   },
   "papers": {
@@ -482,7 +486,8 @@
     "buttonStyle": "background-color: #74BAAC;",
     "wrapperStyle": {
       "before": "background-color: #74BAAC; border-color: #74BAAC;",
-      "this": "border:1px solid #74BAAC; color:#FF6600;"
+      "this": "border:1px solid #74BAAC; color:#FF6600;",
+      "pdf": "text-align:center; font-size: .9em; font-weight: bold;"
     }
   },
   "preface": {
@@ -490,7 +495,8 @@
     "buttonStyle": "background-color: #74BAAC;",
     "wrapperStyle": {
       "before": "background-color: #74BAAC; border:1px solid #74BAAC;",
-      "this": "border:1px solid #74BAAC; color: #66A15E;"
+      "this": "border:1px solid #74BAAC; color: #66A15E;",
+      "pdf": "text-align:center; font-weight:bold; margin: 70px 0px 40px; font-size: 1.1em;"
     }
   },
   "proceduralMotions": {

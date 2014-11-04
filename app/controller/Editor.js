@@ -168,6 +168,59 @@ Ext.define('LIME.controller.Editor', {
 
         if(displayStyle) el.addCls('pdfstyle');
         else el.removeCls('pdfstyle');
+
+        var el2 = Ext.fly(this.getEditor(this.getSecondEditor()).getBody());
+
+        if(displayBox) el2.removeCls('noboxes');
+        else el2.addCls('noboxes');
+
+        if(displayColor) el2.removeCls('nocolors');
+        else el2.addCls('nocolors');
+
+        if(displayStyle) el2.addCls('pdfstyle');
+        else el2.removeCls('pdfstyle');
+    },
+
+    /*
+     * When the buttons structure in marking menu is loaded, load all the CSS
+     */
+    loadCss: function() {
+        var me = this;
+        Ext.defer(function() {
+            me.application.fireEvent(Statics.eventsNames.progressUpdate, Locale.strings.progressBar.loadingDocumentStyles);    
+        }, 1);
+        
+
+        var addStyle = function (button) {
+            if (!button.waweConfig.pattern) return;
+            var styleClass = button.waweConfig.pattern.wrapperClass;
+            var styleValue = button.waweConfig.pattern.wrapperStyle;
+            if (styleValue.pdf)
+                me.addContentStyle('.pdfstyle *[class="' + styleClass + '"]', styleValue.pdf);
+            me.applyAllStyles('*[class="' + styleClass + '"]', styleValue, button.waweConfig.shortLabel);
+            me.applyAllStyles('.pdfstyle:not(.noboxes) *[class="' + styleClass + '"]', styleValue, button.waweConfig.shortLabel);
+
+            // Apply style to second editor
+            var editor2 = me.getSecondEditor();
+            if (editor2) {
+                if (styleValue.pdf)
+                    me.addContentStyle('.pdfstyle *[class="' + styleClass + '"]', styleValue.pdf, editor2);
+                me.applyAllStyles('*[class="' + styleClass + '"]', styleValue, button.waweConfig.shortLabel, editor2);
+                me.applyAllStyles('.pdfstyle:not(.noboxes) *[class="' + styleClass + '"]', styleValue, button.waweConfig.shortLabel, editor2);
+            }
+        }
+
+        var counter = 0;
+        var buttons = this.getController('MarkingMenu').getAllButtons();
+        var iter = function () {
+            if (counter < buttons.length) {
+                addStyle(buttons[counter++]);
+                setTimeout(iter, 0);
+            } else {
+                me.application.fireEvent(Statics.eventsNames.progressEnd);
+            }
+        }
+        iter();
     },
 
     /**
@@ -663,7 +716,16 @@ Ext.define('LIME.controller.Editor', {
      * @param {String} styleText The string representing the property
      */
     addContentStyle : function(selector, styleText, cmp) {
-        DomUtils.addStyle(selector, styleText, this.getDom(cmp));
+        DomUtils.addStyle(selector, styleText, this.getDom(cmp), 'limeStyle');
+    },
+
+    /**
+     * Remove all the custom styles we've added to the editor
+     */
+    removeAllContentStyle : function (cmp) {
+        var style = this.getDom(cmp).querySelector('head #limeStyle');
+        if (style)
+            style.parentElement.removeChild(style);
     },
 
     beforeLoadDocument: function(config) {
@@ -751,7 +813,7 @@ Ext.define('LIME.controller.Editor', {
     },
 
 
-    searchAndManageMarkedElements: function(body, cmp, noSideEffects, customStyleFn) {
+    searchAndManageMarkedElements: function(body, cmp, noSideEffects) {
         var LanguageController = this.getController('Language'),
             markingMenu = this.getController('MarkingMenu'),
             marker = this.getController('Marker'),
@@ -807,16 +869,6 @@ Ext.define('LIME.controller.Editor', {
             //remove inline style
             element.removeAttribute('style');
             element.setAttribute(DomUtils.elementIdAttribute, elId);
-            // Widget is created on demand for performance reasons
-            var styleClass = button.waweConfig.pattern.wrapperClass;
-            var styleValue = button.waweConfig.pattern.wrapperStyle;
-            if(Ext.isFunction(customStyleFn)) {
-                styleValue = customStyleFn(styleValue);
-            }
-            if (styleValue.pdf) {
-                this.addContentStyle('.pdfstyle *[class="' + styleClass + '"]', styleValue.pdf);
-            }
-            this.applyAllStyles('*[class="' + styleClass + '"]', styleValue, button.waweConfig.shortLabel, cmp);
             var isBlock = DomUtils.blockTagRegex.test(button.waweConfig.pattern.wrapperElement);
             if(isBlock){
                 marker.addBreakingElements(element);
@@ -834,7 +886,7 @@ Ext.define('LIME.controller.Editor', {
      * @param {Boolean} [initial] If true removing previous document properties
      * will be skipped
      */
-    loadDocument : function(docText, docId, cmp, noSideEffects, customStyleFn) {
+    loadDocument : function(docText, docId, cmp, noSideEffects) {
         var editor = this.getEditor(cmp), editorBody,
             app = this.application;
 
@@ -843,6 +895,9 @@ Ext.define('LIME.controller.Editor', {
             docText = '&nbsp;';
         }
         
+        // Clear Css
+        this.removeAllContentStyle(cmp);
+
         // Clear previous undo levels
         editor.undoManager.clear();
         editor.setContent(docText); // Add a space, empty content prevents other views from updating
@@ -859,7 +914,7 @@ Ext.define('LIME.controller.Editor', {
         editorBody = editor.getBody();
 
         this.linkNotes(editorBody);
-        this.searchAndManageMarkedElements(editorBody, cmp, noSideEffects, customStyleFn);
+        this.searchAndManageMarkedElements(editorBody, cmp, noSideEffects);
 
         if(!noSideEffects) {
             app.fireEvent('editorDomChange', editorBody);
@@ -1225,6 +1280,7 @@ Ext.define('LIME.controller.Editor', {
         this.application.on(Statics.eventsNames.loadDocument, this.beforeLoadDocument, this);
         this.application.on(Statics.eventsNames.disableEditing, this.disableEditor, this);
         this.application.on(Statics.eventsNames.enableEditing, this.enableEditor, this);
+        this.application.on(Statics.eventsNames.markingMenuLoaded, this.loadCss, this);
 
         // save a reference to the controller
         var editorController = this;
@@ -1450,6 +1506,8 @@ Ext.define('LIME.controller.Editor', {
             },
             '#secondEditor mainEditor tinymcefield': {
                 editorcreated: function(editor) {
+                    var editor2 = Ext.fly(this.getEditor(this.getSecondEditor()).getBody());
+                    editor2.addCls('secondEditor');
                     Ext.Object.each(editor.controlManager.buttons, function(name) {
                         editor.controlManager.setDisabled(name, true);
                     });

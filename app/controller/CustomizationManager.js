@@ -161,21 +161,6 @@ Ext.define('LIME.controller.CustomizationManager', {
         return secondEditor;
     },
 
-    transformPatternStyle: function(styleObj) {
-        var returnStyle = Ext.clone(styleObj);
-        Ext.Object.each(styleObj, function(selector, styleCss) {
-            var style = Utilities.cssToJson(styleCss);
-            if(style["background-color"]) {
-                style["background-color"] = "#CCCCCC";
-            }
-            if(style["border"]) {
-                style["border"] = style["border"].replace(/#(?:[0-9a-f]{3}){1,2}/i, "#CCCCCC")
-            }
-            returnStyle[selector] = Utilities.jsonToCss(style);
-        });
-        return returnStyle;
-    },
-
     finishEditingMode: function(editor, diff) {
          var me = this,
             mainTabPanel = me.getMain(),
@@ -266,7 +251,7 @@ Ext.define('LIME.controller.CustomizationManager', {
         Ext.defer(function() {
             storage.openDocumentNoEditor(dualConfig.notEditableDoc, function(config) {
                 language.beforeLoad(config, function(newConfig) {
-                    editorController.loadDocument(newConfig.docText, newConfig.docId, secondEditor, true, me.transformPatternStyle);
+                    editorController.loadDocument(newConfig.docText, newConfig.docId, secondEditor, true);
                     if(newConfig.metaDom) {
                         var manifestationUri = newConfig.metaDom.querySelector("*[class=FRBRManifestation] *[class=FRBRuri]");
                         if(manifestationUri) {
