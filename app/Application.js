@@ -74,7 +74,6 @@ Ext.define('LIME.Application', {
         'Outliner',
         'Languages',
         'OpenFile',
-        'LanguagesPlugin',
         'Locales',
         'Nationalities',
         'DocumentTypes',

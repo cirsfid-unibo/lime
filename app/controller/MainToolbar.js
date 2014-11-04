@@ -219,7 +219,7 @@ Ext.define('LIME.controller.MainToolbar', {
      setAllowedViews : function() {
         var mainMenu = this.getWindowMenuButton(),
             viewsMenu = mainMenu.menu.down("*[id=showViews]"),
-            configData = this.getStore('LanguagesPlugin').getDataObjects(),
+            configData = LanguageConfigLoader.getConfig(),
             preferencesManager = this.getController('PreferencesManager'),
             openViews = preferencesManager.userPreferences.views,
             menu =  {

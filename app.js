@@ -76,7 +76,8 @@ Ext.require([
     'LIME.Statics',
     'LIME.DocProperties',
     'LIME.DomUtils',
-    'LIME.Interpreters'
+    'LIME.Interpreters',
+    'LIME.LanguageConfigLoader'
 ]);
 
 Ext.application({

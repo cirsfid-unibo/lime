@@ -1,530 +1,717 @@
 {
-	"address": {
-		"pattern": "hcontainer"
-	},
-	"administrationOfOath": {
-		"pattern": "container"
-	},
-	"affectedDocument": {
-		"pattern": "inline"
-	},
-	"alinea": {
-		"pattern": "hcontainer"
-	},
-	"amendmentBody": {
-		"pattern": "container"
-	},
-	"amendmentContent": {
-		"pattern": "container"
-	},
-	"amendmentHeading": {
-		"pattern": "container"
-	},
-	"amendmentJustification": {
-		"pattern": "container"
-	},
-	"amendmentReference": {
-		"pattern": "container"
-	},
-	"answer": {
-		"pattern": "container"
-	},
-	"argument": {
-		"pattern": "inline"
-	},
-	"arguments": {
-		"pattern": "container"
-	},
-	"article": {
-		"pattern": "hcontainer"
-	},
-	"attachments": {
-		"pattern": "patternless"
-	},
-	"authorialNote": {
-		"pattern": "popup"
-	},
-	"background": {
-		"pattern": "container"
-	},
-	"block": {
-		"pattern": "block"
-	},
-	"blockContainer": {
-		"pattern": "container"
-	},
-	"blockList": {
-		"pattern": "container"
-	},
-	"body": {
-		"pattern": "container"
-	},
-	"book": {
-		"pattern": "hcontainer"
-	},
-	"change": {
-		"pattern": "inline"
-	},
-	"chapter": {
-		"pattern": "hcontainer"
-	},
-	"citation": {
-		"pattern": "container"
-	},
-	"citations": {
-		"pattern": "hcontainer"
-	},
-	"clause": {
-		"pattern": "hcontainer"
-	},
-	"collectionBody": {
-		"pattern": "container"
-	},
-	"component": {
-		"pattern": "container"
-	},
-	"componentRef": {
-		"pattern": "patternless"
-	},
-	"components": {
-		"pattern": "patternless"
-	},
-	"concept": {
-		"pattern": "inline"
-	},
-	"conclusions": {
-		"pattern": "container"
-	},
-	"container": {
-		"pattern": "container"
-	},
-	"courtType": {
-		"pattern": "inline"
-	},
-	"coverPage": {
-		"pattern": "container"
-	},
-	"date": {
-		"pattern": "inline"
-	},
-	"debateBody": {
-		"pattern": "container"
-	},
-	"debateSection": {
-		"pattern": "hcontainer"
-	},
-	"decision": {
-		"pattern": "container"
-	},
-	"declarationOfVote": {
-		"pattern": "hcontainer"
-	},
-	"decoration": {
-		"pattern": "inline"
-	},
-	"def": {
-		"pattern": "inline"
-	},
-	"del": {
-		"pattern": "inline"
-	},
-	"division": {
-		"pattern": "hcontainer"
-	},
-	"docAuthority": {
-		"pattern": "inline"
-	},
-	"docCommittee": {
-		"pattern": "inline"
-	},
-	"docDate": {
-		"pattern": "inline"
-	},
-	"docIntroducer": {
-		"pattern": "inline"
-	},
-	"docJurisdiction": {
-		"pattern": "inline"
-	},
-	"docketNumber": {
-		"pattern": "inline"
-	},
-	"docNumber": {
-		"pattern": "inline"
-	},
-	"docProponent": {
-		"pattern": "inline"
-	},
-	"docPurpose": {
-		"pattern": "inline"
-	},
-	"docStage": {
-		"pattern": "inline"
-	},
-	"docStatus": {
-		"pattern": "inline"
-	},
-	"docTitle": {
-		"pattern": "inline"
-	},
-	"docType": {
-		"pattern": "inline"
-	},
-	"documentRef": {
-		"pattern": "inline"
-	},
-	"entity": {
-		"pattern": "inline"
-	},
-	"eol": {
-		"pattern": "marker"
-	},
-	"eop": {
-		"pattern": "marker"
-	},
-	"event": {
-		"pattern": "inline"
-	},
-	"extractStructure": {
-		"pattern": "container"
-	},
-	"extractText": {
-		"pattern": "inline"
-	},
-	"fillIn": {
-		"pattern": "inline"
-	},
-	"foreign": {
-		"pattern": "container"
-	},
-	"formula": {
-		"pattern": "block"
-	},
-	"fragmentBody": {
-		"pattern": "container"
-	},
-	"from": {
-		"pattern": "inline"
-	},
-	"hcontainer": {
-		"pattern": "hcontainer"
-	},
-	"header": {
-		"pattern": "container"
-	},
-	"heading": {
-		"pattern": "inline"
-	},
-	"indent": {
-		"pattern": "hcontainer"
-	},
-	"inline": {
-		"pattern": "inline"
-	},
-	"ins": {
-		"pattern": "inline"
-	},
-	"interstitial": {
-		"pattern": "block"
-	},
-	"intro": {
-		"pattern": "container"
-	},
-	"introduction": {
-		"pattern": "container"
-	},
-	"item": {
-		"pattern": "hcontainer"
-	},
-	"judge": {
-		"pattern": "inline"
-	},
-	"legislature": {
-		"pattern": "inline"
-	},
-	"list": {
-		"pattern": "hcontainer"
-	},
-	"listConclusion": {
-		"pattern": "inline"
-	},
-	"listIntroduction": {
-		"pattern": "inline"
-	},
-	"location": {
-		"pattern": "inline"
-	},
-	"longTitle": {
-		"pattern": "block"
-	},
-	"mainBody": {
-		"pattern": "container"
-	},
-	"marker": {
-		"pattern": "marker"
-	},
-	"ministerialStatements": {
-		"pattern": "hcontainer"
-	},
-	"mmod": {
-		"pattern": "inline"
-	},
-	"mod": {
-		"pattern": "inline"
-	},
-	"motivation": {
-		"pattern": "container"
-	},
-	"mref": {
-		"pattern": "inline"
-	},
-	"narrative": {
-		"pattern": "inline"
-	},
-	"nationalInterest": {
-		"pattern": "hcontainer"
-	},
-	"neutralCitation": {
-		"pattern": "inline"
-	},
-	"noteRef": {
-		"pattern": "marker"
-	},
-	"noticesOfMotion": {
-		"pattern": "hcontainer"
-	},
-	"num": {
-		"pattern": "inline"
-	},
-	"object": {
-		"pattern": "inline"
-	},
-	"omissis": {
-		"pattern": "inline"
-	},
-	"opinion": {
-		"pattern": "inline"
-	},
-	"oralStatements": {
-		"pattern": "hcontainer"
-	},
-	"organization": {
-		"pattern": "inline"
-	},
-	"other": {
-		"pattern": "block"
-	},
-	"outcome": {
-		"pattern": "inline"
-	},
-	"p": {
-		"pattern": "block"
-	},
-	"papers": {
-		"pattern": "hcontainer"
-	},
-	"paragraph": {
-		"pattern": "hcontainer"
-	},
-	"part": {
-		"pattern": "hcontainer"
-	},
-	"party": {
-		"pattern": "inline"
-	},
-	"person": {
-		"pattern": "inline"
-	},
-	"personalStatements": {
-		"pattern": "hcontainer"
-	},
-	"petitions": {
-		"pattern": "hcontainer"
-	},
-	"placeholder": {
-		"pattern": "inline"
-	},
-	"point": {
-		"pattern": "hcontainer"
-	},
-	"pointOfOrder": {
-		"pattern": "hcontainer"
-	},
-	"preamble": {
-		"pattern": "container"
-	},
-	"preface": {
-		"pattern": "container"
-	},
-	"proceduralMotions": {
-		"pattern": "hcontainer"
-	},
-	"process": {
-		"pattern": "inline"
-	},
-	"proviso": {
-		"pattern": "hcontainer"
-	},
-	"quantity": {
-		"pattern": "inline"
-	},
-	"question": {
-		"pattern": "container"
-	},
-	"questions": {
-		"pattern": "hcontainer"
-	},
-	"quotedStructure": {
-		"pattern": "popup"
-	},
-	"quotedText": {
-		"pattern": "inline"
-	},
-	"recital": {
-		"pattern": "container"
-	},
-	"recitals": {
-		"pattern": "hcontainer"
-	},
-	"ref": {
-		"pattern": "inline"
-	},
-	"relatedDocument": {
-		"pattern": "inline"
-	},
-	"remark": {
-		"pattern": "inline"
-	},
-	"resolutions": {
-		"pattern": "hcontainer"
-	},
-	"rmod": {
-		"pattern": "inline"
-	},
-	"role": {
-		"pattern": "inline"
-	},
-	"rollCall": {
-		"pattern": "hcontainer"
-	},
-	"rref": {
-		"pattern": "inline"
-	},
-	"rule": {
-		"pattern": "hcontainer"
-	},
-	"scene": {
-		"pattern": "inline"
-	},
-	"section": {
-		"pattern": "hcontainer"
-	},
-	"session": {
-		"pattern": "inline"
-	},
-	"shortTitle": {
-		"pattern": "inline"
-	},
-	"signature": {
-		"pattern": "inline"
-	},
-	"speech": {
-		"pattern": "container"
-	},
-	"speechGroup": {
-		"pattern": "container"
-	},
-	"subchapter": {
-		"pattern": "hcontainer"
-	},
-	"subclause": {
-		"pattern": "hcontainer"
-	},
-	"subdivision": {
-		"pattern": "hcontainer"
-	},
-	"subFlow": {
-		"pattern": "patternless"
-	},
-	"subheading": {
-		"pattern": "inline"
-	},
-	"sublist": {
-		"pattern": "hcontainer"
-	},
-	"subparagraph": {
-		"pattern": "hcontainer"
-	},
-	"subpart": {
-		"pattern": "hcontainer"
-	},
-	"subrule": {
-		"pattern": "hcontainer"
-	},
-	"subsection": {
-		"pattern": "hcontainer"
-	},
-	"subtitle": {
-		"pattern": "hcontainer"
-	},
-	"table": {
-		"pattern": "block"
-	},
-	"tblock": {
-		"pattern": "container"
-	},
-	"term": {
-		"pattern": "inline"
-	},
-	"time": {
-		"pattern": "inline"
-	},
-	"title": {
-		"pattern": "hcontainer"
-	},
-	"toc": {
-		"pattern": "container"
-	},
-	"tocItem": {
-		"pattern": "inline"
-	},
-	"tome": {
-		"pattern": "hcontainer"
-	},
-	"transitional": {
-		"pattern": "hcontainer"
-	},
-	"vote": {
-		"pattern": "inline"
-	},
-	"wrap": {
-		"pattern": "container"
-	},
-	"writtenStatements": {
-		"pattern": "hcontainer"
-	},
-	"content": {
-		"pattern": "container"
-	},
-	"remedies": {
-		"pattern": "container"
-	},
-	"hierarchicalStructure": {
-	},
-	"genericElement": {
-	},
-	"externalFragment": {
-	},
-	"commonsInline": {
-	},
-	"contentInline": {
-	},
-	"commonElement": {
-	},
-	"commonReference": {
-	},
-	"commonJudgement": {
-	},
-	"commonReport": {
-	}
+  "address": {
+    "pattern": "hcontainer"
+  },
+  "administrationOfOath": {
+    "pattern": "container"
+  },
+  "affectedDocument": {
+    "pattern": "inline"
+  },
+  "alinea": {
+    "pattern": "hcontainer"
+  },
+  "amendmentBody": {
+    "pattern": "container",
+    "buttonStyle": "background-color: #74BAAC;",
+    "wrapperStyle": {
+      "before": "background-color: #74BAAC; border-color: #74BAAC;",
+      "this": "border:1px solid #74BAAC;color:#2385A0;"
+    }
+  },
+  "amendmentContent": {
+    "pattern": "container"
+  },
+  "amendmentHeading": {
+    "pattern": "container"
+  },
+  "amendmentJustification": {
+    "pattern": "container"
+  },
+  "amendmentReference": {
+    "pattern": "container"
+  },
+  "answer": {
+    "pattern": "container"
+  },
+  "argument": {
+    "pattern": "inline"
+  },
+  "arguments": {
+    "pattern": "container"
+  },
+  "article": {
+    "pattern": "hcontainer"
+  },
+  "attachments": {
+    "pattern": "patternless",
+    "buttonStyle": "background-color: #74BAAC;",
+    "wrapperStyle": {
+      "before": "background-color: #74BAAC; border-color: #74BAAC;",
+      "this": "border:1px solid #74BAAC;"
+    }
+  },
+  "authorialNote": {
+    "pattern": "popup",
+    "wrapperRules": {
+      "changePosition": {
+        "where": "afterParent"
+      }
+    }
+  },
+  "background": {
+    "pattern": "container"
+  },
+  "block": {
+    "pattern": "block"
+  },
+  "blockContainer": {
+    "pattern": "container"
+  },
+  "blockList": {
+    "pattern": "container"
+  },
+  "body": {
+    "pattern": "container",
+    "buttonStyle": "background-color: #74BAAC;",
+    "wrapperStyle": {
+      "before": "background-color: #74BAAC; border:1px solid #74BAAC;",
+      "this": "border:1px solid #74BAAC;color:#2385A0;"
+    },
+    "allowedPatterns": [
+      "hcontainer"
+    ],
+    "exceptionalAllowedElements": [
+      "componentRef"
+    ]
+  },
+  "book": {
+    "pattern": "hcontainer"
+  },
+  "change": {
+    "pattern": "inline"
+  },
+  "chapter": {
+    "pattern": "hcontainer"
+  },
+  "citation": {
+    "pattern": "container"
+  },
+  "citations": {
+    "pattern": "hcontainer"
+  },
+  "clause": {
+    "pattern": "hcontainer"
+  },
+  "collectionBody": {
+    "pattern": "container",
+    "buttonStyle": "background-color: #74BAAC;",
+    "wrapperStyle": {
+      "before": "background-color: #74BAAC; border-color: #74BAAC;",
+      "this": "border:1px solid #74BAAC;color:#2385A0;"
+    }
+  },
+  "component": {
+    "pattern": "container"
+  },
+  "componentRef": {
+    "pattern": "patternless"
+  },
+  "components": {
+    "pattern": "patternless",
+    "buttonStyle": "background-color: #74BAAC;",
+    "wrapperStyle": {
+      "before": "background-color: #74BAAC; border-color: #74BAAC;",
+      "this": "border:1px solid #74BAAC;"
+    }
+  },
+  "concept": {
+    "pattern": "inline"
+  },
+  "conclusions": {
+    "pattern": "container",
+    "buttonStyle": "background-color: #74BAAC;",
+    "wrapperStyle": {
+      "before": "background-color: #74BAAC; border-color: #74BAAC;",
+      "this": "border:1px solid #74BAAC;color: #8C489F;"
+    }
+  },
+  "container": {
+    "pattern": "container"
+  },
+  "courtType": {
+    "pattern": "inline"
+  },
+  "coverPage": {
+    "pattern": "container",
+    "buttonStyle": "background-color: #74BAAC;",
+    "wrapperStyle": {
+      "before": "background-color: #74BAAC; border-color: #74BAAC;",
+      "this": "border:1px solid #74BAAC;"
+    }
+  },
+  "date": {
+    "pattern": "inline"
+  },
+  "debateBody": {
+    "pattern": "container",
+    "buttonStyle": "background-color: #74BAAC;",
+    "wrapperStyle": {
+      "before": "background-color: #74BAAC; border-color: #74BAAC;",
+      "this": "border:1px solid #74BAAC;color:#29A2C6;"
+    }
+  },
+  "debateSection": {
+    "pattern": "hcontainer"
+  },
+  "decision": {
+    "pattern": "container"
+  },
+  "declarationOfVote": {
+    "pattern": "hcontainer"
+  },
+  "decoration": {
+    "pattern": "inline"
+  },
+  "def": {
+    "pattern": "inline"
+  },
+  "del": {
+    "pattern": "inline"
+  },
+  "division": {
+    "pattern": "hcontainer"
+  },
+  "docAuthority": {
+    "pattern": "inline"
+  },
+  "docCommittee": {
+    "pattern": "inline"
+  },
+  "docDate": {
+    "pattern": "inline"
+  },
+  "docIntroducer": {
+    "pattern": "inline"
+  },
+  "docJurisdiction": {
+    "pattern": "inline"
+  },
+  "docketNumber": {
+    "pattern": "inline"
+  },
+  "docNumber": {
+    "pattern": "inline"
+  },
+  "docProponent": {
+    "pattern": "inline"
+  },
+  "docPurpose": {
+    "pattern": "inline"
+  },
+  "docStage": {
+    "pattern": "inline"
+  },
+  "docStatus": {
+    "pattern": "inline"
+  },
+  "docTitle": {
+    "pattern": "inline"
+  },
+  "docType": {
+    "pattern": "inline",
+    "wrapperStyle": {
+      "this": "font-weight: bold;"
+    }
+  },
+  "documentRef": {
+    "pattern": "inline"
+  },
+  "entity": {
+    "pattern": "inline"
+  },
+  "eol": {
+    "pattern": "marker"
+  },
+  "eop": {
+    "pattern": "marker",
+    "wrapperElement": "<span></span>"
+  },
+  "event": {
+    "pattern": "inline"
+  },
+  "extractStructure": {
+    "pattern": "container"
+  },
+  "extractText": {
+    "pattern": "inline"
+  },
+  "fillIn": {
+    "pattern": "inline"
+  },
+  "foreign": {
+    "pattern": "container"
+  },
+  "formula": {
+    "pattern": "block"
+  },
+  "fragmentBody": {
+    "pattern": "container",
+    "buttonStyle": "background-color: #74BAAC;",
+    "wrapperStyle": {
+      "before": "background-color: #74BAAC; border-color: #74BAAC;",
+      "this": "border:1px solid #74BAAC;color:#29A2C6;"
+    }
+  },
+  "from": {
+    "pattern": "inline"
+  },
+  "hcontainer": {
+    "pattern": "hcontainer"
+  },
+  "header": {
+    "pattern": "container"
+  },
+  "heading": {
+    "pattern": "inline",
+    "wrapperRules": {
+      "headingElement": {
+        "conditions": {
+          "parentClassContains": "hcontainer"
+        },
+        "values": {
+          "priority": 1
+        }
+      }
+    }
+  },
+  "indent": {
+    "pattern": "hcontainer"
+  },
+  "inline": {
+    "pattern": "inline"
+  },
+  "ins": {
+    "pattern": "inline"
+  },
+  "interstitial": {
+    "pattern": "block"
+  },
+  "intro": {
+    "pattern": "container"
+  },
+  "introduction": {
+    "pattern": "container"
+  },
+  "item": {
+    "pattern": "hcontainer",
+    "remove": {
+      "wrapperRules": [
+        "addWrapperElement"
+      ]
+    },
+    "wrapperElement": "<div><p>&content;</p></div>"
+  },
+  "judge": {
+    "pattern": "inline"
+  },
+  "legislature": {
+    "pattern": "inline"
+  },
+  "list": {
+    "pattern": "hcontainer"
+  },
+  "listConclusion": {
+    "pattern": "inline"
+  },
+  "listIntroduction": {
+    "pattern": "inline"
+  },
+  "location": {
+    "pattern": "inline"
+  },
+  "longTitle": {
+    "pattern": "block"
+  },
+  "mainBody": {
+    "pattern": "container",
+    "buttonStyle": "background-color: #74BAAC;",
+    "wrapperStyle": {
+      "before": "background-color: #74BAAC; border-color: #74BAAC;",
+      "this": "border:1px solid #74BAAC; color:#2385A0;"
+    }
+  },
+  "marker": {
+    "pattern": "marker"
+  },
+  "ministerialStatements": {
+    "pattern": "hcontainer"
+  },
+  "mmod": {
+    "pattern": "inline"
+  },
+  "mod": {
+    "pattern": "inline",
+    "wrapperElement": "<div>&content;</div>",
+    "allowedPatterns": [
+      "inline"
+    ],
+    "exceptionalAllowedElements": [
+      "quotedText",
+      "quotedStructure"
+    ],
+    "remove": {
+      "wrapperStyle": [
+        "after",
+        "before",
+        "this"
+      ]
+    },
+    "wrapperStyle": {
+      "before": "border: 1px solid #C0E0DA; background-color:#C0E0DA;color:#000000;font-size:8pt;position:relative;left:85%;margin:0px;padding:2px 4px 2px 4px;border-radius: 3px;width:90px;display: block;text-align:center; margin-bottom:5px;cursor:pointer;",
+      "this": "border-radius: 3px; border:1px solid #C0E0DA; padding:3px; margin:3px 0px 3px 0px;"
+    }
+  },
+  "motivation": {
+    "pattern": "container"
+  },
+  "mref": {
+    "pattern": "inline"
+  },
+  "narrative": {
+    "pattern": "inline"
+  },
+  "nationalInterest": {
+    "pattern": "hcontainer"
+  },
+  "neutralCitation": {
+    "pattern": "inline"
+  },
+  "noteRef": {
+    "pattern": "marker",
+    "wrapperStyle": {
+      "before": "display: none;",
+      "this": "display: none;"
+    }
+  },
+  "noticesOfMotion": {
+    "pattern": "hcontainer"
+  },
+  "num": {
+    "pattern": "inline",
+    "wrapperRules": {
+      "headingElement": {
+        "conditions": {
+          "parentClassContains": "hcontainer"
+        },
+        "values": {
+          "priority": 0
+        }
+      }
+    }
+  },
+  "object": {
+    "pattern": "inline"
+  },
+  "omissis": {
+    "pattern": "inline"
+  },
+  "opinion": {
+    "pattern": "inline"
+  },
+  "oralStatements": {
+    "pattern": "hcontainer"
+  },
+  "organization": {
+    "pattern": "inline"
+  },
+  "other": {
+    "pattern": "block"
+  },
+  "outcome": {
+    "pattern": "inline"
+  },
+  "p": {
+    "pattern": "block",
+    "wrapperElement": "<div>&content;</div>",
+    "remove": {
+      "wrapperStyle": [
+        "after",
+        "before",
+        "this"
+      ]
+    },
+    "wrapperStyle": {
+      "before": "border: 1px solid #C0E0DA; background-color:#C0E0DA;color:#000000;font-size:8pt;position:relative;left:85%;margin:0px;padding:2px 4px 2px 4px;border-radius: 3px;width:90px;display: block;text-align:center; margin-bottom:5px;",
+      "this": "border-radius: 3px; border:1px solid #C0E0DA; padding:3px; margin:3px 0px 3px 0px;"
+    }
+  },
+  "papers": {
+    "pattern": "hcontainer"
+  },
+  "paragraph": {
+    "pattern": "hcontainer"
+  },
+  "part": {
+    "pattern": "hcontainer"
+  },
+  "party": {
+    "pattern": "inline"
+  },
+  "person": {
+    "pattern": "inline",
+    "wrapperStyle": "border-color: #5CB1FF;"
+  },
+  "personalStatements": {
+    "pattern": "hcontainer"
+  },
+  "petitions": {
+    "pattern": "hcontainer"
+  },
+  "placeholder": {
+    "pattern": "inline"
+  },
+  "point": {
+    "pattern": "hcontainer"
+  },
+  "pointOfOrder": {
+    "pattern": "hcontainer"
+  },
+  "preamble": {
+    "pattern": "container",
+    "buttonStyle": "background-color: #74BAAC;",
+    "wrapperStyle": {
+      "before": "background-color: #74BAAC; border-color: #74BAAC;",
+      "this": "border:1px solid #74BAAC; color:#FF6600;"
+    }
+  },
+  "preface": {
+    "pattern": "container",
+    "buttonStyle": "background-color: #74BAAC;",
+    "wrapperStyle": {
+      "before": "background-color: #74BAAC; border:1px solid #74BAAC;",
+      "this": "border:1px solid #74BAAC; color: #66A15E;"
+    }
+  },
+  "proceduralMotions": {
+    "pattern": "hcontainer"
+  },
+  "process": {
+    "pattern": "inline"
+  },
+  "proviso": {
+    "pattern": "hcontainer"
+  },
+  "quantity": {
+    "pattern": "inline"
+  },
+  "question": {
+    "pattern": "container"
+  },
+  "questions": {
+    "pattern": "hcontainer"
+  },
+  "quotedStructure": {
+    "pattern": "popup",
+    "wrapperStyle": {
+      "this": "border-radius: 3px; border:1px solid #C0E0DA; border-left: 10px solid #CCC;  padding:3px; margin:3px 0px 3px 0px;"
+    }
+  },
+  "quotedText": {
+    "pattern": "inline"
+  },
+  "recital": {
+    "pattern": "container"
+  },
+  "recitals": {
+    "pattern": "hcontainer",
+    "remove": {
+      "wrapperRules": [
+        "addWrapperElement"
+      ]
+    }
+  },
+  "ref": {
+    "pattern": "inline",
+    "wrapperStyle": {
+      "this": "background-color: #DBEADC;text-decoration:underline;"
+    }
+  },
+  "relatedDocument": {
+    "pattern": "inline"
+  },
+  "remark": {
+    "pattern": "inline"
+  },
+  "resolutions": {
+    "pattern": "hcontainer"
+  },
+  "rmod": {
+    "pattern": "inline"
+  },
+  "role": {
+    "pattern": "inline",
+    "wrapperStyle": "border-color: #5CB1FF;"
+  },
+  "rollCall": {
+    "pattern": "hcontainer"
+  },
+  "rref": {
+    "pattern": "inline"
+  },
+  "rule": {
+    "pattern": "hcontainer"
+  },
+  "scene": {
+    "pattern": "inline"
+  },
+  "section": {
+    "pattern": "hcontainer"
+  },
+  "session": {
+    "pattern": "inline"
+  },
+  "shortTitle": {
+    "pattern": "inline"
+  },
+  "signature": {
+    "pattern": "inline",
+    "wrapperStyle": "padding: 3px;"
+  },
+  "speech": {
+    "pattern": "container"
+  },
+  "speechGroup": {
+    "pattern": "container"
+  },
+  "subchapter": {
+    "pattern": "hcontainer"
+  },
+  "subclause": {
+    "pattern": "hcontainer"
+  },
+  "subdivision": {
+    "pattern": "hcontainer",
+    "wrapperClass": "patternName patternName",
+    "wrapperRules": {
+      "applyAttributes": {
+        "values": {
+          "name": "subdivision"
+        }
+      }
+    }
+  },
+  "subFlow": {
+    "pattern": "patternless"
+  },
+  "subheading": {
+    "pattern": "inline",
+    "wrapperRules": {
+      "headingElement": {
+        "conditions": {
+          "parentClassContains": "hcontainer"
+        },
+        "values": {
+          "priority": 2
+        }
+      }
+    }
+  },
+  "sublist": {
+    "pattern": "hcontainer"
+  },
+  "subparagraph": {
+    "pattern": "hcontainer"
+  },
+  "subpart": {
+    "pattern": "hcontainer"
+  },
+  "subrule": {
+    "pattern": "hcontainer"
+  },
+  "subsection": {
+    "pattern": "hcontainer"
+  },
+  "subtitle": {
+    "pattern": "hcontainer"
+  },
+  "table": {
+    "pattern": "block"
+  },
+  "tblock": {
+    "pattern": "container"
+  },
+  "term": {
+    "pattern": "inline"
+  },
+  "time": {
+    "pattern": "inline"
+  },
+  "title": {
+    "pattern": "hcontainer"
+  },
+  "toc": {
+    "pattern": "container"
+  },
+  "tocItem": {
+    "pattern": "inline",
+    "wrapperStyle": {
+      "this": "display: block;"
+    }
+  },
+  "tome": {
+    "pattern": "hcontainer"
+  },
+  "transitional": {
+    "pattern": "hcontainer"
+  },
+  "vote": {
+    "pattern": "inline"
+  },
+  "wrap": {
+    "pattern": "container"
+  },
+  "writtenStatements": {
+    "pattern": "hcontainer"
+  },
+  "content": {
+    "pattern": "container"
+  },
+  "remedies": {
+    "pattern": "container"
+  },
+  "hierarchicalStructure": {
+    "buttonStyle": "border-radius: 3px; background-color: #74BAAC;"
+  },
+  "genericElement": {
+    "buttonStyle": "border-radius: 3px; background-color: #74BAAC;"
+  },
+  "externalFragment": {
+    "buttonStyle": "border-radius: 3px; background-color: #74BAAC;"
+  },
+  "commonsInline": {
+    "buttonStyle": "border-radius: 3px; background-color: #74BAAC;"
+  },
+  "contentInline": {
+    "buttonStyle": "border-radius: 3px; background-color: #74BAAC;"
+  },
+  "commonElement": {
+    "buttonStyle": "border-radius: 3px; background-color: #74BAAC;"
+  },
+  "commonReference": {
+    "buttonStyle": "border-radius: 3px; background-color: #74BAAC;"
+  },
+  "commonJudgement": {
+    "buttonStyle": "border-radius: 3px; background-color: #74BAAC;"
+  },
+  "commonReport": {
+    "buttonStyle": "border-radius: 3px; background-color: #74BAAC;"
+  },
+  "annex": {
+    "buttonStyle": "background-color: #74BAAC;",
+    "wrapperStyle": {
+      "before": "background-color: #74BAAC; border:1px solid #74BAAC;",
+      "this": "border:1px solid #74BAAC;"
+    }
+  }
 }

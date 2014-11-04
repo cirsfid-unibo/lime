@@ -367,7 +367,15 @@
 		"pattern": "container"
 	},
 	"romanI": {
-		"pattern": "hcontainer"
+		"pattern": "hcontainer",
+		"wrapperClass": "patternName patternName",
+		"wrapperRules": {
+			"applyAttributes": {
+				"values": {
+					"name": "romanI"
+				}
+			}
+		}
 	},
 	"event": {
 		"pattern": "inline"

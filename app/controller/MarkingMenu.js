@@ -60,8 +60,6 @@ Ext.define('LIME.controller.MarkingMenu', {
 
 	views : ['MarkingMenu', 'markingmenu.TreeButton'],
 
-	stores : ['LanguagesPlugin'],
-
 	refs : [{
         selector : '[cls=markingMenuContainer]',
         ref : 'markingMenuContainer'
@@ -93,7 +91,7 @@ Ext.define('LIME.controller.MarkingMenu', {
 	/**
 	 * Build the root of the marking buttons
 	 * based on a static configuration file
-	 * loaded at runtime by {@link LIME.store.LanguagesPlugin}
+	 * loaded at runtime by {@link LIME.LanguageConfigLoader}
 	 */
 	buildButtonsStructure : function(pluginData) {
 		var me = this, // Save the scope,
@@ -220,7 +218,7 @@ Ext.define('LIME.controller.MarkingMenu', {
 	 */
 	getButtonConfig : function(name, buttons, rules) {
 		//Get plugin configuration from store
-		var pluginData = this.getLanguagesPluginStore().getDataObjects(),
+		var pluginData = LanguageConfigLoader.getConfig(),
 		//  If the button doesn't exist there must be some error in the configuration
 		button = (buttons && buttons[name]) ? buttons[name] : pluginData.markupMenu[name],
 		defaultButton = pluginData.defaults.markupMenu[name],
@@ -308,7 +306,7 @@ Ext.define('LIME.controller.MarkingMenu', {
 		}
 		//  If the node is marked only hide the not interesting nodes!
 		var markingMenu = this.getMarkingMenu(),
-			pluginData = this.getLanguagesPluginStore().getDataObjects(),
+			pluginData = LanguageConfigLoader.getConfig(),
 			leaveExpanded = pluginData.markupMenuRules.defaults.leaveExpanded,
 			sameLevelExpand = pluginData.markupMenuRules.defaults.sameLevelExpand,
 			elementIdAttribute = DomUtils.elementIdAttribute,

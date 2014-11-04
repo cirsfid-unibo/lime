@@ -715,12 +715,12 @@ Ext.define('LIME.controller.Editor', {
         DocProperties.documentInfo.docMarkingLanguage = config.docMarkingLanguage;
 
         me.documentTempConfig = config;
-        me.getStore('LanguagesPlugin').addListener('filesloaded', me.onPluginLoaded, me);
 
         app.fireEvent(Statics.eventsNames.progressStart, null, {value:0.1, text: Locale.strings.progressBar.loadingDocument});
         docType =  Ext.isString(config.alternateDocType) ? config.alternateDocType : config.docType;
         Ext.defer(function() {
-            me.getStore('LanguagesPlugin').loadPluginData(app, docType, config.docLocale);
+            app.fireEvent(Statics.eventsNames.progressUpdate, Locale.strings.progressBar.configurationFiles);
+            LanguageConfigLoader.load(docType, config.docLocale, Ext.bind(me.onPluginLoaded, me));
         }, 200, me);
     },
 

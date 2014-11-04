@@ -626,7 +626,7 @@ Ext.define('LIME.controller.Marker', {
     },
 
     isAllowedMarking: function(node, config) {
-        var patterns = this.getStore("LanguagesPlugin").getDataObjects().patterns,
+        var patterns = LanguageConfigLoader.getConfig().patterns,
             newParent, patternError = false, pattern,
             nodePattern = this.getPatternConfigByNode(node);
 
@@ -683,7 +683,7 @@ Ext.define('LIME.controller.Marker', {
     },
 
     isAllowedElement: function(parent, buttonConfig) {
-        var languageData = this.getStore("LanguagesPlugin").getDataObjects(),
+        var languageData = LanguageConfigLoader.getConfig(),
             documentRoot = this.getController("Editor").getBody(),
             semanticRules = languageData.semanticRules,
             elements, elementRules, parentId, parentConfig, parentRules, childrenRules;
