@@ -1,4 +1,15 @@
 {
+  "preface_quest": {
+    "quest": true,
+    "label": "Mark preface"
+  },
+  "body_quest": {
+    "quest": true,
+    "label": "Mark body"
+  },
+
+
+
   "address": {
     "pattern": "hcontainer"
   },

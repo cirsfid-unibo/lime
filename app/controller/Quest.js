@@ -44,102 +44,44 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+
 /**
- * The main viewport of the application. It contains all the other views.
+ * Quest controller.
  */
-Ext.define('LIME.view.Viewport', {
-    extend : 'Ext.container.Viewport',
+Ext.define('LIME.controller.Quest', {
+    extend: 'Ext.app.Controller',
+    views: ['QuestPanel'],
 
-    alias : 'widget.appViewport',
-
-    requires : [
-        'LIME.view.Outliner',
-        'LIME.view.QuestPanel',
-        'LIME.view.MainToolbar',
-        'LIME.view.MarkingMenu',
-        'LIME.view.Main',
-        'LIME.view.ContextMenu',
-        'LIME.view.DownloadManager',
-        'LIME.view.ProgressWindow',
-        'LIME.view.Login'
+    refs: [
+        { ref: 'panel', selector: 'questPanel' }
     ],
 
-    style : {
-        background : '#FFFFFF'
+    quests: [],
+
+    init: function () {
+        this.application.on(Statics.eventsNames.languageConfigLoaded, this.loadQuests, this);
+        this.control({
+            'questPanel': {
+                render: this.renderQuests
+            }
+        });
     },
 
-    layout : 'border',
-
-    commonItems : [{
-        xtype : 'progressWindow'
-    }],
-
-    loginItems : [{
-        xtype: 'container',
-        region: 'center',
-        layout: {
-            type: 'vbox',
-            align: 'center'
-        },
-        items: [{
-            xtype: 'image',
-            src: 'resources/images/icons/logo_lime.png',
-            autoEl: 'div'
-        }, {
-            xtype: 'login'
-        }]
-    }],
-
-    markingMenu : {
-        xtype : 'markingMenu',
-        cls: 'markingMenuContainer',
-        region : 'east',
-        width : '22%',
-        collapsible : true,
-        expandable : true,
-        resizable : true,
-        margin : 2,
-        autoScroll : true
+    // Load this.quests from LanguageConfigLoader
+    loadQuests: function () {
+        this.quests = LanguageConfigLoader.getQuests();
+        if (this.getPanel())
+            this.renderQuests();
     },
 
-    editorItems : [{
-        xtype : 'mainToolbar',
-        region : 'north',
-        width : '100%',
-        margin : 2
-    }, {
-        xtype : 'main',
-        region : 'center',
-        id: 'mainEditor',
-        //draggable : true,
-        expandable : true,
-        resizable : true,
-        margin : 2
-    }, {
-        xtype : 'container',
-        region : 'west',
-        width : '15%',
-        autoScroll : true,
-        expandable : true,
-        resizable : true,
-        padding : 2,
-        layout : {
-            type : 'vbox',
-            align : 'stretch'
-        },
-        items: [{
-            xtype : 'outliner',
-            flex : 1
-        }, {
-            xtype : 'questPanel',
-            margin : '4 0 0 0',
-            flex : 1
-        }]
-    },
-    {
-        // Context menu related to the editor
-        xtype : 'contextMenu'
-    }, {
-        xtype : 'downloadManager'
-    }]
+    // Update the panel with the quests in this.quests
+    renderQuests: function () {
+        var panel = this.getPanel();
+        panel.clearQuests();
+        this.quests.forEach(function (quest) {
+            panel.addQuest(quest.label, function () {
+                console.log(quest.label);
+            });
+        });
+    }
 });

@@ -104,15 +104,25 @@ Ext.define('LIME.LanguageConfigLoader', {
     generalConfiguration: undefined,
 
     // Get the general configuration object
-    getConfig: function() {
+    getConfig: function () {
         return this.generalConfiguration;
+    },
+
+    getQuests: function () {
+        // Note: this is quite naive.
+        var items = this.generalConfiguration.defaults.markupMenu;
+        var quests = [];
+        for (var key in items)
+            if (items[key].quest)
+                quests.push(items[key]);
+        return quests;
     },
  
     // Given a document type, load the configuration of its language by 
     // merging and prioritizing its settings, which can be specific to
     // language, locale and/or doctype.
     // The cb callback is executed on success.
-    load: function(docType, docLocale, cb) {
+    load: function (docType, docLocale, cb) {
         // Check if we have to load something
         if (this.isLoading)
             return Ext.log('LanguageConfigLoader.load() called while a language was already loading');

@@ -58,6 +58,7 @@ Ext.define('LIME.Application', {
         'Storage',
         'Editor',
         'MarkingMenu',
+        'Quest',
         'Marker',
         'Outliner',
         'Language',

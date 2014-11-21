@@ -45,101 +45,28 @@
  */
 
 /**
- * The main viewport of the application. It contains all the other views.
+ * This view is a tree panel that contains a different view of marked document.
  */
-Ext.define('LIME.view.Viewport', {
-    extend : 'Ext.container.Viewport',
-
-    alias : 'widget.appViewport',
-
-    requires : [
-        'LIME.view.Outliner',
-        'LIME.view.QuestPanel',
-        'LIME.view.MainToolbar',
-        'LIME.view.MarkingMenu',
-        'LIME.view.Main',
-        'LIME.view.ContextMenu',
-        'LIME.view.DownloadManager',
-        'LIME.view.ProgressWindow',
-        'LIME.view.Login'
-    ],
-
-    style : {
-        background : '#FFFFFF'
+Ext.define('LIME.view.QuestPanel', {
+    extend: 'Ext.panel.Panel',
+    alias: 'widget.questPanel',
+    title: 'Quests',
+    layout: {
+        type: 'vbox',
+        pack: 'start',
+        align: 'stretch'
     },
 
-    layout : 'border',
-
-    commonItems : [{
-        xtype : 'progressWindow'
-    }],
-
-    loginItems : [{
-        xtype: 'container',
-        region: 'center',
-        layout: {
-            type: 'vbox',
-            align: 'center'
-        },
-        items: [{
-            xtype: 'image',
-            src: 'resources/images/icons/logo_lime.png',
-            autoEl: 'div'
-        }, {
-            xtype: 'login'
-        }]
-    }],
-
-    markingMenu : {
-        xtype : 'markingMenu',
-        cls: 'markingMenuContainer',
-        region : 'east',
-        width : '22%',
-        collapsible : true,
-        expandable : true,
-        resizable : true,
-        margin : 2,
-        autoScroll : true
+    clearQuests: function () {
+        this.removeAll(true);
     },
 
-    editorItems : [{
-        xtype : 'mainToolbar',
-        region : 'north',
-        width : '100%',
-        margin : 2
-    }, {
-        xtype : 'main',
-        region : 'center',
-        id: 'mainEditor',
-        //draggable : true,
-        expandable : true,
-        resizable : true,
-        margin : 2
-    }, {
-        xtype : 'container',
-        region : 'west',
-        width : '15%',
-        autoScroll : true,
-        expandable : true,
-        resizable : true,
-        padding : 2,
-        layout : {
-            type : 'vbox',
-            align : 'stretch'
-        },
-        items: [{
-            xtype : 'outliner',
-            flex : 1
-        }, {
-            xtype : 'questPanel',
-            margin : '4 0 0 0',
-            flex : 1
-        }]
-    },
-    {
-        // Context menu related to the editor
-        xtype : 'contextMenu'
-    }, {
-        xtype : 'downloadManager'
-    }]
-});
+    addQuest: function (label, handler) {
+        this.add({
+            xtype: 'button',
+            text: label,
+            margin: 5,
+            handler: handler
+        });
+    }
+}); 

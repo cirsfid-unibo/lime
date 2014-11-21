@@ -782,7 +782,10 @@ Ext.define('LIME.controller.Editor', {
         docType =  Ext.isString(config.alternateDocType) ? config.alternateDocType : config.docType;
         Ext.defer(function() {
             app.fireEvent(Statics.eventsNames.progressUpdate, Locale.strings.progressBar.configurationFiles);
-            LanguageConfigLoader.load(docType, config.docLocale, Ext.bind(me.onPluginLoaded, me));
+            LanguageConfigLoader.load(docType, config.docLocale, function (data, styleUrls) {
+                me.onPluginLoaded(data, styleUrls);
+                app.fireEvent(Statics.eventsNames.languageConfigLoaded);
+            });
         }, 200, me);
     },
 
