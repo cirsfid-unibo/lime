@@ -159,7 +159,7 @@ Ext.define('LIME.controller.Marker', {
             lastNode = (selectionRange[1] == 0) ? selection.end.previousSibling : selection.end, 
             selectedNodes = DomUtils.getSiblings(selection.start, lastNode),
             // Parse the wrapper element in order to determine where the content goes
-            parsedHtml = Interpreters.parseElement(button.waweConfig.pattern.wrapperElement, {
+            parsedHtml = Interpreters.parseElement(button.pattern.wrapperElement, {
                 content : '<span class="' + DomUtils.tempSelectionClass + '"/>'
             }),
             // Create a new HTMLElement to be used as the wrapper (they all are divs)
@@ -239,7 +239,7 @@ Ext.define('LIME.controller.Marker', {
                 inlineWrapper;
             bogusNode = extNode.up('[data-mce-bogus]');
             // An element without content e.g. eop element
-            if ((button.waweConfig.pattern.wrapperElement.indexOf(Interpreters.flags.content)==-1)) {
+            if ((button.pattern.wrapperElement.indexOf(Interpreters.flags.content)==-1)) {
                 isMarker = true;
                 if (bogusNode) {
                     inlineWrapper = Ext.DomHelper.insertHtml("afterEnd", bogusNode.dom, htmlContent);                    
@@ -300,13 +300,13 @@ Ext.define('LIME.controller.Marker', {
      */
     wrap : function(button, config) {
         var editorController = this.getController('Editor'), 
-            buttonPattern = button.waweConfig.pattern, 
+            buttonPattern = button.pattern, 
             isBlock = DomUtils.blockTagRegex.test(buttonPattern.wrapperElement), 
             newElements = [], 
             selectedNode = editorController.getSelectedNode(), 
             firstMarkedNode = DomUtils.getFirstMarkedAncestor(selectedNode);
         
-        if(!this.isAllowedMarking(firstMarkedNode, button.waweConfig)) {
+        if(!this.isAllowedMarking(firstMarkedNode, button)) {
             return;
         }
 
@@ -338,7 +338,7 @@ Ext.define('LIME.controller.Marker', {
             if (config.attribute && config.attribute.name && config.attribute.value) {// check if attribute has name and value
                 newElement.setAttribute(idPrefix + config.attribute.name, config.attribute.value);
             }
-            //var explorer = this.getController("Explorer");
+
             // Set the document properties
             DocProperties.setMarkedElementProperties(markingId, {
                 button : button,
@@ -356,11 +356,6 @@ Ext.define('LIME.controller.Marker', {
                     }
                 }
             }
-            // Avoid random cursor repositioning by using a bookmark
-            //var bm = editorController.getBookmark(); // BUG SAFARI (leave commented): The span used to set the bookmark is converted to an empty p and placed as the first child of the body
-            // Apply the wrapping rules
-            //Interpreters.wrappingRulesHandler(button, newElement);
-            //editorController.restoreBookmark(bm)
         }, this);
         // Warn of the changed nodes
         
@@ -523,9 +518,9 @@ Ext.define('LIME.controller.Marker', {
         if(!config.nodes | !button)
             return;
         var editorController = this.getController('Editor'),
-            buttonPattern = button.waweConfig.pattern,
+            buttonPattern = button.pattern,
             isBlock = DomUtils.blockTagRegex.test(buttonPattern.wrapperElement),
-            idPrefix = button.waweConfig.rules[Utilities.buttonFieldDefault].attributePrefix || '',
+            idPrefix = button.rules[Utilities.buttonFieldDefault].attributePrefix || '',
             markedElements = [];
           
         Ext.each(config.nodes,function(newElement,index){
@@ -581,6 +576,8 @@ Ext.define('LIME.controller.Marker', {
                 silent: config.silent
             });
         }
+        
+        return markedElements;
     },
     
     /**
@@ -673,7 +670,7 @@ Ext.define('LIME.controller.Marker', {
     getPatternConfigByNode: function(node) {
         var button = DomUtils.getButtonByElement(node);
         if(button) {
-            return button.waweConfig.pattern;
+            return button.pattern;
         }
     },
 
@@ -688,7 +685,7 @@ Ext.define('LIME.controller.Marker', {
             if (parent) {
                 parentId = parent.getAttribute(DomUtils.elementIdAttribute);
                 if (DocProperties.markedElements[parentId] && DocProperties.markedElements[parentId].button) {
-                    parentConfig = DocProperties.markedElements[parentId].button.waweConfig;
+                    parentConfig = DocProperties.markedElements[parentId].button;
                     parentRules = elements[parentConfig.name];
                     if (parentRules && parentRules.children) {
                         childrenRules = parentRules.children[buttonConfig.name];

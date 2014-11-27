@@ -70,113 +70,148 @@ Ext.define('LIME.controller.Outliner', {
      * @param {Ext.data.NodeInterface} node A reference the node that has to be expanded
      */
     expandItem : function(node) {
-        var tree = this.getOutliner(), root, row;
-        if (!tree || tree.isHidden()) return;
+        var me = this, tree = this.getOutliner(), root, row, parents,
+            nodeToSelect = null;;
+
         root = tree.store.getRootNode();
         if (!node) {
             tree.getSelectionModel().select(root, false, true);
+            return;
         };
 
-        //Select me or the first ascendant node in the tree
-        while (node && node.nodeType == DomUtils.nodeType.ELEMENT) {
-            var internalId = node.getAttribute(DomUtils.elementIdAttribute);
-            //if node is defined and have an elementid
-            if (node && internalId) {
-                //get the store node by id
-                var storedNode = root.findChild('cls', internalId, true);
-                if (storedNode) {
-                    var iterateNode = storedNode;
-                    //expand node and his ancestors
-                    while (iterateNode && !iterateNode.isExpanded()) {
-                        iterateNode.expand();
-                        iterateNode = iterateNode.parentNode;
-                    }
-                    //select the node
-                    tree.getSelectionModel().select(storedNode, false, true);
-                    row = document.querySelector('#'+tree.items.items[0].getRowId(storedNode));
-                    if (row) {
-                        row = Ext.get(row);
-                        row.scrollIntoView(tree.items.items[0].getEl(), false, true);
-                    }
-                    
-                    break;
-                }
+        parents = DomUtils.getMarkedParents(node).reverse();
+        parents.push(DomUtils.getFirstMarkedAncestor(node));
+        parents = Ext.Array.unique(parents);
+
+        Ext.each(parents, function(parent) {
+            var treeNode = me.getTreeNodeFromDomNode(root, parent);
+            if ( treeNode && !treeNode.hasChildNodes() && parent.querySelector('['+DomUtils.elementIdAttribute+']') ) {
+                me.buildTree(parent, "partial");
+                treeNode = me.getTreeNodeFromDomNode(root, parent);
             }
-            node = node.parentNode;
+
+            if ( treeNode ) {
+                treeNode.expand();
+                nodeToSelect = treeNode;
+            }
+        });
+
+        if ( nodeToSelect ) {
+            //select the node
+            tree.getSelectionModel().select(nodeToSelect, false, true);
+            row = document.querySelector('#'+tree.items.items[0].getRowId(nodeToSelect));
+            if ( row ) {
+                Ext.fly(row).scrollIntoView(tree.items.items[0].getEl(), false, true);
+            }
+        }
+    },
+    
+    getTreeNodeFromDomNode: function(treeRootNode, domNode) {
+        var treeNode = null;
+        if ( treeRootNode && domNode.nodeType == DomUtils.nodeType.ELEMENT ) {
+            var internalId = domNode.getAttribute(DomUtils.elementIdAttribute);
+            if ( internalId ) {
+                return treeRootNode.findChild('cls', internalId, true);
+            }
+        }
+        return treeNode;
+    },
+
+    beforeExpandItem: function(node) {
+        var me = this, treeView = this.getOutliner();
+
+        if( treeView && !treeView.isHidden() ) {
+            treeView.setLoading(true);
+            Ext.defer(function() {
+                me.expandItem(node);
+                treeView.setLoading(false);
+            }, 5);
         }
     },
 
-    /**
-     * This function converts an object that contains different type of nodes
-     * in an structured object for the tree store that contains nodes that
-     * @param {Object} data
-     * @param {Object} [parent]
-     * @param {Number} [pos]
-     * @returns {Object[]/Object}
-     */
-    createTreeData : function(data, parent, pos) {
-        var treeData = {},
-            childs = [];
-        if (data && data.el && data.el.nodeType == DomUtils.nodeType.ELEMENT) {
-            var elementClass = data.el.getAttribute('class');
-            var id = data.el.getAttribute(DomUtils.elementIdAttribute);
-            if (id && DocProperties.markedElements[id]) {
-                // Creating the icon and set the right class
-                var button = DocProperties.markedElements[id].button;
-                    wrapperClass = button.waweConfig.pattern.wrapperClass,
-                    newIcon = '<div class="'+this.iconBaseCls+' ' + wrapperClass + '"></div>',
-                    iconColor = button.waweConfig.pattern.styleObj["background-color"],
-                    iconStyle = 'height: 12px; width: 12px; -moz-border-radius: 6px; border-radius: 6px; background-color: '+iconColor+'; display: inline-block; vertical-align:middle; margin-right: 5px; margin-bottom: 1px; border: 1px solid #6D6D6D;';
-                // Adding explorer icon's style
-                DomUtils.addStyle('*[class="'+ this.iconBaseCls+' '+ wrapperClass + '"]', iconStyle, document);
+    getTreeDataFromNode : function(node) {
+        var data = {}, id = node.getAttribute(DomUtils.elementIdAttribute),
+            markedObj = DocProperties.markedElements[id], button;
 
-                if (elementClass) {
-                    var classes = elementClass.split(" ");
-                    var text = newIcon + classes[(classes.length - 1)];
-                    //treeData.icon = Statics.treeIcon[classes[0]];
-                    var info = DomUtils.getNodeExtraInfo(data.el, "hcontainer");
-                    if (info) {
-                        text += " (" + info + ")";
-                    }
-                    treeData.text = text;
+        if (markedObj) {
+            button = markedObj.button;
+            var wrapperClass = button.pattern.wrapperClass,
+                newIcon = '<div class="'+this.iconBaseCls+' ' + wrapperClass + '"></div>',
+                text = newIcon + button.name;
 
-                } else {
-                    treeData.text = newIcon + id;
-                }
-                // treeData.id = id;
-                treeData.cls = id;
+            var info = DomUtils.getNodeExtraInfo(node, "hcontainer");
+            if (info) {
+                text += " (" + info + ")";
             }
-            if (data.children) {
-                treeData.children = [];
-                for (var i = 0; i < data.children.length; i++) {
-                    var child = data.children[i];
-                    if (child) {
-                        if (!treeData.text && parent) {
-                            Ext.Array.insert(parent.children, pos + i + 1, [child]);
-                        } else {
-                            var chdata = this.createTreeData(child, data, i);
-                            if (chdata) {
-                                treeData.children.push(chdata);
-                            }
-                        }
-                    }
+            data = {
+                text: text,
+                cls: id,
+                leaf: (node.querySelector('['+DomUtils.elementIdAttribute+']')) ? false : true
+            };
+        }
+        return data;
+    },
+
+    loadCss: function() {
+        var me = this,
+            buttons = DocProperties.getElementsConfigList(),
+            button, wrapperClass, iconColor,
+            head = document.querySelector("head"),
+            styleId = 'limeExplorerStyle',
+            styleNode = head.querySelector('#'+styleId);
+
+
+        if ( styleNode ) {
+            head.removeChild(styleNode);
+        }
+
+        for (i in buttons) {
+            button = buttons[i];
+            if(button.pattern) {
+                wrapperClass = button.pattern.wrapperClass;
+                iconColor = button.pattern.styleObj["background-color"];
+                DomUtils.addStyle('*[class="'+ me.iconBaseCls+' '+ wrapperClass + '"]', 'background-color: '+iconColor+';', document, styleId);
+            }
+        }
+    },
+
+    createTreeDataNew : function(root, desiredDepth) {
+        desiredDepth = (desiredDepth !== undefined) ? desiredDepth : -1;
+        var data = [], parents = [],
+            nodes = root.querySelectorAll('['+DomUtils.elementIdAttribute+']'),
+            parentObj = null, parentNode = null, map = {}, node, localData;
+
+        if ( root.getAttribute(DomUtils.elementIdAttribute) ) {
+            localData = this.getTreeDataFromNode(root);
+            map[localData.cls] = localData;
+            data.push(localData);
+        }
+
+        for(var i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            parents = DomUtils.getMarkedParents(node, function(pNode) {
+                if ( root == pNode || (root.compareDocumentPosition(pNode) & Node.DOCUMENT_POSITION_CONTAINED_BY) ) {
+                    return true;
+                }
+            });
+
+            if ( desiredDepth == -1 || parents.length <= desiredDepth ) {
+                localData = this.getTreeDataFromNode(node);
+                map[localData.cls] = localData;
+                parentNode = parents[0];
+
+                if (!parentNode || !map[parentNode.getAttribute(DomUtils.elementIdAttribute)]) {
+                    data.push(localData);
+                } else {
+                    parentObj = map[parentNode.getAttribute(DomUtils.elementIdAttribute)];
+                    parentObj.children = parentObj.children || [];
+                    parentObj.children.push(localData);
+                    parentObj.expanded = true;
                 }
             }
         }
-        if (Ext.Object.getSize(treeData) != 0) {
-            if (!treeData.text) {
-                if (!parent)
-                    return treeData.children;
-                return null;
-            } else if (treeData.children && treeData.children.length > 0) {
-                treeData.expanded = true;
-                treeData.leaf = false;
-            } else {
-                treeData.leaf = true;
-            }
-            return treeData;
-        } else
-            return null;
+
+        return data;
     },
 
     /**
@@ -192,55 +227,56 @@ Ext.define('LIME.controller.Outliner', {
     buildTree : function(node, config) {
         var me = this,
             tree = Ext.getStore('Outliner'),
+            depth = 1,
             treeView = this.getOutliner(),
-            root = tree.getRootNode();
-
-        if(!treeView) return;
+            root = tree.getRootNode(), data;
 
         try {
             //convert to tree format json the node
             if (config != "partial" || DomUtils.getFirstMarkedAncestor(node.parentNode) == null) {
                 var docClass = DocProperties.getDocClassList().split(" "), 
-                    foundNode = node.ownerDocument.querySelector("."+docClass[(docClass.length-1)]), 
-                    rawData = DomUtils.xmlToJson(foundNode), 
-                    data = this.createTreeData(rawData), wrapper;
+                    foundNode = node.querySelector("."+docClass[(docClass.length-1)]);
+
+                data = me.createTreeDataNew(foundNode, depth);
+                
                 if (Ext.isArray(data)) {
                     wrapper = {
                         text : 'root',
-                        children : data,
-                        expanded: true
+                        children : data
                     };
                 } else {
                     wrapper = data;
                 }
-                treeView.setRootNode(wrapper);
+                tree.setRootNode(wrapper);
             } else {
                 var nodeIter = node;
                 var nodeBuild = null;
+                var treeNode = null;
                 while (!nodeBuild && nodeIter && nodeIter.nodeType == DomUtils.nodeType.ELEMENT) {
                     var internalId = nodeIter.getAttribute(DomUtils.elementIdAttribute);
                     if (internalId) {
                         // search the node in the tree
-                        if (root.findChild('cls', internalId, true)) {
+                        treeNode = root.findChild('cls', internalId, true);
+                        if (treeNode) {
                             nodeBuild = nodeIter;
                         }
                     }
                     nodeIter = nodeIter.parentNode;
                 }
                 var rawData;
+
                 if (nodeBuild) {
-                    rawData = DomUtils.xmlToJson(nodeBuild);
+                    data = me.createTreeDataNew(nodeBuild, depth);
                 } else {
-                    rawData = DomUtils.xmlToJson(node);
+                    data = me.createTreeDataNew(node, depth);
                 }
-                var data = this.createTreeData(rawData, null, null);
 
                 if (!Ext.isArray(data)) {
                     data = [data];
                 }
+
                 Ext.each(data, function(dataNode, index) {
                     var storedNode = root.findChild('cls', dataNode.cls, true);
-                    // var storedNode = tree.getNodeById(dataNode.id);
                     if (!storedNode) {
                         //set the new root to the tree store
                         root.insertChild(index, dataNode);
@@ -253,16 +289,34 @@ Ext.define('LIME.controller.Outliner', {
             }
             treeView.getRootNode().expand();
         } catch(e) {
+            // TODO find the error
+            Ext.log({level: "error"}, e);
         }
     },
 
+    beforeBuildTree: function(node, type, config) {
+        var me = this, treeView = this.getOutliner();
+        config = config || {};
+
+        if(treeView) {
+            treeView.setLoading(true);
+            Ext.defer(function() {
+                me.buildTree(node, type);
+                treeView.setLoading(false);
+                Ext.callback(config.callback);
+            }, 5);
+        }
+    },
+    
     onChangeEditorMode: function(config) {
         var cmp = this.getOutliner();
-        if (config.sidebarsHidden) {
-            cmp.collapse();
-            //cmp.placeholder.tools[0].hide();
-        } else {
-            cmp.expand();
+        if(cmp) {
+            if (config.sidebarsHidden) {
+                cmp.collapse();
+                //cmp.placeholder.tools[0].hide();
+            } else {
+                cmp.expand();
+            }    
         }
     },
 
@@ -270,17 +324,12 @@ Ext.define('LIME.controller.Outliner', {
     init : function() {
         // Register for events
         this.application.on({
-            editorDomChange : function(node, config) {
-                try {
-                    this.buildTree(node, config);   
-                } catch(e) {
-                    Ext.log({level: "error"}, "Outliner.editorDomChange"+e);
-                }
-            },
-            editorDomNodeFocused : this.expandItem,
+            editorDomChange : this.beforeBuildTree,
+            editorDomNodeFocused : this.beforeExpandItem,
             scope : this
         });
         this.application.on(Statics.eventsNames.changedEditorMode, this.onChangeEditorMode, this);
+        this.application.on(Statics.eventsNames.markingMenuLoaded, this.loadCss, this);
 
         // set up the control
         this.control({

@@ -48,23 +48,25 @@
 $rules = Array(
 
 	"references" => Array("ref_3",
-						  "ref_2"
+						  "ref_2",
+						  "ref_1"
 						  ),
 
-	"ref_2" => "/{{partition}}\s+{{num}}\s+(de la|del|de)\s+{{source}}/",
-	"ref_3" => "/({{partition}}\s+{{num}}(\s+(de la|del|de)\s+))?{{type}}\s+{{docnum}}\,?\s*{{date}}/",
-	//"ref_3" => "/({{partition}}\s+\d+(º|°)?(\s+(de la|del|de)\s+))?[<>span\/]+{{type}}\s+Nº\s+\d+\.?\d*[<>span\/]+\,?\s*{{date}}/",
+	"ref_1" => "/{{partition}}\s+{{num}}(º|°)?\s+(de la|del|de)\s+{{source}}/",
+	"ref_2" => "/({{partition}}\s+{{num}}(º|°)?(\s+(de la|del|de)\s+))?{{type}}\s+N(º|°)\s+{{docnum}}/",
+	"ref_3" => "/({{partition}}\s+{{num}}(º|°)?(\s+(de la|del|de)\s+))?{{type}}\s+N(º|°)\s+{{docnum}}\,?\s*{{date}}/",
 
-    "type" => Array("Ley",
-    				"LEY",
+    "type" => Array(
 					"Decreto Ley",
-					"Decreto-Ley"),
+					"Decreto-Ley",
+					"Ley",
+    				"LEY"),
 					
-	"num" => "\d+(º|°)?",
+	"num" => "\d+",
 						
-	"date" => "[\w\d\s]+\d{4}",
+	"date" => "[\w\d\sº°]+\d{4}",
 	
-	"docnum" => "Nº\s+\d+\.?\d*",
+	"docnum" => "\d+\.?\d*",
 	
 	"partition" => Array("artículo",
 						 "inciso"),

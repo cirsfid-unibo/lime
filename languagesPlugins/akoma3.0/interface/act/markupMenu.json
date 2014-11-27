@@ -151,7 +151,7 @@
 		"pattern": "container"
 	},
 	"formula": {
-		"pattern": "block"
+		"pattern": "container"
 	},
 	"hcontainer": {
 		"pattern": "hcontainer"

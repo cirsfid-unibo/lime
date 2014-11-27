@@ -69,7 +69,13 @@ Ext.define('LIME.controller.MarkingMenu', {
 	},{
 		ref: 'secondEditor',
 		selector: '#secondEditor mainEditor'
-	}],
+	}, {
+        ref: 'treeButtonsStructure',
+        selector: '#treeStructure'
+    }, {
+        ref: 'treeButtonsCommons',
+        selector: '#treeCommons'
+    }],
 
 	/**
 	 * @property {Object} buttonsReferences
@@ -78,6 +84,7 @@ Ext.define('LIME.controller.MarkingMenu', {
 	 */
 	buttonsReferences : {},
 	expandState : {},
+	styleId : 'limeTreeButtonsStyle',
 
     getMarkingMenu: function() {
         var container = this.getMarkingMenuContainer();
@@ -93,96 +100,114 @@ Ext.define('LIME.controller.MarkingMenu', {
 	 * based on a static configuration file
 	 * loaded at runtime by {@link LIME.LanguageConfigLoader}
 	 */
-	buildButtonsStructure : function(pluginData) {
-		var me = this, // Save the scope,
-		  root = this.getMarkingMenu().down('*[cls~=structure]'),
-		  rootElements = pluginData.markupMenuRules.rootElements,
-		  commonElements = pluginData.markupMenuRules.commonElements,
-		  common = this.getMarkingMenu().down('*[cls~=commons]'),
-		  commonButtons = {},
-		  levelsOrder = ['locale', 'docType', 'defaults'],
-		  sortButtons = function(btn1, btn2) {
-		      return btn1.waweConfig.name > btn2.waweConfig.name;
-		  };
+    buildButtonsStructure : function(pluginData) {
+        var me = this, // Save the scope,
+            rootElements = pluginData.markupMenuRules.rootElements,
+            commonElements = pluginData.markupMenuRules.commonElements,
+            levelsOrder = ['locale', 'docType', 'defaults'],
+            head = document.querySelector("head"),
+            styleNode = head.querySelector('#'+me.styleId );
 
-	    this.buttonsReferences = {};
-	    root.removeAll();
-	    common.removeAll();
+        if ( styleNode ) {
+            head.removeChild(styleNode);
+        }
 
-	    for(var i=0; i<levelsOrder.length; i++) {
-	        var level = levelsOrder[i];
-	        if (pluginData[level] && pluginData[level].markupMenu) {
-	           pluginData[level] = Utilities.mergeJson(pluginData[level], pluginData['language'], Utilities.beforeMerge);
-	           pluginData.markupMenu = pluginData[level].markupMenu;
-	           break;
-	        }
-	    }
+        this.buttonsReferences = {};
+        this.configReferences = {};
+        DocProperties.clearElementConfig();
 
-		// Create and append each child
-		Ext.each(rootElements, function(button) {
-			root.add(me.createButton(button));
-		}, this);
-		Ext.each(commonElements, function(button) {
-            common.add(me.createButton(button));
+        for(var i=0; i<levelsOrder.length; i++) {
+            var level = levelsOrder[i];
+            if (pluginData[level] && pluginData[level].markupMenu) {
+               pluginData[level] = Utilities.mergeJson(pluginData[level], pluginData['language'], Utilities.beforeMerge);
+               pluginData.markupMenu = pluginData[level].markupMenu;
+               break;
+            }
+        }
+
+        var treeStructure = {
+            expanded: true,
+            id: 'structure',
+            children: []
+        };
+
+        var treeCommon = {
+            expanded: true,
+            id: 'commons',
+            children: []
+        };
+
+
+        // Create and append each child
+        Ext.each(rootElements, function(button) {
+            treeStructure.children.push(me.buildConfigData(button, false, false, false, "structure"));
+        }, this);
+        Ext.each(commonElements, function(button) {
+            treeCommon.children.push(me.buildConfigData(button, false, false, false, "common"));
         }, this);
 
+        me.getTreeButtonsStructure().getStore().setRootNode(treeStructure);
+        me.getTreeButtonsCommons().getStore().setRootNode(treeCommon);
+
         this.application.fireEvent(Statics.eventsNames.markingMenuLoaded);
-	},
+    },
+    
+        /**
+     * This function instantiate a TreeButton with all of its children
+     * @param {String} name The name of the button (necessary to get the configuration before the instantiation)
+     */
+    buildConfigData : function(name, buttons, rules, scope, type) {
+        var me = this,
+            config = null, configId = me.createConfigId(name), newConfig = null, style;
 
-	/**
-	 * This function instantiate a TreeButton with all of its children
-	 * @param {String} name The name of the button (necessary to get the configuration before the instantiation)
-	 */
-	createButton : function(name, buttons, rules, scope) {
-		var me = this, // Save the scope
-			buttonConfig = null, buttonId = me.createNewButtonId(name), newButton = null, style;
-		// Instantiate a new TreeButton
-		try {
-			buttonConfig = me.getButtonConfig(name, buttons, rules);
-		} catch(e) {
-			Ext.log({level: "error"}, "MarkingMenu.createButton"+e);
-			throw "Error: There is some error in the configuration of the plugin, the button with name " + name + " couldn't be initialized";
-		}
+        try {
+            config = me.getButtonConfig(name, buttons, rules);
+        } catch(e) {
+            Ext.log({level: "error"}, e);
+            throw "Error: There is some error in the configuration of the plugin, the button with name " + name + " couldn't be initialized";
+        }
 
-		if (buttonConfig.pattern) {
-		    style = buttonConfig.pattern.buttonStyle;
-		} else {
-		    style = buttonConfig.markupConfig.buttonStyle;
-		}
+        if (config.pattern) {
+            style = config.pattern.buttonStyle;
+        } else {
+            style = config.markupConfig.buttonStyle;
+        }
 
-		// Create the actual button
-		newButton = Ext.widget('treeButton', {
-			style : style,
-			id : buttonId,
-			name: name,
-			customHandler: buttonConfig.customHandler,
-			handlerScope: scope
-		}),
-		// Set the custom configuration
-		newButton.waweConfig = buttonConfig;
-		// Customize the button
-		var nameButton = newButton.down('treeButtonName'),
-			pluginChildren = newButton.waweConfig.rules.children,
-			labelTxt = newButton.waweConfig.label;
+        newConfig = Ext.merge(config, {
+            type: type,
+            style : style,
+            id : configId,
+            handlerScope: scope,
+            children: []
+        });
 
-		// Set the button name
-		nameButton.setText(labelTxt);
+        // If it has children do not show as a leaf
+        newConfig.leaf = (newConfig.rules.children) ? false : true;
 
-		// Set an internal reference for further elaboration
-		me.buttonsReferences[name][buttonId] = newButton;
+        // In the end create its children
+        Ext.each(newConfig.rules.children, function(child) {
+            newConfig.children.push(me.buildConfigData(child, buttons, rules, scope, type));
+        });
 
-		// If it has children do not show as a leaf
-		if (pluginChildren) {
-			newButton.setLeaf(false);
-		} else {
-			newButton.setLeaf(true);
-		}
-		// In the end create its children
-		Ext.each(pluginChildren, function(child) {
-			newButton.appendChild(me.createButton(child, buttons, rules, scope));
-		});
-		return newButton;
-	},
+        if ( Ext.Object.isEmpty(me.configReferences[name]) ) {
+            if(style) {
+                DomUtils.addStyle('.x-tree-custom *[class~="'+ name + '"] .x-tree-node-text ', style, document, me.styleId);
+            }
+        }
+
+        DocProperties.setElementConfig(configId, newConfig);
+        me.configReferences[name][configId] = newConfig;
+
+
+        return {
+            text: newConfig.label,
+            cls: name+' '+configId,
+            name: name,
+            id: configId,
+            leaf: newConfig.leaf,
+            children: (newConfig.children.length) ? newConfig.children : undefined
+        };
+    },
 
 	/**
 	 * Create a unique id for a specific button (specified by its name)
@@ -199,6 +224,17 @@ Ext.define('LIME.controller.MarkingMenu', {
 		}
 		return name + count;
 	},
+	
+	createConfigId : function(name) {
+        var count = 0;
+        if (!this.configReferences[name]) {
+            this.configReferences[name] = {};
+        }
+        for (var i in this.configReferences[name]) {
+            count++;
+        }
+        return name + count;
+    },
 
 	getButtonsByName: function(name) {
 	    return this.buttonsReferences[name];
@@ -266,18 +302,7 @@ Ext.define('LIME.controller.MarkingMenu', {
 		return config;
 	},
 
-    /* Return the list of all buttons */
-    getAllButtons : function() {
-        var refs = this.buttonsReferences;
-            buttons = [];
-        for (var k in refs)
-            if (refs.hasOwnProperty(k))
-                if(refs[k].hasOwnProperty(k + '0'))
-                    buttons.push(refs[k][k + '0']);
-        return buttons;
-    },
-
-	addMarkingMenu : function(pluginData) {
+    addMarkingMenu : function(pluginData) {
         var me = this, vp = this.getAppViewport(),
             markingMenu = vp.down('*[cls=markingMenuContainer]'),
             secondEditor = this.getSecondEditor(),
@@ -287,98 +312,105 @@ Ext.define('LIME.controller.MarkingMenu', {
         }
 
         this.application.fireEvent(Statics.eventsNames.beforeCreation, "MarkingMenu", vp.markingMenu, function(config) {
-            if(!secondEditor) {
-            	if(markingMenu) {
-            		vp.remove(markingMenu);	
-            	}
-            	vp.add(Ext.merge(config, {
-		            collapsed: collapsed
-		        }));	
+            if(!markingMenu) {
+                //TODO: check this when secondEditor exists
+                /*if(markingMenu) {
+                    vp.remove(markingMenu, true);   
+                }*/
+                vp.add(Ext.merge(config, {
+                    collapsed: collapsed
+                }));    
             }
             me.buildButtonsStructure(pluginData);
         });
     },
 
-	/**
-	 * This function expands the buttons based on the selected
-	 * node in the editor. If no arguments are given all the buttons
-	 * will be collapsed depending on the value of the __leaveExpanded__ property
-	 * specified in the configuration files.
-	 * @param {HTMLElement} node The node which the expansion must start from
-	 *
-	 */
-	expandButtons : function(node) {
-		// If the selected node is the same as before don't do anything
-		if(this.expandState && this.expandState.node == node){
-			return;
-		}else{
-			if(!this.expandState){
-				this.expandState = {};
-			}
-			this.expandState.node=node;
-		}
-		//  If the node is marked only hide the not interesting nodes!
-		var markingMenu = this.getMarkingMenu(),
-			pluginData = LanguageConfigLoader.getConfig(),
-			leaveExpanded = pluginData.markupMenuRules.defaults.leaveExpanded,
-			sameLevelExpand = pluginData.markupMenuRules.defaults.sameLevelExpand,
-			elementIdAttribute = DomUtils.elementIdAttribute,
-			markedElements = DocProperties.markedElements,
-			iterator = node, parentButton = null,
-			currentButton = null,
-			childWidgetsId = null,
-			parentNode = null,
-			iterateElements = [];
-		// Hiding phase
-		if (!leaveExpanded){
-            markingMenu.hideAll();
-		}
-		// Proceed only if the given node exists (it means it was marked)
-		if (node) {
-			// Get some hooks for the specific configuration to be used while iterating
-			markingId = node.getAttribute(elementIdAttribute);
-			// If there isn't a related button just don't do anything
-			if (markedElements[markingId]) {
-				relatedButton = markedElements[markingId].button || null;
-				//This is very slow TODO: do it on initialize
-				markingMenu.setActiveTab(relatedButton.up('*[cls~=buttonsContainer]'));
+    updateTreeView : function(tree, fn) {
+        var view = tree.getView();
+        view.getStore().loadRecords(fn(tree.getRootNode()));
+        view.refresh();
+    },
 
-				this.expandState.button = relatedButton.id;
-
-				parentButton = relatedButton.getParent();
-				currentButton = relatedButton;
-
-                currentButton = relatedButton;
-				// Iterate on both the button to expand and its children
-                while (iterator && relatedButton) {
-                    markingId = iterator.getAttribute(DomUtils.elementIdAttribute);
-                    currentButton = markedElements[markingId].button;
-                    // Showing phase
-                    if ((!sameLevelExpand && !currentButton.isDescendantOf(parentButton)) || currentButton == relatedButton || sameLevelExpand) {
-                        currentButton.showChildren();
-                    }
-                    parentButton = currentButton.getParent();
-                    parentNode = DomUtils.getFirstMarkedAncestor(iterator.parentNode);
-                    if (parent == iterator || !parent) {
-                        break;
-                    } else {
-                        iterator = parentNode;
-                    }
+    collapseAll : function(tree) {
+        this.updateTreeView(tree, function(root) {
+            root.cascadeBy(function(node) {
+                if (!node.isRoot() || tree.rootVisible) {
+                    node.data.expanded = false;
                 }
-			}
-		}
-		//For performance reason we call doLayout() just one time and not for each button
-		markingMenu.updateLayout();
-	},
+            });
+            return tree.rootVisible ? [root] : root.childNodes;
+        });
+    },
 
-	/**
-	 * Collapse all the buttons.
-	 */
-	collapseButtons : function() {
-		var markingMenu = this.getMarkingMenu();
-		// To collapse all buttons we call the expandButtons method with no marked node
-		markingMenu.hideAll();
-	},
+    getFirstTreeButtonByNameAndType : function(name, type) {
+        var buttonData = Ext.Object.getValues(this.configReferences[name]).filter(function(data) {
+                        return data.type == type;
+                      })[0];
+        if (buttonData) {
+            return this.getTreeButton(buttonData.id);
+        }
+        return null;
+    },
+
+    /**
+     * This function expands the buttons based on the selected
+     * node in the editor. If no arguments are given all the buttons
+     * will be collapsed depending on the value of the __leaveExpanded__ property
+     * specified in the configuration files.
+     * @param {HTMLElement} node The node which the expansion must start from
+     *
+     */
+    expandButtons : function(node) {
+        var me = this, markingMenu = this.getMarkingMenu(), markingId, relatedButton;
+
+        if ( node ) {
+            markingId = node.getAttribute(DomUtils.elementIdAttribute);
+            relatedButton = me.getTreeButton(DomUtils.getButtonIdByElementId(markingId));
+        }
+
+        // Proceed only if the given node exists (it means it was marked)
+        if ( node && markingId && relatedButton ) {
+            var buttonPath = relatedButton.getPath().split('/').slice(2);
+            var nodesPath = Ext.Array.push(node, DomUtils.getMarkedParents(node));
+            nodesPath = nodesPath.map(function(el) {
+                return DomUtils.getButtonIdByElementId(el.getAttribute(DomUtils.elementIdAttribute));
+            }).reverse();
+            var treePanel = relatedButton.getOwnerTree();
+            var pathToExpand;
+
+            if ( buttonPath[0] == nodesPath[0] ) {
+                pathToExpand = relatedButton.getPath();
+            } else {
+                var name = DomUtils.getElementNameByNode(node);
+                var commonButton = me.getFirstTreeButtonByNameAndType(name, "common");
+                if ( commonButton ) {
+                    treePanel = commonButton.getOwnerTree();
+                    pathToExpand = commonButton.getPath();
+                } else {
+                    pathToExpand = relatedButton.getPath();
+                }
+            }
+            if ( me.expandedTree && me.expandedPath != pathToExpand ) {
+                me.collapseAll(me.expandedTree);
+            }
+
+            markingMenu.setActiveTab(treePanel);
+            if ( treePanel &&  pathToExpand && me.expandedPath != pathToExpand ) {
+                treePanel.expandPath(pathToExpand);
+                me.expandedTree = treePanel;
+                me.expandedPath = pathToExpand;
+            }
+        } else {
+            if ( me.expandedTree ) {
+                me.collapseAll(me.expandedTree);
+            }
+        }
+    },
+
+    getTreeButton: function(id) {
+        return this.getTreeButtonsStructure().getStore().getNodeById(id) || 
+               this.getTreeButtonsCommons().getStore().getNodeById(id);
+    },
 
 	disableMarkingMenu: function() {
 	    var cmp = this.getMarkingMenu();
@@ -427,35 +459,36 @@ Ext.define('LIME.controller.MarkingMenu', {
 
     addMarkingButton: function(config) {
         var me = this, markingMenu = me.getMarkingMenu(),
-            group = markingMenu.down("*[cls*="+config.group+"]");
-            refItem = config.before || config.after, refItemIndex = -1, posIndex = -1;
-        if(group && !group.down("*[name="+config.name+"]")) {
-            var buttonCmp = me.createButton(config.name, config.buttons, config.rules, config.scope);
-            buttonCmp.handlerScope = config.scope;
+            group = me.getTreeButton(config.group),
+            refItem = config.before || config.after,
+            configId = me.createConfigId(config.name);
 
+        if(group && !me.getTreeButton(configId)) {
+            var configButton = me.buildConfigData(config.name, config.buttons, config.rules, config.scope);
             if (refItem) {
-                var refButton = group.down("*[name="+refItem+"]");
-                if(refButton && refButton.up("treeButton") && group != refButton.up("treeButton")) {
-                    group = refButton.up("treeButton");
-                    group.appendChild(buttonCmp);
+                var refButton = group.findChildBy(function(child) {
+                    var match = (child.data.cls) ? child.data.cls.match('\\b' + refItem + '\\b') : false;
+                    return (match && match.length) ? true : false;
+                }, me, true);
+                if(refButton) {
+                    if ( config.after && refButton.nextSibling ) {
+                        refButton.parentNode.insertBefore(configButton, refButton.nextSibling);
+                    } else if ( config.after ) {
+                        refButton.parentNode.appendChild(configButton);
+                    } else {
+                        refButton.parentNode.insertBefore(configButton, refButton);
+                    }
                 } else {
-                    group.add(buttonCmp);
+                    group.appendChild(configButton);
                 }
-                refItemIndex = group.items.indexOf(refButton);
             } else {
-                group.add(buttonCmp);
-            }
-            if (refItemIndex != -1 || posIndex != -1) {
-                posIndex = (posIndex != -1) ? posIndex : (refItemIndex+((config.before) ? 0 : 1));
-                if (posIndex != -1) {
-                    group.move(buttonCmp, posIndex);
-                }
+                group.appendChild(configButton);
             }
         }
     },
 
     setCustomMarkingHandler: function(config) {
-        var  me = this, button = me.getFirstButtonByName(config.button);
+        var  me = this, button = DocProperties.getFirstButtonByName(config.button);
         if(button) {
             button.handlerScope = config.scope;
             switch(config.handlerType) {
@@ -479,18 +512,16 @@ Ext.define('LIME.controller.MarkingMenu', {
 
 		// Set the event listeners
 		this.application.on({
-			editorDomNodeFocused : function(node) {
-			    //TODO: check if this is ok
-			    Ext.defer(function() {
-			        try {
-			            this.expandButtons(node);
-			        } catch(e) {
-			            Ext.log({level: "error"}, "MarkingMenu.editorDomNodeFocused"+e);
-			        }
-			    }, 20, this);
-		    },
-			scope : this
-		});
+            editorDomNodeFocused : function(node) {
+                //TODO: check if this is ok
+                try {
+                    this.expandButtons(node);
+                } catch(e) {
+                    Ext.log({level: "error"}, e);
+                }
+            },
+            scope : this
+        });
 		this.application.on(Statics.eventsNames.languageLoaded, this.addMarkingMenu, this);
 		this.application.on(Statics.eventsNames.disableEditing, this.disableMarkingMenu, this);
 		this.application.on(Statics.eventsNames.enableEditing, this.enableMarkingMenu, this);
@@ -503,61 +534,42 @@ Ext.define('LIME.controller.MarkingMenu', {
 		// save a reference to the controller
 		var me = this;
 
-		this.control({
-			'treeButtonName' : {
-				click : function(cmp) {
-					// Warn that a marking button has been clicked and say which one
-					var button = cmp.up().up(), expander, aliasButton;
-					Ext.callback(button.beforeMarking, button.handlerScope, [button]);
-					var afterMarking = (Ext.isFunction(button.afterMarking)) ?
-					                   Ext.bind(button.afterMarking, button.handlerScope) : undefined;
+        this.control({
+            '#treeStructure, #treeCommons': {
+                // Warn that a marking button has been clicked and say which one
+                itemclick : function(view, treeNode) {
+                    var id = treeNode.getData().id;
+                    var config = DocProperties.getElementConfig(id), aliasButton;
+                    var afterMarking = (Ext.isFunction(config.afterMarking)) ?
+                                       Ext.bind(config.afterMarking, config.handlerScope) : undefined;
 
-					if(me.getController("Editor").getMain().getActiveTab().cls != "editor") {
-						return;
-					}
+                    Ext.callback(config.beforeMarking, config.handlerScope, [config]);
 
-					if (Ext.isFunction(button.customHandler)) {
-					    if(button.waweConfig.markAsButton) {
-					        aliasButton = me.getFirstButtonByName(button.waweConfig.markAsButton);
-					        this.application.fireEvent('markingMenuClicked', aliasButton, {
-                                callback : Ext.bind(button.customHandler, button.handlerScope, [button], true)
+                    if(me.getController("Editor").getMain().getActiveTab().cls != "editor") {
+                        return;
+                    }
+
+                    if (Ext.isFunction(config.customHandler)) {
+                        if(config.markAsButton) {
+                            aliasButton = DocProperties.getFirstButtonByName(config.markAsButton);
+                            this.application.fireEvent('markingMenuClicked', aliasButton, {
+                                callback : Ext.bind(config.customHandler, config.handlerScope, [config], true)
                             });
-					    } else {
-					        Ext.callback(button.customHandler, button.handlerScope, [button]);
-					    }
-					} else if (button.waweConfig.pattern) {
-                        this.application.fireEvent('markingMenuClicked', button, {
+                        } else {
+                            Ext.callback(config.customHandler, config.handlerScope, [config]);
+                        }
+                    } else if (config.pattern) {
+                        this.application.fireEvent('markingMenuClicked', config, {
                             callback : afterMarking
                         });
-					} else { // This is just a container of buttons
-					    expander = button.down("treeButtonExpander");
-                       // Expand or collapse the children
-                        if (button.childrenShown) {
-                            // Hide the children
-                            expander.hideChildren(true, button);
-                            //This is for the view bug when the scrollbar disappears
-                            expander.up("treeButton").updateLayout();
-                        } else {
-                            // Show the children
-                            expander.showChildren(button);
-                        }
-                        expander.updateLayout();
-					}
-				},
-				afterrender : function(cmp) {
-					var parent = cmp.up('treeButton');
-					var styles;
-					if (parent.waweConfig.pattern) {
-					   styles = parent.waweConfig.pattern.styleObj;
-					} else {
-					   styles = Utilities.cssToJson(parent.waweConfig.markupConfig.buttonStyle);
-					}
-
-					for (var i in styles) {
-						cmp.btnInnerEl.setStyle(i, styles[i]);
-					}
-				}
-			}
-		});
+                    }
+                    if( treeNode.isExpanded() ) {
+                        treeNode.collapse();
+                    } else {
+                        treeNode.expand();
+                    }
+                }
+            }
+        });
 	}
 });

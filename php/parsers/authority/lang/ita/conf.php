@@ -47,7 +47,8 @@
  
 $rules = Array(
 
-	"main" => "/({{authority}})/i"
+	"main" => "/(({{signature}},(\s+))?{{authority}})/i",
+	"signature" => "{{persone}}"
 );
 
 ?>

@@ -84,7 +84,8 @@
 		"searchingDates": "Fechas búsqueda",
 		"markingDates": "Marcado de fechas",
 		"searchingRefs": "Referencias búsqueda",
-		"markingRefs": "Marcado de referencias"
+		"markingRefs": "Marcado de referencias",
+		"loadingDocumentStyles": "Cargando estilos de documentos"
 	},
 	"typeNotSupported": "Este tipo de archivo no es (todavía) compatible con arrastrar y soltar",
 	"uploadError": "Se produjo un error al cargar el archivo. <br/> Inténtelo de nuevo.",

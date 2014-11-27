@@ -46,8 +46,8 @@
  */
  
 $rules = Array(
-	"main" => "/{{signature}} +{{authority}}/u",
-	"signature" => "[ \w\.]+"
+	"main" => "/{{signature}}(\s{1,4}[<>br idext\-gen0-9=\"\/]*){{authority}}/u",
+	"signature" => "[\p{L}.]+(\s[\p{L}.]+(\s[\p{L}.]+)?)?"
 );
 
 ?>

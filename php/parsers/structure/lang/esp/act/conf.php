@@ -45,23 +45,26 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 $rules = Array(
-    "preambleInitList" => Array("El Senado y la Cámara de Representantes de la República",
-    							"Honorable Cámara de Diputados",
+    "preambleInitList" => Array("Honorable Cámara de Diputados",
     							"La Cámara de Representantes",
     							"Creación",
     							"CÁMARA DE SENADORES",
-    							"Modificaciones de la Cámara de Senadores"),			   
+    							"Modificaciones de la Cámara de Senadores"),
     
-    "conclusionsInitList" => Array("Dios guarde a V.E.,", 
-    							   "Sala de Sesiones de la Cámara de Representantes",
-    							   "Sala de Sesiones de la Cámara de Senadores",
-    							   "Sala de Sesiones de la Asamblea General"),
-								   
-	"preambleEndList" => Array("PROYECTO DE LEY",
+    					
+    "preambleEndList" => Array("PROYECTO DE LEY",
     						   "TEXTO APROBADO",
     						   "PROYECTO DE LEY SUSTITUTIVO",
     						   "EXPOSICIÓN DE MOTIVOS", 
-    						   "INFORME"),
+    						   "INFORME",
+							   "Proyecto de Ley"),
+   
+    						   
+    "conclusionsInitList" => Array("Dios guarde a V.E.,",
+    							   "Sala de Sesiones de la Cámara de Representantes",
+    							   "Sala de Sesiones de la Cámara de Senadores",
+    							   "Sala de Sesiones de la Asamblea General",
+								   "Sala de la Comisiòn","Sala de la Comisión")
 );
 
 ?>

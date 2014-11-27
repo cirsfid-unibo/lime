@@ -146,7 +146,7 @@ Ext.define('LIME.Statics', {
          addMenuItem: "addMenuItem",
          enableDualEditorMode: "enableDualEditorMode",
          markingMenuLoaded: "markingMenuLoaded",
-         languageConfigLoaded: "languageConfigLoaded",
+         languageConfigLoaded: "languageConfigLoaded"
 	 },
 	 
 	 services: {

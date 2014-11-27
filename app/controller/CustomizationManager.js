@@ -165,33 +165,49 @@ Ext.define('LIME.controller.CustomizationManager', {
          var me = this,
             mainTabPanel = me.getMain(),
             viewport = me.getAppViewport(),
+            userInfo = this.getController('LoginManager').getUserInfo(),
             editorTab = me.getMainEditor().up(),
-            newOutliner;
+            newExplorer, language = me.getController("Language"),
+            editorController = me.getController("Editor");
 
-        me.getController("Editor").autoSaveContent(true);
-        
-        if(diff) {
-            diff.tab.show();
-            diff.enforceReload = true;
-            mainTabPanel.setActiveTab(diff);
-        }
+        editorController.autoSaveContent(true);
 
-        editorTab.noChangeModeEvent = false;
-        viewport.remove(editor);
+        language.beforeTranslate(function(xml) {
+            xml = xml.replace('<?xml version="1.0" encoding="UTF-8"?>', '');
+            var params = {
+                userName : userInfo.username,
+                fileContent : xml,
+                metadata: DomUtils.serializeToString(me.secondDocumentConfig.metaDom)
+            };
 
-        newOutliner = Ext.widget("outliner", {
-            region : 'west',
-            expandable : true,
-            resizable : true,
-            width : '15%',
-            autoScroll : true,
-            margin : 2
-        });
-        viewport.add(newOutliner);
-        if(me.finishEditBtn) {
-            me.finishEditBtn.up().remove(me.finishEditBtn);
-        }
+            var url = me.secondDocumentConfig.docId.replace("/diff/", "/diff_modified/");
+
+            me.application.fireEvent(Statics.eventsNames.saveDocument, url, params, function() {
+                if(diff) {
+                    diff.tab.show();
+                    diff.enforceReload = true;
+                    mainTabPanel.setActiveTab(diff);
+                }
+
+                editorTab.noChangeModeEvent = false;
+                viewport.remove(editor);
+
+                newExplorer = Ext.widget("explorer", {
+                    region : 'west',
+                    expandable : true,
+                    resizable : true,
+                    width : '15%',
+                    autoScroll : true,
+                    margin : 2
+                });
+                viewport.add(newExplorer);
+                if(me.finishEditBtn) {
+                    me.finishEditBtn.up().remove(me.finishEditBtn);
+                }
+            });
+        }, {}, null, editor, me.secondDocumentConfig.metaDom);
     },
+
 
     addFinishEditingButton : function(cmp, xmlDiff) {
         var me = this, toolbar = me.getMainToolbar();
@@ -246,11 +262,14 @@ Ext.define('LIME.controller.CustomizationManager', {
         
         secondEditor = me.createSecondEditor();
 
+        me.secondEditor = secondEditor;
+
         me.addFinishEditingButton(secondEditor, xmlDiff);
 
         Ext.defer(function() {
             storage.openDocumentNoEditor(dualConfig.notEditableDoc, function(config) {
                 language.beforeLoad(config, function(newConfig) {
+                    me.secondDocumentConfig = newConfig;
                     editorController.loadDocument(newConfig.docText, newConfig.docId, secondEditor, true);
                     if(newConfig.metaDom) {
                         var manifestationUri = newConfig.metaDom.querySelector("*[class=FRBRManifestation] *[class=FRBRuri]");
@@ -264,6 +283,8 @@ Ext.define('LIME.controller.CustomizationManager', {
                         Ext.each(xmlDiffController.selectedDocs, function(doc, index) {
                             var textFields = xmlDiff.query("textfield");
                             var oldPath = doc.path;
+                            doc.path = doc.path.replace("/diff/", "/diff_modified/");
+                            doc.id = doc.id.replace("/diff/", "/diff_modified/");
                             if(doc.id == dualConfig.editableDoc) {
                                 doc.id = newId;
                                 doc.path = doc.path.replace("/diff/", "/diff_modified/");
@@ -281,6 +302,7 @@ Ext.define('LIME.controller.CustomizationManager', {
         }, 100);
         
     },
+
 
     afterDocumentLoaded: function() {
         var me = this;

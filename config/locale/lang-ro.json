@@ -82,7 +82,8 @@
 		"searchingDates": "Cautarea datelor",
 		"markingDates": "Marcarea datelor",
 		"searchingRefs": "Cautarea referințelor",
-		"markingRefs": "Marcarea referințelor"
+		"markingRefs": "Marcarea referințelor",
+		"loadingDocumentStyles": "Loading document styles"
 	},
 	"typeNotSupported": "Acest tip de fișier nu este (încă) suportat de drag and drop",
 	"uploadError": "A fost o eroare la încărcarea fișierului.<br/>Încercă mai târziu.",

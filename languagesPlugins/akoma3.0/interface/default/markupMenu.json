@@ -264,7 +264,7 @@
     "pattern": "container"
   },
   "formula": {
-    "pattern": "block"
+    "pattern": "container"
   },
   "fragmentBody": {
     "pattern": "container",
@@ -321,7 +321,8 @@
         "addWrapperElement"
       ]
     },
-    "wrapperElement": "<div><p>&content;</p></div>"
+    "wrapperElement": "<div><p>&content;</p></div>",
+    "exceptionalAllowedElements": ["p"]
   },
   "judge": {
     "pattern": "inline"

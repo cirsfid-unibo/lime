@@ -122,6 +122,9 @@ Ext.define('LIME.DocProperties', {
      * This object contains information about widget of marked elements.
      */
     elementsWidget : {},
+    
+    elementsConfig : {},
+    elementsConfigByName: {},
     /**
      * @property {Object} currentEditorFile
      * This object contains information about opened document
@@ -173,6 +176,49 @@ Ext.define('LIME.DocProperties', {
     
     getNodeWidget: function(node) {
         return this.getElementWidget(DomUtils.getElementNameByNode(node));
+    },
+    
+    clearElementConfig: function() {
+        this.elementsConfig = {};
+        this.elementsConfigByName = {};
+    },
+
+    setElementConfig: function(id, config) {
+        this.elementsConfig[id] = config;
+        this.elementsConfigByName[config.name] = this.elementsConfigByName[config.name] || [];
+        this.elementsConfigByName[config.name].push(config);
+    },
+
+    getElementConfig: function(id) {
+        return this.elementsConfig[id];
+    },
+
+    getChildConfigByName: function(parent, name) {
+        if ( parent && name && parent.children.length) {
+            for ( var i in parent.children ) {
+                if ( parent.children[i].name == name ) {
+                    return this.getElementConfig(parent.children[i].id);
+                }
+            }
+        }
+    },
+
+    getFirstButtonByName: function(name, type) {
+        var elements = this.elementsConfigByName[name];
+        if ( elements && elements.length ) {
+            if ( type ) {
+                elements = elements.filter(function(config) {
+                    return (config.type == type);
+                });
+            }
+            return elements[0];
+        }
+    },
+
+    getElementsConfigList: function() {
+        return Ext.Object.getValues(this.elementsConfigByName).map(function(config) {
+            return Ext.Object.getValues(config)[0];
+        });
     },
 
     /**
@@ -325,9 +371,10 @@ Ext.define('LIME.DocProperties', {
                 firstAfterNode = afterNode;
                 Ext.each(config.data, function(attributes) {
                     var newElConf = Ext.merge({
-                        tag : 'div'
+                        tag : 'div',
+                        cls : targetNode
                     }, attributes);
-                    if(afterNode && afterNode.children && afterNode.children.length > 0) {
+                    if(afterNode  && afterNode.children && afterNode.children.length > 0) {
                         afterNode = Ext.DomHelper.insertAfter(afterNode, newElConf);    
                     } else {
                         afterNode = Ext.DomHelper.append(parentTarget.el, newElConf);

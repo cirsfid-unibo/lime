@@ -172,3 +172,35 @@ body .ux-notification-success {
 .forbidden-cell .x-grid-cell {
 	color: #FF0000;
 }
+
+.explorer-icon {
+	height: 12px; 
+	width: 12px; 
+	-moz-border-radius: 6px; 
+	border-radius: 6px;
+	display: inline-block; 
+	vertical-align:middle; 
+	margin-right: 5px; 
+	margin-bottom: 1px; 
+	border: 1px solid #6D6D6D;
+}
+
+.x-tree-custom .x-tree-node-text  {
+	padding: 2px 10px 2px 10px;
+	background-color:#DBEADC;
+	border-radius:3px;
+	display: inline-block;
+	width: 200px;
+	cursor: pointer;
+}
+
+.x-tree-custom .x-grid-row-selected .x-grid-td {
+	background-color: rgba(0, 0, 0, 0);
+}
+
+.x-tree-custom .x-grid-row-focused .x-grid-td, .x-tree-custom .x-grid-row-before-focused .x-grid-td {
+	border-bottom: 0px;
+}
+
+.x-tree-custom .x-tree-elbow-img {
+}

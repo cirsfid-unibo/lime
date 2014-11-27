@@ -54,6 +54,7 @@ require_once("structure/StructureParser.php");
 require_once("reference/ReferenceParser.php");
 require_once("authority/AuthorityParser.php");
 require_once("location/LocationParser.php");
+require_once("enactingFormula/FormulaParser.php");
 
 class MetaParser {
     
@@ -77,9 +78,11 @@ class MetaParser {
         $docTypeRes = $this->parseDocType();
 		$authorityRes = $this->parseAuthority();
 		$locationRes = $this->parseLocation();
+        $enactingFormula = $this->parseEnactingFormula();
 
         //print_r($structureRes);
-		$this->handleParserLocationResult($locationRes, $return);
+        $this->handleParserEnactingFormulaResult($enactingFormula, $return);
+        $this->handleParserLocationResult($locationRes, $return);
         $this->handleParserAuthorityResult($authorityRes, $return);
         $this->handleParserDocTypeResult($docTypeRes, $return);
         $this->handleParserDocNumResult($docRes, $return);
@@ -106,6 +109,11 @@ class MetaParser {
 
     public function parseQuote() {
         $parser = new QuoteParser($this->lang, $this->docType);
+        return $parser->parse($this->content);
+    }
+
+    public function parseEnactingFormula() {
+        $parser = new FormulaParser($this->lang, $this->docType);
         return $parser->parse($this->content);
     }
 
@@ -151,10 +159,38 @@ class MetaParser {
 	private function handleParserAuthorityResult($result, &$completeResult) {
 		foreach ($result["response"] as $match) {
             if($match) {
-                $completeResult[] = array_merge(Array("name"=> "authority"), $match);    
+                if ( array_key_exists("signature", $match) && $match["signature"] ) {
+                    $completeResult[] = Array("name"=> "signature",
+                                                "start" => $match["start"],
+                                                "end" => $match["end"],
+                                                "string" => $match["value"]);
+                    $completeResult[] = Array("name"=> "person",
+                                                "start" => $match["sStart"],
+                                                "end" => $match["sEnd"],
+                                                "string" => $match["signature"]);
+                    $completeResult[] = Array("name"=> "role",
+                                                "start" => $match["aStart"],
+                                                "end" => $match["aEnd"],
+                                                "string" => $match["authority"]);
+                } else if ( !count($this->getElementsByName("authority", $completeResult)) ) {
+                    $completeResult[] = Array("name"=> "authority",
+                                                "start" => $match["start"],
+                                                "end" => $match["end"],
+                                                "string" => $match["value"]);   
+                }
             }
         }
 	}
+
+    private function handleParserEnactingFormulaResult($result, &$completeResult) {
+        foreach ($result["response"] as $match) {
+            if($match) {
+                $match["string"] = $match["enactingFormula"];
+                unset($match["enactingFormula"]);
+                $completeResult[] = array_merge(Array("name"=> "formula"), $match);    
+            }
+        }
+    }
 	
 	
 	private function handleParserLocationResult($result, &$completeResult) {
@@ -273,49 +309,61 @@ class MetaParser {
 
     private function handleParserBodyResult($result, &$completeResult) {
         foreach ($result["response"] as $elementName => $elements) {
-            $nums = Array();
-            foreach ($elements as $element) {
-                $string = rtrim($element["value"]);
-                $newElement = Array("name"=> "num",
-                                          "string" => $string,
-                                          "start" => $element["start"],
-                                          "end" => $element["start"]+strlen($string));
-                //print_r($newElement);
-                //echo $newElement["end"]-$newElement["start"];
-                $nums[] = $newElement;
-                $completeResult[] = $newElement;
-            }
-            foreach ($nums as $key => $num) {
-                $parent = $this->getElementParent($num, $completeResult);
-                $parentIndex = array_search($parent, $completeResult);
-                if($parent["name"] == "quotedText") {
-                    $completeResult[$parentIndex]["name"] = "quotedStructure";
-                }
-                $end = $parent["end"];
-                if(array_key_exists($key+1, $nums)) {
-                    $parentNext = $this->getElementParent($nums[$key+1], $completeResult);
-                    if($parentNext === $parent) {
-                        $end = $nums[$key+1]["start"];
-                    } else {
-                        $nextSibling = $this->getElementWithSameParent($num, $parent, $completeResult);
-                        if(!empty($nextSibling)) {
-                            $end = $nextSibling[0]["start"];
-                        }
-                    }
-                    if($end <= $num["start"]) {
-                        $end = $nums[$key+1]["start"];
-                    }
-                }
+            $this->rawHandleBodyResult($elementName, $elements, $completeResult);
+        }
+    }
 
-                $end = ($end > $parent["end"]) ? $parent["end"] : $end;
+    private function handleParserContainsBodyResult($element, &$completeResult) {
+        foreach ($element["contains"] as $elementName => $elements) {
+            $this->rawHandleBodyResult($elementName, $elements, $completeResult, $element["start"]);
+        }
+    }
 
-                if($end != 0 && $end >= $num["start"]) {
-                    $newElement = Array("name"=> $elementName,
-                                    "start" => $num["start"],
-                                    "end" => $end);
-                    $completeResult[] = $newElement;    
+    private function rawHandleBodyResult($elementName, $elements, &$completeResult, $startOffset = 0) {
+        $nums = Array();
+        foreach ($elements as $element) {
+            $string = (array_key_exists("numitem", $element)) ? rtrim($element["numitem"]) : rtrim($element["value"]);
+
+            $newElement = Array("name"=> "num",
+                                      "string" => $string,
+                                      "start" => $startOffset+$element["start"],
+                                      "end" => $startOffset+$element["start"]+strlen($string));
+            $nums[] = $newElement;
+            $completeResult[] = $newElement;
+        }
+        foreach ($nums as $key => $num) {
+            $parent = $this->getElementParent($num, $completeResult);
+            $parentIndex = array_search($parent, $completeResult);
+            if($parent["name"] == "quotedText") {
+                $completeResult[$parentIndex]["name"] = "quotedStructure";
+            }
+            $end = $parent["end"];
+            if(array_key_exists($key+1, $nums)) {
+                $parentNext = $this->getElementParent($nums[$key+1], $completeResult);
+                if($parentNext === $parent) {
+                    $end = $nums[$key+1]["start"];
+                } else {
+                    $nextSibling = $this->getElementWithSameParent($num, $parent, $completeResult);
+                    if(!empty($nextSibling)) {
+                        $end = $nextSibling[0]["start"];
+                    }
+                }
+                if($end <= $num["start"]) {
+                    $end = $nums[$key+1]["start"];
                 }
             }
+
+            $end = ($end > $parent["end"]) ? $parent["end"] : $end;
+
+            if($end != 0 && $end >= $num["start"]) {
+                $newElement = Array("name"=> $elementName,
+                                "start" => $num["start"],
+                                "end" => $end);
+                $completeResult[] = $newElement;    
+            }
+        }
+        foreach ($elements as $element) {
+            $this->handleParserContainsBodyResult($element, $completeResult);
         }
     }
 
@@ -347,6 +395,13 @@ class MetaParser {
         return (!empty($parents)) ? $parents[0] : NULL; 
     }
 
+    private function getElementsByName($name, $completeResult) {
+        $elements = array_filter($completeResult, function($res) use ($name)  {
+            return ($res["name"] == $name);
+        });
+        return $elements;
+    }
+
     private function normalizeOffsets($completeResult) {
         $encoding = mb_detect_encoding($this->content);
         $result = array();
@@ -358,6 +413,10 @@ class MetaParser {
             $element["end"] = mb_strlen($subStr, $encoding);
             if($element["end"] >= $element["start"]) {
                 if($element["name"] == "date") {
+                    $subStr = mb_substr($this->content, $element["start"] - 15, 15,$encoding);
+                    if ( strpos($subStr, "Vigente al:" ) !== false ) {
+                        $element["type"] = "force";
+                    }
                     $parent = $this->getElementParent($element, $completeResult);
                     if($parent["name"] != "ref") {
                         $result[] = $element;

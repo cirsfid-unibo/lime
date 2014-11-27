@@ -112,6 +112,7 @@
 					     akn:question |
 					     akn:answer |
 					     akn:body |
+					     akn:formula |
 					     akn:mainBody |
 					     akn:amendmentHeading |
 						 akn:amendmentContent |
@@ -145,7 +146,6 @@
 	<!-- Block elements -->
 	<xsl:template match="akn:block |
 						akn:longTitle |
-						akn:formula |
 						akn:p |
 						akn:interstitial |
 						akn:other

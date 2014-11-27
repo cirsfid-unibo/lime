@@ -109,136 +109,142 @@ Ext.define('LIME.Interpreters', {
 	 * it is used only before translation
 	 * @param {HTMLElement} markedNode
 	 */
-	wrappingRulesHandlerOnTranslate : function(markedNode) {
-		var me = this, elements = [],
-			elementId = markedNode.getAttribute(DomUtils.elementIdAttribute);
-			button = (DocProperties.markedElements[elementId]) ? DocProperties.markedElements[elementId].button : null,
-			rules = (button) ? button.waweConfig.pattern.wrapperRules : [],  /* TODO vedere dove mettere ste regole */
-			prefix = (button) ? (button.waweConfig.rules[Utilities.buttonFieldDefault].attributePrefix || '') : '';
-			
-		var rulesReference = {
-			/**
-			 * Put this element on top of the hierarchy
-			 */ 
-			headingElement : function(rule, markedNode, buttonConfig) {
-				if (rule.conditions["parentClassContains"]) {
-					var extEl = Ext.get(markedNode),
-						parent = extEl.parent('.'+rule.conditions["parentClassContains"]),
-                        contentElement = extEl.parent('.content'),
-						contentChild = (parent) ? parent.down('.content') : null;
-					//If content elements are the same	
-					if(parent && contentElement && contentChild && contentChild==contentElement){
-						extEl.insertBefore(contentElement);
-					//In this case the contentElement is outside parent and we can't insert extEl before it	
-					}else if(parent && !contentChild){
-						if(!me.headings){
-							me.headings = {};
-							me.headings.list = [];
-							parent.insertFirst(extEl);
-						}else{
-							var lastHeading,
-								downHeadings = parent.query(me.headings.cls);
-							//Search the last direct child heading element, downHeadings contains all heading descendants 
-							Ext.each(downHeadings,function(child){
-								if(child.parentNode==parent.dom){
-									lastHeading = child;
-								}
-							},this);
-							if(!lastHeading){
-								parent.insertFirst(extEl);
-							}else{
-								extEl.insertAfter(lastHeading);	
-							}	
-						}
-						//Save the name and build a cls string of heading elements
-						if(!Ext.Array.contains(me.headings.list, buttonConfig.name)){
-							me.headings.list.push(buttonConfig.name);
-							if(me.headings.list.length==1){
-								me.headings.cls="."+buttonConfig.name;
-							}else{
-								me.headings.cls+=", ."+buttonConfig.name;
-							}				
-						}	
-					}
-				}
-			},
-			// Apply generic attributes
-			applyAttributes : function(rule, markedNode) {
-				if (!rule.values) {
-					Ext.log({level: "error"}, "Couldn't apply the rule \"applyAttributes\". No values specified.");  
-				}
-				var attributes = rule.values;
-				for (attribute in attributes) {
-					var value = attributes[attribute];
-					var key = button.waweConfig.rules[Utilities.buttonFieldDefault].attributePrefix+attribute;
-					markedNode.setAttribute(key, value);
-				}
-			},
-			// Add mod element
-			addWrapperElement : function(rule, markedNode) {
-				var config = Interpreters.getButtonConfig(rule.type),
-					extWrapper = Ext.fly(markedNode), addedNode;
-				if(rule.type && rule.type=='mod'){
-						var modElement = extWrapper.parent(".mod"),
-						idPrefix = config.rules[Utilities.buttonFieldDefault].attributePrefix || '',
-						contentElement =  extWrapper.parent(".content");
-					if(!modElement && contentElement){
-						var parsedHtml = Interpreters.parseElement(config.pattern.wrapperElement, {
-							content : ''
-						});
-						var newElement = Ext.DomHelper.insertHtml('beforeBegin',contentElement.dom,parsedHtml),
-						extNewElement = Ext.get(newElement);
-						while(contentElement.dom.firstChild){
-							var removed  = contentElement.dom.removeChild(contentElement.dom.firstChild);
-							newElement.appendChild(removed);
-						}
-						newElement.setAttribute('class', config.pattern.wrapperClass);
-						//TODO: add the right id
-						newElement.setAttribute(idPrefix + DomUtils.langElementIdAttribute, 'mod1');
-						addedNode = newElement;
-						contentElement.appendChild(newElement);
-					}
-				}else if(rule.type && rule.type=='content'){
-					var contentElement = extWrapper.child('.content'),
-						hcontainerChild = extWrapper.child('.hcontainer');
-					//Add the content element only if is needed
-					if(!contentElement && !hcontainerChild){
-						var parsedHtml = Interpreters.parseElement(config.pattern.wrapperElement, {
-							content : ''
-						}),
-						tmpElement = Ext.DomHelper.createDom({
-							tag : 'div',
-							html : parsedHtml
-						});
-						if(tmpElement.firstChild){
-						    me.contentCounter = (me.contentCounter) ? me.contentCounter+1 : 1;
-							tmpElement.firstChild.setAttribute('class', config.pattern.wrapperClass);
-							// This is commented because every language need to set the id in the translating process
-							//tmpElement.firstChild.setAttribute(prefix+DomUtils.langElementIdAttribute, "cnt"+me.contentCounter);
-							while(markedNode.hasChildNodes()){
-								tmpElement.firstChild.appendChild(markedNode.firstChild);				
-							}
-							addedNode = tmpElement.firstChild;
-							markedNode.appendChild(tmpElement.firstChild);	
-						}
-					}
-				}
-				return addedNode;
-			}
-		};
-		// Apply the rules
-		for (rule in rules) {
-			var ruleReference = rulesReference[rule];
-			if (ruleReference) {
-				var elementAdded = ruleReference(rules[rule], markedNode, button.waweConfig);
-				if(elementAdded) {
-					elements = Ext.Array.push(elements, elementAdded);
-				}
-			}
-		}
+    wrappingRulesHandlerOnTranslate : function(markedNode) {
+        var me = this,
+            elements = [],
+            elementId = markedNode.getAttribute(DomUtils.elementIdAttribute),
+            button, rules, prefix;
 
-		return elements;
-	},
+        if (!button) {
+            button = (DocProperties.markedElements[elementId]) ? DocProperties.markedElements[elementId].button : null;
+        }
+
+        rules = (button) ? button.pattern.wrapperRules : [];  /* TODO vedere dove mettere ste regole */
+        prefix = (button) ? (button.rules[Utilities.buttonFieldDefault].attributePrefix || '') : '';
+        
+        var rulesReference = {
+            /**
+             * Put this element on top of the hierarchy
+             */ 
+            headingElement : function(rule, markedNode, buttonConfig) {
+                if (rule.conditions["parentClassContains"]) {
+                    var extEl = Ext.get(markedNode),
+                        parent = extEl.parent('.'+rule.conditions["parentClassContains"]),
+                        contentElement = extEl.parent('.content'),
+                        contentChild = (parent) ? parent.down('.content') : null;
+                    //If content elements are the same  
+                    if(parent && contentElement && contentChild && contentChild==contentElement){
+                        extEl.insertBefore(contentElement);
+                    //In this case the contentElement is outside parent and we can't insert extEl before it 
+                    }else if(parent && !contentChild){
+                        if(!me.headings){
+                            me.headings = {};
+                            me.headings.list = [];
+                            parent.insertFirst(extEl);
+                        }else{
+                            var lastHeading,
+                                downHeadings = parent.query(me.headings.cls);
+                            //Search the last direct child heading element, downHeadings contains all heading descendants 
+                            Ext.each(downHeadings,function(child){
+                                if(child.parentNode==parent.dom){
+                                    lastHeading = child;
+                                }
+                            },this);
+                            if(!lastHeading){
+                                parent.insertFirst(extEl);
+                            }else{
+                                extEl.insertAfter(lastHeading); 
+                            }   
+                        }
+                        //Save the name and build a cls string of heading elements
+                        if(!Ext.Array.contains(me.headings.list, buttonConfig.name)){
+                            me.headings.list.push(buttonConfig.name);
+                            if(me.headings.list.length==1){
+                                me.headings.cls="."+buttonConfig.name;
+                            }else{
+                                me.headings.cls+=", ."+buttonConfig.name;
+                            }               
+                        }   
+                    }
+                }
+            },
+            // Apply generic attributes
+            applyAttributes : function(rule, markedNode) {
+                if (!rule.values) {
+                    Ext.log({level: "error"}, "Couldn't apply the rule \"applyAttributes\". No values specified.");  
+                }
+                var attributes = rule.values;
+                for (attribute in attributes) {
+                    var value = attributes[attribute];
+                    var key = button.rules[Utilities.buttonFieldDefault].attributePrefix+attribute;
+                    markedNode.setAttribute(key, value);
+                }
+            },
+            // Add mod element
+            addWrapperElement : function(rule, markedNode) {
+                var config = Interpreters.getButtonConfig(rule.type),
+                    extWrapper = Ext.fly(markedNode), addedNode;
+                if(rule.type && rule.type=='mod'){
+                        var modElement = extWrapper.parent(".mod"),
+                        idPrefix = config.rules[Utilities.buttonFieldDefault].attributePrefix || '',
+                        contentElement =  extWrapper.parent(".content");
+                    if(!modElement && contentElement){
+                        var parsedHtml = Interpreters.parseElement(config.pattern.wrapperElement, {
+                            content : ''
+                        });
+                        var newElement = Ext.DomHelper.insertHtml('beforeBegin',contentElement.dom,parsedHtml),
+                        extNewElement = Ext.get(newElement);
+                        while(contentElement.dom.firstChild){
+                            var removed  = contentElement.dom.removeChild(contentElement.dom.firstChild);
+                            newElement.appendChild(removed);
+                        }
+                        newElement.setAttribute('class', config.pattern.wrapperClass);
+                        //TODO: add the right id
+                        newElement.setAttribute(idPrefix + DomUtils.langElementIdAttribute, 'mod1');
+                        addedNode = newElement;
+                        contentElement.appendChild(newElement);
+                    }
+                }else if(rule.type && rule.type=='content'){
+                    var contentElement = extWrapper.child('.content'),
+                        hcontainerChild = extWrapper.child('.hcontainer');
+                    //Add the content element only if is needed
+                    if(!contentElement && !hcontainerChild){
+                        var parsedHtml = Interpreters.parseElement(config.pattern.wrapperElement, {
+                            content : ''
+                        }),
+                        tmpElement = Ext.DomHelper.createDom({
+                            tag : 'div',
+                            html : parsedHtml
+                        });
+                        if(tmpElement.firstChild){
+                            me.contentCounter = (me.contentCounter) ? me.contentCounter+1 : 1;
+                            tmpElement.firstChild.setAttribute('class', config.pattern.wrapperClass);
+                            // This is commented because every language need to set the id in the translating process
+                            //tmpElement.firstChild.setAttribute(prefix+DomUtils.langElementIdAttribute, "cnt"+me.contentCounter);
+                            while(markedNode.hasChildNodes()){
+                                tmpElement.firstChild.appendChild(markedNode.firstChild);               
+                            }
+                            addedNode = tmpElement.firstChild;
+                            markedNode.appendChild(tmpElement.firstChild);  
+                        }
+                    }
+                }
+                return addedNode;
+            }
+        };
+        // Apply the rules
+        for (rule in rules) {
+            var ruleReference = rulesReference[rule];
+            if (ruleReference) {
+                var elementAdded = ruleReference(rules[rule], markedNode, button);
+                if(elementAdded) {
+                    elements = Ext.Array.push(elements, elementAdded);
+                }
+            }
+        }
+
+        return elements;
+    },
 	/**
 	 * Return the custom configuration of a button taken from the
 	 * language plugin currently in use.

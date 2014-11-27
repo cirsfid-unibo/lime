@@ -176,18 +176,18 @@ Ext.define('LIME.DomUtils', {
      * @returns {HTMLElement[]}
      */
     getSiblings : function(startElement, endElement, nodeName) {
-        if (!startElement || !endElement)
-            return null;
-        var iterator = startElement;
         var siblings = [];
-        // Include start and end
-        while (iterator != endElement.nextSibling) {
-            // Use the regex if available
-            var condition = (Utilities.toType(nodeName) == "regexp") ? nodeName.test(iterator.nodeName) : iterator.nodeName.toLowerCase() == nodeName;
-            if (!nodeName || condition) {
-                siblings.push(iterator);
+        if (startElement && endElement) {
+            var iterator = startElement;
+            // Include start and end
+            while (iterator && iterator != endElement.nextSibling) {
+                // Use the regex if available
+                var condition = (!nodeName) ? false : (Utilities.toType(nodeName) == "regexp") ? nodeName.test(iterator.nodeName) : iterator.nodeName.toLowerCase() == nodeName;
+                if (!nodeName || condition) {
+                    siblings.push(iterator);
+                }
+                iterator = iterator.nextSibling;
             }
-            iterator = iterator.nextSibling;
         }
         return siblings;
     },
@@ -447,7 +447,7 @@ Ext.define('LIME.DomUtils', {
     /**
      * This function returns the marking button related to the passed element
      * @param {HTMLElement} element
-     * returns {LIME.view.markingmenu.TreeButton}
+     * returns {Object}
      */
     getButtonByElement : function(element) {
         var elementId, markingElement;
@@ -472,8 +472,8 @@ Ext.define('LIME.DomUtils', {
     
     getElementNameByNode: function(node) {
         var button = DomUtils.getButtonByElement(node);
-        if(button && button.waweConfig && button.waweConfig.name) {
-            return button.waweConfig.name;
+        if(button && button.name) {
+            return button.name;
         }
         return null;
     },
@@ -485,7 +485,7 @@ Ext.define('LIME.DomUtils', {
      * @returns {HTMLElement}
      */
     findNodeByText : function(text, initNode, rejectElements) {
-        containsText = function(node) {
+        var containsText = function(node) {
             if (rejectElements && Ext.Array.indexOf(rejectElements, node) != -1) {
                 return NodeFilter.FILTER_REJECT;
             } else if (node.innerHTML.indexOf(text) != -1)
@@ -493,6 +493,7 @@ Ext.define('LIME.DomUtils', {
             else
                 return NodeFilter.FILTER_SKIP;
         };
+        if (!initNode) return;
         var w = initNode.ownerDocument.createTreeWalker(initNode, NodeFilter.SHOW_ELEMENT, containsText, false);
         var node;
         while (w.nextNode()) {
@@ -506,24 +507,103 @@ Ext.define('LIME.DomUtils', {
      * @returns {HTMLElement[]} Array of text nodes
      */
     findTextNodes : function(text, initNode) {
-        containsText = function(node) {
+        var containsText = function(node) {
             if (node.textContent.indexOf(text) != -1)
                 return NodeFilter.FILTER_ACCEPT;
             else
                 return NodeFilter.FILTER_SKIP;
         };
-        var w = initNode.ownerDocument.createTreeWalker(initNode, NodeFilter.SHOW_TEXT, containsText, false);
         var nodes = [];
-        try {
-            while (w.nextNode()) {
-                nodes.push(w.currentNode);
-            }
-        } catch(e) {
-            Ext.log({
-                level : "error"
-            }, "DomUtils.findTextNodes - "+e);
-        };
+        
+        if (initNode) {
+           var w = initNode.ownerDocument.createTreeWalker(initNode, NodeFilter.SHOW_TEXT, containsText, false);
+            try {
+                while (w.nextNode()) {
+                    nodes.push(w.currentNode);
+                }
+            } catch(e) {
+                Ext.log({
+                    level : "error"
+                }, e);
+            }; 
+        }
         return nodes;
+    },
+    
+    smartFindTextNodes : function(text, node) {
+        var me = this, textNodes = [], txtGroupNodes = [],
+            tags = text.match(DomUtils.tagRegex);
+
+        if (tags) {
+            var re = new RegExp(tags.join("|"), "gi");
+            var fragments = text.split(re);
+            for (var i = 0; i < fragments.length; i++) {
+                if ( fragments[i].length ) {
+                    var tList = DomUtils.findTextNodes(fragments[i], node).filter(function(tnode) {
+                        alert(tnode.data);
+                        return (tnode.data.startsWith(fragments[i]) || tnode.data.endsWith(fragments[i]));
+                    });
+                    txtGroupNodes.push({
+                        index: i,
+                        str: fragments[i],
+                        nodes: tList
+                    });
+                }
+            }
+
+            for (i = 0; i < txtGroupNodes.length; i++) {
+                var group = txtGroupNodes[i];
+                var nextGroup = txtGroupNodes[i+1];
+
+                if ( group && nextGroup ) {
+                    textNodes = me.fiterTextGroups(group, nextGroup, textNodes);
+                } else if ( group ) {
+                    Ext.each( group.nodes , function(txnode) {
+                        textNodes.push([{str: group.str, node: txnode}]);
+                    });
+                }
+            }
+        } else {
+            textNodes = DomUtils.findTextNodes(text, node).map(function(tnode) {
+                return [{
+                    str: text,
+                    node: tnode
+                }];
+            });
+        }
+        return textNodes;
+    },
+
+    fiterTextGroups: function(g1, g2, groups) {
+        console.log(g1, g2, groups);
+        var groups = groups || [];
+        for(var i = 0; i < g1.nodes.length; i++) {
+            var node1 = g1.nodes[i];
+            for(var j = 0; j < g2.nodes.length; j++) {
+                var node2 = g2.nodes[j];
+                var siblings = this.getSiblings(node1, node2);
+                var sLen = siblings.length;
+                if ( sLen && sLen <= (g2.index-g1.index+2) && 
+                     siblings[0] == node1 && siblings[sLen-1] == node2 ) {
+                    var list = this.findNodeListInGroup(node1, groups);
+                    if (list) {
+                        list.push({str: g2.str, node: node2});
+                    } else {
+                        groups.push([{str: g1.str, node: node1}, {str: g2.str, node: node2}]);
+                    }
+                }
+            }
+        }
+        return groups;
+    },
+
+    findNodeListInGroup : function(node, groups) {
+        var list = groups.filter(function(group) {
+            return group.filter(function(obj) {
+                return obj.node == node; 
+            }).length;
+        })[0];
+        return list;
     },
     
     getTextOfNodeClassic: function(node) {
@@ -546,16 +626,20 @@ Ext.define('LIME.DomUtils', {
         }, false);
 
         var text = "";
-        try {
-            while (w.nextNode()) {
-                text += w.currentNode.nodeValue + " ";
-            }
-        } catch(e) {
-            Ext.log({
-                level : "info"
-            }, "DomUtils.getTextOfNode - "+e);
-            return this.getTextOfNodeClassic(node);
-        };
+        if ( node.nodeType == this.nodeType.TEXT ) {
+            text = node.data;
+        } else {
+            try {
+                while (w.nextNode()) {
+                    text += w.currentNode.nodeValue + " ";
+                }
+            } catch(e) {
+                Ext.log({
+                    level : "error"
+                }, e);
+                return this.getTextOfNodeClassic(node);
+            };
+        }
         return text;
     },
 
@@ -626,7 +710,6 @@ Ext.define('LIME.DomUtils', {
         var cssText = doc.createTextNode(styleTxt);
         styleEl.appendChild(cssText);
     },
-
     /**
      * Wrapper for DOMParser.parseFromString
      */
@@ -669,6 +752,13 @@ Ext.define('LIME.DomUtils', {
         var cls = node.getAttribute("class");
         if(cls) {
             return cls.split(" ")[0];
+        }
+    },
+    
+    getNameByNode: function(node) {
+        var cls = node.getAttribute("class");
+        if(cls) {
+            return cls.split(" ")[1];
         }
     },
     
@@ -809,6 +899,17 @@ Ext.define('LIME.DomUtils', {
             Ext.each(node.querySelectorAll('[id]'), function(el) {
                 el.removeAttribute("id");
             });
+        }
+    },
+    
+    getPreviousTextNode : function(node, notEmpty) {
+        while( node.previousSibling ) {
+            if ( node.previousSibling.nodeType == DomUtils.nodeType.TEXT ) {
+                if (!notEmpty || !Ext.isEmpty(node.previousSibling.data.trim()) ) {
+                    return node.previousSibling;
+                }
+            }
+            node = node.previousSibling;
         }
     },
     

@@ -44,6 +44,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+ 
 $rules = Array(
     "preambleInitList" => Array("Honorable Cámara de Diputados",
     							"La Cámara de Representantes",
@@ -56,14 +57,18 @@ $rules = Array(
     						   "TEXTO APROBADO",
     						   "PROYECTO DE LEY SUSTITUTIVO",
     						   "EXPOSICIÓN DE MOTIVOS", 
-    						   "INFORME"),
+    						   "INFORME",
+							   "Proyecto de Ley"),
    
     						   
     "conclusionsInitList" => Array("Dios guarde a V.E.,",
     							   "Sala de Sesiones de la Cámara de Representantes",
     							   "Sala de Sesiones de la Cámara de Senadores",
     							   "Sala de Sesiones de la Asamblea General",
-								   "Sala de la Comisiòn","Sala de la Comisión")
+								   "Sala de la Comisiòn",
+								   "Sala de la Comisión",
+								   "Sala de la Comisión",
+								   "Montevideo, +[\w ]+\d{4}\.")
 );
 
 ?>

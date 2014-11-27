@@ -103,22 +103,25 @@ Ext.define('LIME.controller.Storage', {
             format: 'Y-m-d'
         },
         fieldName: 'date',
-        getValue: function() {
+        getValue: function(uri, meta) {
             var date;
-            if (DocProperties.frbr && DocProperties.frbr.work) {
-                date = DocProperties.frbr.work['date'];
-                if(isNaN(date.getTime())) {
-                    date = new Date();
-                }
-                return Ext.Date.format(date, this.editor.format);
+            var dom = meta.originalMetadata.metaDom;
+            var frbrDate = dom.querySelector(".FRBRWork .FRBRdate");
+
+            if ( frbrDate ) {
+                date = frbrDate.getAttribute('date');
+            }
+
+            if (!date) {
+                return Ext.Date.format(new Date(), this.editor.format);
             }
             return date || "";
         }
     },{
         text: Locale.strings.docNumberLabel,
         fieldName: 'number',
-        getValue: function() {
-            var docUri = (DocProperties.getDocumentUri()) ? DocProperties.getDocumentUri().split("/") : [],
+        getValue: function(uri) {
+            var docUri = (uri) ? uri.split("/") : [],
                 value = (docUri[0] == Ext.emptyString) ? docUri[4] : docUri[3];
             value = (value) ? value : Ext.emptyString.toString();
             return value;
@@ -130,9 +133,13 @@ Ext.define('LIME.controller.Storage', {
             xtype: "docVersionSelector",
             selectOnFocus: true
         },
-        getValue: function() {
-            var date = ((DocProperties.frbr && DocProperties.frbr.expression && !isNaN(DocProperties.frbr.expression['date'])) ? 
-                        Ext.Date.format(DocProperties.frbr.expression['date'], 'Y-m-d') : "");
+        getValue: function(uri, meta) {
+            var dom = meta.originalMetadata.metaDom;
+            var frbrDate = dom.querySelector(".FRBRExpression .FRBRdate");
+            var date = "";
+            if ( frbrDate ) {
+                date = frbrDate.getAttribute('date');
+            }
             return DocProperties.documentInfo["docLang"]+"@"+date;
         }
     },{
@@ -503,12 +510,15 @@ Ext.define('LIME.controller.Storage', {
     fillInFields: function(cmp) {
         var columnDescriptor, value;
         this.columnValues = [];
-        
+        var editor = this.getController('Editor');
+        var uri = editor.getDocumentUri();
+        var meta = editor.getDocumentMetadata();
+
         for (var i = 0; i < this.storageColumns.length; i++) {
             value = Ext.emptyString.toString();
             columnDescriptor = this.storageColumns[i];
             if (Ext.isFunction(columnDescriptor.getValue)) {
-                value = columnDescriptor.getValue();
+                value = columnDescriptor.getValue(uri, meta);
             }
             value = value || Ext.emptyString.toString();
             this.columnValues.push(value);

@@ -148,7 +148,7 @@
 		"pattern": "container"
 	},
 	"formula": {
-		"pattern": "block"
+		"pattern": "container"
 	},
 	"from": {
 		"pattern": "inline"

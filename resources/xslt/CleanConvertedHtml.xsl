@@ -42,6 +42,15 @@
   <xsl:apply-templates />
  </xsl:template>
 
+ <xsl:template match="*[name()='ol']">
+  <xsl:element name="{name()}">
+     <xsl:attribute name="class">
+      <xsl:value-of select="'toMark'"/>
+     </xsl:attribute>
+    <xsl:apply-templates />
+   </xsl:element>
+ </xsl:template>
+
  <xsl:template priority="1" match="*[name()='h1' or name()='h2' or name()='h3' or name()='h4' or name()='h5' or name()='h6']">
   <xsl:apply-templates />
  </xsl:template>
@@ -56,7 +65,7 @@
   </div>
  </xsl:template>
  
- <xsl:template match="*[not(name()='a') and not(name()='body') and not(name()='br') and not(name()='p') and not(name()='span') and not(name()='div')]">
+ <xsl:template match="*[not(name()='a') and not(name()='body') and not(name()='br') and not(name()='p') and not(name()='span') and not(name()='div') and not(name()='ol')]">
   <xsl:if test="not(.='')">
    <xsl:element name="{name()}">
     <xsl:for-each select="@*[not(name() = 'class') and 

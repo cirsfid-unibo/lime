@@ -124,7 +124,7 @@ Ext.define('LIME.controller.chImportController', {
         try {
             me.searchNodesToMark(function(markingConfigs) {
                 Ext.each(markingConfigs, function(markingConf) {
-                    var silent = (markingConf.button.waweConfig.markupConfig.pattern == "inline") ? false : true;
+                    var silent = (markingConf.button.markupConfig.pattern == "inline") ? false : true;
                     me.application.fireEvent('markingRequest', markingConf.button, {silent:silent, nodes:markingConf.nodes});            
                 });
                 if(markingConfigs.length) {
@@ -139,8 +139,8 @@ Ext.define('LIME.controller.chImportController', {
     },
     
     getElementsToMarkGeneric: function(node, type, config) {
-        var me = this, markingMenu = me.getController("MarkingMenu"),
-            button = markingMenu.getFirstButtonByName(type);
+        var me = this,
+            button = DocProperties.getFirstButtonByName(type);
         if(button) {
             node.setAttribute("class", DomUtils.tempParsingClass+" "+type);
             me.addElementToConfig(config, button.id, node);
@@ -148,13 +148,13 @@ Ext.define('LIME.controller.chImportController', {
     },
     
     getElementsToMarkPartitionHeader: function(node, type, config) {
-        var me = this, markingMenu = me.getController("MarkingMenu"),
+        var me = this,
             orderButtons = ["num", "heading"];
         Ext.each(node.children, function(nodeChild, index) {
             if(orderButtons[index]) {
-                var elButton = markingMenu.getFirstButtonByName(orderButtons[index]);
+                var elButton = DocProperties.getFirstButtonByName(orderButtons[index]);
                 if(elButton) {
-                    nodeChild.setAttribute("class", DomUtils.tempParsingClass+" "+elButton.waweConfig.name);
+                    nodeChild.setAttribute("class", DomUtils.tempParsingClass+" "+elButton.name);
                     me.addElementToConfig(config, elButton.id, nodeChild);
                 }
             }
@@ -169,7 +169,6 @@ Ext.define('LIME.controller.chImportController', {
     detectHcontainerNumsToMark: function() {
         var me = this, editor = me.getController("Editor"),
             body = editor.getBody(), 
-            markingMenu = me.getController("MarkingMenu"),
             hcontainers = Array.prototype.slice.call(body.querySelectorAll(".hcontainer")).filter(function(el) {
                 return !el.querySelector(".num");
             }), button,
@@ -188,16 +187,16 @@ Ext.define('LIME.controller.chImportController', {
         });
         
         if(nodesToMark.length) {
-            button = markingMenu.getFirstButtonByName("num");
+            button = DocProperties.getFirstButtonByName("num");
             me.application.fireEvent('markingRequest', button, {silent:true, nodes:nodesToMark});
         }
     },
 
     wrapBodyPars: function(body, type, config) {
-        var me = this, markingMenu = me.getController("MarkingMenu"), 
+        var me = this, 
             parsers = me.getController("ParsersController"),
             partitions = body.querySelectorAll(".partitionHeader"),
-            button = markingMenu.getFirstButtonByName(type);
+            button = DocProperties.getFirstButtonByName(type);
         
         if(button) {
             partitions = Array.prototype.slice.call(partitions);
@@ -209,7 +208,7 @@ Ext.define('LIME.controller.chImportController', {
                     }
                     return true;
                 });
-                partEl.setAttribute("class", DomUtils.tempParsingClass+" "+button.waweConfig.name);
+                partEl.setAttribute("class", DomUtils.tempParsingClass+" "+button.name);
                 me.addElementToConfig(config, button.id, partEl);
             });
         }
@@ -218,7 +217,6 @@ Ext.define('LIME.controller.chImportController', {
     
     detectBodyParts: function(body, config, callback) {
         var me = this,
-            markingMenu = me.getController("MarkingMenu"),
             parsers = me.getController("ParsersController"),
             nums = body.querySelectorAll(".num"),
             contentToParse = "";
@@ -242,14 +240,13 @@ Ext.define('LIME.controller.chImportController', {
     
     detectBody: function(node, config) {
         var me = this, partition = node.querySelector(".partitionHeader"),
-            markingMenu = me.getController("MarkingMenu"),
             parsers = me.getController("ParsersController"), bodyEl,
-            button = markingMenu.getFirstButtonByName("body");
+            button = DocProperties.getFirstButtonByName("body");
 
         if(partition) {
             bodyEl = parsers.wrapPartNode(partition, partition.parentNode);
             parsers.wrapPartNodeSibling(bodyEl);
-            bodyEl.setAttribute("class", DomUtils.tempParsingClass+" "+button.waweConfig.name);
+            bodyEl.setAttribute("class", DomUtils.tempParsingClass+" "+button.name);
             me.addElementToConfig(config, button.id, bodyEl);
         }
         
@@ -259,14 +256,13 @@ Ext.define('LIME.controller.chImportController', {
     detectPreamble: function(editorBody, bodyEl, config) {
         var me = this, preamble = editorBody.querySelector(".preamble"),
             parsers = me.getController("ParsersController"), sibling, preambleEl,
-            markingMenu = me.getController("MarkingMenu"),
-            button = markingMenu.getFirstButtonByName("preamble"), cls;
+            button = DocProperties.getFirstButtonByName("preamble"), cls;
         
         if (preamble) {
             preambleEl = parsers.wrapPartNode(preamble, preamble.parentNode);
             DomUtils.moveChildrenNodes(preamble, preambleEl, true);
             preambleEl.removeChild(preamble);
-            preambleEl.setAttribute("class", DomUtils.tempParsingClass+" "+button.waweConfig.name);
+            preambleEl.setAttribute("class", DomUtils.tempParsingClass+" "+button.name);
             // Include in the preamble all siblings until reach the body
             if (bodyEl) {
                 sibling = preambleEl.nextSibling;
@@ -294,12 +290,11 @@ Ext.define('LIME.controller.chImportController', {
     
     detectPreface: function(editorBody, limitNode, config) {
         var me = this, parsers = me.getController("ParsersController"), sibling, prefaceEl,
-            markingMenu = me.getController("MarkingMenu"),
-            button = markingMenu.getFirstButtonByName("preface");
+            button = DocProperties.getFirstButtonByName("preface");
             
         if(limitNode && limitNode.previousSibling) {
             prefaceEl = parsers.wrapPartNode(limitNode.previousSibling, limitNode.previousSibling.parentNode);
-            prefaceEl.setAttribute("class", DomUtils.tempParsingClass+" "+button.waweConfig.name);
+            prefaceEl.setAttribute("class", DomUtils.tempParsingClass+" "+button.name);
             me.addElementToConfig(config, button.id, prefaceEl);
             sibling = prefaceEl.previousSibling;
             while(sibling) {
@@ -314,7 +309,7 @@ Ext.define('LIME.controller.chImportController', {
     searchNodesToMark: function(callback) {
         var me = this, editor = me.getController("Editor"),
             body = editor.getBody(), toMarkNodes = body.querySelectorAll(".toMark"),
-            parsers = me.getController("ParsersController"), markingMenu = me.getController("MarkingMenu"),
+            parsers = me.getController("ParsersController"),
             markingConfigs = {}, result = [], bodyEl, preambleEl, notesManager;
         
         if(toMarkNodes.length) {
@@ -366,8 +361,7 @@ Ext.define('LIME.controller.chImportController', {
 
     init : function() {
         var me = this;
-        
-        __CH = me;
+
         this.control({
             'menu [name=chImportDocument]' : {
                 click : function() {

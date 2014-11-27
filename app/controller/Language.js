@@ -118,7 +118,7 @@ Ext.define('LIME.controller.Language', {
      * @param {Object} params
      * @param {Function} [callback] Function to call after translating
      */
-    translateContent : function(params, callback, view) {
+    translateContent : function(params, callback, view, frbrDom) {
         var languageController = this, 
             editorController = this.getController("Editor"),
             tmpElement = params.docDom,
@@ -128,9 +128,12 @@ Ext.define('LIME.controller.Language', {
             langPrefix = languageController.getLanguagePrefix(),
             counters = {};
 
-        if (DocProperties.frbrDom) {
-            var root = tmpElement.querySelector("*["+DocProperties.docIdAttribute+"]");
-            var metaDom = Ext.clone(DocProperties.frbrDom);
+        var frbrDom = frbrDom || DocProperties.frbrDom;
+
+        if (frbrDom) {
+            var root = tmpElement.querySelector("*["+DocProperties.docIdAttribute+"]") 
+                        || tmpElement.querySelector(".document");
+            var metaDom = Ext.clone(frbrDom);
             metaDom.setAttribute("class", "meta");
             if (root && !root.querySelector("*[class*=meta]")) {
                 root.insertBefore(metaDom, root.firstChild);    
@@ -163,7 +166,9 @@ Ext.define('LIME.controller.Language', {
                 Ext.each(hrefElements, function(hrefElement) {
                     hrefElement.setAttribute(langPrefix+"href", "#"+newId);
                 });
-                Interpreters.wrappingRulesHandlerOnTranslate(element);
+                var elName = DomUtils.getNameByNode(element);
+                var button = DocProperties.getFirstButtonByName(elName);
+                Interpreters.wrappingRulesHandlerOnTranslate(element, button);
             }, this);
         } catch(e) {
             if (view && Ext.isFunction(view.setLoading)) {
@@ -191,7 +196,7 @@ Ext.define('LIME.controller.Language', {
                 }
             },
             failure : function() {
-                alert("error");
+                 Ext.log({level: "error"}, "Document not translated");
                 if (view && Ext.isFunction(view.setLoading)) {
                     view.setLoading(false);
                 }
@@ -199,11 +204,11 @@ Ext.define('LIME.controller.Language', {
         });
     },
     
-    beforeTranslate: function(callback, config, view) {
+    beforeTranslate: function(callback, config, view, cmp, frbrDom) {
        var languageController = this, editorController = this.getController("Editor"),
             beforeTranslate = TranslatePlugin.beforeTranslate,
         //removing all ext generated ids
-        editorContent = editorController.getContent().replace(/id="ext-gen(\d)+"/g, ""), 
+        editorContent = editorController.getContent(false, cmp).replace(/id="ext-gen(\d)+"/g, ""), 
         params = {}, newParams, newFn;
         
         if (view && Ext.isFunction(view.setLoading)) {
@@ -222,7 +227,7 @@ Ext.define('LIME.controller.Language', {
                 newParams = params;
             }
         }
-        languageController.translateContent(newParams, callback, view);
+        languageController.translateContent(newParams, callback, view, frbrDom);
     },
     
     buildInternalMetadata : function(withContainer){
@@ -512,20 +517,15 @@ Ext.define('LIME.controller.Language', {
             parser = new DOMParser(), doc, docCounters = {}, openedDocumentsData = [];
         // Checking that before load will be called just one time per document
         if (beforeLoad && !newParams.beforeLoaded) {
+            DocProperties.docsMeta = {};
             if (params.docText) {
                 // IE exception
                 try {
                     docDom = parser.parseFromString(params.docText, "application/xml");
-                    if (docDom.documentElement.tagName == "parsererror" || docDom.documentElement.querySelector("parseerror") || docDom.documentElement.querySelector("parsererror")) {
-                        callback(params);
-                        return;
-                    } else {
+                    if (!(docDom.documentElement.tagName == "parsererror" || docDom.documentElement.querySelector("parseerror") || docDom.documentElement.querySelector("parsererror"))) {
                         params.docDom = docDom;
                     }
                 } catch(e) {
-                    Ext.log({level: "error"}, "Language.beforeLoad"+e);
-                    callback(params);
-                    return;
                 }
             }
             

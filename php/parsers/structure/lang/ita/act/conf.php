@@ -53,8 +53,10 @@ $rules = Array(
     "chapterList" => Array("Capo","Capitolo"),
     "articleList" => Array("Art\.","Articolo"),
     
-	"preambleInitList" => Array("Il Presidente della Repubblica",
+	"preambleInitList" => Array(
+							   "La\s+Camera\s+dei\s+deputati\s+ed\s+il\s+Senato\s+della\s+Repubblica\s+hanno\s+approvato;\s+IL\s+PRESIDENTE\s+DELLA\s+REPUBBLICA",
 							   "IL PRESIDENTE DELLA REPUBBLICA",
+							   "Il Presidente della Repubblica",
 							   "Attesto che"),
     
 	"preambleEndList" => Array (
@@ -65,8 +67,8 @@ $rules = Array(
 								"Decreta:?"
 								),
 			   
-    "conclusionsInitList" => Array("Il presente decreto,",
-								   "La presente legge,")
+    "conclusionsInitList" => Array("Il\s+presente\s+decreto,",
+								   "La\s+presente\s+legge,")
 
 );
 ?>

@@ -91,7 +91,8 @@
 		"searchingDates": "Searching dates",
 		"markingDates": "Marking dates",
 		"searchingRefs": "Searching references",
-		"markingRefs": "Marking references"
+		"markingRefs": "Marking references",
+		"loadingDocumentStyles": "Loading document styles"
 	},
 	"typeNotSupported": "This type of file is not (yet) supported for drag and drop",
 	"uploadError": "There was an error while uploading the file.<br/>Please try again.",

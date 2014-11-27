@@ -181,48 +181,6 @@ Ext.define('LIME.controller.Editor', {
         else el2.removeCls('pdfstyle');
     },
 
-    /*
-     * When the buttons structure in marking menu is loaded, load all the CSS
-     */
-    loadCss: function() {
-        var me = this;
-        Ext.defer(function() {
-            me.application.fireEvent(Statics.eventsNames.progressUpdate, Locale.strings.progressBar.loadingDocumentStyles);    
-        }, 1);
-        
-
-        var addStyle = function (button) {
-            if (!button.waweConfig.pattern) return;
-            var styleClass = button.waweConfig.pattern.wrapperClass;
-            var styleValue = button.waweConfig.pattern.wrapperStyle;
-            if (styleValue.pdf)
-                me.addContentStyle('.pdfstyle *[class="' + styleClass + '"]', styleValue.pdf);
-            me.applyAllStyles('*[class="' + styleClass + '"]', styleValue, button.waweConfig.shortLabel);
-            me.applyAllStyles('.pdfstyle:not(.noboxes) *[class="' + styleClass + '"]', styleValue, button.waweConfig.shortLabel);
-
-            // Apply style to second editor
-            var editor2 = me.getSecondEditor();
-            if (editor2) {
-                if (styleValue.pdf)
-                    me.addContentStyle('.pdfstyle *[class="' + styleClass + '"]', styleValue.pdf, editor2);
-                me.applyAllStyles('*[class="' + styleClass + '"]', styleValue, button.waweConfig.shortLabel, editor2);
-                me.applyAllStyles('.pdfstyle:not(.noboxes) *[class="' + styleClass + '"]', styleValue, button.waweConfig.shortLabel, editor2);
-            }
-        }
-
-        var counter = 0;
-        var buttons = this.getController('MarkingMenu').getAllButtons();
-        var iter = function () {
-            if (counter < buttons.length) {
-                addStyle(buttons[counter++]);
-                setTimeout(iter, 0);
-            } else {
-                me.application.fireEvent(Statics.eventsNames.progressEnd);
-            }
-        }
-        iter();
-    },
-
     /**
      * Returns the editor DOM position inside the whole page (main DOM).
      * @returns {Array} The coordinates of the position as an array (i.e. [x,y])
@@ -475,6 +433,26 @@ Ext.define('LIME.controller.Editor', {
      * **Warning**: this method heavily relies on what editor is used (tested with tinyMCE)
      * @param {String} [formatType] The format of the selection
      */
+    getContent : function(formatType, cmp) {
+        if (!formatType)
+            formatType = "html";
+        return this.getEditor(cmp).getContent({
+            format : formatType
+        });
+    },
+    
+    /**
+     * Returns the currently selected text in the format requested.
+     * **Warning**: no checks are performed on the given format but
+     * it should be one of the following:
+     *
+     * * html (default)
+     * * raw
+     * * text
+     *
+     * **Warning**: this method heavily relies on what editor is used (tested with tinyMCE)
+     * @param {String} [formatType] The format of the selection
+     */
     getSelectionContent : function(formatType) {
         if (!formatType)
             formatType = "html";
@@ -683,8 +661,12 @@ Ext.define('LIME.controller.Editor', {
             mainToolbarController = this.getController('MainToolbar'),
            app = this.application, config = this.documentTempConfig;
         
-        if(Ext.isArray(styleUrls)) {
-            this.addStyles(styleUrls);
+        this.stylesUrl = styleUrls || this.stylesUrl;
+
+        this.addStyles(styleUrls);
+        var editor2 = this.getSecondEditor();
+        if (editor2) {
+            this.addStyles(styleUrls, editor2);
         }
 
         app.fireEvent(Statics.eventsNames.languageLoaded, data);
@@ -697,18 +679,26 @@ Ext.define('LIME.controller.Editor', {
         this.showDocumentUri(config.docId);
     },
 
-    addStyles: function(urls) {
-        var me = this, editorDom = me.getDom(),
+    addStyles: function(urls, editor) {
+        var me = this, editorDom = me.getDom(editor),
             head = editorDom.querySelector("head");
+            
+        urls = urls || me.stylesUrl;
+        if ( urls && urls.length ) {
+            Ext.each(head.querySelectorAll('.limeStyle'), function(styleNode) {
+                head.removeChild(styleNode);
+            });
+        }
+        
         Ext.each(urls, function(url) {
             var link = editorDom.createElement("link");
             link.setAttribute("href", url);
+            link.setAttribute("class", 'limeStyle');
             link.setAttribute("rel", "stylesheet");
             link.setAttribute("type", "text/css");
             head.appendChild(link);
         });
     },
-
     /**
      * Add the given style properties to the elements that match
      * the given css selector.
@@ -818,7 +808,6 @@ Ext.define('LIME.controller.Editor', {
 
     searchAndManageMarkedElements: function(body, cmp, noSideEffects) {
         var LanguageController = this.getController('Language'),
-            markingMenu = this.getController('MarkingMenu'),
             marker = this.getController('Marker'),
             markedElements = body.querySelectorAll('*[' + DomUtils.elementIdAttribute + ']');
         
@@ -828,38 +817,34 @@ Ext.define('LIME.controller.Editor', {
                 newElId;
             var nameAttr = element.getAttribute(LanguageController.getLanguagePrefix()+'name');
             var buttonId = DomUtils.getButtonIdByElementId(elId);
-            var button = Ext.getCmp(buttonId);
+            var button; // = DocProperties.getElementConfig(buttonId)
+            if (elId.indexOf(DomUtils.elementIdSeparator)==-1) {
+                var parent = DomUtils.getFirstMarkedAncestor(element.parentNode);
+                if(parent) {
+                    var buttonParent = DomUtils.getButtonByElement(parent);
+                    if(buttonParent) {
+                        button = DocProperties.getChildConfigByName(buttonParent, elId) || 
+                                 DocProperties.getChildConfigByName(buttonParent, nameAttr);
+                    }
+                }
+                if(!button) {
+                    button = DocProperties.getFirstButtonByName(elId, 'common') ||
+                             DocProperties.getFirstButtonByName(nameAttr, 'common') || 
+                             DocProperties.getFirstButtonByName(elId) ||
+                             DocProperties.getFirstButtonByName(nameAttr);
+                    if ( button ) {
+                        buttonId = button.id;
+                        elId = marker.getMarkingId(buttonId);
+                    }
+                } else {
+                    elId = marker.getMarkingId(button.id);
+                }
+            }
             if (!button) {
-                if (elId.indexOf(DomUtils.elementIdSeparator)==-1) {
-                    var parent = DomUtils.getFirstMarkedAncestor(element.parentNode);
-                    if(parent) {
-                        var buttonParent = DomUtils.getButtonByElement(parent);
-                        if(buttonParent) {
-                            button = buttonParent.getChildByName(elId) || buttonParent.getChildByName(nameAttr);
-                        }
-                    }
-                    if(!button) {
-                        var buttons = markingMenu.getButtonsByName(elId) ||
-                                  markingMenu.getButtonsByName(nameAttr),
-                        buttonKeys;
-                        if(buttons) {
-                            buttonKeys = Ext.Object.getKeys(buttons);
-                            if(buttonKeys.length) {
-                                buttonId = buttonKeys[0];
-                                button = buttons[buttonId];
-                                elId = marker.getMarkingId(buttonId);
-                            }
-                        }
-                    } else {
-                        elId = marker.getMarkingId(button.id);
-                    }
+                if(!noSideEffects) {
+                    Ext.MessageBox.alert("FATAL ERROR!!", "The button with id " + buttonId + " is missing!");   
                 }
-                if (!button) {
-                    if(!noSideEffects) {
-                        Ext.MessageBox.alert("FATAL ERROR!!", "The button with id " + buttonId + " is missing!");   
-                    }
-                    return;
-                }
+                return;
             }
 
             if(!noSideEffects) {
@@ -872,7 +857,7 @@ Ext.define('LIME.controller.Editor', {
             //remove inline style
             element.removeAttribute('style');
             element.setAttribute(DomUtils.elementIdAttribute, elId);
-            var isBlock = DomUtils.blockTagRegex.test(button.waweConfig.pattern.wrapperElement);
+            var isBlock = DomUtils.blockTagRegex.test(button.pattern.wrapperElement);
             if(isBlock){
                 marker.addBreakingElements(element);
             }
@@ -1283,7 +1268,6 @@ Ext.define('LIME.controller.Editor', {
         this.application.on(Statics.eventsNames.loadDocument, this.beforeLoadDocument, this);
         this.application.on(Statics.eventsNames.disableEditing, this.disableEditor, this);
         this.application.on(Statics.eventsNames.enableEditing, this.enableEditor, this);
-        this.application.on(Statics.eventsNames.markingMenuLoaded, this.loadCss, this);
 
         // save a reference to the controller
         var editorController = this;
@@ -1426,7 +1410,6 @@ Ext.define('LIME.controller.Editor', {
                     }
                     /* Warn of the change */
                     this.changed = true;
-                    this.application.fireEvent('editorDomChange', body);
                 },
 
                 beforerender : function(cmp) {
@@ -1467,6 +1450,21 @@ Ext.define('LIME.controller.Editor', {
                                         e.preventDefault();
                                     }
                                 }
+                            });
+                            
+                            editor.on('blur', function() {
+                                me.getBookmark();
+                                selection = me.getSelectionObject();
+                                if(selection.start) {
+                                    Ext.fly(selection.start).addCls("visibleBookmark");
+                                }
+                            });
+                            
+                            editor.on('focus', function() {
+                                var body = me.getBody();
+                                Ext.each(body.querySelectorAll(".visibleBookmark"), function(el) {
+                                    Ext.fly(el).removeCls("visibleBookmark");
+                                });
                             });
 
                             editor.on('click', function(e) {

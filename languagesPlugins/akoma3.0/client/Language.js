@@ -162,9 +162,10 @@ Ext.define('LIME.ux.akoma3.Language', {
         var me = this, elementId = element.getAttribute(DomUtils.elementIdAttribute), 
             button = DomUtils.getButtonByElement(element), elName,
             markedParent, markingId = "", attributeName = langPrefix + DomUtils.langElementIdAttribute, 
-            parentId, elNum = 1, siblings, elIndexInParent;
-        if (elementId && button) {
-            elName = button.name;
+            parentId, elNum = 1, siblings, elIndexInParent,
+            elName = (button) ? button.name : DomUtils.getNameByNode(element);
+
+        if (elementId && elName) {
             markedParent = DomUtils.getFirstMarkedAncestor(element.parentNode);
             if(markedParent){
                 if(markedParent.getAttribute(attributeName)) {

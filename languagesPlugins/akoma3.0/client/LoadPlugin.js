@@ -98,6 +98,7 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
     afterLoad : function(params, app) {
         var me = this, 
             schemaUrl = Config.getLanguageSchemaPath(),
+            docCls = DocProperties.getDocClassList(),
             langId = Language.getAttributePrefix()+Language.getElementIdAttribute();
         Ext.Ajax.request({
             url : schemaUrl,
@@ -111,12 +112,118 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
                 }
             }
         });
-        //TODO: remove all existent language id
-        /*var elementsWithId = params.docDom.querySelectorAll("["+langId+"]");
-        Ext.each(elementsWithId, function(element) {
-            var id = element.getAttribute(langId);
-            console.log(id);
-        });*/
+        documentNode = params.docDom.querySelector('*[class="'+docCls+'"]');
+        if(documentNode && !documentNode.getAttribute("akn_name")) {
+            documentNode.setAttribute("akn_name", DocProperties.getDocType());
+        }
+        me.insertFrbrData(params);
+    },
+    
+        insertFrbrData: function(params) {
+        var me = this,
+            nodes, date = Ext.Date.format(new Date(), 'Y-m-d'),
+            tmpNode, author = "#limeEditor", workUri, workUriTpl,
+            expUri, expUriTpl, manUri, manUriTpl;
+
+        if(params.metaDom) {
+           workUriTpl = new Ext.Template('/{docLocale}/{docType}/{date}/{number}');
+           workUri = workUriTpl.apply(Ext.merge(params, {
+                date: date,
+                number: ""
+           }));
+           expUriTpl = new Ext.Template('{workUri}/{lang}@');
+           expUri = expUriTpl.apply({
+                workUri: workUri,
+                lang: params.docLang
+           });
+           manUriTpl = new Ext.Template('{expUri}/main.xml');
+           manUri = manUriTpl.apply({
+                expUri: expUri
+           });
+
+           tmpNode = params.metaDom.querySelector("*[class=FRBRWork] *[class=FRBRuri]");
+           me.setMetaAttribute(tmpNode, "value", workUri);
+           tmpNode = params.metaDom.querySelector("*[class=FRBRWork] *[class=FRBRthis]");
+           me.setMetaAttribute(tmpNode, "value", workUri);
+
+           tmpNode = params.metaDom.querySelector("*[class=FRBRExpression] *[class=FRBRuri]");
+           me.setMetaAttribute(tmpNode, "value", expUri);
+           tmpNode = params.metaDom.querySelector("*[class=FRBRExpression] *[class=FRBRthis]");
+           me.setMetaAttribute(tmpNode, "value", expUri);
+
+           tmpNode = params.metaDom.querySelector("*[class=FRBRManifestation] *[class=FRBRuri]");
+           me.setMetaAttribute(tmpNode, "value", manUri);
+           tmpNode = params.metaDom.querySelector("*[class=FRBRManifestation] *[class=FRBRthis]");
+           me.setMetaAttribute(tmpNode, "value", manUri);
+
+           nodes = params.metaDom.querySelectorAll("*[class=FRBRdate]");
+           Ext.each(nodes, function(node) {
+                me.setMetaAttribute(node, "date", date);
+           });
+
+           nodes = params.metaDom.querySelectorAll("*[class=FRBRauthor]");
+           Ext.each(nodes, function(node) {
+                me.setMetaAttribute(node, "akn_href", author);
+                me.setMetaAttribute(node, "as", author);
+           });
+
+           tmpNode = params.metaDom.querySelector("*[class=FRBRWork] *[class=FRBRcountry]");
+           me.setMetaAttribute(tmpNode, "value", params.docLocale);
+           tmpNode = params.metaDom.querySelector("*[class=FRBRExpression] *[class=FRBRlanguage]");
+           me.setMetaAttribute(tmpNode, "language", params.docLang);
+
+           tmpNode = params.metaDom.querySelector("*[class=publication]");
+           me.setMetaAttribute(tmpNode, "date", date);
+
+           tmpNode = params.metaDom.querySelector("*[class=references]");
+           var person = {
+                name: "TLCPerson",
+                attributes: [{
+                    name: "eId",
+                    value: "limeEditor"
+                },{
+                    name: "akn_href",
+                    value: "/lime.cirsfid.unibo.it"
+                },{
+                    name: "showAs",
+                    value: "LIME editor"
+                }]
+            };
+            
+            if(tmpNode) {
+                personNode = me.objToDom(params.metaDom.ownerDocument, person);
+                tmpNode.appendChild(personNode);
+            }
+        }
+    },
+
+    objToDom: function(doc, obj) {
+        var me = this, node, childNode;
+        if(obj.name) {
+            node = doc.createElement("div");
+            node.setAttribute("class", obj.name);
+            Ext.each(obj.attributes, function(attribute) {
+                node.setAttribute(attribute.name, attribute.value);
+            });
+            if(!Ext.isEmpty(obj.text)) {
+                childNode = doc.createTextNode(obj.text);
+                node.appendChild(childNode);               
+            } else {
+                Ext.each(obj.children, function(child) {
+                    childNode = me.objToDom(doc, child);
+                    if(childNode) {
+                        node.appendChild(childNode);
+                    }
+                });    
+            }
+        }
+        return node;
+    },
+
+    setMetaAttribute: function(node, name, value) {
+        if(node && Ext.isEmpty(node.getAttribute(name))) {
+            node.setAttribute(name, value);
+        }
     },
     
     

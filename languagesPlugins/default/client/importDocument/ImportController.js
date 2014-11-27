@@ -86,6 +86,8 @@ Ext.define('LIME.controller.ImportController', {
         if(request.response && request.response[DocProperties.languageAttribute]) {
             docLang = request.response[DocProperties.languageAttribute] || "";
         }
+        
+        content = content.replace(/(<br\/>(\s*))+/g, '$1');
         // Upload the editor's content
         app.fireEvent(Statics.eventsNames.loadDocument, {
                         docText: content,

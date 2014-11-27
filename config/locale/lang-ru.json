@@ -83,7 +83,8 @@
 		"searchingDates": "Поиск дат",
 		"markingDates": "Разметка дат",
 		"searchingRefs": "Поиск ссылок",
-		"markingRefs": "Разметка ссылок"
+		"markingRefs": "Разметка ссылок",
+		"loadingDocumentStyles": "Loading document styles"
 	},
 	"typeNotSupported": "Этот тип файла не поддерживается (пока) для перетаскивания",
 	"uploadError": "Был Произошла ошибка при загрузке файла.<br/>Попробуйте позже.",

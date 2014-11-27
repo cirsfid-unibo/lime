@@ -48,10 +48,10 @@
 $rules = Array(
 
 	"references" => Array("ref_1"),#,"ref_2"),
-	"ref_1" => "/({{partition}}[\s\d\w,)-]+\s*)?{{type}}\s+{{date}}\s*(,\s*n\.\s*\d+)/",
+	"ref_1" => "/({{partition}}[\s\d\w,)-]+\s*)?{{type}}\s+{{date}}\s*(,\s*n\.\s*{{docnum}}+)/",
 	//"ref_2" => "/{{partition}}\s+\d+\s+{{prep}}\s+{{type}}\s+({{prep}}\s+{{authorities}}\s+)?{{date}}\s*(,\s*n\.\s*\d+)?/",
 
-				
+	"docnum" => "\d+\.?\d*",
 	"date" => "[\w\d\s]+\d{4}",
 	
 	"partition" => Array("articolo",

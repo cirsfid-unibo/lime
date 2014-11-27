@@ -125,9 +125,8 @@ Ext.define('LIME.controller.ModsMarkerController', {
             docMeta = me.getDocumentMetadata(),
             langPrefix = docMeta.langPrefix,
             language = me.getController("Language"),
-            markingMenu = me.getController("MarkingMenu"),
             metaDom = docMeta.metadata.originalMetadata.metaDom,
-            button = markingMenu.getFirstButtonByName("mod"),
+            button = DocProperties.getFirstButtonByName("mod"),
             modsElements = editorBody.querySelectorAll("*[" + DomUtils.elementIdAttribute + "][class~='mod']"),
             returnMods = [],
             hrefAttr = langPrefix+"href";
@@ -174,7 +173,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     return cfg.modType == modType;
                 })[0];
                 if(buttonCfg) {
-                    button = markingMenu.getFirstButtonByName(buttonCfg.markAsButton);
+                    button = DocProperties.getFirstButtonByName(buttonCfg.markAsButton);
                 }
                 Ext.each(modEls, function(modEl) {
                     var href = modEl.getAttribute(hrefAttr);
@@ -410,8 +409,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         if(buttonCfg) {
             if(checked && cmp.refNode) {
                 var meta = me.getAnalysisByNodeOrNodeId(cmp.refNode),
-                    markingMenu = me.getController("MarkingMenu"),
-                    button = markingMenu.getFirstButtonByName("mod");
+                    button = DocProperties.getFirstButtonByName("mod");
                 meta.analysis.setAttribute("type", cmp.modType);
                 me.setElementStyles([cmp.refNode], button, null, buttonCfg);
             } else if(!checked) {
@@ -773,9 +771,9 @@ Ext.define('LIME.controller.ModsMarkerController', {
     setElementStyles: function(markedElements, button, originalButton, buttonCfg) {
         var me = this, editor = me.getController("Editor"), 
             styleClass = markedElements[0].getAttribute("class"),
-            style = Ext.clone(button.waweConfig.pattern.wrapperStyle);
+            style = Ext.clone(button.pattern.wrapperStyle);
             
-        buttonCfg = buttonCfg || me.activeModButtons[originalButton.waweConfig.name];
+        buttonCfg = buttonCfg || me.activeModButtons[originalButton.name];
         Ext.each(markedElements, function(markedElement) {
             markedElement.setAttribute(buttonCfg.modType, "true");
         });
@@ -1261,7 +1259,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             
             if(button) {
                 me.setElementStyles([node, newElement], button, button, {
-                    shortLabel: button.waweConfig.shortLabel+" "+Locale.getString("splitted", me.getPluginName()),
+                    shortLabel: button.shortLabel+" "+Locale.getString("splitted", me.getPluginName()),
                     modType: me.getSplitAttr(),
                     elementStyle: "",
                     labelStyle: "background-color: #75d6ff; border: 1px solid #44b4d5;"
@@ -1379,7 +1377,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 }
                 start.setAttribute(me.getJoinAttr(), "true");
                 me.setElementStyles([start], button, button, {
-                    shortLabel: button.waweConfig.shortLabel+" "+Locale.getString("joined", me.getPluginName()),
+                    shortLabel: button.shortLabel+" "+Locale.getString("joined", me.getPluginName()),
                     modType: me.getJoinAttr(),
                     elementStyle: "",
                     labelStyle: "background-color: #75d6ff; border: 1px solid #44b4d5;"
@@ -1619,7 +1617,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 form.renumberedNode.setAttribute(me.getRenumberingAttr(), oldText);
                 var button = DomUtils.getButtonByElement(form.renumberedNode);
                 me.setElementStyles([form.renumberedNode], button, button, {
-                    shortLabel: button.waweConfig.shortLabel+" "+Locale.getString("renumbered", me.getPluginName()),
+                    shortLabel: button.shortLabel+" "+Locale.getString("renumbered", me.getPluginName()),
                     modType: me.getRenumberingAttr(),
                     elementStyle: "",
                     labelStyle: "background-color: #75d6ff; border: 1px solid #44b4d5;"
@@ -1648,8 +1646,8 @@ Ext.define('LIME.controller.ModsMarkerController', {
     
     createSubstitution: function(node, formText, update) {
         var me = this, editor = me.getController("Editor"),
-            oldText = formText,markingMenu = me.getController("MarkingMenu"),
-            button = markingMenu.getFirstButtonByName("ins");
+            oldText = formText,
+            button = DocProperties.getFirstButtonByName("ins");
             /*var panel = me.createAndShowFloatingForm(node, function(form, text) {
                 var oldText = DomUtils.replaceTextOfNode(form.relatedNode, text);
                 me.updateSubsMetadata(form.relatedNode, oldText);
@@ -1904,7 +1902,5 @@ Ext.define('LIME.controller.ModsMarkerController', {
         me.application.on(Statics.eventsNames.editorDomNodeFocused, me.editorNodeFocused, me);
         me.application.on(Statics.eventsNames.unmarkedNodes, me.nodesUnmarked, me);
         me.application.fireEvent(Statics.eventsNames.registerContextMenuBeforeShow, Ext.bind(me.beforeContextMenuShow, me));
-
-
     }
 });

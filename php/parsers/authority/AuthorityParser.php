@@ -69,16 +69,25 @@ class AuthorityParser {
 				//print_r($result);
 				for ($i = 0; $i < $success; $i++) {
                     $match = $result["authority"][$i][0];
-                    $offset = $result["authority"][$i][1];
+                    $aOffset = $result["authority"][$i][1];
+                    $totalMatch = $result[0][$i][0];
+                    $offset = $result[0][$i][1];
 					$entry = Array (
 						"authority" => $match,
 						"start" => $offset,
-                        "end" => $offset+strlen($match)
+						"value" => $totalMatch,
+                        "end" => $offset+strlen($totalMatch),
+                        "aStart" => $aOffset,
+                        "aEnd" => $aOffset+strlen($match)
 					);
 					
 					if (array_key_exists("signature", $result)) {
 						if(is_array($result["signature"])) {
-							$entry["signature"] = trim($result["signature"][$i][0]);
+							$match = trim(trim($result["signature"][$i][0],'.'));
+							$offset = $result["signature"][$i][1];
+							$entry["sStart"] = $offset;
+							$entry["sEnd"] = $offset+strlen($match);
+							$entry["signature"] = $match;
 						}
 					}
 					

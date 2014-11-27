@@ -185,7 +185,15 @@ Ext.define('LIME.controller.WidgetManager', {
                         for(var i=0; i<tplValues.length; i++) {
                             var key = tplValues[i].substring(1, tplValues[i].length-1),
                                 field = me.getWidgetFieldByOrigName(widget, key);
+                                
                             if(field && values[i]) {
+                                if ( obj.internalSeparator ) {
+                                    var internalSplit = values[i].split(obj.internalSeparator);
+                                    if ( internalSplit.length == 2 ) {
+                                        values[i] = internalSplit[0];
+                                        values.push(internalSplit[1]);
+                                    }
+                                }
                                 me.setWidgetFieldValue(widget, field, values[i]);    
                             }
                         }       
