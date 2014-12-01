@@ -47,7 +47,12 @@ Ext.define('Ext.ux.toggleslide.Thumb', {
     render: function() {
         var me = this;
         
-        me.el = me.slider.el.insertFirst(me.getElConfig());
+        me.el = me.slider.el.insertFirst(Ext.merge(me.getElConfig(), {
+            children: [{
+                tag: 'span',
+                cls: 'thumb-text'
+            }]
+        }));
         me.onRender();
     },
     
@@ -56,6 +61,10 @@ Ext.define('Ext.ux.toggleslide.Thumb', {
             this.disable();
         }
         //this.initEvents();
+    },
+
+    setText: function(text) {
+        this.el.down('.thumb-text').setHtml(text);
     },
 
     getElConfig: function() {

@@ -108,6 +108,23 @@ label.x-toggle-slide-label-off span {
 	-khtml-border-radius: 4px;
 	border-radius: 4px;
 	padding-left: 3px;
+	text-align: center;
+}
+
+.x-toggle-slide-thumb .thumb-text {
+	color: #929496;
+	text-shadow: 1px 0px 1px #fff;
+	text-align: center;
+	white-space: nowrap;
+	font-size: 12px !important;
+	font-weight: bold;
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+	text-transform: uppercase;
+	display: inline-block;
+	clear: both;
+	width: auto;
+	overflow: hidden;
+	line-height: 30px;
 }
 
 .x-item-disabled .x-toggle-slide-label-on span {
@@ -120,18 +137,17 @@ label.x-toggle-slide-label-off span {
 
 .x-toolbar .x-toggle-slide-container label {
 	font-size: 12px !important;
-	
-	height: 17px;
+	height: 30px;
 	padding-top: 1px;
 }
 
 .x-toolbar .x-toggle-slide-container {
-	height: 17px;
+	height: 30px;
 }
 
 .x-toolbar .x-toggle-slide-container div.holder {
 
-	height: 17px;
+	height: 30px;
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	-o-border-radius: 4px;
@@ -140,16 +156,12 @@ label.x-toggle-slide-label-off span {
 	border-radius: 4px;
 }
 
-.x-toolbar label.x-toggle-slide-label-on {
-
+.x-toolbar label.x-toggle-slide-label-on, .x-toolbar label.x-toggle-slide-label-off {
+	line-height: 30px;
 }
 
 .x-toolbar label.x-toggle-slide-label-on span {
 	padding-left: 6px;
-}
-
-.x-toolbar label.x-toggle-slide-label-off {
-
 }
 
 .x-toolbar label.x-toggle-slide-label-off span {
@@ -157,7 +169,7 @@ label.x-toggle-slide-label-off span {
 }
 
 .x-toolbar .x-toggle-slide-thumb {
-	height: 17px;
+	height: 30px;
 }
 
 .x-toolbar-right .x-toggle-slide-label-on {

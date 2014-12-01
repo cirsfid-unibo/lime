@@ -193,6 +193,11 @@ Ext.define('Ext.ux.toggleslide.ToggleSlide', {
             me.thumb.bringToFront();
         else
             me.thumb.sendToBack();
+
+        if ( me.state ) 
+            me.thumb.setText(me.offText);
+        else
+            me.thumb.setText(me.onText);
         
         me.resize();
         me.disableTextSelection();
@@ -222,14 +227,14 @@ Ext.define('Ext.ux.toggleslide.ToggleSlide', {
         
         if(me.resizeHandle)
         {
-            var min = (onlabel.getWidth() < offlabel.getWidth()) ? onlabel.getWidth() : offlabel.getWidth();
-            handle.setWidth(min);
+            var max = (onlabel.getWidth() < offlabel.getWidth()) ? offlabel.getWidth() : onlabel.getWidth();
+            handle.setWidth(max+10);
         }
 
         if(me.resizeContainer)
         {
             var max = (onlabel.getWidth() > offlabel.getWidth()) ? onlabel.getWidth() : offlabel.getWidth();
-            var expandPx = Math.ceil(container.getHeight() / 3);
+            var expandPx = Math.ceil(container.getHeight());
             container.setWidth(max + handle.getWidth() + expandPx);
         }
         
@@ -290,7 +295,7 @@ Ext.define('Ext.ux.toggleslide.ToggleSlide', {
         var me = this,
             runner = new Ext.util.TaskRunner(),
             to = on ? me.rightside : 0;
-        
+
         Ext.create('Ext.fx.Anim', {
             target: me.handle,
             dynamic: true,
@@ -401,6 +406,7 @@ Ext.define('Ext.ux.toggleslide.ToggleSlide', {
         if(!me.booleanMode)
         {
             next = me.state ? me.onText : me.offText;
+            me.thumb.setText(next);
         }
         
         if(me.fireEvent('beforechange', me, next) !== false)

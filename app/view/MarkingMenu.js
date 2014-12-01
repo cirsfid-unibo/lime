@@ -215,6 +215,8 @@ Ext.define('LIME.view.MarkingMenu', {
                 },
                 items: [{
                     xtype: 'textfield',
+                    enableKeyEvents: true,
+                    emptyText: 'Quick search',
                     onTriggerClick: function () {
                         this.reset();
                         this.focus();
@@ -227,7 +229,16 @@ Ext.define('LIME.view.MarkingMenu', {
                         buffer: 250
                     }
                 }]
-            }]
+            }],
+            listeners: {
+                activate: function(cmp) {
+                    var text = cmp.down('textfield');
+                    //TODO: focus only with a manual selection
+                    /*if ( text ) {
+                        text.focus();
+                    }*/
+                }
+            }
         }],
         this.callParent(arguments);
     }
