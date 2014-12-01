@@ -1,11 +1,11 @@
 {
   "preface_quest": {
     "quest": true,
-    "label": "Mark preface"
+    "label": "Preface"
   },
   "body_quest": {
     "quest": true,
-    "label": "Mark body"
+    "label": "Body"
   },
 
 

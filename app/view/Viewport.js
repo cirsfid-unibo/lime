@@ -116,24 +116,29 @@ Ext.define('LIME.view.Viewport', {
         resizable : true,
         margin : 2
     }, {
-        xtype : 'container',
+        xtype : 'panel',
         region : 'west',
         width : '15%',
         autoScroll : true,
         expandable : true,
+        //collapsible : true,
         resizable : true,
         padding : 2,
-        layout : {
+        /*layout : {
             type : 'vbox',
             align : 'stretch'
+        },*/
+        layout: {
+            type: 'accordion',
+            titleCollapse: false,
+            animate: true,
+            multi: true
         },
         items: [{
-            xtype : 'outliner',
-            flex : 1
+            xtype : 'outliner'
         }, {
             xtype : 'questPanel',
-            margin : '4 0 0 0',
-            flex : 1
+            margin : '4 0 0 0'
         }]
     },
     {

@@ -101,6 +101,7 @@ Ext.define('LIME.controller.MarkingMenu', {
 	 * loaded at runtime by {@link LIME.LanguageConfigLoader}
 	 */
     buildButtonsStructure : function(pluginData) {
+        console.log(pluginData);
         var me = this, // Save the scope,
             rootElements = pluginData.markupMenuRules.rootElements,
             commonElements = pluginData.markupMenuRules.commonElements,
@@ -394,11 +395,17 @@ Ext.define('LIME.controller.MarkingMenu', {
                 me.collapseAll(me.expandedTree);
             }
 
-            markingMenu.setActiveTab(treePanel);
+            var item = markingMenu.query('treepanel').indexOf(treePanel);
+            //markingMenu.setActiveItem(item);
+            if ( me.prevToggleItem !== undefined && me.prevToggleItem != item ) {
+                markingMenu.toggleButtons.toggle();
+            }
+
             if ( treePanel &&  pathToExpand && me.expandedPath != pathToExpand ) {
                 treePanel.expandPath(pathToExpand);
                 me.expandedTree = treePanel;
                 me.expandedPath = pathToExpand;
+                me.prevToggleItem = item;
             }
         } else {
             if ( me.expandedTree ) {

@@ -130,8 +130,7 @@
 	],
 
 	"customViews": ["MarkingMenu"],
-	"plugins": ["aknPreview", 
-				"documentCollection", 
+	"plugins": ["aknPreview",  
 				"parsers", 
 				"modsMarker", 
 				"notesManager",

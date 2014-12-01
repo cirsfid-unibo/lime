@@ -68,7 +68,8 @@ Ext.define('LIME.view.Outliner', {
     // the view configuration
     //viewConfig: {baseCls: 'elements_tree'},
 
-    tools : [{
+    tools : [
+    /*{
         type : 'expand',
         handler : function() {
             this.up('panel').expandAll();
@@ -78,16 +79,15 @@ Ext.define('LIME.view.Outliner', {
         handler : function() {
             this.up('panel').collapseAll();
         }
-    },
+    },*/
     //trick to positionate the collapse button on the right
-    {
+    /*{
         type : 'left',
         handler : function() {
             this.up("panel").collapse();
         }
-    }],
+    }*/],
     // the panel is collapsible
-    //collapsible: true,
 
     listeners : {
         resize : function(cmp) {

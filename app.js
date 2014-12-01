@@ -57,7 +57,8 @@ Ext.Loader.setConfig({
     paths   : {
         'LIME' : 'app',
         'LIME.conf' : 'config',
-        'Ext.ux' : 'plugins/ux'
+        'Ext.ux' : 'plugins/ux',
+        'Ext.ux.toggleslide': 'plugins/ux/toggleslide'
     }
 });
 
@@ -71,6 +72,8 @@ Ext.require([
     'Ext.ux.form.field.TinyMCE',
     'Ext.ux.form.field.TinyMCEWindowManager',
     'Ext.ux.form.field.CodeMirror',
+    'Ext.ux.form.field.ToggleSlide',
+    'Ext.ux.toggleslide.Thumb',
     'Ext.ux.layout.component.field.CodeMirror',
     'LIME.Utilities',
     'LIME.Statics',

@@ -204,3 +204,46 @@ body .ux-notification-success {
 
 .x-tree-custom .x-tree-elbow-img {
 }
+
+#markingMenu {
+	-webkit-perspective: 1000;
+	-moz-perspective: 1000;
+	-o-perspective: 1000;
+	perspective: 1000;
+}
+
+#markingMenu-body {
+	-webkit-transition: 0.5s;
+	-webkit-transform-style: preserve-3d;
+
+	-moz-transition: 0.5s;
+	-moz-transform-style: preserve-3d;
+  
+	-o-transition: 0.5s;
+	-o-transform-style: preserve-3d;
+
+	transition: 0.5s;
+	transform-style: preserve-3d;
+
+	position: relative;
+}
+
+#treeStructure, #treeCommons {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+#markingMenu-body.flipped #treeCommons, #markingMenu-body.flipped #treeStructure {
+	-webkit-transform: rotateY(180deg);
+	-moz-transform: rotateY(180deg);
+	-o-transform: rotateY(180deg);
+	transform: rotateY(180deg);
+}
+
+#markingMenu-body.flipped {
+	-webkit-transform: rotateY(-180deg);
+    -moz-transform: rotateY(-180deg);
+    -o-transform: rotateY(-180deg);
+    transform: rotateY(-180deg);
+}
