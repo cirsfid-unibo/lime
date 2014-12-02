@@ -160,29 +160,30 @@ Ext.define('LIME.ux.akoma3.Language', {
     },
 
     getLanguageMarkingId : function(element, langPrefix, root) {
-        var me = this,
-            button = DomUtils.getButtonByElement(element), elName,
-            markedParent, markingId = "", attributeName = langPrefix + DomUtils.langElementIdAttribute, 
-            parentId, elNum = 1, siblings, elIndexInParent,
+        var markingId = "",
+            button = DomUtils.getButtonByElement(element),
+            attributeName = langPrefix + DomUtils.langElementIdAttribute, 
             elName = (button) ? button.name : DomUtils.getNameByNode(element);
 
         if (elName) {
-            markedParent = DomUtils.getFirstMarkedAncestor(element.parentNode);
-            if(markedParent){
-                if(markedParent.getAttribute(attributeName)) {
-                    markingId = markedParent.getAttribute(attributeName)+me.getPrefixSeparator();
-                }
-                siblings = markedParent.querySelectorAll("*[class~="+elName+"]");
-            } else {
-                siblings = root.querySelectorAll("*[class~="+elName+"]");
+            var markedParent = DomUtils.getFirstMarkedAncestor(element.parentNode);
+            if(markedParent && markedParent.getAttribute(attributeName)) {
+                markingId = markedParent.getAttribute(attributeName) + this.getPrefixSeparator();
             }
-            
+            // Find elNum by counting the preceding elements with the same name.
+            // Some elements (eg. article) have a global numeration
+            var elNum = 1;
+            var context = markedParent || root;
+            if (elName == 'article')
+                context = root;
+            var siblings = context.querySelectorAll("*[class~="+elName+"]");
             if(siblings.length) {
-                elIndexInParent = Array.prototype.indexOf.call(siblings, element);
+                var elIndexInParent = Array.prototype.indexOf.call(siblings, element);
                 elNum = (elIndexInParent!=-1) ? elIndexInParent+1 : elNum;    
             }
-            elName = (me.getAbbreviations()[elName]) ? (me.getAbbreviations()[elName]) : elName;
-            markingId += elName+me.getNumSeparator()+elNum;
+
+            elName = (this.getAbbreviations()[elName]) ? (this.getAbbreviations()[elName]) : elName;
+            markingId += elName+this.getNumSeparator()+elNum;
         }
         return markingId;
     },
