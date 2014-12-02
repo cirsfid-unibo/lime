@@ -168,7 +168,11 @@ Ext.define('LIME.controller.Language', {
                 });
                 var elName = DomUtils.getNameByNode(element);
                 var button = DocProperties.getFirstButtonByName(elName);
-                Interpreters.wrappingRulesHandlerOnTranslate(element, button);
+                var wrappingElements = Interpreters.wrappingRulesHandlerOnTranslate(element, button);
+                // Add ids also to wrapping elements
+                Ext.each(wrappingElements, function (el) {
+                    var id = languageController.setLanguageMarkingId(el, counters, tmpElement);                    
+                });
             }, this);
         } catch(e) {
             if (view && Ext.isFunction(view.setLoading)) {

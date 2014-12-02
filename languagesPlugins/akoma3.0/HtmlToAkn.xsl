@@ -142,7 +142,7 @@
             </xsl:if>
         </xsl:variable>
 		<xsl:element name="{$aknName}">
-        	<xsl:attribute name="eId"><xsl:value-of select="concat('ctn', generate-id(.))" /></xsl:attribute>
+            <xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
         	<!-- Content element can not contains directly text so add a p element if it's needed -->
             <!--  and (count(child::text()) > 0) -->
             <xsl:call-template name="manageImplicitP"/>

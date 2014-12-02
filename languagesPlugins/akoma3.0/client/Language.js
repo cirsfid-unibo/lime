@@ -70,6 +70,7 @@ Ext.define('LIME.ux.akoma3.Language', {
             "citations" : "cits",
             "clause" : "cl",
             "component" : "cmp",
+            "content" : "ctn",
             "communication" : "comm",
             "componentRef" : "cref",
             "debateSection" : "dbtsec",
@@ -159,13 +160,13 @@ Ext.define('LIME.ux.akoma3.Language', {
     },
 
     getLanguageMarkingId : function(element, langPrefix, root) {
-        var me = this, elementId = element.getAttribute(DomUtils.elementIdAttribute), 
+        var me = this,
             button = DomUtils.getButtonByElement(element), elName,
             markedParent, markingId = "", attributeName = langPrefix + DomUtils.langElementIdAttribute, 
             parentId, elNum = 1, siblings, elIndexInParent,
             elName = (button) ? button.name : DomUtils.getNameByNode(element);
 
-        if (elementId && elName) {
+        if (elName) {
             markedParent = DomUtils.getFirstMarkedAncestor(element.parentNode);
             if(markedParent){
                 if(markedParent.getAttribute(attributeName)) {
@@ -180,7 +181,6 @@ Ext.define('LIME.ux.akoma3.Language', {
                 elIndexInParent = Array.prototype.indexOf.call(siblings, element);
                 elNum = (elIndexInParent!=-1) ? elIndexInParent+1 : elNum;    
             }
-            
             elName = (me.getAbbreviations()[elName]) ? (me.getAbbreviations()[elName]) : elName;
             markingId += elName+me.getNumSeparator()+elNum;
         }
