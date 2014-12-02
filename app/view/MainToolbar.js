@@ -72,8 +72,8 @@ Ext.define('LIME.view.MainToolbar', {
             'padding' : '0px !important'
         },
         margin : 2,
-        width: 30
-
+        width: 30,
+        height: 30
         }, {
             xtype : 'fileMenuButton'   
         },{
