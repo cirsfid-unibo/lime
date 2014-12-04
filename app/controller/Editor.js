@@ -1255,6 +1255,53 @@ Ext.define('LIME.controller.Editor', {
         return config;
     },
 
+    this.onClickHandler : function(ed, e, selectedNode) {
+        var me = this,
+           toMarkNodes = me.getBody().querySelectorAll("."+DomUtils.toMarkNodeClass);
+
+        // Replace all empty toMarkNodes with breaking elements
+        Ext.each(toMarkNodes, function(node) {
+           if(Ext.isEmpty(DomUtils.getTextOfNode(node).trim())) {
+               if(node.parentNode) {
+                   Ext.DomHelper.insertHtml('beforeBegin',node, DomUtils.getBreakingElementHtml());
+                   node.parentNode.removeChild(node);
+               }
+           }
+        });
+
+        // Hide the context menu
+        this.getContextMenu().hide();
+        if (Ext.Object.getSize(selectedNode)==0) {
+            selectedNode = DomUtils.getFirstMarkedAncestor(e.target);
+            if(DomUtils.isBreakingNode(e.target)) {
+                var newElement = Ext.DomHelper.createDom({
+                    tag : 'div',
+                    html : '&nbsp;',
+                    cls: DomUtils.toMarkNodeClass
+                });
+                e.target.parentNode.replaceChild(newElement, e.target);
+                this.setCursorLocation(newElement, 0);
+                if(selectedNode) {
+                    this.lastFocused = selectedNode;
+                    me.application.fireEvent('editorDomNodeFocused', selectedNode);
+                    return;
+                }
+            }
+        }
+
+        if(selectedNode) {
+           var editorNode = this.getSelectedNode(),
+               cls = editorNode.getAttribute("class");
+           if((cls && cls != DomUtils.toMarkNodeClass) &&
+               !DomUtils.isBreakingNode(editorNode) && editorNode != selectedNode) {
+                this.setCursorLocation(selectedNode, 0);
+           }
+           // Expand the selected node's related buttons
+           this.lastFocused = selectedNode;
+           me.application.fireEvent('editorDomNodeFocused', selectedNode);
+        }
+    },
+
     /* Initialization of the controller */
     init : function() {
         var me = this;
@@ -1305,52 +1352,7 @@ Ext.define('LIME.controller.Editor', {
 
             // Handle the viewable events on the editor (click, contextmenu etc.)
             '#mainEditor mainEditor' : {
-                click : function(ed, e, selectedNode) {
-                    var me = this,
-                       toMarkNodes = me.getBody().querySelectorAll("."+DomUtils.toMarkNodeClass);
-
-                    // Replace all empty toMarkNodes with breaking elements
-                    Ext.each(toMarkNodes, function(node) {
-                       if(Ext.isEmpty(DomUtils.getTextOfNode(node).trim())) {
-                           if(node.parentNode) {
-                               Ext.DomHelper.insertHtml('beforeBegin',node, DomUtils.getBreakingElementHtml());
-                               node.parentNode.removeChild(node);
-                           }
-                       }
-                    });
-
-                    // Hide the context menu
-                    this.getContextMenu().hide();
-                    if (Ext.Object.getSize(selectedNode)==0) {
-                        selectedNode = DomUtils.getFirstMarkedAncestor(e.target);
-                        if(DomUtils.isBreakingNode(e.target)) {
-                            var newElement = Ext.DomHelper.createDom({
-                                tag : 'div',
-                                html : '&nbsp;',
-                                cls: DomUtils.toMarkNodeClass
-                            });
-                            e.target.parentNode.replaceChild(newElement, e.target);
-                            this.setCursorLocation(newElement, 0);
-                            if(selectedNode) {
-                                this.lastFocused = selectedNode;
-                                me.application.fireEvent('editorDomNodeFocused', selectedNode);
-                                return;
-                            }
-                        }
-                    }
-
-                    if(selectedNode) {
-                       var editorNode = this.getSelectedNode(),
-                           cls = editorNode.getAttribute("class");
-                       if((cls && cls != DomUtils.toMarkNodeClass) &&
-                           !DomUtils.isBreakingNode(editorNode) && editorNode != selectedNode) {
-                            this.setCursorLocation(selectedNode, 0);
-                       }
-                       // Expand the selected node's related buttons
-                       this.lastFocused = selectedNode;
-                       me.application.fireEvent('editorDomNodeFocused', selectedNode);
-                    }
-                },
+                click : me.onClickHandler,
                 change : function(ed, e) {
                     /* If the body node is not the default one wrap it */
                     var body = ed.getBody(),
@@ -1470,12 +1472,12 @@ Ext.define('LIME.controller.Editor', {
                             editor.on('click', function(e) {
                                 // Fire a click event only if left mousebutton was used
                                 if (e.which == 1){
-                                    editorView.fireEvent('click', editor, e);
+                                    me.onClickHandler(editor, e);
                                 }
                             });
 
                             editor.on('contextmenu', function(e) {
-                                editorView.fireEvent('click', editor, e);
+                                me.onClickHandler(editor, e);
                                 editorView.fireEvent('contextmenu', editor, e);
                             });
                         }});

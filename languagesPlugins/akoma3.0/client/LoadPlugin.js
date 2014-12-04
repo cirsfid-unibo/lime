@@ -61,10 +61,9 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
     },
 
     beforeLoad : function(params) {
-        var metaResults = [], extdom, documents, treeData = [];
+        var metaResults = [], documents, treeData = [];
         if (params.docDom) {
-            extdom = Ext.get(params.docDom);
-            documents = extdom.query("*[class~=" + DocProperties.documentBaseClass + "]");
+            documents = params.docDom.querySelectorAll('.' + DocProperties.documentBaseClass);
             if(documents.length) {
                 Ext.each(documents, function(doc, index) {
                     metaResults.push(Ext.Object.merge(this.processMeta(doc, params), {docDom: doc}));
