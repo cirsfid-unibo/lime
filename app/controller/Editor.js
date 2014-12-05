@@ -1255,7 +1255,7 @@ Ext.define('LIME.controller.Editor', {
         return config;
     },
 
-    this.onClickHandler : function(ed, e, selectedNode) {
+    onClickHandler : function(ed, e, selectedNode) {
         var me = this,
            toMarkNodes = me.getBody().querySelectorAll("."+DomUtils.toMarkNodeClass);
 
@@ -1269,6 +1269,8 @@ Ext.define('LIME.controller.Editor', {
            }
         });
 
+        me.getBookmark();
+        me.lastBookmark = me.getSelectionObject();
         // Hide the context menu
         this.getContextMenu().hide();
         if (Ext.Object.getSize(selectedNode)==0) {
@@ -1455,8 +1457,7 @@ Ext.define('LIME.controller.Editor', {
                             });
                             
                             editor.on('blur', function() {
-                                me.getBookmark();
-                                selection = me.getSelectionObject();
+                                selection = me.lastBookmark || {};
                                 if(selection.start) {
                                     Ext.fly(selection.start).addCls("visibleBookmark");
                                 }
