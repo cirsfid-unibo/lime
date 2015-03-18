@@ -47,7 +47,7 @@
 Ext.define('LIME.controller.NewPdfPreviewController', {
     extend : 'Ext.app.Controller',
     
-    views: ["LIME.ux.newPdfPreview.NewPdfPreviewPanel"],
+    views: ["LIME.ux.newPdfPreview.NewPdfPreviewMainTab"],
 
     refs : [{
         selector : 'appViewport',
@@ -58,7 +58,8 @@ Ext.define('LIME.controller.NewPdfPreviewController', {
     }],
 
     config : {
-        pluginName : "newPdfPreview"
+        pluginName : "newPdfPreview",
+        cssFile : "prova.css"
     },
     
     initPdf: function() {
@@ -84,6 +85,7 @@ Ext.define('LIME.controller.NewPdfPreviewController', {
             params : {
                 requestedService: "AKN_TO_PDF_FOP",
                 start_page: 0,
+                css: cssPath,
                 source: akn
             },
             // the scope of the ajax request

@@ -3,7 +3,7 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:akn="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD10"
+    xmlns:akn="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD13"
     exclude-result-prefixes="xs"
     version="1.0">
     <xsl:output method="xml" indent="yes" encoding="UTF-8" />
@@ -21,14 +21,14 @@
 	<!-- ATTRIBUTE'S GENERIC TEMPLATE -->
 	<xsl:template mode="elementAttributes" match="@*" >
     	<xsl:choose> 
-    		<xsl:when test="not(starts-with(name(.),'xml'))">
-    			<xsl:variable name="attName" select="concat('akn_',name(.))"/>
+    		<xsl:when test="not(starts-with(local-name(.),'xml'))">
+    			<xsl:variable name="attName" select="concat('akn_',local-name(.))"/>
     			<xsl:attribute name="{$attName}">
     				<xsl:value-of select="." />
     			</xsl:attribute>	
     		</xsl:when>
     		<xsl:otherwise>
-    			<xsl:attribute name="{name(.)}">
+    			<xsl:attribute name="{local-name(.)}">
     				<xsl:value-of select="." />
     			</xsl:attribute>	
     		</xsl:otherwise>
@@ -38,14 +38,14 @@
 	<!-- UNDEFINED ATTRIBUTE'S GENERIC TEMPLATE -->
 	<xsl:template mode="undefinedElementAttributes" match="@*" >
 			<xsl:choose>
-	    		<xsl:when test="name(.) = 'currentId' or name(.) = 'currentid' or name(.) = 'href' or name(.) = 'showAs' or name(.) = 'showas'">
-	    			<xsl:variable name="attName" select="concat('akn_',name(.))"/>
+	    		<xsl:when test="local-name(.) = 'currentId' or local-name(.) = 'currentid' or local-name(.) = 'href' or local-name(.) = 'showAs' or local-name(.) = 'showas'">
+	    			<xsl:variable name="attName" select="concat('akn_',local-name(.))"/>
 	    			<xsl:attribute name="{$attName}">
 	    				<xsl:value-of select="." />
 	    			</xsl:attribute>	
 	    		</xsl:when>
 	    		<xsl:otherwise>
-	    			<xsl:attribute name="{name(.)}">
+	    			<xsl:attribute name="{local-name(.)}">
 	    				<xsl:value-of select="." />
 	    			</xsl:attribute>	
 	    		</xsl:otherwise>
@@ -53,13 +53,13 @@
 	</xsl:template>
 	
 	
-	<!--<xsl:template match="*[not(name(.)='akomaNtoso')]">
+	<!--<xsl:template match="*[not(local-name(.)='akomaNtoso')]">
 	        <div>
 	        	<xsl:attribute name="class">
-		         	<xsl:value-of select="name(.)" />
+		         	<xsl:value-of select="local-name(.)" />
 		         </xsl:attribute>
 		         <xsl:attribute name="internalid">
-		         	<xsl:value-of select="name(.)" />
+		         	<xsl:value-of select="local-name(.)" />
 		         </xsl:attribute>
 	        	
 	        	 ATTRIBUTE'S GENERIC TEMPLATE  
@@ -82,7 +82,7 @@
 		akn:debate">
 		<div>
 			<xsl:attribute name="class">
-				<xsl:value-of select="concat('document ',name(.))" />
+				<xsl:value-of select="concat('document ',local-name(.))" />
 			</xsl:attribute>
 			
 			<!-- ATTRIBUTE'S GENERIC TEMPLATE -->
@@ -106,13 +106,14 @@
 					     akn:recital |
 					     akn:citation |
 					     akn:conclusions |
-					     akn:body |
-					     akn:mainBody |
 					     akn:administrationOfOath |
 					     akn:speechGroup |
 					     akn:speech |
 					     akn:question |
 					     akn:answer |
+					     akn:body |
+					     akn:formula |
+					     akn:mainBody |
 					     akn:amendmentHeading |
 						 akn:amendmentContent |
 						 akn:amendmentReference |
@@ -126,15 +127,15 @@
 						 akn:remedias |
 						 akn:motivation |
 						 akn:decision |
-						 akn:mod |
+						 akn:components |
 						 akn:fragmentBody
 						">
 	        <div>
 	        	<xsl:attribute name="class">
-		         	<xsl:value-of select="concat('container ',name(.))" />
+		         	<xsl:value-of select="concat('container ',local-name(.))" />
 		         </xsl:attribute>
 		         <xsl:attribute name="internalid">
-		         	<xsl:value-of select="name(.)" />
+		         	<xsl:value-of select="local-name(.)" />
 		         </xsl:attribute>
 	        	
 	        	<!-- ATTRIBUTE'S GENERIC TEMPLATE -->
@@ -146,16 +147,16 @@
 	<!-- Block elements -->
 	<xsl:template match="akn:block |
 						akn:longTitle |
-						akn:formula |
+						akn:p |
 						akn:interstitial |
-						akn:other
-						">
+						akn:other |
+						akn:wrapUp">
 	        <div>
 	        	<xsl:attribute name="class">
-		         	<xsl:value-of select="concat('block ',name(.))" />
+		         	<xsl:value-of select="concat('block ',local-name(.))" />
 		         </xsl:attribute>
 		         <xsl:attribute name="internalid">
-		         	<xsl:value-of select="name(.)" />
+		         	<xsl:value-of select="local-name(.)" />
 		         </xsl:attribute>
 	        	
 	        	<!-- ATTRIBUTE'S GENERIC TEMPLATE -->
@@ -171,10 +172,10 @@
 						">
 	        <span>
 	        	<xsl:attribute name="class">
-		         	<xsl:value-of select="concat('marker ',name(.))" />
+		         	<xsl:value-of select="concat('marker ',local-name(.))" />
 		         </xsl:attribute>
 		         <xsl:attribute name="internalid">
-		         	<xsl:value-of select="name(.)" />
+		         	<xsl:value-of select="local-name(.)" />
 		         </xsl:attribute>
 	        	
 	        	<!-- ATTRIBUTE'S GENERIC TEMPLATE -->
@@ -196,10 +197,26 @@
 						 akn:authorialNote">
 			<div>
 	        	<xsl:attribute name="class">
-		         	<xsl:value-of select="concat('popup ',name(.))" />
+		         	<xsl:value-of select="concat('popup ',local-name(.))" />
 		         </xsl:attribute>
 		         <xsl:attribute name="internalid">
-		         	<xsl:value-of select="name(.)" />
+		         	<xsl:value-of select="local-name(.)" />
+		         </xsl:attribute>
+	        	
+	        	<!-- ATTRIBUTE'S GENERIC TEMPLATE -->
+	        	<xsl:apply-templates select="@*" mode="elementAttributes" />
+	        	<xsl:apply-templates />
+	        </div>
+	</xsl:template>
+
+	<!-- Mod elements -->
+	<xsl:template match="akn:mod">
+			<div>
+	        	<xsl:attribute name="class">
+		         	<xsl:value-of select="concat('inline ',local-name(.))" />
+		         </xsl:attribute>
+		         <xsl:attribute name="internalid">
+		         	<xsl:value-of select="local-name(.)" />
 		         </xsl:attribute>
 	        	
 	        	<!-- ATTRIBUTE'S GENERIC TEMPLATE -->
@@ -262,10 +279,10 @@
 						">
 	        <div>
 	        	<xsl:attribute name="class">
-		         	<xsl:value-of select="concat('hcontainer ',name(.))" />
+		         	<xsl:value-of select="concat('hcontainer ',local-name(.))" />
 		         </xsl:attribute>
 		         <xsl:attribute name="internalid">
-		         	<xsl:value-of select="name(.)" />
+		         	<xsl:value-of select="local-name(.)" />
 		         </xsl:attribute>
 	        	
 	        	<!-- ATTRIBUTE'S GENERIC TEMPLATE -->
@@ -371,7 +388,6 @@
 						akn:proprietary |
 						akn:presentation |
 						akn:attachments |
-						akn:components |
 						akn:debateBody |
 						akn:amendmentBody |
 						akn:judgementBody |
@@ -381,10 +397,10 @@
 						">
 	        <div>
 	        	<xsl:attribute name="class">
-		         	<xsl:value-of select="name(.)" />
+		         	<xsl:value-of select="local-name(.)" />
 		         </xsl:attribute>
 		         <!-- <xsl:attribute name="internalid">
-		         	<xsl:value-of select="name(.)" />
+		         	<xsl:value-of select="local-name(.)" />
 		       </xsl:attribute> -->
 	        	
 	        	<!-- UNDEFINED ATTRIBUTE'S GENERIC TEMPLATE -->
@@ -466,10 +482,10 @@
 						 akn:tocItem">
 	        <span>
 	        	<xsl:attribute name="class">
-		         	<xsl:value-of select="concat('inline ',name(.))" />
+		         	<xsl:value-of select="concat('inline ',local-name(.))" />
 		         </xsl:attribute>
 		         <xsl:attribute name="internalid">
-		         	<xsl:value-of select="name(.)" />
+		         	<xsl:value-of select="local-name(.)" />
 		         </xsl:attribute>
 	        	
 	        	<!-- ATTRIBUTE'S GENERIC TEMPLATE -->
@@ -478,26 +494,10 @@
 	        </span>
 	</xsl:template>
 	
-	
-	<xsl:template match="akn:p">
-	        <p>
-	        	<xsl:attribute name="class">
-		         	<xsl:value-of select="concat('inline ',name(.))" />
-		         </xsl:attribute>
-		         <xsl:attribute name="internalid">
-		         	<xsl:value-of select="name(.)" />
-		         </xsl:attribute>
-	        	
-	        	<!-- ATTRIBUTE'S GENERIC TEMPLATE -->
-	        	<xsl:apply-templates select="@*" mode="elementAttributes" />
-	        	<xsl:apply-templates />
-	        </p>
-	</xsl:template>
-	
 	<xsl:template match="akn:componentRef">
 		<div>
 			<xsl:attribute name="class">
-				<xsl:value-of select="name(.)" />
+				<xsl:value-of select="local-name(.)" />
 			</xsl:attribute>
 			<!-- UNDEFINED ATTRIBUTE'S GENERIC TEMPLATE -->
 			<xsl:apply-templates select="@*" mode="elementAttributes" />
@@ -510,10 +510,10 @@
 	        <xsl:variable name="uri" select="//akn:component[@currentId=$idref or @eId=$idref]//akn:FRBRManifestation//akn:FRBRthis/@value"/>
 	        <span>
 	        	<xsl:attribute name="class">
-		         	<xsl:value-of select="concat('inline ',name(.))" />
+		         	<xsl:value-of select="concat('inline ',local-name(.))" />
 		         </xsl:attribute>
 		         <xsl:attribute name="internalid">
-		         	<xsl:value-of select="name(.)" />
+		         	<xsl:value-of select="local-name(.)" />
 		         </xsl:attribute>
 		         
 		         
@@ -551,7 +551,7 @@
 						akn:th |
 						akn:caption |
 						akn:tr">
-	        <xsl:element name="{name(.)}">
+	        <xsl:element name="{local-name(.)}">
 	        	<!-- TODO: check the specific HTML elements attributes -->
 	        	
 	        	<!-- ATTRIBUTE'S GENERIC TEMPLATE -->
@@ -561,6 +561,10 @@
     	</xsl:element>
 	</xsl:template>
 	
+	<xsl:template match="akn:td[count(./*)=1]/akn:p">
+		<xsl:apply-templates select="@*" mode="undefinedElementAttributes" />
+		<xsl:apply-templates />
+	</xsl:template>
     
     <!-- <xsl:template match="text()">
         <xsl:value-of select="normalize-space(.)"/>

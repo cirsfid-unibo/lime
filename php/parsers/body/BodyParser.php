@@ -89,10 +89,25 @@ class BodyParser {
 					$return[$value] = array();
 					$offsets = array();
 					$values = array();
+					$numitems = array();
+					$bodyitems = array();
 					foreach($result["0"] as $index => $match) {
 						$values[] = $match[0];
 						$offsets[] = $match[1];
 					}
+					
+					if(array_key_exists("numitem",$result)) {
+						foreach($result["numitem"] as $index => $match) {
+							$numitems[] = $match[0];
+						}
+					}
+					
+					if(array_key_exists("bodyitem",$result)) {
+						foreach($result["bodyitem"] as $index => $match) {
+							$bodyitems[] = $match[0];
+						}
+					}
+					
 					$pairs = arrayToPairsArray($offsets, strlen($content));
 					for($i = 0; $i < count($pairs); $i++) {
 						$pair = $pairs[$i];
@@ -100,6 +115,15 @@ class BodyParser {
 						$subString = substr($content, $pair[0], ($pair[1]-$pair[0]));
 						$valueArray["value"] = $values[$i];
 						$valueArray["start"] = $offsets[$i];
+					
+						if(array_key_exists($i,$numitems)) {
+							$valueArray["numitem"] = $numitems[$i];
+						}
+						if(array_key_exists($i,$bodyitems)) {
+							$valueArray["bodyitem"] = trim($bodyitems[$i]);
+						}
+				
+						
 						$valueArray["contains"] = $this->parse_ricorsive($subString,$hierarchyIndex+$key+1);
 						$return[$value][] = $valueArray;					
 					}	

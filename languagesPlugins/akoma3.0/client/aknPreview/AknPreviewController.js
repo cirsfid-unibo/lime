@@ -47,13 +47,13 @@
 Ext.define('LIME.controller.AknPreviewController', {
     extend : 'Ext.app.Controller',
     
-    views: ["LIME.ux.aknPreview.AknPreviewPanel"],
+    views: ["LIME.ux.aknPreview.AknPreviewMainTab"],
 
     refs : [{
         selector : 'appViewport',
         ref : 'appViewport'
     }, {
-        selector: 'xml',
+        selector: 'aknPreviewMainTab',
         ref: 'xml'
     }],
 
@@ -79,8 +79,9 @@ Ext.define('LIME.controller.AknPreviewController', {
      * @private
      */
     updateContent : function(content) {
-        if (this.getXml()) {
+        if (this.getXml() && content != this.content) {
             this.getXml().down('codemirror').setValue(content);
+            this.content = content;
         }
     },
     
@@ -97,7 +98,7 @@ Ext.define('LIME.controller.AknPreviewController', {
     init : function() {
         var me = this;
         this.control({
-            'xml' : {
+            'aknPreviewMainTab' : {
                 activate : me.doTranslate
             }
         });

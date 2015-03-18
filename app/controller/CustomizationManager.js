@@ -62,6 +62,21 @@ Ext.define('LIME.controller.CustomizationManager', {
     refs : [{
         selector: 'appViewport',
         ref: 'appViewport'
+    }, {
+        selector: 'mainToolbar',
+        ref: 'mainToolbar'
+    }, {
+        selector: 'main',
+        ref: 'main'
+    }, {
+        selector: 'mainEditor',
+        ref: 'mainEditor'
+    }, {
+        selector: 'explorer',
+        ref: 'explorer'
+    }, {
+        selector : '[cls=markingMenuContainer]',
+        ref : 'markingMenuContainer'
     }],
 
     onLanguageLoaded : function() {
@@ -127,12 +142,201 @@ Ext.define('LIME.controller.CustomizationManager', {
         me.customMenuItems[controller.id] = [];
     },
 
+    createSecondEditor: function() {
+        var secondEditor = Ext.widget("main", {
+            id: 'secondEditor',
+            resizable : true,
+            region : 'west',
+            width: '48%',
+            margin : 2
+        });
+
+        this.getAppViewport().add(secondEditor);
+        return secondEditor;
+    },
+
+    finishEditingMode: function(editor, diff) {
+         var me = this,
+            mainTabPanel = me.getMain(),
+            viewport = me.getAppViewport(),
+            userInfo = this.getController('LoginManager').getUserInfo(),
+            editorTab = me.getMainEditor().up(),
+            newExplorer, language = me.getController("Language"),
+            editorController = me.getController("Editor");
+
+        editorController.autoSaveContent(true);
+
+        if(me.finishEditBtn) {
+            me.finishEditBtn.up().remove(me.finishEditBtn);
+        }
+        if(me.syncButton) {
+            if (me.syncButton.syncEnabled)
+                me.getController('DualEditorSynchronizer').disable();
+            me.syncButton.up().remove(me.syncButton);
+        }
+        language.beforeTranslate(function(xml) {
+            xml = xml.replace('<?xml version="1.0" encoding="UTF-8"?>', '');
+            var params = {
+                userName : userInfo.username,
+                fileContent : xml,
+                metadata: DomUtils.serializeToString(me.secondDocumentConfig.metaDom)
+            };
+
+            var url = me.secondDocumentConfig.docId.replace("/diff/", "/diff_modified/");
+
+            me.application.fireEvent(Statics.eventsNames.saveDocument, url, params, function() {
+                if(diff) {
+                    diff.tab.show();
+                    diff.enforceReload = true;
+                    mainTabPanel.setActiveTab(diff);
+                }
+
+                editorTab.noChangeModeEvent = false;
+                viewport.remove(editor);
+
+                newExplorer = Ext.widget("explorer", {
+                    region : 'west',
+                    expandable : true,
+                    resizable : true,
+                    width : '15%',
+                    autoScroll : true,
+                    margin : 2
+                });
+                viewport.add(newExplorer);
+            });
+        }, {}, null, editor, me.secondDocumentConfig.metaDom);
+    },
+
+    addFinishEditingButton : function(cmp, xmlDiff) {
+        var me = this, toolbar = me.getMainToolbar();
+        if (!toolbar.down("[cls=finishEditingButton]")) {
+            //toolbar.add("->");
+            me.finishEditBtn = toolbar.insert(6, {
+                cls : "finishEditingButton",
+                margin : "0 10 0 240",
+                text : "Finish editing",
+                listeners : {
+                    click : Ext.bind(me.finishEditingMode, me, [cmp, xmlDiff])
+                }
+            });
+            me.syncButton = toolbar.insert(7, {
+                margin : "0 10 0 20",
+                text : "Enable Synchronization",
+                enableToggle: true,
+                syncEnabled : false,
+                listeners : {
+                    click : function () {
+                        if (this.syncEnabled) {
+                            this.syncEnabled = false;
+                            this.setText('Enable Synchronization');
+                            me.getController('DualEditorSynchronizer').disable();
+                        } else {
+                            this.syncEnabled = true;
+                            this.setText('Disable Synchronization');
+                            me.getController('DualEditorSynchronizer').enable();
+                        }
+                    }
+                }
+            });
+        }
+    },
+
+    enableDualEditorMode: function(dualConfig) {
+        var me = this,
+            mainTabPanel = me.getMain(),
+            explorer = me.getExplorer(),
+            markingMenu = me.getMarkingMenuContainer(),
+            editorTab = me.getMainEditor().up(),
+            storage = me.getController("Storage"),
+            editorController = me.getController("Editor"),
+            language = me.getController("Language"),
+            xmlDiff = dualConfig.diffTab,
+            xmlDiffController = me.getController("XmlDiffController"),
+            secondEditor;
+
+        //me.getAppViewport().setLoading(true);
+
+        editorTab.noChangeModeEvent = true;
+
+        // Set active the editor tab
+        mainTabPanel.setActiveTab(editorTab);
+
+        if(xmlDiff) {
+            xmlDiff.tab.hide();  
+        }
+        
+        //explorer.setVisible(false);
+
+        explorer.up().remove(explorer);
+
+        //markingMenu.collapse();
+
+        // Bug: this causes the first editor to disappear
+        // if(markingMenu) {
+        //     markingMenu.placeholder.getEl().on('mouseenter', function(){ 
+        //         markingMenu.floatCollapsedPanel();
+        //     });
+        // }
+        
+        secondEditor = me.createSecondEditor();
+        me.secondEditor = secondEditor;
+
+        me.addFinishEditingButton(secondEditor, xmlDiff);
+
+        Ext.defer(function() {
+            storage.openDocumentNoEditor(dualConfig.notEditableDoc, function(config) {
+                language.beforeLoad(config, function(newConfig) {
+                    me.secondDocumentConfig = newConfig;
+                    editorController.loadDocument(newConfig.docText, newConfig.docId, secondEditor, true);
+                    if(newConfig.metaDom) {
+                        var manifestationUri = newConfig.metaDom.querySelector("*[class=FRBRManifestation] *[class=FRBRuri]");
+                        if(manifestationUri) {
+                            secondEditor.down("mainEditorUri").setUri(manifestationUri.getAttribute("value"));
+                        }
+                    }
+                    me.manageAfterLoad = function() {
+                        var newId = dualConfig.editableDoc.replace("/diff/", "/diff_modified/");
+                        DocProperties.documentInfo.docId = newId;
+                        Ext.each([xmlDiff.firstDoc, xmlDiff.secondDoc], function(doc, index) {
+                            var textFields = xmlDiff.query("textfield");
+                            var oldPath = doc.path;
+                            doc.path = doc.path.replace("/diff/", "/diff_modified/");
+                            doc.id = doc.id.replace("/diff/", "/diff_modified/");
+                            if(doc.id == dualConfig.editableDoc) {
+                                doc.id = newId;
+                                doc.path = doc.path.replace("/diff/", "/diff_modified/");
+                            }
+                            Ext.each(textFields, function(text) {
+                                if(text.getValue() == oldPath) {
+                                    text.setValue(doc.path);
+                                }
+                            });
+                        }, me);
+                    };
+                    storage.openDocument(dualConfig.editableDoc);
+                }, true);
+            });    
+        }, 100);
+        
+    },
+
+    afterDocumentLoaded: function() {
+        var me = this;
+        if(Ext.isFunction(me.manageAfterLoad)) {
+            Ext.callback(me.manageAfterLoad);
+            me.manageAfterLoad = null;
+        }
+    },
+
     init : function() {
         var me = this;
         //Listening progress events
         me.application.on(Statics.eventsNames.languageLoaded, me.onLanguageLoaded, me);
         me.application.on(Statics.eventsNames.beforeCreation, me.beforeCreation, me);
-        me.application.on("addMenuItem", me.addMenuItem, me);
+        me.application.on(Statics.eventsNames.addMenuItem, me.addMenuItem, me);
+        me.application.on(Statics.eventsNames.enableDualEditorMode, me.enableDualEditorMode, me);
+        me.application.on(Statics.eventsNames.afterLoad, me.afterDocumentLoaded, me);
+        
                 
         Config.beforeSetLanguage = function(lang, callback) {
             if (Config.customControllers) {
@@ -168,6 +372,13 @@ Ext.define('LIME.controller.CustomizationManager', {
                 }
             },
             'docLocaleSelector': {
+                afterrender: function(cmp) {
+                    if(Config.fieldsDefaults[cmp.name]) {
+                        cmp.setValue(Config.fieldsDefaults[cmp.name]);
+                    }
+                }
+            },
+            'docTypeSelector': {
                 afterrender: function(cmp) {
                     if(Config.fieldsDefaults[cmp.name]) {
                         cmp.setValue(Config.fieldsDefaults[cmp.name]);

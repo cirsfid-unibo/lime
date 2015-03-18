@@ -59,61 +59,45 @@ Ext.define('LIME.ux.Language', {
         attributePrefix: "akn_",
         metadataStructure : {},
         abbreviations : {
-            "adjournment" : "adj",
-            "administrationOfOath" : "admoath",
-            "address" : "addr",
-            "answer" : "ans",
-            "article" : "art",
-            "attachment" : "att",
-            "chapter" : "chp",
-            "citation" : "cit",
-            "citations" : "cits",
-            "clause" : "cl",
-            "component" : "cmp",
-            "communication" : "comm",
-            "componentRef" : "cref",
-            "debateSection" : "dbtsec",
-            "declarationOfVote" : "dclvote",
-            "documentRef" : "dref",
-            "embeddedStructure" : "estr",
-            "embeddedText" : "etxt",
-            "fragment" : "frag",
-            "heading" : "hdg",
-            "intro" : "intro",
-            "listIntroduction" : "intro",
-            "blockList" : "list",
-            "list" : "list",
-            "party" : "lwr",
-            "ministerialStatements" : "mnstm",
-            "noticesOfMotion" : "ntcmot",
-            "nationalInterest" : "ntnint",
-            "oralStatements" : "orlstm",
-            "paragraph" : "para",
-            "pointOfOrder" : "pntord",
-            "proceduralMotions" : "prcmot",
-            "personalStatements" : "prnstm",
-            "prayers" : "pry",
-            "petitions" : "pts",
-            "question" : "qst",
-            "quotedStructure" : "qstr",
-            "questions" : "qsts",
-            "quotedText" : "qtxt",
-            "recital" : "rec",
-            "recitals" : "recs",
-            "rollCall" : "roll",
-            "resolutions" : "res",
-            "section" : "sec",
-            "subchapter" : "subchp",
-            "subclause" : "subcl",
-            "subheading" : "subhdg",
-            "subparagraph" : "subpara",
-            "subsection" : "subsec",
-            "transitional" : "trans",
-            "listWrap" : "wrap",
-            "wrap" : "wrap",
-            "writtenStatements" : "wrtst"
+            alinea : "al",
+            article : "art",
+            attachment : "att",
+            blockList : "list",
+            chapter : "chp",
+            citation : "cit",
+            citations : "cits",
+            clause : "cl",
+            component : "cmp",
+            components : "cmpnts",
+            componentRef : "cref",
+            debateSection : "dbsect",
+            division : "dvs",
+            documentRef : "dref",
+            eventRef : "eref",
+            intro : "intro",
+            list : "list",
+            listIntroduction : "intro",
+            listWrapUp : "wrap",
+            paragraph : "para",
+            quotedStructure : "qstr",
+            quotedText : "qtext",
+            recital : "rec",
+            recitals : "recs",
+            section : "sec",
+            subchapter : "subchp",
+            subclause : "subcl",
+            subdivision : "subdvs",
+            subparagraph : "subpara",
+            subsection : "subsec",
+            temporalGroup : "tmpg",
+            wrapUp : "wrapup"
         },
-        noContextElements : ["listIntroduction", "listConclusion", "docDate", "docNumber", "docTitle", "location", "docType", "heading", "num", "proponent", "signature", "role", "person", "quotedText", "subheading", "ref", "mref", "rref", "date", "time", "organization", "concept", "object", "event", "process", "from", "term", "quantity", "def", "entity", "courtType", "neutralCitation", "party", "judge", "lower", "scene", "opinion", "argument", "affectedDocument", "relatedDocument", "change", "inline", "mmod", "rmod", "remark", "recorderedTime", "vote", "outcome", "ins", "del", "legislature", "session", "shortTitle", "docPurpose", "docCommittee", "docIntroducer", "docStage", "docStatus", "docJurisdiction", "docketNumber", "placeholder", "fillIn", "decoration", "docProponent", "omissis", "extractText", "narrative", "summery", "tocItem"],
+        noPrefixElements : ["collectionBody", "body", "mainBody", "documentRef", "componentRef", "mod"],
+        noIdElements: ["preface", "preamble", "body", "mainBody", "collectionBody"],
+        noIdPatterns: ["block", "inline"],
+        exceptIdElements: ["mod", "documentRef", "componentRef", "heading", "ins", "del"],
+        documentContextElements: ["mod", "article"],
+        noIdNumElements: ["components", "conclusions", "content", "heading"],
         prefixSeparator: "__",
         numSeparator: "_"
     },
@@ -137,7 +121,8 @@ Ext.define('LIME.ux.Language', {
         }, transformFile = Config.getLanguageTransformationFile("LIMEtoLanguage");
         if (transformFile) {
             params = Ext.merge(params, {
-                transformFile : transformFile
+                transformFile : transformFile,
+                includeFiles : Config.getLocaleXslPath()
             });
         }
         //Calling the translate service
@@ -151,38 +136,132 @@ Ext.define('LIME.ux.Language', {
             // if the translation was performed
             success : function(result, request) {
                 if (Ext.isFunction(callbacks.success)) {
-                    callbacks.success(result.responseText);
+                    callbacks.success(result);
                 }
             },
             failure : callbacks.failure
         });
     },
 
-    getLanguageMarkingId : function(element, langPrefix, root) {
-        var me = this, elementId = element.getAttribute(DomUtils.elementIdAttribute), 
-            button = DomUtils.getButtonByElement(element), elName,
-            markedParent, markingId = "", attributeName = langPrefix + DomUtils.langElementIdAttribute, 
-            parentId, elNum = 1, siblings, elIndexInParent;
-        if (elementId && button) {
-            elName = button.name;
-            markedParent = DomUtils.getFirstMarkedAncestor(element.parentNode);
-            if(markedParent){
-                if(markedParent.getAttribute(attributeName)) {
-                    markingId = markedParent.getAttribute(attributeName)+me.getPrefixSeparator();
-                }
-                siblings = markedParent.querySelectorAll("*[class~="+elName+"]");
-            } else {
-                siblings = root.querySelectorAll("*[class~="+elName+"]");
-            }
-            
+    needsElementId: function(elName, button) {
+        var pattern = (button) ? button.pattern.pattern : null;
+
+        return (elName && (this.getNoIdElements().indexOf(elName) == -1) && 
+                ( ( !pattern || this.getNoIdPatterns().indexOf(pattern) == -1 ) ||
+                ( this.getExceptIdElements().indexOf(elName) != -1 ) ) );
+    },
+
+    skipGeneratingId: function( node ) {
+        var workThis = node.querySelector('[class="FRBRWork"] [class="FRBRthis"]');
+        workThis = (workThis) ? workThis.getAttribute('value') : false;
+
+        if ( workThis && (workThis == '/uy/bill/camera/2008-02-25/carpeta1055-2008/main' || 
+                workThis == '/uy/doc/beto/2009-09-09/19541/main' ) ) {
+            return true;
+        }
+    },
+
+    /* Find elNum by counting the preceding elements with 
+       in given the same name in the context.*/
+
+    getElNum: function(element, elName, context) {
+        var elNum = false,
+            num = Ext.fly(element).down('.num', true);
+
+        if ( num && (num.parentNode == element || Ext.fly(num.parentNode).is('.content')) ) {
+            var text = (num) ? num.textContent : "",
+                numVal = text.match(/(?:[\u00C0-\u1FFF\u2C00-\uD7FF\w]+\W*\s+)*(\w+\s*\w*)/),
+                romanChecker = new RegExp(/M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3})/);
+
+            elNum = (numVal && numVal.length) ? numVal[numVal.length-1] : false;
+            var romanNumer = (elNum) ? elNum.match(romanChecker) : false;
+            elNum = (elNum && (!romanNumer || !romanNumer[0].length ) ) ? elNum.toLowerCase() : elNum;
+            elNum = elNum.replace(/\s/g,'');
+        }
+
+        if ( !elNum ) {
+            elNum = 1;
+            var siblings = context.querySelectorAll("*[class~="+elName+"]");
             if(siblings.length) {
-                elIndexInParent = Array.prototype.indexOf.call(siblings, element);
+                var elIndexInParent = Array.prototype.indexOf.call(siblings, element);
                 elNum = (elIndexInParent!=-1) ? elIndexInParent+1 : elNum;    
             }
-            
-            elName = (me.getAbbreviations()[elName]) ? (me.getAbbreviations()[elName]) : elName;
-            markingId += elName+me.getNumSeparator()+elNum;
+        }
+        return elNum;
+    },
+
+    getMarkingIdParentPart: function(elName, markedParent, documentContext) {
+        var markingId = '',
+            attributeName = Language.getAttributePrefix() + DomUtils.langElementIdAttribute,
+            parentName = (markedParent) ? DomUtils.getNameByNode(markedParent) : false,
+            cmpParent = (documentContext) ? documentContext.parent('.component', true) : false,
+            cmpPrefix = (cmpParent) ? cmpParent.getAttribute(attributeName)+this.getPrefixSeparator() : "";
+
+        if( markedParent && this.getNoPrefixElements().indexOf(parentName) == -1 
+                         && this.getNoPrefixElements().indexOf(elName) == -1 ) {
+
+            markingId += markedParent.getAttribute(attributeName) ? markedParent.getAttribute(attributeName) 
+                                                        : "";
+            markingId += (!markingId) ? this.getMarkingIdParentPart(parentName, DomUtils.getFirstMarkedAncestor(markedParent.parentNode)) 
+            										: this.getPrefixSeparator();
+        }
+
+        if ( cmpPrefix && !Ext.String.startsWith(markingId,cmpPrefix) ) {
+            markingId = cmpPrefix+markingId;
         }
         return markingId;
+    },
+
+    getLanguageMarkingId : function(element, langPrefix, root, counters, enforce) {
+        var me = this, markingId = "",
+            button = DomUtils.getButtonByElement(element),
+            elName = (button) ? button.name : DomUtils.getNameByNode(element);
+
+        if ( me.skipGeneratingId(root) ) return markingId;
+        try {
+            if ( enforce || me.needsElementId(elName, button) ) {
+                var markedParent = DomUtils.getFirstMarkedAncestor(element.parentNode),
+                    documentContext = Ext.fly(element).parent('.document'),
+                    
+                markingId = me.getMarkingIdParentPart(elName, markedParent, documentContext);
+
+                var context = markedParent || root;
+                var alternativeContext = Ext.fly(element).parent('.collectionBody', true);
+                context = (alternativeContext) ? alternativeContext : context;
+
+                if ( me.getDocumentContextElements().indexOf(elName) != -1 ) {
+                    context = Ext.fly(element).parent('.mod', true) || documentContext.dom;
+                } else if ( elName != 'content' && Ext.fly(element).findParent( '.content', 2, true ) ) {
+                    markingId+='content'+me.getPrefixSeparator();
+                }
+
+                var elNum = me.getElNum(element, elName, context);
+
+                var elementRef = (me.getAbbreviations()[elName]) ? (me.getAbbreviations()[elName]) : elName;
+                markingId += elementRef;
+                if ( me.getNoIdNumElements().indexOf(elName) == -1 ) {
+                    markingId += me.getNumSeparator()+elNum;
+                }
+
+            }
+        } catch(e) {
+            console.log(e, elName);
+        }
+        return markingId;
+    },
+
+    onNodeChange : function(node, deep) {
+        var me = this, fly = Ext.fly(node);
+        if (!node) return;
+        
+        if ( deep === false ) {
+            DomUtils.setNodeInfoAttr(node, 'hcontainer', " ({data})");
+        } else if ( fly && fly.is('.inline')) {
+            me.onNodeChange(fly.parent('.hcontainer', true), false);
+        } else {
+            Ext.each(Ext.Array.push(Ext.Array.toArray(node.querySelectorAll('.hcontainer')), node), function(node) {
+                me.onNodeChange(node, false);
+            });
+        }
     }
 });

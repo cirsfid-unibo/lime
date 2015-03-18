@@ -66,6 +66,12 @@ Ext.define('LIME.controller.Marker', {
         selector : 'contextMenu'
     }],
 
+    nodeChangedConfig: {
+        select : false,
+        scroll : false,
+        change : true
+    },
+
     /**
      * This method returns a well formed unique id for the marked element.
      * For more information about the button id see {@link Ext.view.markingmenu.TreeButton}
@@ -159,7 +165,7 @@ Ext.define('LIME.controller.Marker', {
             lastNode = (selectionRange[1] == 0) ? selection.end.previousSibling : selection.end, 
             selectedNodes = DomUtils.getSiblings(selection.start, lastNode),
             // Parse the wrapper element in order to determine where the content goes
-            parsedHtml = Interpreters.parseElement(button.waweConfig.pattern.wrapperElement, {
+            parsedHtml = Interpreters.parseElement(button.pattern.wrapperElement, {
                 content : '<span class="' + DomUtils.tempSelectionClass + '"/>'
             }),
             // Create a new HTMLElement to be used as the wrapper (they all are divs)
@@ -175,8 +181,8 @@ Ext.define('LIME.controller.Marker', {
             //return [];
             selectedNodes = [selection.node];
         }
-            
-        if(selection.text &&selectedNodes.length == 1
+  
+        if(selection.text && selectedNodes.length == 1
                 && selectedNodes[0] == selection.start && selectedNodes[0] == selection.end) {
             this.wrapSelectedTextInNode(newElement, tempSelection);    
         } else {
@@ -201,6 +207,22 @@ Ext.define('LIME.controller.Marker', {
         return [newElement];
     },
 
+    wrapRange: function(button, element) {
+        var editor = this.getController('Editor'),
+            element = element || 'div'
+            selectionRange = editor.lastSelectionRange || editor.getEditor().selection.getRng();
+
+        var wrapper = selectionRange.startContainer.ownerDocument.createElement(element);
+        DomUtils.range.normalize(selectionRange);
+        selectionRange.surroundContents(wrapper);
+
+        if ( element == 'div' ) {
+            // Add breaking elements so that text can be inserted
+            this.addBreakingElements(wrapper);
+        }
+        return wrapper;
+    },
+
     /**
      * Mark one or multiple inlines related to the button used to mark.
      * 
@@ -213,33 +235,51 @@ Ext.define('LIME.controller.Marker', {
     wrapInline: function(button) {
         var editorController = this.getController('Editor'),
             // Creat temporary spans to be replaced
-            toMarkNodes = editorController.applyPattern('tempselection', {
-                inline : 'span',
-                classes : DomUtils.tempSelectionClass
-            }),
+            toMarkNodes = [],
             markedElements = [],
             bogusNode,
             isMarker = false,
             //number of elements in the group
-            numberOfEls, nodesLength = toMarkNodes.length;
+            numberOfEls, nodesLength;
         /* Temp nodes in toMarkNodes are separate span elements this loop 
          * try to group these elements that are siblings but they can be separated by <br> element(s).
          * Each group will be marked and not each element, in this way
          * we can mark as unique inline, elements that are rendered with multiple rows.
          * Each iteration represents a group for this reason the "i" variable is incremented by "numberOfEls". 
          */
+         var selection = editorController.getSelectionObject();
+
+        if ( selection.start.getAttribute('data-mce-type') == 'bookmark' && 
+                    selection.node == selection.start &&  selection.start == selection.end ) {
+
+            var wrapper = Ext.DomHelper.createDom({
+                tag : 'span',
+                cls : DomUtils.tempParsingClass
+            });
+
+            DomUtils.insertAfter(wrapper, selection.end);
+            toMarkNodes = [wrapper];
+        } else {
+            toMarkNodes = editorController.applyPattern('tempselection', {
+                inline : 'span',
+                classes : DomUtils.tempSelectionClass
+            });
+            
+        }
         
+        nodesLength = toMarkNodes.length;
+
         for(var i = 0; i < nodesLength; i+=numberOfEls) {
             var node = toMarkNodes[i],
                 extNode = new Ext.Element(node),
                 //Get html of wrapperElement
-                htmlContent = Interpreters.parseElement(button.waweConfig.pattern.wrapperElement, {
+                htmlContent = Interpreters.parseElement(button.pattern.wrapperElement, {
                     content : ''
                 }),
                 inlineWrapper;
             bogusNode = extNode.up('[data-mce-bogus]');
             // An element without content e.g. eop element
-            if ((button.waweConfig.pattern.wrapperElement.indexOf(Interpreters.flags.content)==-1)) {
+            if ((button.pattern.wrapperElement.indexOf(Interpreters.flags.content)==-1)) {
                 isMarker = true;
                 if (bogusNode) {
                     inlineWrapper = Ext.DomHelper.insertHtml("afterEnd", bogusNode.dom, htmlContent);                    
@@ -300,87 +340,124 @@ Ext.define('LIME.controller.Marker', {
      */
     wrap : function(button, config) {
         var editorController = this.getController('Editor'), 
-            buttonPattern = button.waweConfig.pattern, 
-            isBlock = DomUtils.blockTagRegex.test(buttonPattern.wrapperElement), 
+            isBlock = DomUtils.blockTagRegex.test(button.pattern.wrapperElement), 
             newElements = [], 
             selectedNode = editorController.getSelectedNode(), 
             firstMarkedNode = DomUtils.getFirstMarkedAncestor(selectedNode);
         
-        if (!this.isAllowedElement(firstMarkedNode, button.waweConfig)) {
-            this.application.fireEvent(Statics.eventsNames.showNotification, {
-                content: new Ext.Template(Locale.strings.semanticError).apply({'name': "<b>"+button.waweConfig.name+"</b>"})
-            });
+        // If marking is not allowed or the node is already been marked just exit
+        if( !this.isAllowedMarking(firstMarkedNode, selectedNode, button) || 
+            (firstMarkedNode && DomUtils.getButtonIdByElementId(firstMarkedNode.getAttribute(DomUtils.elementIdAttribute)) == button.id) ) {
             return;
         }
-        // If the nodes have already been marked just exit
-        if (firstMarkedNode && DomUtils.getButtonIdByElementId(firstMarkedNode.getAttribute(DomUtils.elementIdAttribute)) == button.id) {
-            //Return a list contains the node
-            return [firstMarkedNode];
-        }
+
         if (isBlock) {
-            newElements = this.wrapBlock(button);
+            //newElements = this.wrapBlock(button);
+            newElements = [this.wrapRange(button)];
         } else {
-            newElements = this.wrapInline(button);
+            //newElements = this.wrapInline(button);
+            newElements = [this.wrapRange(button, 'span')];
         }
+        var setCursorLocation = false;
         // Common finilizing operations
-        Ext.each(newElements, function(newElement) {
-            // Wrap the element inside an Ext.Element
-            var extNode = new Ext.Element(newElement),
-                oldElement = newElement.cloneNode(true),
-                // Get a unique id for the marked element
-                markingId = this.getMarkingId(button.id), 
-                idPrefix = button.waweConfig.rules[Utilities.buttonFieldDefault].attributePrefix || '', 
-                styleClass = buttonPattern.wrapperClass;
-            // Set the internal id
-            newElement.setAttribute(DomUtils.elementIdAttribute, markingId);
-            
-            /*This part has been moved on translating
-            // Set the language specific id (with the given prefix)
-            var langId = this.getLanguageMarkingId(newElement, button.id, idPrefix);
-            newElement.setAttribute(idPrefix + DomUtils.langElementIdAttribute, langId);*/
-            // Set the class
-            newElement.setAttribute('class', buttonPattern.wrapperClass);
-            // Set the optional attribute
-            if (config.attribute && config.attribute.name && config.attribute.value) {// check if attribute has name and value
-                newElement.setAttribute(idPrefix + config.attribute.name, config.attribute.value);
+        Ext.each(newElements, function(node) {
+            var bookmarkParent = Ext.fly(node).parent('.visibleBookmark', true);
+            if ( bookmarkParent ) {
+                DomUtils.insertAfter(node, bookmarkParent);
+                bookmarkParent.parentNode.removeChild(bookmarkParent);
             }
-            // Add the style
-            editorController.applyAllStyles('*[class="' + styleClass + '"]', buttonPattern.wrapperStyle, button.waweConfig.shortLabel);
-            //var explorer = this.getController("Explorer");
-            // Set the document properties
-            DocProperties.setMarkedElementProperties(markingId, {
-                button : button,
-                htmlElement : newElement
-            });
-            if(newElement.parentNode) {
-                var parent = newElement.parentNode, 
-                    cls = parent.getAttribute("class");
-                if(cls && cls == DomUtils.toMarkNodeClass) {
-                    if(parent.parentNode) {
-                        while(parent.firstChild) {
-                            parent.parentNode.insertBefore(parent.firstChild, parent);
-                        }
-                        parent.parentNode.removeChild(parent);
-                    }
-                }
+
+            if ( !node.textContent.trim() ) {
+                node.appendChild(node.ownerDocument.createTextNode("  "));
+                setCursorLocation = true;
             }
-            // Avoid random cursor repositioning by using a bookmark
-            //var bm = editorController.getBookmark(); // BUG SAFARI (leave commented): The span used to set the bookmark is converted to an empty p and placed as the first child of the body
-            // Apply the wrapping rules
-            //Interpreters.wrappingRulesHandler(button, newElement);
-            //editorController.restoreBookmark(bm)
+
+            this.setMarkedElementProperties(node, button, config);
         }, this);
+
         // Warn of the changed nodes
-        
-        this.application.fireEvent('nodeChangedExternally', newElements, {
-            select : false,
-            scroll : false,
-            click : (config.silent)? false : true,
-            change : true,
-            silent: config.silent
-        });
+        this.application.fireEvent('nodeChangedExternally', newElements, Ext.merge(config, Ext.merge(this.nodeChangedConfig, {
+            click : (config.silent) ? false : true,
+            setCursorLocation: setCursorLocation
+        })));
         
         Ext.callback(config.callback, this, [button, newElements]);
+    },
+
+    /**
+     * This function mark nodes passed in config according to the rule defined
+     * in the button's wrapperElement rule.
+     * This function is used by parsers for fast marking.
+     * @param {TreeButton} button The button that was used to mark
+     * @param {Object} config 
+     */
+    autoWrap : function(button, config) {
+        if(!config.nodes | !button)
+            return;
+        var buttonPattern = button.pattern,
+            isBlock = DomUtils.blockTagRegex.test(buttonPattern.wrapperElement),
+            markedElements = [];
+          
+        Ext.each(config.nodes, function(newElement, index) {
+            var firstMarkedNode = DomUtils.getFirstMarkedAncestor(newElement);
+
+            if ( !config.noDoubleMarkingCheck && firstMarkedNode && 
+                DomUtils.getButtonIdByElementId(firstMarkedNode.getAttribute(DomUtils.elementIdAttribute)) == button.id) {
+                return;
+            }
+            
+            if(!DomUtils.isSameNodeWithHtml(newElement, buttonPattern.wrapperElement)) {
+                if(buttonPattern.pattern == "inline") {
+                    if(newElement.children.length == 1 && 
+                        DomUtils.isSameNodeWithHtml(newElement.firstChild, buttonPattern.wrapperElement)) {
+                        newElement = newElement.firstChild;
+                    } else {
+                        newElement = this.wrapChildrenInWrapperElement(newElement, buttonPattern);    
+                    }
+                } else {
+                    newElement = this.wrapElementInWrapperElement(newElement, buttonPattern);
+                }
+            }
+            
+            this.setMarkedElementProperties(newElement, button, Ext.merge(Ext.clone(config), {
+                attribute: (config.attributes) ? config.attributes[index] : null
+            }));
+
+            if(isBlock) {
+                this.addBreakingElements(newElement);
+            }
+            markedElements.push(newElement);
+        },this);
+        
+        Ext.callback(config.onFinish, this, [markedElements]);
+        
+        if (!config.noEvent) {
+            this.application.fireEvent('nodeChangedExternally', newElements, Ext.merge(config, Ext.merge(this.nodeChangedConfig, {
+                click : (config.silent) ? false : true,
+            })));
+        }
+        return markedElements;
+    },
+
+    setMarkedElementProperties : function(node, button, config) {
+        var markingId = this.getMarkingId(button.id); // Get a unique id for the marked element
+        // Set the internal id and the class
+        node.setAttribute(DomUtils.elementIdAttribute, markingId);
+        node.setAttribute('class',  button.pattern.wrapperClass);
+
+        // Set the optional attribute, if it has name and value
+        if (config.attribute && config.attribute.name && config.attribute.value) {
+            node.setAttribute(Language.getAttributePrefix() + config.attribute.name, config.attribute.value);
+        }
+        // Wrap the parent if it's a toMarkNode
+        if( node.parentNode && Ext.fly(node.parentNode).is('.'+DomUtils.toMarkNodeClass) ) {
+            DomUtils.unwrapNode(node.parentNode);
+        }
+        // Set the document properties
+        DocProperties.setMarkedElementProperties(markingId, {
+            button : button,
+            htmlElement : node
+        });
     },
 
     /**
@@ -453,7 +530,7 @@ Ext.define('LIME.controller.Marker', {
             end = DomUtils.getFirstMarkedAncestor(selectedNodes.end),
             siblings = DomUtils.getSiblings(start, end),
             // Check what kind of operations we have to perform on the unmarked node
-            eventConfig = {change : true, click : true},
+            eventConfig = {change : true, click : true, unmark: true},
             markedParent = (start)? start.parentNode : end.parentNode,
             unmarkedNodeIds = [];
         // Check the siblings
@@ -485,12 +562,13 @@ Ext.define('LIME.controller.Marker', {
         this.application.fireEvent('nodeChangedExternally', markedParent, eventConfig);
         this.application.fireEvent(Statics.eventsNames.unmarkedNodes, unmarkedNodeIds);
     },
-    
-    
-    
+
     unmarkNodes: function(nodes, unmarkChildren) {
-        var me = this, parents = [], documentEl = me.getController("Editor").getDocumentElement(),
-            unmarkedNodeIds = [];
+        var me = this, parents = [], editor = me.getController("Editor"),
+            documentEl = editor.getDocumentElement(),
+            unmarkedNodeIds = [], config = {change : true, unmark: true};
+
+        editor.removeBookmarks();
         Ext.each(nodes, function(node) {
             var parent = DomUtils.getFirstMarkedAncestor(node.parentNode);
             if(parent && parents.indexOf(parent) == -1) parents.push(parent);
@@ -498,10 +576,10 @@ Ext.define('LIME.controller.Marker', {
         });
         if(parents.length) {
             Ext.each(parents, function(parent) {
-                me.application.fireEvent('nodeChangedExternally', parent, {change : true});    
+                me.application.fireEvent('nodeChangedExternally', parent, config);    
             });    
         } else {
-            me.application.fireEvent('nodeChangedExternally', documentEl, {change : true});
+            me.application.fireEvent('nodeChangedExternally', documentEl, config);
         }
         me.application.fireEvent(Statics.eventsNames.unmarkedNodes, unmarkedNodeIds);
     },
@@ -523,96 +601,107 @@ Ext.define('LIME.controller.Marker', {
     },
     
     /**
-     * This function mark nodes passed in config according to the rule defined
-     * in the button's wrapperElement rule.
-     * This function is used by parsers for fast marking.
-     * @param {TreeButton} button The button that was used to mark
-     * @param {Object} config 
-     */
-    autoWrap : function(button, config){
-        if(!config.nodes | !button)
-            return;
-        var editorController = this.getController('Editor'),
-            buttonPattern = button.waweConfig.pattern,
-            isBlock = DomUtils.blockTagRegex.test(buttonPattern.wrapperElement),
-            idPrefix = button.waweConfig.rules[Utilities.buttonFieldDefault].attributePrefix || '',
-            styleClass = buttonPattern.wrapperClass, markedElements = [];
-          
-        Ext.each(config.nodes,function(newElement,index){
-            var markingId = this.getMarkingId(button.id),
-                attrName,attrValue,
-                firstMarkedNode = DomUtils.getFirstMarkedAncestor(newElement),
-                checkType = new RegExp("^<"+newElement.nodeName+">", 'i');
-            newElement.removeAttribute("class");
-            if (firstMarkedNode && DomUtils.getButtonIdByElementId(firstMarkedNode.getAttribute(DomUtils.elementIdAttribute)) == button.id) {
-                return;
-            }
-            
-            if(!DomUtils.isSameNodeWithHtml(newElement, buttonPattern.wrapperElement)) {
-                if(buttonPattern.pattern == "inline") {
-                    if(newElement.children.length == 1 && DomUtils.isSameNodeWithHtml(newElement.firstChild, buttonPattern.wrapperElement)) {
-                        newElement = newElement.firstChild;
-                    } else {
-                        newElement = this.wrapChildrenInWrapperElement(newElement, buttonPattern);    
-                    }
-                } else {
-                    newElement = this.wrapElementInWrapperElement(newElement, buttonPattern);
-                }
-            }
-            
-            newElement.removeAttribute("class");
-            newElement.setAttribute(DomUtils.elementIdAttribute, markingId);
-            // Set the internal id  
-            newElement.setAttribute('class', buttonPattern.wrapperClass);
-            // Set the optional attribute
-            if (config.attributes && (attrName = config.attributes[index].name) && (attrValue = config.attributes[index].value)) {// check if attribute has name and value
-                newElement.setAttribute(idPrefix + attrName, attrValue);
-            }
-            // Add the style
-            editorController.applyAllStyles('*[class="' + styleClass + '"]', buttonPattern.wrapperStyle, button.waweConfig.shortLabel);
-
-            if(isBlock){
-                this.addBreakingElements(newElement);
-            }
-            // Set the document properties
-            DocProperties.setMarkedElementProperties(markingId, {
-                button : button,
-                htmlElement : newElement
-            }); 
-            markedElements.push(newElement);
-        },this);
-        
-        Ext.callback(config.onFinish, this, [markedElements]);
-        
-        if (!config.noEvent) {
-            this.application.fireEvent('nodeChangedExternally', markedElements, {
-                select : false,
-                scroll : false,
-                click : (config.silent)? false : true,
-                change : true,
-                silent: config.silent
-            });
-        }
-    },
-    
-    /**
      * This function adds breaking elements before and/or after the node so that text can be inserted
      * @param {HTMLElement} node 
      */
     addBreakingElements : function(node){
         //var breakingElementString = "<p class=\""+DomUtils.breakingElementClass+"\"></p>";
         var breakingElementString = DomUtils.getBreakingElementHtml();
-        Ext.DomHelper.insertHtml('afterEnd',node, breakingElementString);
+        var flyNode = Ext.fly(node);
+
         Ext.DomHelper.insertHtml('afterBegin',node, breakingElementString);
         Ext.DomHelper.insertHtml('beforeEnd',node, breakingElementString);
+
         // Add a breaking element also above the marked element but only if there isn't another breaking element
-        if (!node.previousSibling || node.previousSibling.nodeName != "BR" && node.previousSibling.getAttribute && node.previousSibling.getAttribute("class") != DomUtils.breakingElementClass){
+        if (!node.previousSibling || node.previousSibling.nodeName.toLowerCase() != 'br' && 
+                                    !Ext.fly(node.previousSibling).hasCls(DomUtils.breakingElementClass)) {
             Ext.DomHelper.insertHtml('beforeBegin',node, breakingElementString);
         }
+
+        if ( !node.nextSibling || (node.nextSibling.nodeName.toLowerCase() != 'br' && !Ext.fly(node.nextSibling).hasCls(DomUtils.breakingElementClass)) ) {
+            Ext.DomHelper.insertHtml('afterEnd',node, breakingElementString);
+        }
+    },
+
+    applyWrappingRuleWithoutEffects: function(node) {
+        var cloned = Ext.clone(node);
+        Interpreters.wrappingRulesHandlerOnTranslate(cloned);
+        return cloned;
+    },
+
+    getParentOfSelectionAfterWrappingRules: function(node) {
+        var editorController = this.getController('Editor'),
+            startSelection, tmpNode, tmpStart;
+
+        // Save a reference of the selection
+        editorController.getBookmark();
+        startSelection = editorController.getEditor().selection.getStart();
+
+        tmpNode = this.applyWrappingRuleWithoutEffects(node);
+
+        tmpStart = tmpNode.querySelector("#"+startSelection.getAttribute("id"));
+        return tmpStart.parentNode;
+    },
+
+    isAllowedMarking: function(markedNode, node, config) {
+        var patterns = this.getStore("LanguagesPlugin").getData().patterns,
+            newParent, patternError = false, pattern,
+            nodePattern = this.getPatternConfigByNode(markedNode);
+
+        if(!nodePattern || Ext.fly(node).is('table') || Ext.fly(node).up('table') ) {
+            return true;
+        }
+
+        if (!this.isAllowedPattern(nodePattern, 
+                                   config.pattern)) {
+            // There is a pattern incompatibility
+            patternError = true;
+            // Trying to apply wrapping rules to check if the incompatibility still persists
+            newParent = this.getParentOfSelectionAfterWrappingRules(markedNode);
+            if(newParent && !markedNode.isEqualNode(newParent)) {
+                pattern = DomUtils.getPatternByNode(newParent);
+                if(pattern && patterns[pattern] && 
+                    this.isAllowedPattern(patterns[pattern], config.pattern)) {
+                    patternError = false;
+                }
+            }
+        }
+
+        if (!Ext.isEmpty(nodePattern.exceptionalAllowedElements) &&
+            nodePattern.exceptionalAllowedElements.indexOf(config.name) != -1) {
+
+            patternError = false;
+        }
+
+        if(patternError) {
+            this.application.fireEvent(Statics.eventsNames.showNotification, {
+                title: Locale.strings.notAllowedMarking,
+                content: new Ext.Template(Locale.strings.semanticError).apply({'name': "<b>"+config.name+"</b>"}),
+                moreInfo: new Ext.Template(Locale.strings.patternNotAllowed).apply({
+                    'elementPattern': config.pattern.pattern,
+                    'parentPattern': nodePattern.pattern
+                })
+            });   
+        }
+        return !patternError;
     },
     
+    isAllowedPattern: function(parentPatternConfig, patternConfig) {
+        if(!Ext.isEmpty(parentPatternConfig.allowedPatterns)
+            && parentPatternConfig.allowedPatterns.indexOf(patternConfig.pattern) == -1) {
+            return false;
+        }
+        return true;
+    },
+
+    getPatternConfigByNode: function(node) {
+        var button = DomUtils.getButtonByElement(node);
+        if(button) {
+            return button.pattern;
+        }
+    },
+
     isAllowedElement: function(parent, buttonConfig) {
-        return true; //Temporary disable rules
         var languageData = this.getStore("LanguagesPlugin").getData(),
             documentRoot = this.getController("Editor").getBody(),
             semanticRules = languageData.semanticRules,
@@ -623,7 +712,7 @@ Ext.define('LIME.controller.Marker', {
             if (parent) {
                 parentId = parent.getAttribute(DomUtils.elementIdAttribute);
                 if (DocProperties.markedElements[parentId] && DocProperties.markedElements[parentId].button) {
-                    parentConfig = DocProperties.markedElements[parentId].button.waweConfig;
+                    parentConfig = DocProperties.markedElements[parentId].button;
                     parentRules = elements[parentConfig.name];
                     if (parentRules && parentRules.children) {
                         childrenRules = parentRules.children[buttonConfig.name];

@@ -84,6 +84,8 @@ Ext.define('LIME.view.modal.newSavefile.ListView', {
             dataIndex : 'name',
             flex : 1,
             renderer : function(value, cmp, record) {
+                value = Ext.isDate(value) ? Ext.Date.format(name, 'Y-m-d') : value;
+                value = value.replace(/%3A/g, ':');
                 if (!record.data.leaf) {
                     value = '<div style="float:left;">' + value + '</div><img class="openfile-expander" src="data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">';
                 }

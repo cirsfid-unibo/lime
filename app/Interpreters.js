@@ -109,12 +109,18 @@ Ext.define('LIME.Interpreters', {
 	 * it is used only before translation
 	 * @param {HTMLElement} markedNode
 	 */
-	wrappingRulesHandlerOnTranslate : function(markedNode) {
+	wrappingRulesHandlerOnTranslate : function(markedNode, button) {
 		var me = this,
-			elementId = markedNode.getAttribute(DomUtils.elementIdAttribute);
-			button = (DocProperties.markedElements[elementId]) ? DocProperties.markedElements[elementId].button : null,
-			rules = (button) ? button.waweConfig.pattern.wrapperRules : [],  /* TODO vedere dove mettere ste regole */
-			prefix = (button) ? (button.waweConfig.rules[Utilities.buttonFieldDefault].attributePrefix || '') : '';
+			elements = [],
+			elementId = markedNode.getAttribute(DomUtils.elementIdAttribute),
+            button, rules, prefix;
+
+        if (!button) {
+            button = (DocProperties.markedElements[elementId]) ? DocProperties.markedElements[elementId].button : null;
+        }
+
+		rules = (button) ? button.pattern.wrapperRules : [];  /* TODO vedere dove mettere ste regole */
+		prefix = (button) ? (button.rules[Utilities.buttonFieldDefault].attributePrefix || '') : '';
 			
 		var rulesReference = {
 			/**
@@ -170,14 +176,15 @@ Ext.define('LIME.Interpreters', {
 				var attributes = rule.values;
 				for (attribute in attributes) {
 					var value = attributes[attribute];
-					var key = button.waweConfig.rules[Utilities.buttonFieldDefault].attributePrefix+attribute;
+					var key = button.rules[Utilities.buttonFieldDefault].attributePrefix+attribute;
 					markedNode.setAttribute(key, value);
 				}
 			},
 			// Add mod element
 			addWrapperElement : function(rule, markedNode) {
 				var config = Interpreters.getButtonConfig(rule.type),
-					extWrapper = new Ext.Element(markedNode);
+					extWrapper = new Ext.Element(markedNode),
+					addedNode;
 				if(rule.type && rule.type=='mod'){
 						var modElement = extWrapper.parent(".mod"),
 						idPrefix = config.rules[Utilities.buttonFieldDefault].attributePrefix || '',
@@ -195,6 +202,7 @@ Ext.define('LIME.Interpreters', {
 						newElement.setAttribute('class', config.pattern.wrapperClass);
 						//TODO: add the right id
 						newElement.setAttribute(idPrefix + DomUtils.langElementIdAttribute, 'mod1');
+						addedNode = newElement;
 						contentElement.appendChild(newElement);
 					}
 				}else if(rule.type && rule.type=='content'){
@@ -217,18 +225,26 @@ Ext.define('LIME.Interpreters', {
 							while(markedNode.hasChildNodes()){
 								tmpElement.firstChild.appendChild(markedNode.firstChild);				
 							}
+							addedNode = tmpElement.firstChild;
 							markedNode.appendChild(tmpElement.firstChild);	
 						}
 					}
 				}
+				return addedNode;
 			}
 		};
 		// Apply the rules
 		for (rule in rules) {
 			var ruleReference = rulesReference[rule];
-			if (ruleReference)
-				ruleReference(rules[rule], markedNode, button.waweConfig);
+			if (ruleReference) {
+				var elementAdded = ruleReference(rules[rule], markedNode, button);
+				if(elementAdded) {
+					elements = Ext.Array.push(elements, elementAdded);
+				}
+			}
 		}
+
+		return elements;
 	},
 	/**
 	 * Return the custom configuration of a button taken from the

@@ -61,6 +61,10 @@
 	"preferencesMenuButton": "Preferenze",
 	"windowMenuButton": "Finestra",
 	"menuShowView": "Visualizza vista",
+	"menuShowStyle": "Stile",
+	"menuShowStyleBox": "Mostra contenitori",
+	"menuShowStyleColor": "Mostra colori",
+	"menuShowStylePdf": "Mostra tipografia",
 	"languageSelectionBoxEmptyText": "Seleziona una lingua...",
 	"localeEmptyText": "Seleziona la localizzazione",
 	"mainEditor": "Editor documento",
@@ -80,7 +84,8 @@
 		"searchingDates": "Ricerca delle date",
 		"markingDates": "Marcatura delle date",
 		"searchingRefs": "Ricerca dei riferimenti",
-		"markingRefs": "Marcatura dei riferimenti"
+		"markingRefs": "Marcatura dei riferimenti",
+		"loadingDocumentStyles": "Caricamento degli stili"
 	},
 	"typeNotSupported": "Questo tipo di file non è (ancora) supportato per il drag and drop",
 	"uploadError": "Si è verificato un errore durante l'upload.<br/>Riprovare più tardi.",
@@ -96,6 +101,7 @@
 	"userRegistration": "Registrazione dell' utente",
 	"newLabel": "Crea",
 	"countryLabel": "Nazione",
+    "docProponent": "Doc. Proponent",
 	"folderLabel": "Cartella",
 	"docTypeLabel": "Tipo doc.",
 	"docDateLabel": "Data doc.",

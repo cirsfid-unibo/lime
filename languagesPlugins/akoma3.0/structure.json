@@ -1,4 +1,5 @@
 {
+    "schemaRegex": "xmlns=\"(http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD\\d+)\"",
 	"docTypes": [
 		{
 			"name": "bill",
@@ -130,12 +131,15 @@
 	],
 
 	"customViews": ["MarkingMenu"],
-	"plugins": ["aknPreview", 
-				"documentCollection", 
+	"plugins": ["aknPreview",
+				"nirPreview",
+				"consolidation",
 				"parsers", 
+				"documentCollection",
 				"modsMarker", 
 				"notesManager",
-				"metadataManager"],
+				"metadataManager",
+                "widgetManager"],
 	"transformationFiles": {
 		"languageToLIME": "AknToXhtml.xsl",
 		"LIMEtoLanguage": "HtmlToAkn.xsl"

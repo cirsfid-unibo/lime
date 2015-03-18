@@ -84,7 +84,7 @@ Ext.define('LIME.controller.Storage', {
             return ((DocProperties.frbr && DocProperties.frbr.work) ? DocProperties.frbr.work[this.fieldName] : false) 
                    || DocProperties.documentInfo["docLocale"];
         }
-    },{
+    }, {
         text: Locale.strings.docTypeLabel,
         editor: {
             xtype: "docTypeSelector",
@@ -94,7 +94,17 @@ Ext.define('LIME.controller.Storage', {
         getValue: function() {
             return DocProperties.documentInfo[this.fieldName]; 
         }
-    },{
+    }, {
+        text: Locale.strings.docProponent,
+        fieldName: "docProponent",
+        getValue: function(uri) {
+            var docUri = (uri) ? uri.split("/") : [],
+                value = (docUri.length && isNaN(new Date(docUri[3]).getYear())) ? docUri[3] : false;
+
+            value = (value) ? value : Ext.emptyString.toString();
+            return value;
+        }
+    }, {
         text: Locale.strings.docDateLabel,
         editor: {
             xtype: "datefield",
@@ -103,29 +113,44 @@ Ext.define('LIME.controller.Storage', {
             format: 'Y-m-d'
         },
         fieldName: 'date',
-        getValue: function() {
-            return (DocProperties.frbr && DocProperties.frbr.work) ? 
-                    Ext.Date.format(DocProperties.frbr.work['date'], this.editor.format) : "";
+        getValue: function(uri, meta) {
+            var date;
+            var dom = meta.originalMetadata.metaDom;
+            var frbrDate = dom.querySelector(".FRBRWork .FRBRdate");
+
+            if ( frbrDate ) {
+                date = frbrDate.getAttribute('date');
+            }
+
+            if (!date) {
+                return Ext.Date.format(new Date(), this.editor.format);
+            }
+            return date || "";
         }
     },{
         text: Locale.strings.docNumberLabel,
         fieldName: 'number',
-        getValue: function() {
-            var docUri = (DocProperties.getDocumentUri()) ? DocProperties.getDocumentUri().split("/") : [],
-                value = (docUri[0] == Ext.emptyString) ? docUri[4] : docUri[3];
+        getValue: function(uri) {
+            var docUri = (uri) ? uri.split("/") : [],
+                value = (docUri.length) ? docUri[(docUri.length-3)] : false;
             value = (value) ? value : Ext.emptyString.toString();
             return value;
         }
     },{
         text: Locale.strings.versionLabel,
+        width: 245,
         fieldName: 'version',
         editor: {
             xtype: "docVersionSelector",
             selectOnFocus: true
         },
-        getValue: function() {
-            var date = ((DocProperties.frbr && DocProperties.frbr.expression && !isNaN(DocProperties.frbr.expression['date'])) ? 
-                        Ext.Date.format(DocProperties.frbr.expression['date'], 'Y-m-d') : "");
+        getValue: function(uri, meta) {
+            var dom = meta.originalMetadata.metaDom;
+            var frbrDate = dom.querySelector(".FRBRExpression .FRBRdate");
+            var date = "";
+            if ( frbrDate ) {
+                date = frbrDate.getAttribute('date');
+            }
             return DocProperties.documentInfo["docLang"]+"@"+date;
         }
     },{
@@ -183,14 +208,19 @@ Ext.define('LIME.controller.Storage', {
         }
     },
 
+    openDocumentNoEditor: function(path, callback) {
+        var me = this;
+        me.openDocument(path, null, callback);
+    },
+
     /**
      * Request and load the document by using proper methods of the Editor controller.
      */
-    openDocument : function(filePath, openWindow) {
+    openDocument : function(filePath, openWindow, openNoEffectCallback) {
         var me = this, 
-            editor = me.getController('Editor'), 
             app = this.application, 
-            LanguageController = this.getController('Language');
+            LanguageController = this.getController('Language'),
+            noOpeningEffects = Ext.isFunction(openNoEffectCallback);
 
         this.application.fireEvent(Statics.eventsNames.progressStart, null, {
             value : 0.1,
@@ -210,15 +240,11 @@ Ext.define('LIME.controller.Storage', {
             url : requestMetaUrl,
             async : false,
             success : function(response, opts) {
-                DocProperties.clearMetadata(app);
-                var config = LanguageController.parseMetadata(response.responseXML, response.responseText);
-                if(config.docMarkingLanguage) {
-                    Config.setLanguage(config.docMarkingLanguage, function() {
-                        me.requestDoc(filePath, config, openWindow);
-                    });
-                } else {
-                    me.requestDoc(filePath, config, openWindow);
+                var config = LanguageController.parseMetadata(response.responseXML, response.responseText, noOpeningEffects);
+                if(!noOpeningEffects) {
+                    DocProperties.clearMetadata(app);    
                 }
+                me.requestDoc(filePath, config, openWindow, openNoEffectCallback);
             },
             failure : function(response, opts) {
                 Ext.Msg.alert('server-side failure with status code ' + response.status);
@@ -228,23 +254,14 @@ Ext.define('LIME.controller.Storage', {
 
     },
     
-    requestDoc: function(filePath, config, openWindow) {
+    requestDoc: function(filePath, config, openWindow, openNoEffectCallback) {
         config = config || {};
-        var app = this.application, 
-            transformFile = (config.docMarkingLanguage) ? Config.getLanguageTransformationFile("languageToLIME", config.docMarkingLanguage) : "",
-            requestUrl = Utilities.getAjaxUrl({
-                'requestedFile' : filePath,
-                'userName' : localStorage.getItem('username'),
-                'userPassword' : localStorage.getItem('password'),
-                'requestedService' : Statics.services.getFileContent,
-                'transformFile': (transformFile) ? transformFile : ""
-            }), 
+        var me = this, app = this.application, 
             prefManager = this.getController('PreferencesManager');
-        // get the doc
-        Ext.Ajax.request({
-            url : requestUrl,
-            success : function(response, opts) {
-                var documentId = filePath, 
+
+        var transformAndLoadDocument = function(text, transformFile, markingLang) {
+            Server.applyXslt(text, transformFile, function(content) {
+                var documentId = filePath,
                     idParts = filePath.split('/');
 
                 // Avoid overwriting examples, TODO: warn the user that the example will not be overwritten (use save as)
@@ -252,33 +269,65 @@ Ext.define('LIME.controller.Storage', {
                 if (idParts[4] && idParts[4].indexOf('examples') != -1) {
                     documentId = '';
                 }
-                if (response.responseXML && !config.docMarkingLanguage) {
-                    config.docMarkingLanguage =  response.responseXML.documentElement.getAttribute(DocProperties.markingLanguageAttribute);
-                }
-
-                // If the service is called with empty name the file will be saved in a temporary location
-                app.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(config, {
-                    docText : response.responseText,
+                
+                config = Ext.Object.merge(config, {
+                    docText : content,
                     docId : documentId,
-                    originalDocId: filePath
-                }));
-
-                // Set the last opened document into the user's preferences
-                prefManager.setUserPreferences({
-                    lastOpened : documentId
+                    originalDocId: filePath,
+                    docMarkingLanguage : markingLang
                 });
 
-                //Close the Open Document window
-                if (openWindow) {
-                    openWindow.close();
-                }
-            },
+                if(Ext.isFunction(openNoEffectCallback)) {
+                    Ext.callback(openNoEffectCallback, this, [config]);
+                    app.fireEvent(Statics.eventsNames.progressEnd);
+                } else {
+                    // If the service is called with empty name the file will be saved in a temporary location
+                    app.fireEvent(Statics.eventsNames.loadDocument, config);
 
-            failure : function(response, opts) {
-                this.application.fireEvent(Statics.eventsNames.progressEnd);
-                Ext.Msg.alert('server-side failure with status code ' + response.status);
+                    // Set the last opened document into the user's preferences
+                    prefManager.setUserPreferences({
+                        lastOpened : documentId
+                    });
+                }
+            }, Ext.emptyFn, {
+                output: 'html', 
+                markingLanguage: markingLang,
+                includeFiles: Config.getLocaleXslPath(markingLang, config.docLocale)});
+        };
+        
+        Server.getDocument(filePath, localStorage.getItem('username'), localStorage.getItem('password'), function(responseText) {
+            var markingLang = me.detectMarkingLang(responseText) || config.docMarkingLanguage || Config.languages[0].name,
+                transformFile = (markingLang) ? Config.getLanguageTransformationFile("languageToLIME", markingLang) : "";
+
+            if (transformFile) {
+                transformAndLoadDocument(responseText, transformFile, markingLang);
+            } else {
+                Config.setLanguage(markingLang, function() {
+                    transformFile = Config.getLanguageTransformationFile("languageToLIME", markingLang);
+                    transformAndLoadDocument(responseText, transformFile, markingLang);
+                });
             }
+
+            //Close the Open Document window
+            if (openWindow) {
+                openWindow.close();
+            }
+
+            }, function(response, opts) {
+            app.fireEvent(Statics.eventsNames.progressEnd);
+            Ext.Msg.alert('server-side failure with status code ' + response.status);
         });
+    },
+
+    detectMarkingLang: function(xmlString) {
+        var name ;
+        for(var i = 0; i < Config.languages.length; i++) {
+            name = Config.languages[i].name;
+            var config = Config.getLanguageConfig(name);
+            if ( config && config.schemaRegex && xmlString.match(config.schemaRegex) ) {
+                return name;
+            }
+        }
     },
     
     loadOpenFileListData: function(cmp, path, callback) {
@@ -332,6 +381,9 @@ Ext.define('LIME.controller.Storage', {
         if(record.notSelectable) {
             return;
         }
+
+        data.path = data.path.replace(/%3A/g, ':');
+
         if (record.data.leaf) {
             if(relatedButton) {
                 relatedButton.enable();    
@@ -430,11 +482,11 @@ Ext.define('LIME.controller.Storage', {
         this.createRecord(listView, this.columnValues[listView.indexInParent], true);
     },
     
-    saveDocument: function(cmp) {
+    prepareSaveDocument: function(cmp) {
         var relatedWindow = cmp.up('window'),
             listViews = relatedWindow.query('grid'),
             values = {}, frbrValues = {}, separator = "@", separatorPos, versionDate, versionLang,
-            selectedItem = relatedWindow.activeList.getSelectionModel().getSelection()[0], path,
+            selectedItem = relatedWindow.activeList.getSelectionModel().getSelection()[0],
             regVersion = RegExp("(/([a-z]{3}))@");
         
         Ext.each(listViews, function(view, index) {
@@ -472,22 +524,105 @@ Ext.define('LIME.controller.Storage', {
             folder: values.folder
         });
         DocProperties.setFrbr(frbrValues);
-        path = selectedItem.getData().path;
-        this.getController('Editor').saveDocument({
+
+        this.saveDocument({
             view : relatedWindow,
-            path :  path
+            path :  selectedItem.getData().path
+        });
+    },
+
+    saveDocument: function(config) {
+        var me = this, metadataDom,
+            frbr = DocProperties.frbr,
+            languageController = this.getController('Language');
+        
+        config.path = config.path || DocProperties.documentInfo.docId || Ext.emptyString;
+
+        if (!config || !config.autosave) {
+            partialUrl = config.path.substring(1);
+            partialUrl = partialUrl.substring(partialUrl.indexOf('/'));
+            metadataDom = languageController.buildMetadata(frbr, true, partialUrl);
+        } else {
+            // TODO: don't call this every autosave
+            metadataDom = languageController.buildInternalMetadata(true);
+        }
+
+        // Before saving
+        me.application.fireEvent(Statics.eventsNames.beforeSave, {
+            editorDom: me.getController('Editor').getDom(),
+            metadataDom: metadataDom,
+            documentInfo: DocProperties.documentInfo
+        });
+
+        config.metaString = DomUtils.serializeToString(metadataDom) || Ext.emptyString;
+        config.metadataDom = metadataDom;
+        config.docName = (frbr.manifestation) ? frbr.manifestation.docName : "";
+
+        me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
+           xml = xml.replace('<?xml version="1.0" encoding="UTF-8"?>', '');
+           me.saveDocumentText(xml, config);
+        }, {complete: true});
+    },
+
+    /**
+     * This is a wrapper for Language.saveDocument function
+     */
+    saveDocumentText: function(text, config) {
+        var me = this,
+            userInfo = this.getController('LoginManager').getUserInfo(),
+            params = {
+                userName : userInfo.username,
+                fileContent : text,
+                metadata: config.metaString
+            };
+
+        if ( !Ext.isEmpty(config.path) && Ext.isString(config.path) ) {
+            config.path = config.path.replace(/:/g, '%3A');    
+        }
+
+        // Saving phase
+        me.application.fireEvent(Statics.eventsNames.saveDocument, config.path, params, function(response, path) {
+            var responseText = response.responseText;
+            if(responseText[responseText.length-1] == "1") {
+                responseText = responseText.substring(0, (responseText.length-1));
+            }
+            // If it's an autosave don't show anything
+            if (!config || !config.autosave) {
+               if ( config && config.view ) {
+                   config.view.close();
+               }
+
+               Ext.Msg.alert({
+                    title : Locale.strings.saveAs,
+                    msg :  new Ext.Template(Locale.strings.savedToTpl).apply({
+                        docName : config.docName,
+                        docUrl : config.path.replace(config.docName, '')
+                    })
+                });
+            }
+
+            // After saving
+            me.application.fireEvent(Statics.eventsNames.afterSave, {
+                editorDom: me.getController('Editor').getDom(),
+                metadataDom: config.metadataDom,
+                documentInfo: DocProperties.documentInfo,
+                saveData: Ext.decode(responseText, true)
+            });
         });
     },
     
     fillInFields: function(cmp) {
         var columnDescriptor, value;
         this.columnValues = [];
-        
+        var editor = this.getController('Editor');
+        var uri = editor.getDocumentUri();
+        var meta = editor.getDocumentMetadata();
+
         for (var i = 0; i < this.storageColumns.length; i++) {
             value = Ext.emptyString.toString();
             columnDescriptor = this.storageColumns[i];
             if (Ext.isFunction(columnDescriptor.getValue)) {
-                value = columnDescriptor.getValue();
+                value = columnDescriptor.getValue(uri, meta);
             }
             value = value || Ext.emptyString.toString();
             this.columnValues.push(value);
@@ -694,6 +829,10 @@ Ext.define('LIME.controller.Storage', {
                     if (columnConfig && columnConfig.editor) {
                         column.editor = columnConfig.editor;
                     }
+
+                    if ( columnConfig && columnConfig.width ) {
+                        cmp.width = columnConfig.width;
+                    }
                 },
                 itemclick: this.fileListViewClick,
                 recordChanged: function(cmp, record, silent) {
@@ -741,7 +880,7 @@ Ext.define('LIME.controller.Storage', {
                 click: this.contextualButtonClick
             },
             'newSavefileMain newSavefileToolbarOpenButton': {
-                click: this.saveDocument
+                click: this.prepareSaveDocument
             },
             'newDocument' : {
                 close: function(cmp, option) {

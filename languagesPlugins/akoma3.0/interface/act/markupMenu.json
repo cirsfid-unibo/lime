@@ -13,7 +13,10 @@
 		"pattern": "hcontainer"
 	},
 	"attachments": {
-		"pattern": "patternless"
+		"pattern": "container"
+	},
+	"attachment": {
+		"pattern": "container"
 	},
 	"authorialNote": {
 		"pattern": "popup"
@@ -52,7 +55,7 @@
 		"pattern": "patternless"
 	},
 	"components": {
-		"pattern": "patternless"
+		"pattern": "container"
 	},
 	"concept": {
 		"pattern": "inline"
@@ -151,7 +154,7 @@
 		"pattern": "container"
 	},
 	"formula": {
-		"pattern": "block"
+		"pattern": "container"
 	},
 	"hcontainer": {
 		"pattern": "hcontainer"
@@ -199,7 +202,7 @@
 		"pattern": "inline"
 	},
 	"mod": {
-		"pattern": "container"
+		"pattern": "inline"
 	},
 	"mref": {
 		"pattern": "inline"
@@ -223,7 +226,7 @@
 		"pattern": "inline"
 	},
 	"p": {
-		"pattern": "inline"
+		"pattern": "block"
 	},
 	"paragraph": {
 		"pattern": "hcontainer"
@@ -333,6 +336,9 @@
 	"subtitle": {
 		"pattern": "hcontainer"
 	},
+	"table": {
+		"pattern": "block"
+	},
 	"tblock": {
 		"pattern": "container"
 	},
@@ -362,6 +368,9 @@
 	},
 	"wrap": {
 		"pattern": "container"
+	},
+	"wrapUp": {
+		"pattern": "block"
 	},
 	"content": {
 		"pattern": "container"

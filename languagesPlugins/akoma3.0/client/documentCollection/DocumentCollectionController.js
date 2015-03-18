@@ -65,11 +65,14 @@ Ext.define('LIME.controller.DocumentCollectionController', {
         colModSuffix: "-mod",
         docColAlternateType: "documentCollectionContent"
     },
+
+    originalBeforeTranslate: false,
     
     onDocumentLoaded : function(docConfig) {
         var me = this, app = me.application, docsType = Config.getDocTypesName(), 
             menu, beforeTranslate = TranslatePlugin.beforeTranslate,
             collTab = me.getDocCollectionTab(), tabPanel = collTab.up();
+
         // Create snapshot and documents tree only if the load is not light load but a complete one
         if (!docConfig.lightLoad) {
             if (Ext.Array.indexOf(docsType, "documentCollection") != -1) {
@@ -93,7 +96,9 @@ Ext.define('LIME.controller.DocumentCollectionController', {
             } else {
                 // Wrap beforeTrasnalte for customizate it
                 TranslatePlugin.beforeTranslate = function(params) {
-                    var newParams = Ext.Function.bind(beforeTranslate, TranslatePlugin, [params])() || params;
+                    me.originalBeforeTranslate = me.originalBeforeTranslate || 
+                                                Ext.Function.bind(beforeTranslate, TranslatePlugin);
+                    var newParams = me.originalBeforeTranslate(params) || params;
                     return me.docCollectionBeforeTranslate(newParams);
                 };
             }
@@ -102,8 +107,11 @@ Ext.define('LIME.controller.DocumentCollectionController', {
         if (docConfig.docType == "documentCollection" && !docConfig.colectionMod) { 
             tabPanel.setActiveTab(collTab);
             tabPanel.getTabBar().items.items[0].disable();
+            tabPanel.getTabBar().items.items[1].enable();
             app.fireEvent(Statics.eventsNames.disableEditing);
         } else {
+            tabPanel.setActiveTab(0);
+            tabPanel.getTabBar().items.items[0].enable();
             app.fireEvent(Statics.eventsNames.enableEditing);
         }
        
@@ -148,7 +156,9 @@ Ext.define('LIME.controller.DocumentCollectionController', {
                 if (docId != 0 && metaConf[docId] && metaConf[docId].metaDom) {
                     metaDom = Ext.clone(metaConf[docId].metaDom);
                     metaDom.setAttribute("class", "meta");
-                    doc.insertBefore(metaDom, doc.firstChild);    
+                    if ( doc.firstChild && !Ext.fly(doc.firstChild).is('.meta') ) {
+                        doc.insertBefore(metaDom, doc.firstChild);    
+                    }
                 }
             }, this);       
         }
@@ -400,13 +410,13 @@ Ext.define('LIME.controller.DocumentCollectionController', {
             doc = (docId === 0) ? completeSnapshotDom : completeSnapshotDom.querySelector("*["+DocProperties.docIdAttribute+"='" + docId + "']"),
             docCol = completeSnapshotDom.querySelector("*["+DocProperties.docIdAttribute+"='" + docId + "']"),
             colBody;
-        Utilities.removeNodeByQuery(doc, "[class=components]");
+        Utilities.removeNodeByQuery(doc, "[class*=components]");
         if(docCol) {
             colBody = docCol.querySelector("[class*=collectionBody]");
             //Utilities.removeNodeByQuery(docCol, "[class*=collectionBody]");
             if(colBody) {
                 // Add breaking element to be able to insert text
-                Ext.DomHelper.insertHtml('beforeBegin', colBody, "<p class=\""+DomUtils.breakingElementClass+"\"></p>");    
+                Ext.DomHelper.insertHtml('beforeBegin', colBody, "<span class=\""+DomUtils.breakingElementClass+"\"></span>");    
             }
         }
         return doc;
@@ -480,7 +490,6 @@ Ext.define('LIME.controller.DocumentCollectionController', {
                 afterrender: function(cmp) {
                     var collectionGrid = cmp.down("*[cls=dropArea] grid"), 
                     config, gridStore, components = [];
-                    CDD = collectionGrid;
                     if (!cmp.isModify) return;
                     components = this.getDocumentsFromSnapshot(me.completeEditorSnapshot);
                     if (collectionGrid) {

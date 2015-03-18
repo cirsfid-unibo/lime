@@ -51,7 +51,7 @@
 Ext.define('LIME.view.Main', {
 
     extend : 'Ext.tab.Panel',
-    id : 'editorTab',
+    //id : 'editorTab',
     requires : ['Ext.ux.TabCloseMenuImproved',
     			'Ext.ux.form.field.TinyMCE',
     			'LIME.view.main.Editor',

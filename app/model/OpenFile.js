@@ -57,6 +57,6 @@ Ext.define('LIME.model.OpenFile', {
             type: 'ajax',
             reader: 'xml'
     },
-	fields : ['path', 'id', 'text', 'cls', 'leaf', 'name', 'relPath', 'originalName']
+	fields : ['path', 'id', 'text', 'cls', 'leaf', 'name', 'namespace', 'mime', 'relPath', 'originalName']
 
 });

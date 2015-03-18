@@ -122,6 +122,9 @@ Ext.define('LIME.DocProperties', {
      * This object contains information about widget of marked elements.
      */
     elementsWidget : {},
+
+    elementsConfig : {},
+    elementsConfigByName: {},
     /**
      * @property {Object} currentEditorFile
      * This object contains information about opened document
@@ -173,6 +176,49 @@ Ext.define('LIME.DocProperties', {
     
     getNodeWidget: function(node) {
         return this.getElementWidget(DomUtils.getElementNameByNode(node));
+    },
+
+    clearElementConfig: function() {
+        this.elementsConfig = {};
+        this.elementsConfigByName = {};
+    },
+
+    setElementConfig: function(id, config) {
+        this.elementsConfig[id] = config;
+        this.elementsConfigByName[config.name] = this.elementsConfigByName[config.name] || [];
+        this.elementsConfigByName[config.name].push(config);
+    },
+
+    getElementConfig: function(id) {
+        return this.elementsConfig[id];
+    },
+
+    getChildConfigByName: function(parent, name) {
+        if ( parent && name && parent.children.length) {
+            for ( var i in parent.children ) {
+                if ( parent.children[i].name == name ) {
+                    return this.getElementConfig(parent.children[i].id);
+                }
+            }
+        }
+    },
+
+    getFirstButtonByName: function(name, type) {
+        var elements = this.elementsConfigByName[name];
+        if ( elements && elements.length ) {
+            if ( type ) {
+                elements = elements.filter(function(config) {
+                    return (config.type == type);
+                });
+            }
+            return elements[0];
+        }
+    },
+
+    getElementsConfigList: function() {
+        return Ext.Object.getValues(this.elementsConfigByName).map(function(config) {
+            return Ext.Object.getValues(config)[0];
+        });
     },
 
     /**
@@ -242,22 +288,77 @@ Ext.define('LIME.DocProperties', {
         return;
     },
     
+    insertChildInOrder: function(parent, child, parentStructure, childStructure) {
+        var indexInParent = parentStructure.children.indexOf(childStructure),
+            refNode, tmpNode;
+        if(indexInParent == -1 || indexInParent == parentStructure.children.length-1) {
+            parent.appendChild(child);
+        } else {
+            for(var i = indexInParent+1; i < parentStructure.children.length; i++) {
+                refNode = parent.querySelector("[class='" + parentStructure.children[i].name + "']");
+                if(refNode) break;
+            }
+            if(refNode) {
+                parent.insertBefore(child, refNode);
+            } else {
+                parent.appendChild(child);
+            }
+        }
+    },
+
     updateMetadata: function(config) {
         var obj = config.metadata.obj,
             nodes = config.path.split("/"),
             targetNode = nodes[nodes.length-1],
             parentTarget = obj,
             afterNode,
-            result = 0;
+            result = 0,
+            me = this;
         Ext.Array.remove(nodes, targetNode);
+
+        if(config.isAttr) {
+            Ext.Array.push(nodes, targetNode);
+        }
+
+        //console.log('update metadata')
         Ext.each(nodes, function(el) {
+            var parent = Language.getMetadataStructure();
+            if (parentTarget[el] == undefined) {
+                //console.log('creating ', el);
+                var child = document.createElement('div');
+                child.setAttribute('class', el);
+                var found = false;
+                for(var i = 0; i < parent.children.length; i++) {
+                    //console.log(parent.children[i].name, el)
+                    if (parent.children[i].name == el) {
+                        //console.log(this);
+                        me.insertChildInOrder(parentTarget.el, child, parent, parent.children[i]);
+                        //parent = parent.children[i];
+                        found = true;
+                        //console.log('updateMetadata, found', el);
+                        break;
+                    }
+                }
+                if (!found) {
+                    //console.log('updateMetadata, not found and creating', el);
+                    //console.log('parent', parent);
+                    parentTarget.el.appendChild(child);
+                }
+                parentTarget[el] = {
+                    el: child
+                }
+            }
             parentTarget = parentTarget[el];
         });
-        if (parentTarget) {
+        if(config.isAttr) {
+            if(parentTarget)
+                for(var key in config.data)
+                    parentTarget.el.setAttribute(key, config.data[key]);
+        } else if (parentTarget) {
             try {
-            	if(config.overwrite) {
-            		config.after = targetNode;
-            	} else if (!config.append) {
+                if(config.overwrite) {
+                    config.after = targetNode;
+                } else if (!config.append) {
                     /* Using Ext.Array.push is a trick to transform the value
                      * in array if it isn't an array and array remain the same */
                     Ext.each(Ext.Array.push(parentTarget[targetNode]), function(child) {
@@ -273,15 +374,15 @@ Ext.define('LIME.DocProperties', {
                         tag : 'div',
                         cls : targetNode
                     }, attributes);
-                    if(afterNode) {
+                    if(afterNode && afterNode.children && afterNode.children.length > 0) {
                         afterNode = Ext.DomHelper.insertAfter(afterNode, newElConf);    
                     } else {
                         afterNode = Ext.DomHelper.append(parentTarget.el, newElConf);
                     }
                 });
                 if(config.overwrite && firstAfterNode) {
-            		afterNode.parentNode.removeChild(firstAfterNode);
-            	}
+                    afterNode.parentNode.removeChild(firstAfterNode);
+                }
             } catch(e) {
                 Ext.log({level: "error"}, e);
                 result = 2;

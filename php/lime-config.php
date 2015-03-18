@@ -45,9 +45,9 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 // the exist admin user
-define('EXIST_ADMIN_USER', 'admin');
+define('EXIST_ADMIN_USER', 'exist');
 
-// the exist admin password
+// the exist admin password 
 define('EXIST_ADMIN_PASSWORD', 'exist');
 
 // the exist db base url
@@ -56,7 +56,9 @@ define('EXIST_URL','http://localhost:8080/exist/');
 // the server url 
 define('SERVER_NAME', 'http://localhost');
 
+
 // absolute path to AbiWord utility
 define('ABIWORD_PATH', '/usr/bin/abiword');
+
 
 ?>

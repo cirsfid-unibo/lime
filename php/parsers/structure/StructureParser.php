@@ -74,6 +74,8 @@ class StructureParser {
 					$resolved = resolveRegex($this->parserRules[$value], $this->parserRules,
 											 $this->lang, $this->docType, $this->dirName);
 											 
+					//print_r($resolved);
+											 
 					$success = 	preg_match_all($resolved["value"], $subString, $result, PREG_OFFSET_CAPTURE);
 					if ($success) {
 						$successSum = TRUE;

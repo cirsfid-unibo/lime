@@ -55,34 +55,56 @@ Ext.define('LIME.controller.Notification', {
     showNotification : function(config) {
         var content = config.content,
             iconClsSuccess = "ux-notification-icon-information",
-            iconClsError = "ux-notification-icon-error";
-        if (!this.nofification) {
-            this.nofification = Ext.create('widget.uxNotification', {
+            iconClsError = "ux-notification-icon-error",
+            moreLink,
+            cls = (config.status) ? 'ux-notification-success' : 'ux-notification-light';
+        if (!this.notification || this.notification.cls != cls) {
+            this.notification = this.createNotificationWindow({
+                cls: cls,
                 title : Locale.strings.error,
-                position : 'tr',
-                useXAxis : true,
-                closeAction : 'hide',
-                autoClose : false,
-                shadow : false,
-                spacing : 20,
-                slideInDuration : 1500,
-                slideBackDuration : 1500,
-                slideInAnimation : 'elasticIn',
-                maxHeight: 600,
-                autoScroll: true,
-                slideBackAnimation : 'elasticIn'
+                closeAction : 'hide'
             });
         }
         if (config.width) {
-            this.nofification.setWidth(config.width);
+            this.notification.setWidth(config.width);
         }
         if (config.title) {
-            this.nofification.setTitle(config.title);
+            this.notification.setTitle(config.title);
+        }
+
+        if (!Ext.isEmpty(config.moreInfo)) {
+            content+='<div class="moreInfoLink"><a href="#">More info</a></div>';
         }
         
-        this.nofification.setIconCls((config.status) ? iconClsSuccess : iconClsError);
-        this.nofification.update(content);
-        this.nofification.show();
+        this.notification.setIconCls((config.status) ? iconClsSuccess : iconClsError);
+        this.notification.update(content);
+        this.notification.show();
+
+        moreLink = this.notification.getEl().down(".moreInfoLink a");
+        if(moreLink) {
+            moreLink.addListener("click", Ext.bind(this.openMoreInfo, this, [config]));
+        }
+    },
+
+    createNotificationWindow: function(config) {
+        return Ext.create('widget.uxNotification', Ext.merge({
+            position : 'tr',
+            useXAxis : true,
+            autoClose : false,
+            shadow : false,
+            spacing : 20,
+            slideInDuration : 1500,
+            slideBackDuration : 1500,
+            slideInAnimation : 'elasticIn',
+            maxHeight: 600,
+            autoScroll: true,
+            slideBackAnimation : 'elasticIn'
+        }, config));
+    },
+
+    openMoreInfo: function(config) {
+        var newContent = config.content+"<div>"+config.moreInfo+"</div>";
+        this.notification.update(newContent);
     },
 
     init : function() {

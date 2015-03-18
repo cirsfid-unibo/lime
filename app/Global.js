@@ -180,20 +180,19 @@ Ext.define('LIME.Global', {
         }
         Ext.Loader.setPath(this.uxPath, this.getPluginLibsPath());
         counter = scriptToLoad.length;
-        // Load app's components
-        Ext.each(scriptToLoad, function(script) {
-            me.loadScript(this.getPluginLibsPath() + '/' + script + '.js', callingCallback, callingCallback);
-        }, this);
 
         if(langConf.transformationFiles) {
+            langConf.transformationUrls = {};
             Ext.Object.each(langConf.transformationFiles, function(name, value) {
                 if(name == "languageToLIME" || name == "LIMEtoLanguage") {
                     urls.push({
                         url: me.getLanguagePath()+value,
                         name: name
                     });
+                    langConf.transformationUrls[name] = me.getLanguagePath()+value;
                 }
             });
+
             if(!Ext.isEmpty(urls)) {
                 Utilities.filterUrls(urls, false, function(newUrls) {
                     langConf.transformationUrls = {};
@@ -203,6 +202,12 @@ Ext.define('LIME.Global', {
                 }, false, me);    
             }
         } 
+        
+        // Load app's components
+        Ext.each(scriptToLoad, function(script) {
+            me.loadScript(this.getPluginLibsPath() + '/' + script + '.js', callingCallback, callingCallback);
+        }, this);
+
     },
     
     loadScript: function(url, success, error) {
@@ -374,8 +379,9 @@ Ext.define('LIME.Global', {
         return this.language;   
     },
     
-    getLanguagePath: function() {
-        return this.pluginBaseDir + '/' + this.language + '/';
+    getLanguagePath: function(lang) {
+        lang = lang || this.language;
+        return this.pluginBaseDir + '/' + lang + '/';
     },
     
     getLanguageSchemaPath: function() {
@@ -407,5 +413,10 @@ Ext.define('LIME.Global', {
     
     getUxClassName: function(name) {
         return this.uxPath+"." +name;
+    },
+
+    getLocaleXslPath: function(lang, locale) {
+        locale = locale || DocProperties.documentInfo.docLocale || Config.fieldsDefaults['docLocale'];
+        return Config.getLanguagePath(lang)+'localeXsl/'+locale+'.xsl';
     }
 });

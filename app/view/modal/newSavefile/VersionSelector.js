@@ -56,7 +56,7 @@ Ext.define('LIME.view.modal.newSavefile.VersionSelector', {
     },
 	name : 'docVersion',
 	layout: 'hbox',
-	width: 190,
+	width: 250,
 	combineErrors: true,
 	msgTarget: 'side',
     allowBlank : false,
@@ -66,10 +66,14 @@ Ext.define('LIME.view.modal.newSavefile.VersionSelector', {
         var me = this;
         if (!me.langCfg) me.langCfg = {};
         if (!me.dateCfg) me.dateCfg = {};
+        if (!me.timeCfg) me.timeCfg = {};
         me.buildField();
         me.callParent();
         me.dateField = me.down('datefield');
         me.langField = me.down('docLangSelector');
+        me.timeField = me.down('timefield');
+        me.timeField.on("blur", me.onFieldsBlur, me);
+        me.timeField.on("specialkey", me.onFieldsSpecialKey, me);
         me.langField.on("blur", me.onFieldsBlur, me);
         me.langField.on("specialkey", me.onFieldsSpecialKey, me);
         me.dateField.on("specialkey", me.onFieldsSpecialKey, me);
@@ -82,7 +86,7 @@ Ext.define('LIME.view.modal.newSavefile.VersionSelector', {
         me.items = [
         Ext.apply({
             xtype: 'docLangSelector',
-            width: 85
+            width: 60
         }, me.langCfg),{
             xtype: 'displayfield',
             value: '@'
@@ -91,7 +95,17 @@ Ext.define('LIME.view.modal.newSavefile.VersionSelector', {
             submitValue: false,
             width: 85,
             format: 'Y-m-d'
-        }, me.dateCfg)];
+        }, me.dateCfg),{
+            xtype: 'displayfield',
+            value: ':'
+        },Ext.apply({
+            xtype: 'timefield',
+            submitValue: false,
+            width: 55,
+            increment: 1,
+            value: '00:00',
+            format: 'H:i'
+        }, me.timeCfg)];
     },
     
     getValue: function () {
@@ -99,22 +113,33 @@ Ext.define('LIME.view.modal.newSavefile.VersionSelector', {
             value,
             date = me.dateField.getSubmitValue(),
             dateFormat = me.dateField.format,
-            lang = me.langField.getSubmitValue();
+            lang = me.langField.getSubmitValue(),
+            time = me.timeField.getSubmitValue();
         if (lang) {
-            date = (date) ? date : "";
-            value = lang + "@" + date;
+            date = (date) ? date : '';
+            time = (time) ? time : '';
+            value = lang + "@" + date+':'+time;
         }
         return (value) ? value : "";
     },
     
     setValue: function (value) {
         var me = this,
-            separator = "@", separatorPos;
+            separator = "@",
+            separatorTime = ':',
+            separatorTimePos,
+            separatorPos;
        if (value) {
             separatorPos = value.indexOf(separator);
             if (separatorPos != -1) {
-                me.dateField.setValue(value.substring(separatorPos+1));
                 me.langField.setValue(value.substring(0, separatorPos));
+                separatorTimePos = value.indexOf(separatorTime);
+                if ( separatorTimePos != -1 ) {
+                    me.dateField.setValue(value.substring(separatorPos+1, separatorTimePos));
+                    me.timeField.setValue(value.substring(separatorTimePos+1));
+                } else {
+                    me.dateField.setValue(value.substring(separatorPos+1));
+                }
             } else {
                 me.langField.setValue(value);
             }

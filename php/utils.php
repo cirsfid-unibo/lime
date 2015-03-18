@@ -150,6 +150,24 @@ function cssFileToArray($path) {
 	return $cssRules;
 }
 
+function addIncludesToXsl($dom, $paths) {
+	$insertFirst = function($parent, $node) {
+        if ($parent->hasChildNodes()) {
+		    $parent->insertBefore($node, $parent->firstChild);
+		} else {
+		    $parent->appendChild($node);
+		}
+    };
+
+	foreach ($paths as $path) {
+		if ( $path ) {
+			$include = $dom->createElementNS("http://www.w3.org/1999/XSL/Transform", "xsl:include");
+			$include->setAttribute("href", $path);
+			$insertFirst($dom->documentElement, $include);
+		}
+	}
+}
+
 function createAttributeSet($dom, $selector, $rules) {
 	$name = preg_replace('/\./', '', $selector);
 	$attributeSet = $dom->createElementNS("http://www.w3.org/1999/XSL/Transform", "xsl:attribute-set");

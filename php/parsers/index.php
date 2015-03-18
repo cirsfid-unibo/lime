@@ -59,8 +59,11 @@ if($parser && $lang && $docType && $content) {
 		case 'document':
 			echo $metaParser->parseDocument();
 			break;
+		case 'enactingFormula':
+			echo json_encode($metaParser->parseEnactingFormula());
+			break;
 		case 'body':
-			echo $metaParser->parseBody();
+			echo json_encode($metaParser->parseBody());
 			break;
 		case 'date':
 			echo $metaParser->parseDate();
@@ -81,7 +84,7 @@ if($parser && $lang && $docType && $content) {
 			echo $metaParser->parseReference();
 			break;
 		case 'structure':
-			echo $metaParser->parseStructure();
+			echo json_encode($metaParser->parseStructure());
 			break;
 		default:
 			http_response_code(406);

@@ -76,6 +76,9 @@ Ext.define('LIME.view.Viewport', {
     markingMenu : {
         xtype : 'markingMenu',
         cls: 'markingMenuContainer',
+        //floating: true,
+        //draggable: true,
+        //collapsed: true,
         region : 'east',
         width : '22%',
         collapsible : true,
@@ -86,13 +89,18 @@ Ext.define('LIME.view.Viewport', {
     },
 
     editorItems : [{
-        xtype : 'mainToolbar',
+        xtype: 'panel',
+        border: 0,
         region : 'north',
         width : '100%',
-        margin : 2
+        margin : 2,
+        items: [{
+            xtype : 'mainToolbar'
+        }]
     }, {
         xtype : 'main',
         region : 'center',
+        id: 'mainEditor',
         //draggable : true,
         expandable : true,
         resizable : true,
@@ -101,6 +109,7 @@ Ext.define('LIME.view.Viewport', {
         xtype : 'explorer',
         region : 'west',
         //draggable : true,
+        //hidden: true,
         expandable : true,
         resizable : true,
         width : '15%',

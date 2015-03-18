@@ -1,8 +1,10 @@
 {
 	"en": {
-		"title": "Metadata editor"
+		"title": "Metadata editor",
+		"savedMsg": "Data has been saved"
 	},
 	"it": {
-		"title": "Editor metadati"
+		"title": "Editor metadati",
+		"savedMsg": "I dati sono stati salvati"
 	}
 }

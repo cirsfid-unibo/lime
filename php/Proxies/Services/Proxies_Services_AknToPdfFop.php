@@ -61,7 +61,7 @@ class Proxies_Services_AknToPdfFop implements Proxies_Services_Interface
 	public function __construct($params, $isDownload=false)
 	{
 		// save the start page number
-		$this->_startPageNumber = $params['start_page'];	
+		$this->_startPageNumber = (isset($params['start_page'])) ? $params['start_page'] : 0;	
 		
 		// save the source
 		$this->_submittedSourceXML = $params['source'];
@@ -116,13 +116,13 @@ class Proxies_Services_AknToPdfFop implements Proxies_Services_Interface
 							$xsl = new DOMDocument;
 							$xsl->load(AKN_TO_PDF);
 							
-							if($this->_cssFile) {
+							/*if($this->_cssFile) {
 								$cssRules = cssFileToArray($this->_cssFile);
 								foreach($cssRules as $selector => $rules) {
 									$attributeSet = createAttributeSet($xsl, $selector, $rules);
 									$xsl->documentElement->appendChild($attributeSet);
 								}
-							}
+							}*/
 							
 							$uriNamespace = $doc ->documentElement ->lookupnamespaceURI(NULL);
 							
@@ -175,7 +175,8 @@ class Proxies_Services_AknToPdfFop implements Proxies_Services_Interface
 							    		//header(':', true, CONVERSION_ERROR_CODE);
 									$output["status"] = "error";
 									$output["description"] = "Conversion error: impossible to generate XSL-FO and/or PDF(2)";
-									$output["path"]	= $pdfFullPath;			
+									$output["path"]	= $pdfFullPath;		
+									$output["command"] = $final_command;	
 									}
 								}
 							else

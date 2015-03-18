@@ -81,7 +81,7 @@
             );
 			
 			// TODO: remove this, is temporary trick
-			if(strpos($this->_params['file'], "/diff/") || strpos($this->_params['file'], "wawe_users_documents/firstDoc.xml")) {
+			if(strpos($this->_params['file'], "/diff/")) {
 				$this->_params['file'] = "";
 			}
 			

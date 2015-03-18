@@ -36,12 +36,20 @@ declare function functx:substring-before-last
  		};
 
 declare function functx:escape-for-regex 
-  		($arg as xs:string?)  
-		as xs:string 
-		{
-   			replace($arg,
-           			'(\.|\[|\]|\\|\||\-|\^|\$|\?|\*|\+|\{|\}|\(|\))','\\$1')
- 		};
+        ($arg as xs:string?)  
+        as xs:string 
+        {
+            replace($arg,
+                    '(\.|\[|\]|\\|\||\-|\^|\$|\?|\*|\+|\{|\}|\(|\))','\\$1')
+        };
+
+(: Return document namespace :)
+declare function functx:namespace 
+        ($path as xs:string?)  
+        as xs:string 
+        {
+            namespace-uri(doc($path)/*)
+        };
 
 (: Calls the function that lists the collections getting the collection name from the given GET parameter :)
 declare variable $collection := replace(request:get-parameter("collection", ()), ' ', '%20');
@@ -81,23 +89,28 @@ element()* {
                 </node>,
 
         (: Iterate all the files in the given collection :)
-        for $child in xdb:get-child-resources($collection) order by $child 
+        for $child in xdb:get-child-resources($collection)
+        let $mimetype := xdb:get-mime-type(xs:anyURI(concat($collection, '/', $child)))
+        let $path := concat($collection, '/', replace($child,'%40','@'))
+        (: Hide the autosave temporary folder :)
+        where not(contains($child, '.metadata'))
+        order by $child 
+
         (: Returns an XML fragment describing the file :)
         return
-            (: Hide the autosave temporary folder :)
-            if (contains($child, '.metadata')) then
-                ()
-            else
-                <node> 
-                    <id>{concat($collection, '/', replace($child,'%40','@'))}</id> 
-                    <text>{replace($child,'%40','@')}</text> 
-                    <type>resource</type> 
-                    <path>{concat($relativePath, '/', replace($child,'%40','@'))}</path>
-    				<cls>file</cls>
-    				<leaf>1</leaf> 
-                    <mime>{xdb:get-mime-type(xs:anyURI(concat($collection, '/', $child)))}</mime> 
-                    <size>{fn:ceiling(xdb:size($collection, $child) div 1024)}</size> 
-                </node> 
+            <node> 
+                <id>{ $path }</id> 
+                <text>{replace($child,'%40','@')}</text> 
+                <type>resource</type> 
+                <path>{concat($relativePath, '/', replace($child,'%40','@'))}</path>
+				<cls>file</cls>
+				<leaf>1</leaf> 
+                <mime>{$mimetype}</mime>
+                <namespace>
+                    { if ($mimetype = 'application/xml') then functx:namespace($path) else () }
+                </namespace>
+                <size>{fn:ceiling(xdb:size($collection, $child) div 1024)}</size> 
+            </node> 
      ) 
 }; 
 

@@ -15,6 +15,8 @@
 	"userSettings": "Settings",
 	"passwordsDontMatch": "Passwords do not match!",
 	"semanticError": "Element {name} cannot be inserted here!",
+	"patternNotAllowed": "Pattern <b>{elementPattern}</b> is not allowed in the <b>{parentPattern}</b> pattern!",
+	"notAllowedMarking": "Not allowed element",
 	"markupLanguage": "Markup language",
 	"authErrors": {
 		"LOGIN_FAILED_TITLE": "Login failed",
@@ -65,6 +67,10 @@
 	"preferencesMenuButton": "Preferences",
 	"windowMenuButton": "Window",
 	"menuShowView": "Show view",
+	"menuShowStyle": "Show style",
+	"menuShowStyleBox": "Show boxes",
+	"menuShowStyleColor": "Show colors",
+	"menuShowStylePdf": "Show style",
 	"languageSelectionBoxEmptyText": "Select a language...",
 	"localeEmptyText": "Select a locale",
 	"legalSystemSelectionBoxEmptyText": "Select a legal system",
@@ -85,7 +91,8 @@
 		"searchingDates": "Searching dates",
 		"markingDates": "Marking dates",
 		"searchingRefs": "Searching references",
-		"markingRefs": "Marking references"
+		"markingRefs": "Marking references",
+		"loadingDocumentStyles": "Loading document styles"
 	},
 	"typeNotSupported": "This type of file is not (yet) supported for drag and drop",
 	"uploadError": "There was an error while uploading the file.<br/>Please try again.",
@@ -104,6 +111,7 @@
 	"type": "Type",
 	"newLabel": "New",
 	"countryLabel": "Country",
+    "docProponent": "Doc. Proponent",
 	"folderLabel": "Folder",
 	"docTypeLabel": "Doc. Type",
 	"docDateLabel": "Doc. date",

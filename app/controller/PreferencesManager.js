@@ -69,6 +69,19 @@ Ext.define('LIME.controller.PreferencesManager', {
         views : null,
         lastOpened : null
     },
+
+    init : function() {
+        this.application.on(Statics.eventsNames.afterSave, this.afterSave, this);
+    },
+
+    afterSave: function(config) {
+        // Save as the last opened
+        if (config.saveData && config.saveData.path) {
+            this.setUserPreferences({
+                lastOpened : config.saveData.path
+            });
+        }
+    },
     
     /**
      * Set the user's preferences on the DB.

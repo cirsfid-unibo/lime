@@ -51,7 +51,7 @@
 Ext.define('LIME.view.MarkingMenu', {
     extend : 'Ext.tab.Panel',
 
-    requires : ['LIME.view.markingmenu.TreeButton', 'LIME.view.NationalitySelector'],
+    requires : ['LIME.view.NationalitySelector'],
 
     alias : 'widget.markingMenu',
 
@@ -73,38 +73,24 @@ Ext.define('LIME.view.MarkingMenu', {
         this.shown = [];
         this.title = Locale.strings.eastToolbarTitle;
         this.items = [{
-            //Structure buttons container
-            xtype : 'panel',
-            cls: 'buttonsContainer structure',
-            title : Locale.strings.documentStructure, 
+            xtype : 'treepanel',
+            title : Locale.strings.documentStructure,
+            cls : 'x-tree-noicon x-tree-custom structure',
+            id: 'treeStructure',
+            useArrows: true,
             border : false,
+            rootVisible: false,
             autoScroll : true
-        }, {
-            //Common buttons container
-            xtype : 'panel',
+        },{
+            xtype : 'treepanel',
             title : Locale.strings.commonButtons,
+            cls : 'x-tree-noicon x-tree-custom commons',
+            id: 'treeCommons',
+            useArrows: true,
             border : false,
-            autoScroll : true,
-            cls: 'buttonsContainer commons'
+            rootVisible: false,
+            autoScroll : true
         }],
         this.callParent(arguments);
-    },
-
-    /**
-     * Hide all the previously shown buttons. Notice that the array
-     * of the already shown buttons MUST be cloned before iterating on it to avoid
-     * unexpected behaviors.
-     */
-    hideAll : function() {
-        // Iterate on the previously hidden buttons
-        var items = Ext.clone(this.shown), // clone the array of references to avoid unexpected behavior
-        item;
-        for (var i = 0; i < items.length; i++) {
-            item = items[i];
-            if (item) {
-                item.hideChildren();
-            }
-        }
-        this.doLayout();
     }
 });

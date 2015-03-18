@@ -51,7 +51,7 @@ Ext.define('LIME.view.main.editor.Path', {
 	extend: 'Ext.Panel',
 	// set the alias
 	alias : 'widget.mainEditorPath',
-	id : "path",   
+	//id : "path",   
    	// set the layout type
     layout: {
         type: 'hbox',

@@ -61,6 +61,10 @@
 	"preferencesMenuButton": "Preferencias",
 	"windowMenuButton": "Ventana",
 	"menuShowView": "Mostrar vista",
+	"menuShowStyle": "Show style",
+	"menuShowStyleBox": "Show boxes",
+	"menuShowStyleColor": "Show colors",
+	"menuShowStylePdf": "Show style",
 	"languageSelectionBoxEmptyText": "Seleccione un idioma...",
 	"localeEmptyText": "Seleccione una localidad",
 	"mainEditor": "Editor documento",
@@ -80,7 +84,8 @@
 		"searchingDates": "Fechas búsqueda",
 		"markingDates": "Marcado de fechas",
 		"searchingRefs": "Referencias búsqueda",
-		"markingRefs": "Marcado de referencias"
+		"markingRefs": "Marcado de referencias",
+		"loadingDocumentStyles": "Cargando estilos de documentos"
 	},
 	"typeNotSupported": "Este tipo de archivo no es (todavía) compatible con arrastrar y soltar",
 	"uploadError": "Se produjo un error al cargar el archivo. <br/> Inténtelo de nuevo.",
@@ -98,6 +103,7 @@
 	"language": "Idioma",
 	"newLabel": "Nuevo",
 	"countryLabel": "País",
+    "docProponent": "Doc. Proponent",
 	"folderLabel": "Carpeta",
 	"docTypeLabel": "Tipo doc.",
 	"docDateLabel": "Fecha doc.",

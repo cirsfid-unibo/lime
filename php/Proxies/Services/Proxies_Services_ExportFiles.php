@@ -79,8 +79,8 @@ class Proxies_Services_ExportFiles implements Proxies_Services_Interface
 		$output = array();
 		if (mkdir($tmpDir)) {
 			$tmpDir = realpath($tmpDir);
-			$path1 = $this->getDocument($this->_doc1, $tmpDir."/doc1.xml");
-			$path2 = $this->getDocument($this->_doc2, $tmpDir."/doc2.xml");
+			$path1 = $this->getDocumentExist($this->_doc1, $tmpDir."/doc1.xml");
+			$path2 = $this->getDocumentExist($this->_doc2, $tmpDir."/doc2.xml");
 			
 			if ($path1 && $path2) {
 				$output["status"] = "success";
@@ -116,6 +116,14 @@ class Proxies_Services_ExportFiles implements Proxies_Services_Interface
 		curl_exec($ch);
 		fclose($fp);
 		return TRUE;
+	}
+	
+	private function getDocumentExist($uri, $where) {
+		require_once(dirname(__FILE__) . './../../dbInterface/class.dbInterface.php');
+		$credential = EXIST_ADMIN_USER . ":" . EXIST_ADMIN_PASSWORD;
+		$DBInterface = new DBInterface(EXIST_URL,$credential);
+		$xmlResult = $DBInterface->get_document_content(Array("requestedFile" => $uri));
+		return file_put_contents($where, $xmlResult);
 	}
 }
 ?>

@@ -53,22 +53,22 @@ $rules = Array(
     "chapterList" => Array("Capo","Capitolo"),
     "articleList" => Array("Art\.","Articolo"),
     
-	"preambleInitList" => Array("Il Presidente della Repubblica",
-							   "IL PRESIDENTE DELLA REPUBBLICA",
+	"preambleInitList" => Array(
+							   "La\s+Camera\s+dei\s+deputati\s+ed\s+il\s+Senato\s+della\s+Repubblica\s+hanno\s+approvato;\s+IL\s+PRESIDENTE\s+DELLA\s+REPUBBLICA",
+							   "IL\s+PRESIDENTE\s+DELLA\s+REPUBBLICA",	
+							   //"Il\s+Presidente\s+della\s+Repubblica\s*",						   
 							   "Attesto che"),
     
-	"preambleEndList" => Array ("Emana il seguente decreto legislativo",
+	"preambleEndList" => Array (
+								"\s*E\s*m\s*a\s*n\s*a\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|la +seguente +legge|il +seguente +decreto(-| +)legge):?",
+								"EMANA\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|la +seguente +legge|il +seguente +decreto(-| +)legge):?",
+								"(P|p)romulga\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|la +seguente +legge|il +seguente +decreto(-| +)legge):?",
 								"Attesto che",
-								"\s*E\s*m\s*a\s*n\s*a\s*.*({{followingDoctype}}:)?",
-								"EMANA\s*({{followingDoctype}}:)?",
-								"Promulga\s*({{followingDoctype}}:)?"),
-    
-	"followingDoctype" => Array("(I|i)l\*seguente\s*(R|r)egolamento)",
-					            "(I|i)l seguente decreto legislativo",
-					            "la seguente legge"),
+								"Decreta:?"
+								),
 			   
-    "conclusionsInitList" => Array("Il presente decreto,",
-								   "IL PRESIDENTE")
+    "conclusionsInitList" => Array("Il\s+presente\s+decreto,",
+								   "La\s+presente\s+legge,")
 
 );
 ?>

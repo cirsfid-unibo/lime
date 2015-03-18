@@ -6,7 +6,13 @@
  */
 Ext.Loader.addClassPathMappings({
   "Ext": "../../ext/src",
+  "Ext.DomHelper": "../../ext/src/dom/Helper.js",
+  "Ext.DomQuery": "../../ext/src/dom/Query.js",
+  "Ext.EventObjectImpl": "../../ext/src/EventObject.js",
   "Ext.Msg": "../../ext/src/window/MessageBox.js",
+  "Ext.Supports": "../../ext/src/Support.js",
+  "Ext.core.DomHelper": "../../ext/src/dom/Helper.js",
+  "Ext.core.DomQuery": "../../ext/src/dom/Query.js",
   "Ext.rtl.EventObjectImpl": "../../ext/src/rtl/EventObject.js",
   "Ext.ux": "../../plugins/ux",
   "Ext.ux.BoxReorderer": "../../ext/src/ux/BoxReorderer.js",
@@ -957,10 +963,6 @@ Ext.ClassManager.addNameAlternateMappings({
   "LIME.view.maintoolbar.SaveDocumentButton": [],
   "LIME.view.maintoolbar.UserButton": [],
   "LIME.view.maintoolbar.WindowMenuButton": [],
-  "LIME.view.markingmenu.TreeButton": [],
-  "LIME.view.markingmenu.treebutton.Children": [],
-  "LIME.view.markingmenu.treebutton.Expander": [],
-  "LIME.view.markingmenu.treebutton.Name": [],
   "LIME.view.modal.Login": [],
   "LIME.view.modal.NewDocument": [],
   "LIME.view.modal.Registration": [],
@@ -2130,18 +2132,6 @@ Ext.ClassManager.addNameAliasMappings({
   ],
   "LIME.view.maintoolbar.WindowMenuButton": [
     "widget.windowMenuButton"
-  ],
-  "LIME.view.markingmenu.TreeButton": [
-    "widget.treeButton"
-  ],
-  "LIME.view.markingmenu.treebutton.Children": [
-    "widget.treeButtonChildren"
-  ],
-  "LIME.view.markingmenu.treebutton.Expander": [
-    "widget.treeButtonExpander"
-  ],
-  "LIME.view.markingmenu.treebutton.Name": [
-    "widget.treeButtonName"
   ],
   "LIME.view.modal.Login": [
     "widget.login"

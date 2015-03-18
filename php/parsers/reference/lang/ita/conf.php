@@ -47,22 +47,23 @@
  
 $rules = Array(
 
-	"references" => Array("ref_1"),#,"ref_2"),
-	"ref_1" => "/{{type}}\s+{{date}}\s*(,\s*n\.\s*\d+)/",
-	"ref_2" => "/{{partition}}\s+\d+\s+{{prep}}\s+{{type}}\s+({{prep}}\s+{{authorities}}\s+)?{{date}}\s*(,\s*n\.\s*\d+)?/",
-
-    "type" => Array("legge",
-    				"decreto",
-    				"decreti",
-					"decreto legislativo",
-					"decreto del Presidente della Repubblica"),
-					
-	"date" => "[\w\d\s]+\d{4}",
+	"references" => Array("ref_1","ref_2","ref_2b",
+						  "ref_3","ref_4","ref_4b","ref_5"),
+	"ref_1" => "/({{partition}}[\s\d\w,)-]+\s*)?{{type}}\s+{{date}}\s*(,\s*n\.\s*{{docnum}}+)/",
+	"ref_2" => "/{{partition}} +{{num}} +(della|del|dello|dell(’|')) *{{type}} +del +{{date}}/",
+	"ref_2b" => "/{{partition}} +{{num}} +della +legge/",
+	"ref_3" => "/O +del +{{date}}/",
+	"ref_4" => "/direttiva +\d+\/\d+\/CE/",
+	"ref_4b" => "/procedimento +[C\-\d]+\/\d+/",
+	"ref_5" =>"/{{partition}} +{{num}}( +delle +disposizioni +transitorie)? +della +Costituzione +federale/",
+	
+	"docnum" => "\d+\.?\d*",
+	"date" => "[\w\d\s\.°﻿]+\d{4}",
+	"num" => "[aebistrqun\d\-\–\, ]+",
 	
 	"partition" => Array("articolo",
+						 "articoli",
 						 "art\."),
-					 
-	"prep" => Array("de","del","della","dello","dei","degli","delle")
 );
 
 ?>

@@ -65,10 +65,12 @@ function resolveRegex($value, $configArray,$lang,$documentType, $directory = "")
 	$success = 	preg_match_all($keyRe, $value, $result);
 	if ($success) {
 		foreach($result["0"] as $k => $toBeReplaced) {
+			
 			$keyword = $result["1"][$k];
 			if (strlen($result["2"][$k])) {
 				$flags[$keyword] = $result["2"][$k];
 			}
+			
 			if(array_key_exists($keyword, $configArray)) {
 				$resolved = resolveRegex($configArray[$keyword], $configArray,
 										 $lang,$documentType, $directory);
@@ -87,8 +89,8 @@ function resolveRegex($value, $configArray,$lang,$documentType, $directory = "")
 											 $configArray,$lang,$documentType, $directory);
 											 
 				} else if(file_exists($localFileName2)) {
-					$resolved = resolveRegex(file($localFileName),
-											 $configArray,$lang,$documentType, $directory);						 
+					$resolved = resolveRegex(file($localFileName2),
+											 $configArray,$lang,$documentType, $directory);				 
 				} else {
 					$commonFileName = $directory . "/../common/lang/" . $lang . "/" . $keyword;
 					if(file_exists($commonFileName)) {
@@ -104,16 +106,19 @@ function resolveRegex($value, $configArray,$lang,$documentType, $directory = "")
 			if(isset($resolved['value'])) {
 				$regexPart = sprintf("(?P<%s>%s)", $keyword, $resolved['value']);
 				$value = str_replace($toBeReplaced, $regexPart, $value);
+				//$value = resolveRegex($value, $configArray,$lang,$documentType, $directory);
+				//$value = $value['value'];
 			}
 		}
 	}
 
 	$resolved = Array('value' => $value);
 	if(count($flags)) $resolved['flags'] = $flags;
+	//print_r($resolved);
 	return $resolved;
 }
 
-function arrayToPairsArray($array, $max) {
+function arrayToPairsArray($array,$max) {
 	$result = array();
 	for($i = 0; $i < count($array); $i++) {
 		$pair = array();

@@ -50,9 +50,13 @@ class DateParser {
     public $lang;
     private $patterns = array();
     private $monthsNames = array();
+    private $dates = array();
     
     public function __construct($lang) {
         $this->lang = $lang;
+        $this->dirName = dirname(__FILE__);
+        $this->dates = array();
+
         $this->loadConfiguration($lang);
     }
 
@@ -60,13 +64,14 @@ class DateParser {
         $return = array();
         $preg_result = array();
         $element = array();
+        $dates = array();
         foreach ($this->patterns as $key => $value) {
             $success = preg_match_all($value, $content, $n, PREG_OFFSET_CAPTURE);
             if ($success) {
                 $preg_result[] = $n;
                 $element[] = $key;
                 /*To avoid another pattern match with the same string remove it*/
-                $content = preg_replace($value, "", $content);
+                //$content = preg_replace($value, "", $content);
             }
         }
 
@@ -78,6 +83,11 @@ class DateParser {
                 foreach ($n["0"] as $k => $value) {
                     $offset = $n["0"][$k][1];
                     $match = $n["0"][$k][0];
+                    $offsetEnd = $offset+strlen($match);
+                    // Skip imcomplete or already saved matches
+                    if(!$this->isValidMatch($match, $offset, $offsetEnd)) {
+                        continue;
+                    }
                     if (!isset($counter[$match]))
                         $counter[$match] = 0;
                     $counter[$match]++;
@@ -86,7 +96,10 @@ class DateParser {
                     if (!isset($return['dates'][$match]["offsets"]))
                         $return['dates'][$match]["offsets"] = array();
                     $return['dates'][$match]["offsets"][] = Array("start" => $offset,
-                                                                  "end" => $offset+strlen($match));
+                                                                  "end" => $offsetEnd);
+
+                    $this->dates[] = Array("start" => $offset, "end" => $offsetEnd, "match"=> $match);
+
                     if ($counter[$match] == 1) {
                         $return['dates'][$match]['rule'] = $element[$key];
                         $return['dates'][$match]['match'] = $match;
@@ -148,6 +161,16 @@ class DateParser {
         
     }
 
+    private function isValidMatch($match, $start, $end) {
+        $dates = array_filter($this->dates, function($date) use ($match, $start, $end)  {
+            return ((strpos($date["match"], $match) || strpos($match, $date["match"]))
+                    && $date["start"] <= $start && $date["end"] >= $end 
+                    && !($date["start"] == $start && $date["end"] == $end));
+        });
+     
+        return empty($dates);
+    }
+
     public function loadConfiguration() {
         global $patterns, $monthsNames;
         global $day,$year,$num_month,$date_sep;
@@ -161,26 +184,20 @@ class DateParser {
         $num_month = "(\d){1,2}";
         $date_sep = "(?:\\\\|\\/|-|\.)";
 
-        require_once "standard.php";
+        // It's important to use "require" and not "require_once"
+        require realpath($this->dirName."/standard.php");
         if (isset($vocs[$this->lang])) {
-            require_once $vocs[$this->lang];
+            require realpath($this->dirName."/".$vocs[$this->lang]);
         }
 
         $months = implode("|", $monthsNames);
-        if($this->lang != "ita") {
-            $patterns = array("(day) month-name year" => "/((?P<day>$day)\W?\s+)?(?P<month>$months)\W?\s+(?P<year>$year)/i", 
-                        "month-name (day) year" => "/(?P<month>$months)\W?\s+((?P<day>$day)\W?\s+)?(?P<year>$year)/i", 
-                        "month-name year (day)" => "/(?P<month>$months)\W?\s+(?P<year>$year)\W?\s+((?P<day>$day))?/i");
-    
-        } else {
-            $patterns = array("(day) month-name year" => "/((?P<day>$day)\W?\s+)?(?P<month>$months)\W?\s+(?P<year>$year)/i");    
-        }
+        $patterns = array("(day) month-name year" => "/((?P<day>$day)(\s*°)?\W?\s+)?(?P<month>$months)\W?\s+(?P<year>$year)/i", 
+                    "month-name (day) year" => "/(?P<month>$months)\W?\s+((?P<day>$day)\W?\s+)?(?P<year>$year)/i", 
+                    "month-name year (day)" => "/(?P<month>$months)\W?\s+(?P<year>$year)(\W?\s+(?P<day>$day))?/i");
 
-        if (isset($localpatterns) && $this->lang != "ita") {
+        if (isset($localpatterns)) {
             $patterns = array_merge($localpatterns, $patterns);
-            $patterns = $localpatterns;
         }
-
         $this->patterns = $patterns;
         $this->monthsNames = $monthsNames;
     }

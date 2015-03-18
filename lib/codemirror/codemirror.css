@@ -164,6 +164,15 @@ span.cm-invalidchar {color: #f00;}
 div.CodeMirror span.CodeMirror-matchingbracket {color: #0f0;}
 div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 
+.CodeMirror .line-error {
+  background: #FBC2C4 !important;
+  color: #8a1f11 !important;
+}
+
+.CodeMirror .line-highlighted {
+  background: #e8f2ff !important;
+}
+
 @media print {
 
   /* Hide the cursor when printing */

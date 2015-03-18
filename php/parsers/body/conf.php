@@ -46,14 +46,20 @@
  */
  
 $rules = Array(
-    "roman" => "(M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3}))",
-    //"number" => "\d+|{{roman}}+",
-    "number" => "\d+",
+    //"roman" => "(M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3}))",
+    "roman" => "\b[IVXLCDM]+",
+    "number" => "\d+|{{roman}}+|(U|Ú)NICO",
+    "book" => "/({{bookList}})\s*({{number}}\s*[º°\.]*)/",
     "title" => "/({{titleList}})\s*({{number}})/",
+    "section" => "/({{sectionList}})\s*({{number}}\s*[º°\.]*)/",
     "chapter" => "/({{chapterList}})\s*({{number}})/",
-    "article" => "/({{articleList}})\s*({{number}}\s*[º°\.]*)/",
-    "section" => "/({{sectionList}})\s*({{number}}\s*[º°]*\.)/",
-    "book" => "/({{bookList}})\s*({{number}}\s*[º°]*\.)/"
+    "article" => "/({{articleList}})\s*({{number}}\s*[º°\.]*({{latino}})?)/",
+    "numitem" => "\b(([A-Za-z]+|\d+|{{roman}})\))|\b(\d+\s*\.)",
+    "item" => "/(?<![\.\w] ){{numitem}} +{{bodyitem}}/u",
+    "bodyitem" => "[\p{L}\p{N}\p{P}\p{S} ]+[\.;]?",
+    
+    "hierarchy" => Array("book","title","chapter","section","article","item")
+    
 );
 
 ?>

@@ -46,7 +46,7 @@
  */
 
  $rules = Array(
-	"main" => "/({{doctype}})/",
+	"main" => "/({{doctype}})/i",
 );
 
 ?>

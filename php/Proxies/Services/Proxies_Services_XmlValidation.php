@@ -102,6 +102,7 @@ class Proxies_Services_XmlValidation implements Proxies_Services_Interface {
 	private function libxmlErrorToArray($error) {
 		$result = Array();
 		$result["message"] = $error -> message;
+		$result["code"] = $error -> code;
 		$result["line"] = $error -> line;
 		$result["column"] = $error -> column;
 		switch ($error->level) {
@@ -126,7 +127,7 @@ class Proxies_Services_XmlValidation implements Proxies_Services_Interface {
 		$tmpRes = Array();
 		foreach ($errors as $error) {
 			$tmpRes = $this -> libxmlErrorToArray($error);
-			$tmpRes["lineString"] = htmlentities(trim($xmlLines[$tmpRes["line"] - 1]));
+			$tmpRes["lineString"] = trim($xmlLines[$tmpRes["line"] - 1]);
 			$result[$tmpRes["type"]][] = $tmpRes;
 		}
 		libxml_clear_errors();

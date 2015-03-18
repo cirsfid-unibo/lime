@@ -59,6 +59,10 @@
 	"preferencesMenuButton": "Preferințe",
 	"windowMenuButton": "Fereastră",
 	"menuShowView": "Arată vizionarea",
+	"menuShowStyle": "Show style",
+	"menuShowStyleBox": "Show boxes",
+	"menuShowStyleColor": "Show colors",
+	"menuShowStylePdf": "Show style",
 	"languageSelectionBoxEmptyText": "Alege o limbă...",
 	"localeEmptyText": "Selectați setarea regională",
 	"mainEditor": "Editor",
@@ -78,7 +82,8 @@
 		"searchingDates": "Cautarea datelor",
 		"markingDates": "Marcarea datelor",
 		"searchingRefs": "Cautarea referințelor",
-		"markingRefs": "Marcarea referințelor"
+		"markingRefs": "Marcarea referințelor",
+		"loadingDocumentStyles": "Loading document styles"
 	},
 	"typeNotSupported": "Acest tip de fișier nu este (încă) suportat de drag and drop",
 	"uploadError": "A fost o eroare la încărcarea fișierului.<br/>Încercă mai târziu.",
@@ -95,6 +100,7 @@
 	"nationality": "Naționalitate",
 	"language": "Lima",
 	"countryLabel": "Country",
+    "docProponent": "Doc. Proponent",
 	"newLabel": "New",
 	"folderLabel": "Folder",
 	"docTypeLabel": "Doc. Type",

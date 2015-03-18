@@ -65,14 +65,14 @@ Ext.define('LIME.controller.MetadataManagerController', {
 
     config : {
         pluginName : "metadataManager",
-        btnCls : "openMetadataBtn"
+        btnCls : "editorTabButton openMetadataBtn"
     },
 
     tabMetaMap: {},
 
     addMetadataButton : function() {
         var me = this, toolbar = me.getMainToolbar();
-        if (!toolbar.down("[cls=" + me.getBtnCls() + "]")) {
+        if (!toolbar.down("[cls='" + me.getBtnCls() + "']")) {
         	toolbar.add("->");
             toolbar.add({
                 cls : me.getBtnCls(),
@@ -87,7 +87,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
 
     removeMetadataButton : function() {
         var me = this, toolbar = me.getMainToolbar(),
-        	btn = toolbar.down("[cls=" + me.getBtnCls() + "]");
+        	btn = toolbar.down("[cls='" + me.getBtnCls() + "']");
         if (btn) {
             toolbar.remove(btn);
         }
@@ -143,24 +143,161 @@ Ext.define('LIME.controller.MetadataManagerController', {
                 };
     		}
     	});
+
+        me.addLifecycle();
+        me.addWorkflow();
+        me.addClassification();
+        me.addProprietary();
     },
 
+    fakeSavingToolbar: [{
+        xtype: 'component',
+        hidden: true,
+        flex: 1,
+        baseCls: 'form-success-state',
+        cls: Ext.baseCSSPrefix + 'success-icon',
+        html: Locale.getString('Data has been saved', 'metadataManager')
+    },'->', {
+        xtype: 'button',
+        text: Locale.getString("saveDocumentButtonLabel"),
+        handler: function(cmp) {
+            var label = cmp.up().down('component');  
+            setTimeout(function () {
+                label.show();
+                setTimeout(function () { label.hide(); }, 5000);
+            }, 300);
+        }    
+    }],
+
+    // Add lifecycle tab
+    addLifecycle: function() {
+        this.addMetaTab("lifecycle", "lifecycle", [
+            this.createFieldsetItem ("lifecycle", ["source"]),
+            this.createMetaGrid (
+                "Lifecycle",
+                ["eId", "date", "source", "type"],
+                {
+                    // Custom columns
+                    "type": ["generation", "amendment", "repeal"]
+                },
+                "lifecycle/eventRef"
+            )
+        ]);
+    },
+
+    // Add workflow tab
+    addWorkflow: function() {
+        this.addMetaTab("workflow", "workflow", [
+            this.createFieldsetItem ("workflow", ["source"]),
+            this.createMetaGrid (
+                "Workflow",
+                ["date", "actor", "outcome", "refersTo"],
+                {
+                    "type": ["generation", "amendment", "repeal"]
+                },
+                "workflow/step"
+            )
+        ]);
+    },
+
+    // Add classification tab
+    addClassification: function() {
+        this.addMetaTab("classification", "classification", [
+            this.createFieldsetItem ("classification", ["source"]),
+            this.createMetaGrid (
+                "Classification",
+                ["value", "showAs", "dictionary", "href"],
+                {
+                },
+                "classification/keyword"
+            )
+        ]);
+    },
+
+    addProprietary: function() {
+        var me = this, editor = me.getController("Editor");
+        this.addMetaTab("proprietary", "proprietary", [
+            this.createFieldsetItem ("proprietary", ["source"]),
+            this.createMetaGrid (
+                "Proprietary",
+                ["name", "content"],
+                {
+                    "name": ["Asunto", "Carpeta", "WorkflowTitle", "Cuerpo", "SubType", "Variante", "Iniciativa", "Asunto", "Repartido", "Destribuito"]
+                },
+                "proprietary",
+                function(store) {
+                    var data = me.getDataObjectsFromStore(store),
+                        metadata = editor.getDocumentMetadata(),
+                        groups = {};
+
+                    Ext.each(metadata.originalMetadata.metaDom.querySelectorAll('[class=proprietary] *'), function(node) {
+                        node.parentNode.removeChild(node);
+                    });
+
+                    Ext.each(data, function(obj) {
+                       var name = obj.name;
+                       if(name) {
+                           delete obj.name;
+                           obj.html = obj.content;
+                           delete obj.content;
+                           name = DocProperties.documentInfo.docLocale + ':' + name;
+                           groups[name] = groups[name] || [];
+                           groups[name].push(obj);
+                       }
+                    });
+                    Ext.Object.each(groups, function(group, gData) {
+                       var result = DocProperties.updateMetadata(Ext.merge({
+                            metadata : editor.getDocumentMetadata(),
+                            path : "proprietary/"+group,
+                            data : gData
+                        }));
+                        if (result) {
+                            Ext.MessageBox.alert("Error", "Error " + result);
+                        } else {
+                            //remove this
+                            editor.changed = true;
+                        }
+                    });
+                }
+            )
+        ]);
+    },
+
+
     storeGridChanged: function(store) {
-    	var data = [];
-    	store.each(function(record) {
-    		var recordData = record.getData(),
-    			filtredData = {};
-    		Ext.Object.each(recordData, function(key, val) {
-    			if(val != undefined) {
-    				filtredData[key] = val;
-    			}
-    		});
-    		data.push(filtredData);
-    	});
-    	this.updateMetadata(store.grid, data, {
-    		overwrite: false,
-    		after: (store.grid.name == "FRBRuri") ? "FRBRthis" : "FRBRuri"
-    	});
+        var data = this.getDataObjectsFromStore(store);
+        this.updateMetadata(store.grid, data, {
+            overwrite: false,
+            after: (store.grid.name == "FRBRuri") ? "FRBRthis" : "FRBRuri"
+        });
+    },
+
+    getDataObjectsFromStore: function(store) {
+        var data = [];
+        store.each(function(record) {
+            var recordData = record.getData(),
+                filtredData = {};
+            Ext.Object.each(recordData, function(key, val) {
+                if(val != undefined) {
+                    filtredData[key] = val;
+                }
+            });
+            data.push(filtredData);
+        });
+        return data;
+    },
+
+    // Add a tab with title tabname and containing items, responsible for the metadataTag
+    addMetaTab: function (tabName, metadataTag, items) {
+        var tab = this.addTab({
+            name: metadataTag,
+            title: tabName,
+            items: items,
+            bbar: this.fakeSavingToolbar
+        });
+        this.tabMetaMap[metadataTag] = {
+            tab: tab
+        };
     },
 
     getValuesFromObj: function(obj) {
@@ -171,8 +308,9 @@ Ext.define('LIME.controller.MetadataManagerController', {
       });
     },
 
-    createMetaGrid: function(name, values, customColumns) {
-        var me = this;
+    createMetaGrid: function(name, values, customColumns, customPath, callback) {
+        var me = this,
+            callback = callback || me.storeGridChanged;
         return Ext.widget("metaGrid", {
                 title: name,
                 width: "98%",
@@ -180,11 +318,12 @@ Ext.define('LIME.controller.MetadataManagerController', {
                 name: name,
                 columnsNames: values,
                 customColumns: customColumns,
+                customPath: customPath,
                 store: Ext.create('Ext.data.Store', {
                     fields : values,
                     listeners: {
-                        remove: Ext.bind(me.storeGridChanged, me),
-                        update: Ext.bind(me.storeGridChanged, me)
+                        remove: Ext.bind(callback, me),
+                        update: Ext.bind(callback, me)
                     }
                 })
         });
@@ -214,16 +353,22 @@ Ext.define('LIME.controller.MetadataManagerController', {
         items = [me.createFieldsetItem(name, me.getValuesFromObj(conf))];
       }
 
-      if(possibleChildren) {
-          values = Ext.Array.push("type", me.getValuesFromObj(possibleChildren.attributes));
-          items.push(me.createMetaGrid("Children", values, {
-              "type": possibleChildren.names
-          }));
-      }
+        if(possibleChildren) {
+            // if(possibleChildren.names) {
+                values = Ext.Array.push("type", me.getValuesFromObj(possibleChildren.attributes));
+                items.push(me.createMetaGrid("Children", values, {
+                    "type": possibleChildren.names
+                }));
+            // } else {
+            //     values = me.getValuesFromObj(possibleChildren.attributes);
+            //     items.push(me.createMetaGrid("Children", values, {}));
+            // }
+        }
   		return me.addTab({
   			name: name,
   			title: name,
-  			items: items
+  			items: items,
+            bbar: me.fakeSavingToolbar
   		});
     },
 
@@ -244,10 +389,10 @@ Ext.define('LIME.controller.MetadataManagerController', {
               return {
                 xtype: (attr == "date") ? "datefield" : "textfield",
                 format: (attr == "date") ? "Y-m-d" : "",
-                fieldLabel: Ext.String.capitalize(attr.replace("akn_", "")),
+                fieldLabel: (values[0] == 'source') ? 'Provenance' : Ext.String.capitalize(attr.replace("akn_", "")),
                 labelAlign : 'right',
                 anchor: '30%',
-                labelWidth: 50,
+                labelWidth: 80,
                 name: attr
               };
             })
@@ -263,13 +408,39 @@ Ext.define('LIME.controller.MetadataManagerController', {
         if(!tabMap || tabMap.filled ) return;
         metadata = (metadata && metadata.obj && tabMap.metaParent) ?  metadata.obj[tabMap.metaParent] : metadata.obj;
         if(metadata && metadata[tab.name]) {
+
+            // Populate source field.
+            var source = metadata[tab.name].attr["source"],
+                sourceField = tabMap.tab.down("*[name='source']");
+            if(source && sourceField) {
+                sourceField.setValue(source);
+            }
+
         	Ext.each(metadata[tab.name].children, function(el) {
         		var cmpToFill = tabMap.tab.down("*[name='"+el.attr.class+"']");
 
         		if(tabMap.tab.down("*[name='Children']")) {
-        		    cmpToFill = tabMap.tab.down("*[name='Children']");
+                    cmpToFill = tabMap.tab.down("*[name='Children']");
                     el.attr["type"] = el.attr["class"];
-        		}
+                }
+                if(tabMap.tab.down("*[name='Lifecycle']")) {
+                    cmpToFill = tabMap.tab.down("*[name='Lifecycle']");
+                    el.attr["type"] = el.attr["class"];
+                }
+                if(tabMap.tab.down("*[name='Workflow']")) {
+                    cmpToFill = tabMap.tab.down("*[name='Workflow']");
+                    el.attr["type"] = el.attr["class"];
+                }
+                if(tabMap.tab.down("*[name='Classification']")) {
+                    cmpToFill = tabMap.tab.down("*[name='Classification']");
+                    el.attr["type"] = el.attr["class"];
+                }
+
+                if(tabMap.tab.down("*[name='Proprietary']")) {
+                    cmpToFill = tabMap.tab.down("*[name='Proprietary']");
+                    el.attr["name"] = el.attr["class"].substring(el.attr["class"].indexOf(':')+1);
+                    el.attr["content"] = el.el.innerHTML;
+                }
 
         		if(cmpToFill) {
 					if(cmpToFill.xtype == "metaGrid") {
@@ -278,7 +449,6 @@ Ext.define('LIME.controller.MetadataManagerController', {
 						me.fillFormFields(cmpToFill, el);
 					}
         		} else {
-        		    //console.log(tab, el);
         		}
         	});
         }
@@ -374,12 +544,10 @@ Ext.define('LIME.controller.MetadataManagerController', {
                         editor.changed = true;
                     }
     	       });
-    	    } else {
-                path += (tab.name != name) ? tab.name + "/" + name : tab.name;
-                //move this to a controller
+    	    } else if (name == "Lifecycle" || name == "Workflow" || name == "Classification") {
                 var result = DocProperties.updateMetadata(Ext.merge({
                     metadata : editor.getDocumentMetadata(),
-                    path : path,
+                    path : cmp.customPath,
                     data : data,
                     overwrite: true
                 }, conf));
@@ -389,8 +557,25 @@ Ext.define('LIME.controller.MetadataManagerController', {
                     //remove this
                     editor.changed = true;
                 }
+            } else {
+                path += (tab.name != name) ? tab.name + "/" + name : tab.name;
+                //move this to a controller
+                var result = DocProperties.updateMetadata(Ext.merge({
+                    metadata : editor.getDocumentMetadata(),
+                    path : path,
+                    data : data,
+                    isAttr: data.source ? true : false,
+                    overwrite: data.source ? false : true
+                }, conf));
+                if (result) {
+                    Ext.MessageBox.alert("Error", "Error " + result);
+                } else {
+                    //remove this
+                    editor.changed = true;
+                }
     	    }
     	}
+        editor.showDocumentUri();
     },
 
     init : function() {

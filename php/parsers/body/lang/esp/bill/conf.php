@@ -47,10 +47,11 @@
  
 $rules = Array(
 	"bookList" => Array("LIBRO","Libro"),
-    "titleList" => Array("T(Í|í|i)tulo","T(I|Í)TULO"),
-    "sectionList" => Array("Secci(ó|o)n","SECCION"),
+    "titleList" => Array("T(I|Í)TULO"),
+    "sectionList" => Array("Secci(ó|o)n","SECCI(O|Ó)N",),
     "articleList" => Array("Art(I|Í|i|í)culo", "Art\.","ART(I|Í)CULO"),
-    "chapterList" => Array("Cap(í|i)tulo","CAPÍTULO")
+    "item" => "/((?<!\w\s)){{numitem}} +{{bodyitem}}/u",
+    "chapterList" => Array("CAP(Í|I)TULO")
 );
 
 ?>

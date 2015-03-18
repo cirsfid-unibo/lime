@@ -95,6 +95,15 @@ Ext.define('LIME.controller.MainToolbar', {
         ref : 'windowMenuButton',
         selector : 'windowMenuButton'
     },{
+        ref : 'showBoxCheckbox',
+        selector : '#showBoxCheckbox'
+    },{
+        ref : 'showColorCheckbox',
+        selector : '#showColorCheckbox'
+    },{
+        ref : 'showStyleCheckbox',
+        selector : '#showStyleCheckbox'
+    },{
         ref : 'mainToolbar',
         selector : 'mainToolbar'
     }],
@@ -111,7 +120,6 @@ Ext.define('LIME.controller.MainToolbar', {
 	           'maintoolbar.FileMenuButton', 
 	           'maintoolbar.DocumentMenuButton',
 	           'maintoolbar.WindowMenuButton',
-	           'modal.SaveAs',
 	           'modal.NewDocument'],
 	           
 	/**
@@ -122,7 +130,7 @@ Ext.define('LIME.controller.MainToolbar', {
 	   var app = this.application,
 	       documentId = DocProperties.currentEditorFile.id,
 	       config = {
-	           docText: params.docText || '',
+	           docText: params.docText || '<div> &nbsp; </div>',
 	           docId: ''
 	       };
 	   // If a document's id is not specified it means the document is saved
@@ -202,7 +210,7 @@ Ext.define('LIME.controller.MainToolbar', {
             if(newTab) {
                 main.add(newTab);
             } else {
-                Ext.log({level: "error"}, "Error creating tab "+xtype);
+                this.removeMainTabFromPreferences(xtype);
             }
         }
     },
@@ -243,18 +251,6 @@ Ext.define('LIME.controller.MainToolbar', {
         }   
     },
     
-    onMetadataChange : function() {
-        var saveButton = this.getSaveDocumentButton(),
-            saveAsMenu = this.getSaveAsDocumentButton();
-            /*saveAsMenu.enable();*/
-        if (DocProperties.getDocumentUri()) {
-            saveButton.enable();
-        } else {
-            saveButton.disable();
-        }
-    },
-    
-    
     onLanguageLoaded: function() {
         var me = this, main = me.getMain(), 
             customViews = Config.getLanguageConfig().customViews,
@@ -270,16 +266,29 @@ Ext.define('LIME.controller.MainToolbar', {
     },
     
     addMenuItem: function(config, menuConfig) {
+        if(this.getMainToolbar()) {
+            this.addMenuItemRaw(config, menuConfig);
+        } else {
+            this.menuItemsToAdd = this.menuItemsToAdd || [];
+            this.menuItemsToAdd.push({
+                config: config,
+                menuConfig: menuConfig
+            });
+        }
+    },
+
+    addMenuItemRaw: function(config, menuConfig) {
         var mainMenu = this.getMainToolbar(), newMenu,
             menu = mainMenu.down(config.menu+" menu"),
-            refItem = config.before || config.after, refItemIndex = -1,
-            posIndex = config.posIndex || -1;
+            refItem = config.before || config.after || config.replace,
+            refItemIndex = -1, posIndex = config.posIndex || -1;
+
         if(menu && !menu.down("*[name="+menuConfig.name+"]")) {
             newMenu = menu.add(menuConfig);
             if (refItem) {
-                refItemIndex = menu.items.indexOf(menu.down(refItem));
-                refItemIndex = (refItemIndex != -1) ? refItemIndex : menu.items.indexOf(menu.down("*[name="+refItem+"]"));
-                   
+                var refCmp = menu.down(refItem) || menu.down("*[name="+refItem+"]");
+                refItemIndex = menu.items.indexOf(refCmp);
+                if ( config.replace ) refCmp.hide();
             }
             if (refItemIndex != -1 || posIndex != -1) {
                 posIndex = (posIndex != -1) ? posIndex : (refItemIndex+((config.before) ? 0 : 1));
@@ -287,15 +296,28 @@ Ext.define('LIME.controller.MainToolbar', {
                     menu.move(newMenu, posIndex);
                 } 
             }
+
         }
-        return newMenu;
+    },
+    
+    removeMainTabFromPreferences: function(xtype) {
+        var preferencesManager = this.getController('PreferencesManager');
+
+        preferencesManager.setUserPreferences({
+            views : preferencesManager.userPreferences.views.filter(function(el) {
+                if (el == xtype) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }) 
+        });
     },
 
 	init : function() {
 		// save a reference to the controller
 		var toolbarController = this;
 		
-		this.application.on(Statics.eventsNames.frbrChanged, this.onMetadataChange, this);
 		this.application.on(Statics.eventsNames.languageLoaded, this.onLanguageLoaded, this);
 		
 		// set up the control
@@ -387,34 +409,7 @@ Ext.define('LIME.controller.MainToolbar', {
 			     }  
 			},
             
-            'saveAsMenu menuitem' : {
-                click : function(cmp){
-                    var saveAs,
-                        config = {};
-                    
-                    switch(cmp.metaType){
-                        case 'newWork':
-                            break;
-                            
-                        case 'newExpression':
-                            config = {
-                                toHide : ['work']
-                            };
-                            break;
-                            
-                        case 'newManifestation':
-                            config = {
-                                toHide : ['work','expression']
-                            };
-                            break;
-                    }
-                    
-                    saveAs = Ext.widget('saveAs', config);
-                    saveAs.show();
-                }
-            },
-            
-            '[cls=editorTab]' : {
+            '[cls~=editorTab]' : {
                 added : function(cmp){
                     var preferencesManager = this.getController('PreferencesManager'),
                         menu = this.getWindowMenuButton(),
@@ -440,50 +435,7 @@ Ext.define('LIME.controller.MainToolbar', {
                 },
                 
                 removed : function(cmp){
-                    var preferencesManager = this.getController('PreferencesManager'),
-                        menu = this.getWindowMenuButton();
-                    try {
-	                    preferencesManager.setUserPreferences({
-	                        views : preferencesManager.userPreferences.views.filter(function(el){
-	                            if (el == cmp.getXType()){
-	                                return false;
-	                            } else {
-	                                return true;
-	                            }
-	                        }) 
-	                    });
-                    } catch (e) {
-                    	Ext.log({level: "error"}, e);
-                    }
-                    
-                }
-            },
-            
-            'saveAs button' : {
-                click : function(cmp){
-                    var saveWindow = cmp.up('window'),
-                        values = saveWindow.getData(),
-                        info = {};
-                        
-                    if (values){
-                        
-                        if (values.work){
-                            info.docType = values.work.docType;
-                        }
-                        
-                        if (values.expression){
-                            info.docLang = values.expression.docLang;
-                        }
-                        
-                        // The only thing here is to set the values of the form in the document properties
-                        DocProperties.setDocumentInfo(info);
-                        
-                        DocProperties.setFrbr(values);
-                        
-                        this.getController('Editor').saveDocument({
-                            view : saveWindow
-                        });
-                    }
+                    toolbarController.removeMainTabFromPreferences(cmp.getXType());
                 }
             },
             
@@ -583,7 +535,10 @@ Ext.define('LIME.controller.MainToolbar', {
                afterrender: function(cmp) {
                     var newWindow = cmp,
                         config = newWindow.tmpConfig;
-                        
+                    
+                    // Setting the first language as default selected
+                    newWindow.down("docMarkingLanguageSelector").setValue(Config.languages[0].name);
+                    
                     if(config) {
                         if(config.docMarkingLanguage && !cmp.onlyLanguage) {
                             newWindow.down("docMarkingLanguageSelector").setValue(config.docMarkingLanguage);
@@ -611,14 +566,12 @@ Ext.define('LIME.controller.MainToolbar', {
             },            
             'saveDocumentButton' : {
                 click: function() {
-                    this.getController("Editor").autoSaveContent(true);
-                }
-            },
-            'fileMenuButton' : {
-                afterrender: function() {
-                    // Disable save buttons by default, they will be enabled when at loading a document
-                    this.getSaveDocumentButton().disable();
-                    //this.getSaveAsMenu().disable();
+                    if(!DocProperties.documentInfo.docId || 
+                        DocProperties.documentInfo.docId.match("/autosave/")) {
+                        Ext.widget('newSavefileMain').show();
+                    } else {
+                        this.getController("Editor").autoSaveContent(true);    
+                    }
                 }
             },
             
@@ -628,7 +581,7 @@ Ext.define('LIME.controller.MainToolbar', {
             	}
             },
             
-            'windowMenuButton menuitem': {
+            'windowMenuButton *[id=showViews] menuitem': {
                 click: function(cmp) {
                     var main = this.getMain(),
                         menu = this.getWindowMenuButton(),
@@ -640,6 +593,16 @@ Ext.define('LIME.controller.MainToolbar', {
                         this.addTab(cmp.openElement);
                         menu.setCheckIcon(cmp);
                     }
+                }
+            },
+
+            'windowMenuButton *[id=showStyles] menuitem': {
+                checkchange: function(cmp) {
+                    var displayBox = this.getShowBoxCheckbox().checked,
+                        displayColor = this.getShowColorCheckbox().checked,
+                        displayStyle = this.getShowStyleCheckbox().checked,
+                        editor = this.getController('Editor');
+                    editor.updateStyle(displayBox, displayColor, displayStyle);
                 }
             },
             

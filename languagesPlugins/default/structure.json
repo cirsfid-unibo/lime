@@ -1,3 +1,9 @@
 {
-	"plugins": ["xmlValidation", "importDocument", "exportDocument", "newPdfPreview"]
+    "plugins": [
+        "xmlValidation",
+        "importDocument",
+        "exportDocument",
+        "newPdfPreview",
+        "openNirDocPdfDocument"
+    ]
 }

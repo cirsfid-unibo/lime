@@ -65,7 +65,7 @@ class DocNumParser {
 		if ($success) {
 			if (isset($n['num'])) {
 				foreach($n["match"] as $k => $value){	
-					$match = $n["match"][$k][0];
+					$match = rtrim($n["match"][$k][0]);
 					$num = intval($n['num'][$k][0]); 
                     $offset = $n["match"][$k][1];
 					$return[] = array("match" =>$match, 

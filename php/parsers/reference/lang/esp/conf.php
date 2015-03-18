@@ -47,15 +47,26 @@
  
 $rules = Array(
 
-	"references" => Array("ref_1","ref_2"),
-	"ref_1" => "/{{type}}\s+Nº\s+\d+\.?\d*\,?\s*{{date}}/",
-	"ref_2" => "/{{partition}}\s+\d+(\s+(de la|del|de)\s+{{source}})?/",
+	"references" => Array("ref_3",
+						  "ref_2",
+						  "ref_1"
+						  ),
 
-    "type" => Array("Ley",
-    				"LEY",
-					"Decreto Ley"),
+	"ref_1" => "/{{partition}}\s+{{num}}(º|°)?\s+(de la|del|de)\s+{{source}}/",
+	"ref_2" => "/({{partition}}\s+{{num}}(º|°)?(\s+(de la|del|de)\s+))?{{type}}\s+N(º|°)\s+{{docnum}}/",
+	"ref_3" => "/({{partition}}\s+{{num}}(º|°)?(\s+(de la|del|de)\s+))?{{type}}\s+N(º|°)\s+{{docnum}}\,?\s*{{date}}/",
+
+    "type" => Array(
+					"Decreto Ley",
+					"Decreto-Ley",
+					"Ley",
+    				"LEY"),
+					
+	"num" => "\d+",
 						
-	"date" => "[\w\d\s]+\d{4}",
+	"date" => "[\w\d\sº°]+\d{4}",
+	
+	"docnum" => "\d+\.?\d*",
 	
 	"partition" => Array("artículo",
 						 "inciso"),
@@ -63,7 +74,8 @@ $rules = Array(
 	"source" => Array("Constitución de la República",
 					  "Constitución",
 					  "Carta",
-					  "Código Penal")
+					  "Código Penal",
+					  "presente ley")
 );
 
 ?>
