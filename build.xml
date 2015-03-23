@@ -47,9 +47,12 @@
         <copy todir="${basedir}/resources/ext">
             <fileset dir="${build.dir}/resources/ext" includes="**"/>  
         </copy>
-        <copy file="${build.dir}/resources/LIME-all.css" todir="${basedir}/resources/ext"/>
+        <copy todir="${basedir}/resources/images">
+            <fileset dir="${build.dir}/resources/images" includes="**"/>  
+        </copy>
+        <copy file="${build.dir}/resources/LIME-all.css" todir="${basedir}/resources"/>
         <echo file="${basedir}/bootstrap.css" append="false">
-            @import 'resources/ext/LIME-all.css';
+            @import 'resources/LIME-all.css';
         </echo>
 	</target>
 
