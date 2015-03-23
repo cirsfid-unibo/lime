@@ -65,14 +65,27 @@ Ext.define('LIME.controller.Outliner', {
     
     iconBaseCls: 'explorer-icon', 
 
+    getTreeNodeFromDomNode: function(treeRootNode, domNode) {
+        var treeNode = null;
+
+        if (!domNode) return;
+
+        if ( treeRootNode && domNode.nodeType == DomUtils.nodeType.ELEMENT ) {
+            var internalId = domNode.getAttribute(DomUtils.elementIdAttribute);
+            if ( internalId ) {
+                return treeRootNode.findChild('cls', internalId, true);
+            }
+        }
+        return treeNode;
+    },
+
     /**
      * This function expands and selects the passed node.
      * @param {Ext.data.NodeInterface} node A reference the node that has to be expanded
      */
-    expandItem : function(node) {
+    expandItem: function(node) {
         var me = this, tree = this.getOutliner(), root, row, parents,
-            nodeToSelect = null;;
-
+            nodeToSelect = null;
         root = tree.store.getRootNode();
         if (!node) {
             tree.getSelectionModel().select(root, false, true);
@@ -104,17 +117,7 @@ Ext.define('LIME.controller.Outliner', {
                 Ext.fly(row).scrollIntoView(tree.items.items[0].getEl(), false, true);
             }
         }
-    },
-    
-    getTreeNodeFromDomNode: function(treeRootNode, domNode) {
-        var treeNode = null;
-        if ( treeRootNode && domNode.nodeType == DomUtils.nodeType.ELEMENT ) {
-            var internalId = domNode.getAttribute(DomUtils.elementIdAttribute);
-            if ( internalId ) {
-                return treeRootNode.findChild('cls', internalId, true);
-            }
-        }
-        return treeNode;
+
     },
 
     beforeExpandItem: function(node) {
@@ -147,7 +150,7 @@ Ext.define('LIME.controller.Outliner', {
                 text: text,
                 cls: id,
                 leaf: (node.querySelector('['+DomUtils.elementIdAttribute+']')) ? false : true
-            };
+            }
         }
         return data;
     },
@@ -227,15 +230,16 @@ Ext.define('LIME.controller.Outliner', {
     buildTree : function(node, config) {
         var me = this,
             tree = Ext.getStore('Outliner'),
-            depth = 1,
             treeView = this.getOutliner(),
+            depth = 1,
             root = tree.getRootNode(), data;
 
         try {
             //convert to tree format json the node
             if (config != "partial" || DomUtils.getFirstMarkedAncestor(node.parentNode) == null) {
+                
                 var docClass = DocProperties.getDocClassList().split(" "), 
-                    foundNode = node.querySelector("."+docClass[(docClass.length-1)]);
+                    foundNode = node.ownerDocument.querySelector("."+docClass[(docClass.length-1)]);
 
                 data = me.createTreeDataNew(foundNode, depth);
                 
@@ -289,7 +293,6 @@ Ext.define('LIME.controller.Outliner', {
             }
             treeView.getRootNode().expand();
         } catch(e) {
-            // TODO find the error
             Ext.log({level: "error"}, e);
         }
     },
@@ -307,7 +310,7 @@ Ext.define('LIME.controller.Outliner', {
             }, 5);
         }
     },
-    
+
     onChangeEditorMode: function(config) {
         var cmp = this.getOutliner();
         if(cmp) {
@@ -345,11 +348,17 @@ Ext.define('LIME.controller.Outliner', {
                         });
                     }
                 },
+                itemexpand: function(item) {
+                    var node = DocProperties.markedElements[item.getData().cls];
+                    if (node) {
+                        this.beforeExpandItem(node.htmlElement);
+                    }
+                },
                 itemcontextmenu : function(view, rec, item, index, e, eOpts) {
                     var coordinates = [];
                     // Prevent the default context menu to show
                     e.preventDefault();
-                    /*Fire an itemclick event to select the htmlNode in the editor*/
+                    //Fire an itemclick event to select the htmlNode in the editor
                     view.fireEvent('itemclick', view, rec, item, index, e, eOpts);
                     this.application.fireEvent(Statics.eventsNames.showContextMenu, e.getXY());
                 }

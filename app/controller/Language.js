@@ -63,53 +63,6 @@ Ext.define('LIME.controller.Language', {
         selector: 'main' 
     }],
 
-    metaTemplate : {
-        outer : {
-            'identification' : {
-                'FRBRWork' : {
-                    'FRBRcountry' : {
-                        '@value' : null
-                    }
-                },
-
-                'FRBRExpression' : {
-                    'FRBRlanguage' : {
-                        '@language' : null
-                    }
-                },
-
-                'FRBRManifestation' : {
-                }
-            }
-            // TODO References
-        },
-
-        inner : {
-            'FRBRthis' : {
-                '@value' : null
-            },
-            'FRBRuri' : {
-                '@value' : null
-            },
-            'FRBRdate' : {
-                '@date' : null,
-                '@name' : null
-            },
-            'FRBRauthor' : {
-                '@href' : null,
-                '@as' : null
-            },
-            'componentInfo' : {
-                'componentData' : {
-                    '@id' : null,
-                    '@href' : null,
-                    '@name' : null,
-                    '@showAs' : null
-                }
-            }
-        }
-    },
-
     /**
      * Call the language translate function.
      * If the ajax request is successful the related view is updated.
@@ -126,9 +79,9 @@ Ext.define('LIME.controller.Language', {
             markedElements = tmpElement.querySelectorAll("*[" + DomUtils.elementIdAttribute + "]"),
             focusedElements  = tmpElement.querySelectorAll("."+DocProperties.elementFocusedCls),
             langPrefix = languageController.getLanguagePrefix(),
-            counters = {};
+            counters = {}, aknIdMapping = {};
 
-        var frbrDom = frbrDom || DocProperties.frbrDom;
+        frbrDom = frbrDom || DocProperties.frbrDom;
 
         if (frbrDom) {
             var root = tmpElement.querySelector("*["+DocProperties.docIdAttribute+"]") 
@@ -142,8 +95,6 @@ Ext.define('LIME.controller.Language', {
         
         // TODO: decide if this part is general for all languages or specific
         try {
-            DomUtils.cleanNodeFromExtId(tmpElement, true);
-
             //Remove all unused elements
             Ext.each(unusedElements, function(element) {
                 var classes = element.getAttribute("class");
@@ -160,15 +111,30 @@ Ext.define('LIME.controller.Language', {
             //Apply rules for all marked elements
             Ext.each(markedElements, function(element) {
                 var intId = element.getAttribute(DomUtils.elementIdAttribute), newId,
-                    hrefElements = tmpElement.querySelectorAll("*["+langPrefix+"href = '#"+intId+"']");
+                    hrefElements = tmpElement.querySelectorAll("*["+langPrefix+"href *= '#"+intId+"']");
+                
+                var elName = DomUtils.getNameByNode(element),
+                    button = DocProperties.getFirstButtonByName(elName),
+                    wrappingElements = Interpreters.wrappingRulesHandlerOnTranslate(element, button);
+
                 //Set a language unique Id
                 newId = languageController.setLanguageMarkingId(element, counters, tmpElement);
+                var status = element.getAttribute(langPrefix +'status');
+                var wId = element.getAttribute(langPrefix +'wId');
+
                 Ext.each(hrefElements, function(hrefElement) {
-                    hrefElement.setAttribute(langPrefix+"href", "#"+newId);
+                    var oldHref = hrefElement.getAttribute(langPrefix+"href");
+                    if ( !status || status != 'removed' || !wId ) {
+                        hrefElement.setAttribute(langPrefix+"href", oldHref.replace(intId, newId));
+                    } else if (wId) {
+                        hrefElement.setAttribute(langPrefix+"href", oldHref.replace(intId, wId));
+                    }
                 });
-                var elName = DomUtils.getNameByNode(element);
-                var button = DocProperties.getFirstButtonByName(elName);
-                var wrappingElements = Interpreters.wrappingRulesHandlerOnTranslate(element, button);
+
+                if ( newId ) {
+                    aknIdMapping[newId] = intId;
+                }
+
                 // Add ids also to wrapping elements
                 Ext.each(wrappingElements, function (el) {
                     var id = languageController.setLanguageMarkingId(el, counters, tmpElement);                    
@@ -178,29 +144,28 @@ Ext.define('LIME.controller.Language', {
             if (view && Ext.isFunction(view.setLoading)) {
                 view.setLoading(false);
             }
-            Ext.log({level: "error", stack: true}, "Language.translateContent - "+e);
             return;
         }
         
         var tmpHtml = editorController.serialize(tmpElement);
         
         //temporary trick to remove focus class when removeCls don't work
-        tmpHtml = tmpHtml.replace(/(class=\"[^\"]+)(\s+\bfocused\")/g, '$1"');
+        tmpHtml = tmpHtml.replace(/(class=\"[^\"]+)(\s+\bfocused\")/g, '$1"').replace(/\bid="[^"]*"/g, "");
 
-        //Ext.log(false, tmpHtml);
         Language.translateContent(tmpHtml, DocProperties.documentInfo.docMarkingLanguage, {
-            success : function(responseText) {
+            success : function(response) {
                 // pretty print the code because codemirror is not enough
-                var xmlPretty = vkbeautify.xml(responseText);
+                var xmlPretty = vkbeautify.xml(response.responseText);
+                
                 if (Ext.isFunction(callback)) {
-                    callback.call(languageController, xmlPretty);
+                    callback.call(languageController, xmlPretty, aknIdMapping);
                 }
                 if (view && Ext.isFunction(view.setLoading)) {
                     view.setLoading(false);
                 }
             },
             failure : function() {
-                 Ext.log({level: "error"}, "Document not translated");
+                Ext.log({level: "error"}, "Document not translated");
                 if (view && Ext.isFunction(view.setLoading)) {
                     view.setLoading(false);
                 }
@@ -212,9 +177,9 @@ Ext.define('LIME.controller.Language', {
        var languageController = this, editorController = this.getController("Editor"),
             beforeTranslate = TranslatePlugin.beforeTranslate,
         //removing all ext generated ids
-        editorContent = editorController.getContent(false, cmp).replace(/id="ext-gen(\d)+"/g, ""), 
+        editorContent = editorController.getContent(false, cmp).replace(/id="ext-element-(\d)+"/g, ""), 
         params = {}, newParams, newFn;
-        
+
         if (view && Ext.isFunction(view.setLoading)) {
             view.setLoading(true);
         }
@@ -266,51 +231,52 @@ Ext.define('LIME.controller.Language', {
             work = identification['FRBRWork'],
             expression = identification['FRBRExpression'],
             manifestation = identification['FRBRManifestation'],
-            internalMetadata,
             uriRegex = {
                 workUri : '(\.xml)|(%lang%@)/',
                 workOnlyNumber : '/\\w{3}@.*$',
                 expressionUri : '(\.xml)'
             };
-            
+        
+        docUri = docUri.replace(/:/g, '%3A');
+
         // Build the main structure
         container.setAttribute('class', Statics.metadata.containerClass);
-        internalMetadata = this.buildInternalMetadata(container);
-        container.appendChild(internalMetadata);
 
         // Populate template
         // Example: identification['FRBRWork']['FRBRCountry']['@value'] = values.nationality;
         if (values && values.work && values.expression && values.manifestation){
             var newWorkUriRegex = new RegExp(uriRegex.expressionUri.replace('%lang%', values.expression.docLang), 'gi');
-                
+            var workUri = docUri.substr(0,docUri.indexOf(values.expression.docLang));
+
             work['FRBRcountry']['@value'] = values.work.nationality;
-            work['FRBRthis']['@value'] = docUri.replace(newWorkUriRegex, '');
-            work['FRBRuri']['@value'] = docUri.replace(new RegExp(uriRegex.workOnlyNumber, 'gi'), '');
+            work['FRBRthis']['@value'] = workUri;
+            work['FRBRuri']['@value'] = workUri.replace(new RegExp(uriRegex.workOnlyNumber, 'gi'), '');
             //work['FRBRdate']['@date'] = Ext.Date.format(values.work.date, 'Y-m-d');
             work['FRBRdate']['@date'] = values.work.date;
             
+
             expression['FRBRthis']['@value'] = docUri.replace(uriRegex.expressionUri, '');
-            expression['FRBRuri']['@value'] = docUri.split(values.expression.docLang+'@')[0]+values.expression.docLang+'@';
+            //expression['FRBRuri']['@value'] = docUri.split(values.expression.docLang+'@')[0]+values.expression.docLang+'@';
+            expression['FRBRuri']['@value'] = docUri.replace(uriRegex.expressionUri, '');
             expression['FRBRlanguage']['@language'] = values.expression.docLang;
             //expression['FRBRdate']['@date'] = Ext.Date.format(values.expression.date, 'Y-m-d');
             expression['FRBRdate']['@date'] = values.expression.date;
             
             manifestation['FRBRthis']['@value'] = docUri;
             manifestation['FRBRuri']['@value'] = docUri; // TODO what about the suffix (e.g. akn)?
-            //manifestation['FRBRdate']['@date'] = Ext.Date.format(values.manifestation.date, 'Y-m-d');
-            
+            manifestation['FRBRdate']['@date'] = Ext.Date.format(new Date(), 'Y-m-d');
         }
 
         // Save metadata in DocProperties
         DocProperties.metadata = metaTemplate;
-        DocProperties.frbrDom = null;
         // Convert to HTML
         if (dom) {
             var frbr = Utilities.jsonToHtml(metaTemplate);
             frbr.setAttribute('class', Statics.metadata.frbrClass);
             this.parseFrbrMetadata(frbr);
-            container.appendChild(frbr);
-            container.setAttribute('class', Statics.metadata.containerClass);
+            var internalMetadata = this.buildInternalMetadata(container);
+            container.appendChild(internalMetadata);
+            //container.appendChild(frbr);
             return container;
         }
         return mainTemplate;
@@ -323,12 +289,12 @@ Ext.define('LIME.controller.Language', {
     parseMetadata : function(xmlDom, xmlString, noSideEffects) {
         var metaObject = {}, extDom;
         try {
-            extDom = Ext.get(xmlDom);
+            extDom = Ext.fly(xmlDom);
         } catch(e) { //Ext.Element sometimes fails with IE browsers.
             var parser = new DOMParser();
             var doc = parser.parseFromString(xmlString, "application/xml");
-            extDom = Ext.get(doc);
-        }    
+            extDom = Ext.fly(doc);
+        }  
          var internalMetadata = extDom.down('*[class=internalMetadata]'), 
              docLang, docLocale, docType, nationality, frbrDom;
             if (internalMetadata) {
@@ -406,6 +372,14 @@ Ext.define('LIME.controller.Language', {
             langSetId = me.getLanguageMarkingIdGeneral;
         }
         newId = langSetId(markedElement, langPrefix, root, counters);
+
+        var oldId = markedElement.getAttribute(langPrefix + Language.getElementIdAttribute());
+        
+        // TODO: understand how to manage changing ids
+        if ( oldId && newId && oldId != newId ) {
+            markedElement.setAttribute(langPrefix + 'wId', oldId);
+        }
+
         if (newId != '') {
             markedElement.setAttribute(langPrefix + DomUtils.langElementIdAttribute, newId);
             markedElement.setAttribute(langPrefix + Language.getElementIdAttribute(), newId);
@@ -415,9 +389,7 @@ Ext.define('LIME.controller.Language', {
     },
     
     parseFrbrMetadata : function(dom, noSideEffects) {
-        var frbr, 
-            frbrDom = Ext.get(dom);
-
+        var frbr, frbrDom = Ext.fly(dom);
         frbr = (noSideEffects) ? {} : DocProperties.frbr;
         frbr.work = {};
         frbr.expression = {};
@@ -463,15 +435,53 @@ Ext.define('LIME.controller.Language', {
         }
 
         if(!noSideEffects) {
-            DocProperties.frbrDom = dom;   
+            if ( DocProperties.frbrDom ) {
+                if ( frbr.work.FRBRuri ) {
+                    workUri = DocProperties.frbrDom.querySelector('.FRBRWork .FRBRuri');
+                    if ( workUri ) {
+                        workUri.setAttribute('value', frbr.work.FRBRuri);
+                    } 
+                }
+
+                if ( frbr.expression.FRBRuri ) {
+                    expUri = DocProperties.frbrDom.querySelector('.FRBRExpression .FRBRuri');
+                    if ( expUri ) {
+                        var expThisUri = DocProperties.frbrDom.querySelector('.FRBRExpression .FRBRthis');
+                        expUri.setAttribute('value', frbr.expression.FRBRuri);
+                        if ( expThisUri ) {
+                            expThisUri.setAttribute('value', frbr.expression.FRBRuri);
+                        }
+                    } 
+                }
+
+                if ( frbr.manifestation.FRBRuri ) {
+                    manUri = DocProperties.frbrDom.querySelector('.FRBRManifestation .FRBRuri');
+                    if ( manUri ) {
+                        var manThisUri = DocProperties.frbrDom.querySelector('.FRBRManifestation .FRBRthis');
+                        manUri.setAttribute('value', frbr.manifestation.FRBRuri);
+                        if ( manThisUri ) {
+                            manThisUri.setAttribute('value', frbr.manifestation.FRBRuri);
+                        }
+                    } 
+                }
+                if ( manDate ) {
+                    var date = manDate.getAttribute('date');
+                    manDate = DocProperties.frbrDom.querySelector('.FRBRManifestation .FRBRdate');
+                    if ( manDate ) {
+                        manDate.setAttribute('date', date);
+                    }
+                }
+            } else {
+                DocProperties.frbrDom = dom;
+            }
             this.application.fireEvent(Statics.eventsNames.frbrChanged);  
         }
         return frbr;
     },
     
     getLanguagePrefix: function() {
-         var languageConfig = LanguageConfigLoader.getConfig();
-         return languageConfig.markupMenuRules.defaults.attributePrefix;       
+        var languageConfig = this.getStore("LanguagesPlugin").getConfigData();
+        return languageConfig.markupMenuRules.defaults.attributePrefix;       
     },
     
     nodeGetLanguageAttribute: function(node, attribute) {
@@ -522,13 +532,14 @@ Ext.define('LIME.controller.Language', {
         // Checking that before load will be called just one time per document
         if (beforeLoad && !newParams.beforeLoaded) {
             DocProperties.docsMeta = {};
+            DocProperties.frbrDom = null;
             if (params.docText) {
-                // IE exception
-                try {
-                    docDom = parser.parseFromString(params.docText, "application/xml");
-                    if (!(docDom.documentElement.tagName == "parsererror" || docDom.documentElement.querySelector("parseerror") || docDom.documentElement.querySelector("parsererror"))) {
-                        params.docDom = docDom;
-                    }
+            	// IE exception
+            	try {
+	                docDom = parser.parseFromString(params.docText, "application/xml");
+	                if (!(docDom.documentElement.tagName == "parsererror" || docDom.documentElement.querySelector("parseerror") || docDom.documentElement.querySelector("parsererror"))) {
+	                    params.docDom = docDom;
+	                }
                 } catch(e) {
                 }
             }
@@ -539,7 +550,6 @@ Ext.define('LIME.controller.Language', {
                 newParams.beforeLoaded = true;
                 
                 if (newParams.metaResults && !noSideEffects) {
-                    DocProperties.docsMeta = {};
                     Ext.each(newParams.metaResults, function(metaObj, index) {
                         var name = metaObj.docType;
                         docCounters[name] = docCounters[name]+1 || 1; 

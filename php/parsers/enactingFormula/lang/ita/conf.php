@@ -48,7 +48,9 @@
 $rules = Array(
 
 	"main" => "/({{enactingFormula}})/i",
-	"enactingFormula" => "{{formula}}(\s+(il|la)\s+seguente\s+{{doctype}})?:"
+	"enactingFormula" => "({{frasiIniziali}}\s*)?{{formula}}(\s+(il|la)\s+seguente\s+{{doctype}})?:",
+	"frasiIniziali" => Array("La\s+Camera\s+dei\s+deputati\s+ed\s+il\s+Senato\s+della\s+Repubblica\s+hanno\s+approvato;\s+IL\s+PRESIDENTE\s+DELLA\s+REPUBBLICA",
+							"IL\s+PRESIDENTE\s+DELLA\s+REPUBBLICA")
 );
 
 ?>

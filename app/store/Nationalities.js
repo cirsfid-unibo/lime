@@ -50,19 +50,19 @@
  * http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
  */
 Ext.define('LIME.store.Nationalities', {
-    extend: 'Ext.data.Store',
+    extend : 'Ext.data.Store',
     autoLoad: true,
-    fields: [
+    fields : [
         'alpha-2',
         'name'
     ],
     
     proxy : {
-        type: 'ajax',
-        url: 'config/locale/countries.json',
-        reader: {
-            type: 'json',
-            rootProperty: 'countries'
+        type : 'ajax',
+        url : 'config/locale/countries.json',
+        reader : {
+            type : 'json',
+            rootProperty : 'countries'
         }
     }
 });

@@ -103,6 +103,7 @@
 	"type": "Тип",
 	"newLabel": "New",
 	"countryLabel": "Country",
+    "docProponent": "Doc. Proponent",
 	"folderLabel": "Folder",
 	"docTypeLabel": "Doc. Type",
 	"docDateLabel": "Doc. date",

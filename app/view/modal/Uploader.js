@@ -67,6 +67,8 @@ Ext.define('LIME.view.modal.Uploader', {
         type : 'vbox',
         align: 'center'
     },
+    
+    closeAction: 'destroy',
 
     border : false,
 
@@ -195,4 +197,5 @@ Ext.define('LIME.view.modal.Uploader', {
 	        }, 300, this);
         }
     }
+
 });

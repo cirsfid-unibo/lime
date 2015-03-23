@@ -278,6 +278,19 @@ class AKNDiff {
 		}
 		return implode(' ', $ids);
 	}
+
+	protected function getAllParentsWId($node) {
+		$ids = array();
+		$parent = $node->parentNode;
+		while($parent) {
+			if ($parent->nodeName == 'div') {
+				$id = $parent->getAttribute('akn_wId');
+				if ($id) $ids[] = $id;
+			}
+			$parent = $parent->parentNode;
+		}
+		return implode(' ', $ids);
+	}
 	
 	protected function buildLineDiff($node) {
 		$trNode = $this->tableDOM->createElement('tr');

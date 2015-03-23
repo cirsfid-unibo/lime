@@ -1,3 +1,4 @@
 {
-	"controllers": ["XmlValidationController"]
+	"controllers": ["XmlValidationController"],
+	"views": ["ValidationResultWindow"]
 }

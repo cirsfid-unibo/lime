@@ -1,11 +1,6 @@
 {
 	"amendmentBody": {
-		"pattern": "container",
-		"buttonStyle": "background-color: #74BAAC;",
-		"wrapperStyle": {
-			"before": "background-color: #74BAAC; border-color: #74BAAC;",
-			"this": "border:1px solid #74BAAC;"
-		}
+		"pattern": "container"
 	},
 	"amendmentHeading": {
 		"pattern": "container"
@@ -32,7 +27,10 @@
 		"pattern": "hcontainer"
 	},
 	"attachments": {
-		"pattern": "patternless"
+		"pattern": "container"
+	},
+	"attachment": {
+		"pattern": "container"
 	},
 	"authorialNote": {
 		"pattern": "popup"
@@ -68,7 +66,7 @@
 		"pattern": "patternless"
 	},
 	"components": {
-		"pattern": "patternless"
+		"pattern": "container"
 	},
 	"concept": {
 		"pattern": "inline"
@@ -375,6 +373,9 @@
 	},
 	"wrap": {
 		"pattern": "container"
+	},
+	"wrapUp": {
+		"pattern": "block"
 	},
 	"content": {
 		"pattern": "container"

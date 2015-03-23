@@ -23,6 +23,11 @@ version="1.0">
 			<xsl:value-of select="."/>
 		</xsl:attribute>
 	</xsl:template>
+	<xsl:template match="@wid">
+		<xsl:attribute name="wId">
+			<xsl:value-of select="."/>
+		</xsl:attribute>
+	</xsl:template>
 	<xsl:template match="@empoweredby">
 		<xsl:attribute name="empoweredBy">
 			<xsl:value-of select="."/>

@@ -70,6 +70,21 @@ Ext.define('LIME.controller.ModsMarkerController', {
         splitAttr: "splitted",
         externalConnectedElements: ["quotedStructure", "quotedText", "ref", "rref", "mref"]
     },
+
+
+    init : function() {
+        var me = this;
+        this.control({
+            '#secondEditor mainEditor' : {
+                click: me.secondEditorClickHandler
+            }
+        });
+    },
+
+    secondEditorClickHandler: function(editor, evt) {
+        var selectedNode = DomUtils.getFirstMarkedAncestor(evt.target);
+        Ext.callback(this.secondEditorClickHandlerCustom, this, [selectedNode, evt, editor]);
+    },
     
     onDocumentLoaded : function(docConfig) {
         var me = this, modPosChecked = Ext.bind(this.modPosChecked, this);
@@ -101,9 +116,8 @@ Ext.define('LIME.controller.ModsMarkerController', {
         try {
             this.detectExistingMods();    
         } catch(e) {
-            Ext.log({level: "error"}, "ModsMarkerController.onDocumentLoaded"+e);
+            Ext.log({level: "error"}, e);
         }
-        __ME = this;
     },
     
     modPosChecked: function(cmp, checked) {
@@ -145,7 +159,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 modType = textMod.getAttribute('type');
                 if(!noEffect) {
                     metaMod.setAttribute(langPrefix+'href', "#"+intId);
-                    element.removeAttribute(elId.name);    
+                    element.removeAttribute(elId.name);
                 }
                 returnMods.push({
                     node: element,
@@ -184,6 +198,13 @@ Ext.define('LIME.controller.ModsMarkerController', {
                             var edElId = editorEl.getAttribute(DomUtils.elementIdAttribute);
                             modEl.setAttribute(hrefAttr, href.replace(id, edElId));
                             editorEl.removeAttribute(hrefAttr);
+                            if ( element.querySelector('.old') )  {
+                                var oldText = element.querySelector('.old').textContent;
+                                editorEl.setAttribute('data-old-text', oldText);
+                                if ( modType == 'repeal' ) {
+                                    editorEl.innerHTML = oldText;
+                                }
+                            }
                             if(buttonCfg && button && DomUtils.getButtonByElement(editorEl).name == button.name) {
                                 me.setElementStyles([editorEl], button, null, buttonCfg);
                             }
@@ -192,7 +213,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 });
             }
         });
-        
+
         //TODO:passive mods
         return returnMods;
     },
@@ -203,9 +224,9 @@ Ext.define('LIME.controller.ModsMarkerController', {
             button = DomUtils.getButtonByElement(node);
         if(!elementName) {
             node = DomUtils.getFirstMarkedAncestor(node.parentNode);
+            button = DomUtils.getButtonByElement(node);
             elementName = DomUtils.getElementNameByNode(node);
         }
-
         if(button && button.name == 'ref') {
             if(!menu.down("*[name=openlink]"))
                 menu.add({
@@ -220,7 +241,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     }
                 });
         }
-
+        
         if(node && elementName) {
             markedParent = DomUtils.getFirstMarkedAncestor(node.parentNode);
             if(markedParent && (elementName == "quotedStructure"
@@ -473,20 +494,17 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 insertionCustom: {
                     label: Locale.getString("insertion", me.getPluginName()),
                     buttonStyle: "background-color:#DBEADC;border-radius:3px",
-                    handler: me.insertionHandler,
-                    markAsButton: "ins"
+                    handler: me.beforeInsertionHandler
                 },
                 repealCustom: {
                     label: Locale.getString("repeal", me.getPluginName()),
                     buttonStyle: "background-color:#DBEADC;border-radius:3px",
-                    handler: me.delHandler,
-                    markAsButton: "del"
+                    handler: me.beforeDelHandler
                 },
                 substitutionCustom: {
                     label: Locale.getString("substitution", me.getPluginName()),
                     buttonStyle: "background-color:#DBEADC;border-radius:3px",
-                    handler: me.substitutionHandler,
-                    markAsButton: "ins",
+                    handler: me.beforeSubstitutionHandler,
                     elementStyle: "background-color: #fcf8e3;border-color: #faebcc;",
                     labelStyle: "border-color: #faebcc;",
                     shortLabel: Locale.getString("substitution", me.getPluginName()),
@@ -495,12 +513,24 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 splitCustom: {
                     label: Locale.getString("split", me.getPluginName()),
                     buttonStyle: "background-color:#DBEADC;border-radius:3px",
-                    handler: me.splitHandler
+                    handler: function(button) {
+                        if ( DocProperties.documentState == 'diffEditingScenarioB' ) { 
+                            me.splitHandlerB(button);
+                        } else {
+                            me.splitHandler(button);
+                        }
+                    }
                 },
                 joinCustom: {
                     label: Locale.getString("join", me.getPluginName()),
                     buttonStyle: "background-color:#DBEADC;border-radius:3px",
-                    handler: me.joinHandler
+                    handler: function(button) {
+                        if ( DocProperties.documentState == 'diffEditingScenarioB' ) { 
+                            me.joinHandlerB(button);
+                        } else {
+                            me.joinHandler(button);
+                        }
+                    }
                 },
                 renumberingCustom: {
                     label: Locale.getString("renumbering", me.getPluginName()),
@@ -666,10 +696,17 @@ Ext.define('LIME.controller.ModsMarkerController', {
             Ext.each(path, function(objStructure) {
                 if (iterNode.getAttribute("class") != objStructure.name) {
                     tmpNode = iterNode.querySelector("[class='" + objStructure.name + "']");
+                    var source = (objStructure.name == 'analysis') ? {
+                        attributes: [{
+                            name: "source",
+                            value: " "
+                        }]
+                    } : {};
+
                     if (!tmpNode) {
-                        node = me.objToDom(iterNode.ownerDocument, {
+                        node = me.objToDom(iterNode.ownerDocument, Ext.merge({
                             name : objStructure.name
-                        });
+                        }, source));
                         me.insertChildInOrder(iterNode, node, parentStructure, objStructure);               
                     } else {
                         iterNode = tmpNode;
@@ -780,7 +817,12 @@ Ext.define('LIME.controller.ModsMarkerController', {
         
         style["this"]+= ";"+buttonCfg.elementStyle;
         style["before"]+= ";"+buttonCfg.labelStyle;
-        editor.applyAllStyles('body:not(.noboxes) *[class="' + styleClass + '"]['+buttonCfg.modType+']', style, buttonCfg.shortLabel);
+        editor.applyAllStyles('body#tinymce:not(.noboxes) *[class="' + styleClass + '"]['+buttonCfg.modType+']', style, buttonCfg.shortLabel);
+    },
+
+    getTextualModId: function( parent ) {
+        var textualMods = parent.querySelectorAll("*[class~=textualMod]");
+        return "pmod_"+(textualMods.length+1);
     },
     
     activeInsertionHandler: function(button, markedElements, originalButton) {
@@ -808,7 +850,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 value: "#"
             },{
                 name: "eId",
-                value: "pmod"
+                value: me.getTextualModId(activeModifications)
             }],
             children: [{
                 name: "source",
@@ -861,7 +903,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 value: "#"
             },{
                 name: "eId",
-                value: "pmod"
+                value: me.getTextualModId(activeModifications)
             }],
             children: [{
                 name: "source",
@@ -908,7 +950,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 value: "#"
             },{
                 name: "eId",
-                value: "pmod"
+                value: me.getTextualModId(activeModifications)
             }],
             children: [{
                 name: "source",
@@ -968,7 +1010,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 value: "#"
             },{
                 name: "eId",
-                value: "pmod"
+                value: me.getTextualModId(activeModifications)
             }],
             children: [{
                 name: "source",
@@ -1029,7 +1071,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 value: "#"
             },{
                 name: "eId",
-                value: "pmod"
+                value: me.getTextualModId(activeModifications)
             }],
             children: [{
                 name: "source",
@@ -1090,7 +1132,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 value: "#"
             },{
                 name: "eId",
-                value: "pmod"
+                value: me.getTextualModId(activeModifications)
             }],
             children: [{
                 name: "source",
@@ -1122,6 +1164,32 @@ Ext.define('LIME.controller.ModsMarkerController', {
         activeModifications.appendChild(textualMod);
         me.setElementStyles(markedElements, button, originalButton);
     },
+
+    beforeInsertionHandler: function() {
+        var me = this,
+            editor = me.getController('Editor'),
+            selectionRange = editor.lastSelectionRange || editor.getEditor().selection.getRng();
+
+        if ( selectionRange.toString() ) {
+            var aliasButton = DocProperties.getFirstButtonByName('ins');
+            me.application.fireEvent('markingMenuClicked', aliasButton, {
+                callback : Ext.bind(me.insertionHandler, me)
+            });
+        } else {
+            var focusedNode = editor.getFocusedNode();
+                
+            if ( focusedNode ){
+                var button = DomUtils.getButtonByElement(focusedNode);
+                me.insertionHandler(button, [focusedNode]);
+                me.setElementStyles([focusedNode], button, button, {
+                    shortLabel: button.shortLabel+" "+Locale.getString("inserted", me.getPluginName()),
+                    modType: 'inserted',
+                    elementStyle: "",
+                    labelStyle: "background-color: #75d6ff; border: 1px solid #44b4d5;"
+                });
+            }
+        }
+    },
         
     insertionHandler: function(button, markedElements) {
         var me = this,
@@ -1130,7 +1198,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             metaDom = docMeta.metadata.originalMetadata.metaDom,
             passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
             modEl;
-        
+
         Ext.each(markedElements, function(element) {
             var textModObj = {
                 name: "textualMod",
@@ -1142,7 +1210,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     value: "#"
                 },{
                     name: "eId",
-                    value: "pmod"
+                    value: me.getTextualModId(passiveModifications)
                 }],
                 children: [{
                     name: "source",
@@ -1162,8 +1230,9 @@ Ext.define('LIME.controller.ModsMarkerController', {
             modEl = element;
             passiveModifications.appendChild(textualMod);
         });
-        
-        me.askForRenumbering(modEl, textualMod);
+        if ( DocProperties.documentState != 'diffEditingScenarioB' ) {
+            me.askForRenumbering(modEl, textualMod);
+        }
     },
     
     renumberingHandler: function(button) {
@@ -1201,21 +1270,45 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     return true;
                 });
                 if (parents.length) {
-                    var elementSelector = {
+                    /*var elementSelector = {
                         xtype: 'radiogroup',
-                        columns: 1,
+                        //columns: 1,
                         items: parents.reverse().map(function(parent) {
                             var id = parent.getAttribute(DomUtils.elementIdAttribute),
                                 relBtn = DomUtils.getButtonByElement(parent);
                             return {
-                                boxLabel: relBtn.waweConfig.shortLabel,
+                                boxLabel: relBtn.shortLabel,
                                 name: 'splitParent',
                                 inputValue: id
                             };
                         })
-                    };
+                    };*/
 
-                    Utilities.getLastItem(elementSelector.items).checked = true;
+                    // Work around for Extjs4 bug with radio buttons in window
+                    var html = '';
+                    var items = parents.reverse().map(function(parent) {
+                        var id = parent.getAttribute(DomUtils.elementIdAttribute),
+                            relBtn = DomUtils.getButtonByElement(parent);
+                        
+                        return {
+                            boxLabel: relBtn.shortLabel,
+                            name: 'splitParent',
+                            inputValue: id
+                        };
+                    });
+                    Utilities.getLastItem(items).checked = true;
+
+                    Ext.each(items, function(item) {
+                        var checked = (item.checked) ? 'checked="checked"' : '';
+                        html+= '<input type="radio" name="'+item.name+'" value="'+item.inputValue+'">'+item.boxLabel+'<br>';
+                    });
+
+                    var elementSelector = {
+                        xtype  : 'box',
+                        autoEl : {
+                            html : html
+                        }
+                    };
 
                     var onClose = function(cmp) {
                         cmp.close();
@@ -1223,8 +1316,10 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     };
 
                     me.createAndShowFloatingForm(selection.start, formTitle, false, false, function(cmp) {
-                        var parentId = cmp.getValues().splitParent;
-                        var tmpParent = Ext.fly(selection.start).parent(".toMarkNode, .beaking", true);
+                        //var parentId = cmp.getValues().splitParent;
+                        var parentId = me.getRadioSelectedValue("splitParent");
+                        var tmpParent = Ext.fly(selection.start).parent(".toMarkNode", true) || 
+                                        Ext.fly(selection.start).parent(".beaking", true);
                         var posNode = tmpParent || selection.start;
                         me.splitElement(DocProperties.getMarkedElement(parentId).htmlElement, posNode);
                         onClose(cmp);
@@ -1240,6 +1335,18 @@ Ext.define('LIME.controller.ModsMarkerController', {
         } else {
             Ext.MessageBox.alert("Error", "You can split one element at time!");
         } 
+    },
+
+    splitHandlerB: function(button) {
+        //TODO
+    },
+
+    getRadioSelectedValue: function(name) {
+        var inputItems = Ext.Array.toArray(document.getElementsByName(name));
+        inputItems = inputItems.filter(function(input) {
+            return input.checked;
+        });
+        return (inputItems.length) ? inputItems[0].value : false;
     },
 
     splitElement: function(node, posNode, initialSplitNode) {
@@ -1302,7 +1409,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 value: "#"
             },{
                 name: "eId",
-                value: "pmod"
+                value: me.getTextualModId(passiveModifications)
             }],
             children: [{
                 name: "source",
@@ -1389,6 +1496,107 @@ Ext.define('LIME.controller.ModsMarkerController', {
             Ext.MessageBox.alert("Error", "Select more than one siblings!");
         } 
     },
+
+    joinHandlerB : function(button) {
+        var me = this,
+            editor = me.getController("Editor"),
+            selection = editor.getSelectionObject(null, null, true),
+            joinedNode = DomUtils.getFirstMarkedAncestor(selection.start),
+            joinedData = [];
+
+        if ( joinedNode ) {
+            var markButton = DomUtils.getButtonByElement(joinedNode);
+
+            var onClose = function(cmp) {
+                cmp.close();
+            };
+
+            var registerJoin = function(data) {
+                joinedNode.setAttribute(me.getJoinAttr(), "true");
+                me.setElementStyles([joinedNode], markButton, markButton, {
+                    shortLabel: markButton.shortLabel+" "+Locale.getString("joined", me.getPluginName()),
+                    modType: me.getJoinAttr(),
+                    elementStyle: "",
+                    labelStyle: "background-color: #75d6ff; border: 1px solid #44b4d5;"
+                });
+                me.setJoinMetadata(joinedNode, data);
+            };
+
+            var winCmp = me.createAndShowFloatingForm(joinedNode, 'Select elements to join', false, false, function(cmp) {
+                var grid = cmp.down('grid'),
+                    data = [];
+                grid.store.each(function(record) {
+                    var node = cmp.editor.getBody().querySelector('['+DomUtils.elementIdAttribute+'='+record.get('id')+']');
+                    data.push({
+                        id: record.get('id'),
+                        langId: record.get('eId'),
+                        node: node
+                    });
+                });
+                registerJoin(data);
+                onClose(cmp);
+            }, onClose, {
+                items : [me.getNodesGridConfig()],
+                width: 400
+            });
+
+            me.secondEditorClickHandlerCustom = function(node, evt, ed) {
+                winCmp.editor = ed;
+                if ( !node ) return;
+                var markButton = DocProperties.getFirstButtonByName(DomUtils.getNameByNode(node)),
+                    body = ed.getBody();
+
+                if ( markButton && winCmp && winCmp.isVisible() ) {
+                    var grid = winCmp.down('grid');
+
+                    if ( !grid.store.getCount() ) {
+                        editor.unFocusNodes(false, body);
+                    } else {
+                        var firstNode = body.querySelector('['+DomUtils.elementIdAttribute+'='+grid.store.getAt(0).get('id')+']');
+                        if ( firstNode && DomUtils.getSiblingsFromNode(firstNode).indexOf(node) == -1 ) {
+                            Ext.Msg.alert(Locale.strings.error, "You can join only sibling nodes");
+                            return;
+                        }
+                    }
+
+                    editor.setFocusStyle(node);
+
+                    grid.store.loadData([{
+                        name: markButton.shortLabel,
+                        content: node.textContent,
+                        id: node.getAttribute(DomUtils.elementIdAttribute),
+                        eId: node.getAttribute(Language.getAttributePrefix()+'eid')
+                    }], true);
+                }
+            };
+        }
+    },
+
+    getNodesGridConfig: function() {
+        return {
+            xtype: 'gridpanel',
+            store: Ext.create('Ext.data.Store', {
+                fields:['name', 'content', 'id', 'eId'],
+                data: []
+            }),
+            columns: [
+                { text: 'Name',  dataIndex: 'name' },
+                { text: 'Content', dataIndex: 'content', flex: 1 }, {
+                    xtype : 'actioncolumn',
+                    width : 30,
+                    sortable : false,
+                    menuDisabled : true,
+                    items : [{
+                        icon : 'resources/images/icons/delete.png',
+                        tooltip : 'Remove',
+                        handler : function(grid, rowIndex) {
+                            grid.getStore().removeAt(rowIndex);
+                        }
+                    }]
+                }
+            ]
+        };
+    },
     
     setJoinMetadata: function(joinedNode, joinedData) {
         var me = this,
@@ -1396,7 +1604,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             langPrefix = editorMeta.langPrefix,
             metaDom = editorMeta.metadata.originalMetadata.metaDom,
             passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
-            destId = joinedData[0].id;
+            destId = joinedNode.getAttribute(DomUtils.elementIdAttribute);
             
         textModObj = {
             name: "textualMod",
@@ -1408,7 +1616,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 value: "#"
             },{
                 name: "eId",
-                value: "pmod"
+                value: me.getTextualModId(passiveModifications)
             }],
             children: [{
                 name: "source",
@@ -1438,6 +1646,33 @@ Ext.define('LIME.controller.ModsMarkerController', {
         textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
         passiveModifications.appendChild(textualMod);    
     },
+
+    beforeDelHandler: function() {
+        var me = this,
+            editor = me.getController('Editor'),
+            selectionRange = editor.lastSelectionRange || editor.getEditor().selection.getRng();
+
+        if ( selectionRange.toString() ) {
+            var aliasButton = DocProperties.getFirstButtonByName('del');
+            me.application.fireEvent('markingMenuClicked', aliasButton, {
+                callback : Ext.bind(me.delHandler, me)
+            });
+        } else {
+            var focusedNode = editor.getFocusedNode();
+            if ( focusedNode ){
+                var button = DomUtils.getButtonByElement(focusedNode);
+                me.delHandler(button, [focusedNode]);
+                focusedNode.setAttribute(Language.getAttributePrefix()+"status", "removed");
+                DomUtils.removeChildren(focusedNode);
+                me.setElementStyles([focusedNode], button, button, {
+                    shortLabel: button.shortLabel+" "+Locale.getString("deleted", me.getPluginName()),
+                    modType: 'deleted',
+                    elementStyle: "",
+                    labelStyle: "background-color: #75d6ff; border: 1px solid #44b4d5;"
+                });
+            }
+        }
+    },
     
     delHandler: function(button, markedElements) {
         var me = this,
@@ -1446,46 +1681,63 @@ Ext.define('LIME.controller.ModsMarkerController', {
             metaDom = editorMeta.metadata.originalMetadata.metaDom,
             passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
             modEl;
-        
-        Ext.each(markedElements, function(element) {
-            var textModObj = {
-                name: "textualMod",
-                attributes: [{
-                    name: "type",
-                    value: "repeal"
-                },{
-                    name: "period",
-                    value: "#"
-                },{
-                    name: "eId",
-                    value: "pmod"
-                }],
-                children: [{
-                    name: "source",
+
+        var setMetadata = function(oldText) {
+            Ext.each(markedElements, function(element) {
+                oldText = oldText || DomUtils.getTextOfNode(element);
+                var textModObj = {
+                    name: "textualMod",
                     attributes: [{
-                        name: langPrefix+"href",
-                        value: " "
+                        name: "type",
+                        value: "repeal"
+                    },{
+                        name: "period",
+                        value: "#"
+                    },{
+                        name: "eId",
+                        value: me.getTextualModId(passiveModifications)
+                    }],
+                    children: [{
+                        name: "source",
+                        attributes: [{
+                            name: langPrefix+"href",
+                            value: " "
+                        }]
+                    },{
+                        name: "destination",
+                        attributes: [{
+                            name: langPrefix+"href",
+                            value: "#"+element.getAttribute("internalid")
+                        }]
+                    },{
+                        name: "old",
+                        text: oldText
                     }]
-                },{
-                    name: "destination",
-                    attributes: [{
-                        name: langPrefix+"href",
-                        value: "#"+element.getAttribute("internalid")
-                    }]
-                },{
-                    name: "old",
-                    text: DomUtils.getTextOfNode(element)
-                }]
-            }; 
-            modEl = element;
-            textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
-            passiveModifications.appendChild(textualMod);
-        });
-        me.askForRenumbering(modEl, textualMod);
+                }; 
+                modEl = element;
+                textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
+                passiveModifications.appendChild(textualMod);
+            });
+        };
+
+
+        if ( DocProperties.documentState != 'diffEditingScenarioB' ) {
+            setMetadata();
+            me.askForRenumbering(modEl, textualMod);
+        } else if ( markedElements.length ) {
+            var formTitle = 'Insert the old text';
+            me.createAndShowFloatingForm(markedElements[0], formTitle, false, false, function(cmp, text) {
+                setMetadata(text);
+                cmp.close();
+            }, function(cmp) {
+                cmp.close();
+                Ext.fly(markedElements[0]).remove();
+            });
+        }
     },
     
     updateSubsMetadata: function(node, oldText) {
-        var me = this, extNode = Ext.get(node),
+        var me = this, extNode = Ext.fly(node),
             elId = extNode.dom.getAttribute(DomUtils.elementIdAttribute),
             editorMeta = me.getDocumentMetadata(),
             parent = extNode.up(".hcontainer"),
@@ -1507,7 +1759,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 value: "#"
             },{
                 name: "eId",
-                value: "pmod"
+                value: me.getTextualModId(passiveModifications)
             }],
             children: [{
                 name: "source",
@@ -1543,7 +1795,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },
     
     updateRenumberingMetadata: function(node, oldText, renumberedNode) {
-        var me = this, extNode = Ext.get(node),
+        var me = this, extNode = new Ext.Element(node),
             language = me.getController("Language"),
             elId = language.nodeGetLanguageAttribute(renumberedNode, "eId").value || renumberedNode.getAttribute(DomUtils.elementIdAttribute),
             editorMeta = me.getDocumentMetadata(),
@@ -1570,7 +1822,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 value: "#"
             },{
                 name: "eId",
-                value: "pmod"
+                value: me.getTextualModId(passiveModifications)
             }],
             children: [{
                 name: "source",
@@ -1602,6 +1854,35 @@ Ext.define('LIME.controller.ModsMarkerController', {
             passiveModifications.replaceChild(textualMod, prevTextualMod);           
         } else {
             passiveModifications.appendChild(textualMod);    
+        }
+    },
+
+    beforeSubstitutionHandler: function(aliasButton, elements) {
+        var me = this,
+            editor = me.getController('Editor'),
+            selectionRange = editor.lastSelectionRange || editor.getEditor().selection.getRng();
+
+        if ( selectionRange.toString() ) {
+            var aliasButton = DocProperties.getFirstButtonByName('ins');
+            me.application.fireEvent('markingMenuClicked', aliasButton, {
+                callback : Ext.bind(me.substitutionHandler, me)
+            });
+        } else {
+            var focusedNode = editor.getFocusedNode();
+            if ( focusedNode ){
+                var button = DomUtils.getButtonByElement(focusedNode);
+                me.createSubstitutionBlock(focusedNode, false, false, function(obj) {
+                    var oldText = DomUtils.getTextOfNode(obj.node);
+                    me.updateSubsMetadata(focusedNode, oldText);
+
+                    me.setElementStyles([focusedNode], button, button, {
+                        shortLabel: button.shortLabel+" "+Locale.getString("replaced", me.getPluginName()),
+                        modType: 'replaced',
+                        elementStyle: "",
+                        labelStyle: "background-color: #75d6ff; border: 1px solid #44b4d5;"
+                    });
+                });
+            }
         }
     },
    
@@ -1643,6 +1924,66 @@ Ext.define('LIME.controller.ModsMarkerController', {
         panel.originalText = formText;
         me.openedForm = panel;
     },
+
+    createSubstitutionBlock: function(node, formText, update, callback) {
+        var me = this, editor = me.getController("Editor"),
+            oldText = formText,
+            button = DocProperties.getFirstButtonByName("ins");
+
+        var panel = null;
+
+        var onClose = function(cmp) {
+            cmp.close();
+        };
+
+        panel = me.createAndShowFloatingForm(node, 'Select the element to replace', false, false, function(cmp) {
+            var grid = cmp.down('grid'),
+                data = [];
+            grid.store.each(function(record) {
+                var node = cmp.editor.getBody().querySelector('['+DomUtils.elementIdAttribute+'='+record.get('id')+']');
+                data.push({
+                    id: record.get('id'),
+                    langId: record.get('eId'),
+                    node: node
+                });
+            });
+            Ext.callback(callback, me, [data[0]]);
+            onClose(cmp);
+        }, onClose, {
+            items : [me.getNodesGridConfig()],
+            width: 400
+        });
+        var firstEditorNode = node;
+        me.secondEditorClickHandlerCustom = function(node, evt, ed) {
+            panel.editor = ed;
+            if ( !node ) return;
+            var markButton = DocProperties.getFirstButtonByName(DomUtils.getNameByNode(node)),
+                markButtonNameSecond = markButton.name,
+                markButtonName = DomUtils.getNameByNode(firstEditorNode),
+                body = ed.getBody();
+
+            if ( markButtonNameSecond && panel && panel.isVisible() ) {
+                if ( markButtonNameSecond != markButtonName ) {
+                     Ext.Msg.alert(Locale.strings.error, "You need to select a "+markButtonName);
+                     return;
+                }
+                var grid = panel.down('grid');
+
+                if ( !grid.store.getCount() ) {
+                    editor.unFocusNodes(false, body);
+                }
+
+                editor.setFocusStyle(node);
+
+                grid.store.loadData([{
+                    name: markButton.shortLabel,
+                    content: node.textContent,
+                    id: node.getAttribute(DomUtils.elementIdAttribute),
+                    eId: node.getAttribute(Language.getAttributePrefix()+'eid')
+                }], false);
+            }
+        };
+    },
     
     createSubstitution: function(node, formText, update) {
         var me = this, editor = me.getController("Editor"),
@@ -1663,23 +2004,41 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 form.destroy();
                 me.openedForm = null;
             }, formText);*/
-        
-        if(!update) {
-            //oldText = DomUtils.replaceTextOfNode(node, "  ");
-            oldText = DomUtils.getTextOfNode(node);
-            me.updateSubsMetadata(node, oldText);
-            me.setElementStyles([node], button, null, me.passiveModButtons.substitutionCustom);
-        }
-        panel = me.createAndShowFloatingForm(node, "The old text", oldText, true);
-        Ext.defer(function() {
-            editor.getEditor().focus();
-            if(!update) {
-                editor.selectNode(node);    
+        var panel = null;
+
+        if ( DocProperties.documentState == 'diffEditingScenarioB' ) {
+            var formTitle = 'Insert the old text';
+            var formText = false;
+            if ( update ) {
+                formText = node.getAttribute('data-old-text');
             }
-        }, 40);
-        
-        /*panel.relatedNode = node;
-        panel.originalText = formText;*/
+            me.createAndShowFloatingForm(node, formTitle, formText, false, function(cmp, text) {
+                me.updateSubsMetadata(node, text);
+                node.setAttribute('data-old-text', text);
+                me.setElementStyles([node], button, null, me.passiveModButtons.substitutionCustom);
+                cmp.close();
+            }, function(cmp) {
+                cmp.close();
+                if ( !update ) {
+                    DomUtils.unwrapNode(node);
+                }
+            });
+        } else {
+            if(!update) {
+                //oldText = DomUtils.replaceTextOfNode(node, "  ");
+                oldText = DomUtils.getTextOfNode(node);
+                me.updateSubsMetadata(node, oldText);
+                me.setElementStyles([node], button, null, me.passiveModButtons.substitutionCustom);
+            }
+            panel = me.createAndShowFloatingForm(node, "The old text", oldText, true);
+            Ext.defer(function() {
+                editor.getEditor().focus();
+                if(!update) {
+                    editor.selectNode(node);    
+                }
+            }, 40);
+        }
+
         me.openedForm = panel;
     },
     
@@ -1747,7 +2106,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
     
     substitutionUpdate: function(node, textMod) {
         var me = this, oldEl = textMod.querySelector("*[class='old']"),
-            extEl = Ext.get(node), nodeText = DomUtils.getTextOfNode(node);
+            extEl = Ext.fly(node), nodeText = DomUtils.getTextOfNode(node);
             
         //extEl.setHTML(DomUtils.getTextOfNode(oldEl));
         me.createSubstitution(node, DomUtils.getTextOfNode(oldEl), true);
@@ -1786,41 +2145,36 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     modElement: textModChild
                 };
             }
+
+            if ( unmarked ) {
+                me.unmarkModMeta(textMod);
+                return;
+            }
+
             switch(modType) {
                 case "substitution":
-                    if(textMod.parentNode.getAttribute("class") == "activeModifications") {
-                        if(unmarked) {
-                            textMod.parentNode.removeChild(textMod);                            
-                        }
-                    } else {
-                        if(textModChild.getAttribute("class") == "new") {
-                            if(unmarked) {
-                                textMod.parentNode.removeChild(textMod);                            
-                            } else {
-                                me.substitutionUpdate(node, textMod);    
-                            }
-                        }    
+                    if(textMod.parentNode.getAttribute("class") != "activeModifications"
+                            && textModChild.getAttribute("class") == "new") {
+                            me.substitutionUpdate(node, textMod);
                     }
-                    
                     break;
                 case "insertion":
-                    if(textModChild.getAttribute("class") == "destination") {
-                        if(unmarked) {
-                            textMod.parentNode.removeChild(textMod);                            
-                        }
-                    }
                     break;
                 case "repeal":
-                    if(textModChild.getAttribute("class") == "destination") {
-                        if(unmarked) {
-                            textMod.parentNode.removeChild(textMod);                            
-                        }
-                    }
                     break;
             }
         }
         
         return null;
+    },
+
+    unmarkModMeta: function(textModNode) {
+        var modifications = textModNode.parentNode;
+        modifications.removeChild(textModNode);
+
+        if ( !modifications.childNodes.length ) {
+            modifications.parentNode.removeChild(modifications);
+        }
     },
     
     askForRenumbering: function(modEl, textualMod) {
@@ -1873,7 +2227,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             try {
                 me.detectModifications(node);    
             } catch(e) {
-                Ext.log({level: "error"}, "ModsMarkerController.editorNodeFocused"+e);
+                Ext.log({level: "error"}, e);
             }
         }
     },
@@ -1884,7 +2238,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             try {
                 me.detectModifications(null, nodeId, true);
             } catch(e) {
-                Ext.log({level: "error"}, "ModsMarkerController.nodesUnmarked"+e);
+                Ext.log({level: "error"}, e);
             }
         });
     },

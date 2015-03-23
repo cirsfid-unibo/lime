@@ -87,7 +87,7 @@
 		"pattern": "patternless"
 	},
 	"components": {
-		"pattern": "patternless"
+		"pattern": "container"
 	},
 	"concept": {
 		"pattern": "inline"
@@ -195,7 +195,7 @@
 		"pattern": "container"
 	},
 	"formula": {
-		"pattern": "block"
+		"pattern": "container"
 	},
 	"fragmentBody": {
 		"pattern": "container"
@@ -267,7 +267,7 @@
 		"pattern": "inline"
 	},
 	"mod": {
-		"pattern": "container"
+		"pattern": "inline"
 	},
 	"motivation": {
 		"pattern": "container"

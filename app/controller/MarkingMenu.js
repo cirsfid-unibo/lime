@@ -58,7 +58,9 @@ Ext.define('LIME.controller.MarkingMenu', {
 
 	extend : 'Ext.app.Controller',
 
-	views : ['MarkingMenu', 'markingmenu.TreeButton'],
+	views : ['MarkingMenu'],
+
+	stores : ['LanguagesPlugin'],
 
 	refs : [{
         selector : '[cls=markingMenuContainer]',
@@ -84,7 +86,7 @@ Ext.define('LIME.controller.MarkingMenu', {
 	 */
 	buttonsReferences : {},
 	expandState : {},
-	styleId : 'limeTreeButtonsStyle',
+    styleId : 'limeTreeButtonsStyle',
 
     getMarkingMenu: function() {
         var container = this.getMarkingMenuContainer();
@@ -98,11 +100,10 @@ Ext.define('LIME.controller.MarkingMenu', {
 	/**
 	 * Build the root of the marking buttons
 	 * based on a static configuration file
-	 * loaded at runtime by {@link LIME.LanguageConfigLoader}
+	 * loaded at runtime by {@link LIME.store.LanguagesPlugin}
 	 */
-    buildButtonsStructure : function(pluginData) {
-        console.log(pluginData);
-        var me = this, // Save the scope,
+	buildButtonsStructure : function(pluginData) {
+		var me = this, // Save the scope,
             rootElements = pluginData.markupMenuRules.rootElements,
             commonElements = pluginData.markupMenuRules.commonElements,
             levelsOrder = ['locale', 'docType', 'defaults'],
@@ -127,23 +128,25 @@ Ext.define('LIME.controller.MarkingMenu', {
         }
 
         var treeStructure = {
+            text: 'Document structure',
             expanded: true,
             id: 'structure',
             children: []
         };
 
         var treeCommon = {
+            text: 'Common elements',
             expanded: true,
             id: 'commons',
             children: []
         };
 
 
-        // Create and append each child
-        Ext.each(rootElements, function(button) {
+		// Create and append each child
+		Ext.each(rootElements, function(button) {
             treeStructure.children.push(me.buildConfigData(button, false, false, false, "structure"));
-        }, this);
-        Ext.each(commonElements, function(button) {
+		}, this);
+		Ext.each(commonElements, function(button) {
             treeCommon.children.push(me.buildConfigData(button, false, false, false, "common"));
         }, this);
 
@@ -151,12 +154,63 @@ Ext.define('LIME.controller.MarkingMenu', {
         me.getTreeButtonsCommons().getStore().setRootNode(treeCommon);
 
         this.application.fireEvent(Statics.eventsNames.markingMenuLoaded);
-    },
-    
-        /**
-     * This function instantiate a TreeButton with all of its children
-     * @param {String} name The name of the button (necessary to get the configuration before the instantiation)
-     */
+	},
+
+	/**
+	 * This function instantiate a TreeButton with all of its children
+	 * @param {String} name The name of the button (necessary to get the configuration before the instantiation)
+	 */
+	createButton : function(name, buttons, rules, scope) {
+		var me = this, // Save the scope
+			buttonConfig = null, buttonId = me.createNewButtonId(name), newButton = null, style;
+		// Instantiate a new TreeButton
+		try {
+			buttonConfig = me.getButtonConfig(name, buttons, rules);
+		} catch(e) {
+			Ext.log({level: "error"}, e);
+			throw "Error: There is some error in the configuration of the plugin, the button with name " + name + " couldn't be initialized";
+		}
+
+		if (buttonConfig.pattern) {
+		    style = buttonConfig.pattern.buttonStyle;
+		} else {
+		    style = buttonConfig.markupConfig.buttonStyle;
+		}
+
+		// Create the actual button
+		newButton = Ext.widget('treeButton', {
+			style : style,
+			id : buttonId,
+			name: name,
+			customHandler: buttonConfig.customHandler,
+			handlerScope: scope
+		}),
+		// Set the custom configuration
+		newButton.waweConfig = buttonConfig;
+		// Customize the button
+		var nameButton = newButton.down('treeButtonName'),
+			pluginChildren = newButton.waweConfig.rules.children,
+			labelTxt = newButton.waweConfig.label;
+
+		// Set the button name
+		nameButton.setText(labelTxt);
+
+		// Set an internal reference for further elaboration
+		me.buttonsReferences[name][buttonId] = newButton;
+
+		// If it has children do not show as a leaf
+		if (pluginChildren) {
+			newButton.setLeaf(false);
+		} else {
+			newButton.setLeaf(true);
+		}
+		// In the end create its children
+		Ext.each(pluginChildren, function(child) {
+			newButton.appendChild(me.createButton(child, buttons, rules, scope));
+		});
+		return newButton;
+	},
+
     buildConfigData : function(name, buttons, rules, scope, type) {
         var me = this,
             config = null, configId = me.createConfigId(name), newConfig = null, style;
@@ -225,8 +279,8 @@ Ext.define('LIME.controller.MarkingMenu', {
 		}
 		return name + count;
 	},
-	
-	createConfigId : function(name) {
+
+    createConfigId : function(name) {
         var count = 0;
         if (!this.configReferences[name]) {
             this.configReferences[name] = {};
@@ -241,14 +295,6 @@ Ext.define('LIME.controller.MarkingMenu', {
 	    return this.buttonsReferences[name];
 	},
 
-	getFirstButtonByName: function(name) {
-	    var me = this, buttons = me.getButtonsByName(name);
-        if (buttons) {
-            return buttons[Ext.Object.getKeys(buttons)[0]];
-        }
-	    return null;
-	},
-
 	/**
 	 * Return the custom configuration of a button taken from the
 	 * language plugin currently in use.
@@ -257,7 +303,7 @@ Ext.define('LIME.controller.MarkingMenu', {
 	 */
 	getButtonConfig : function(name, buttons, rules) {
 		//Get plugin configuration from store
-		var pluginData = LanguageConfigLoader.getConfig(),
+        var pluginData = this.getLanguagesPluginStore().getConfigData(),
 		//  If the button doesn't exist there must be some error in the configuration
 		button = (buttons && buttons[name]) ? buttons[name] : pluginData.markupMenu[name],
 		defaultButton = pluginData.defaults.markupMenu[name],
@@ -303,7 +349,18 @@ Ext.define('LIME.controller.MarkingMenu', {
 		return config;
 	},
 
-    addMarkingMenu : function(pluginData) {
+    /* Return the list of all buttons */
+    getAllButtons : function() {
+        var refs = this.buttonsReferences;
+            buttons = [];
+        for (var k in refs)
+            if (refs.hasOwnProperty(k))
+                if(refs[k].hasOwnProperty(k + '0'))
+                    buttons.push(refs[k][k + '0']);
+        return buttons;
+    },
+
+	addMarkingMenu : function(pluginData) {
         var me = this, vp = this.getAppViewport(),
             markingMenu = vp.down('*[cls=markingMenuContainer]'),
             secondEditor = this.getSecondEditor(),
@@ -315,12 +372,12 @@ Ext.define('LIME.controller.MarkingMenu', {
         this.application.fireEvent(Statics.eventsNames.beforeCreation, "MarkingMenu", vp.markingMenu, function(config) {
             if(!markingMenu) {
                 //TODO: check this when secondEditor exists
-                /*if(markingMenu) {
-                    vp.remove(markingMenu, true);   
-                }*/
-                vp.add(Ext.merge(config, {
-                    collapsed: collapsed
-                }));    
+            	/*if(markingMenu) {
+            		vp.remove(markingMenu, true);	
+            	}*/
+            	vp.add(Ext.merge(config, {
+		            collapsed: collapsed
+		        }));	
             }
             me.buildButtonsStructure(pluginData);
         });
@@ -391,25 +448,22 @@ Ext.define('LIME.controller.MarkingMenu', {
                     pathToExpand = relatedButton.getPath();
                 }
             }
-            if ( me.expandedTree && me.expandedPath != pathToExpand ) {
+            if ( me.expandedTree && me.expandedPath && me.expandedPath != pathToExpand ) {
                 me.collapseAll(me.expandedTree);
             }
 
-            var item = markingMenu.query('treepanel').indexOf(treePanel);
-            //markingMenu.setActiveItem(item);
-            if ( me.prevToggleItem !== undefined && me.prevToggleItem != item ) {
-                markingMenu.toggleButtons.toggle();
-            }
-
-            if ( treePanel &&  pathToExpand && me.expandedPath != pathToExpand ) {
-                treePanel.expandPath(pathToExpand);
-                me.expandedTree = treePanel;
-                me.expandedPath = pathToExpand;
-                me.prevToggleItem = item;
+            if ( !treePanel.isDisabled() ) {
+                markingMenu.setActiveTab(treePanel);
+                if ( treePanel &&  pathToExpand && me.expandedPath != pathToExpand ) {
+                    treePanel.expandPath(pathToExpand);
+                    me.expandedTree = treePanel;
+                    me.expandedPath = pathToExpand;
+                }
             }
         } else {
             if ( me.expandedTree ) {
                 me.collapseAll(me.expandedTree);
+                me.expandedPath = null;
             }
         }
     },
@@ -418,6 +472,15 @@ Ext.define('LIME.controller.MarkingMenu', {
         return this.getTreeButtonsStructure().getStore().getNodeById(id) || 
                this.getTreeButtonsCommons().getStore().getNodeById(id);
     },
+
+	/**
+	 * Collapse all the buttons.
+	 */
+	collapseButtons : function() {
+		var markingMenu = this.getMarkingMenu();
+		// To collapse all buttons we call the expandButtons method with no marked node
+		markingMenu.hideAll();
+	},
 
 	disableMarkingMenu: function() {
 	    var cmp = this.getMarkingMenu();
@@ -512,36 +575,80 @@ Ext.define('LIME.controller.MarkingMenu', {
         }
     },
 
+    filterTreeByFn: function(tree, fn) {
+        if ( !Ext.isFunction(fn) ) return;
+        this.clearTreeFilter(tree);
+         
+        var view = tree.getView(),
+        me = tree,
+        nodesAndParents = [];
+         
+        // Find the nodes which match the search term, expand them.
+        // Then add them and their parents to nodesAndParents.
+        me.getRootNode().cascadeBy(function(tree, view){
+            var currNode = this;
+             
+            if( currNode && fn(currNode) ) {
+                me.expandPath(currNode.getPath());
+                 
+                while(currNode.parentNode) {
+                    nodesAndParents.push(currNode.id);
+                    currNode = currNode.parentNode;
+                }
+            }
+        }, null, [me, view]);
+         
+        // Hide all of the nodes which aren't in nodesAndParents
+        me.getRootNode().cascadeBy(function(tree, view) {
+            var uiNode = view.getNodeByRecord(this);
+             
+            if(uiNode && !Ext.Array.contains(nodesAndParents, this.id)) {
+                Ext.fly(uiNode).setDisplayed('none');
+            }
+        }, null, [me, view]);
+    },
+
+    clearTreeFilter: function( tree ) {
+        var view = tree.getView();
+
+        tree.getRootNode().cascadeBy(function(tree, view) {
+            var uiNode = view.getNodeByRecord(this);
+
+            if(uiNode) {
+                Ext.fly(uiNode).setDisplayed('table-row');
+            }
+        }, null, [tree, view]);
+    }, 
+
 	//  --------------- Event Handlers -------------------
 
 	// Initialization of the controller
 	init : function() {
+		// save a reference to the controller
+		var me = this, app = me.application;
 
-		// Set the event listeners
-		this.application.on({
-            editorDomNodeFocused : function(node) {
-                //TODO: check if this is ok
+        // Set the event listeners
+        app.on(Statics.eventsNames.editorDomNodeFocused, function(node, config) {
+            if ( !config || !config.noExpandButtons ) {
                 try {
                     this.expandButtons(node);
                 } catch(e) {
-                    Ext.log({level: "error"}, e);
+                    Ext.log({level: "error"}, 'MarkingMenu expandButtons: '+e);
                 }
-            },
-            scope : this
-        });
-		this.application.on(Statics.eventsNames.languageLoaded, this.addMarkingMenu, this);
-		this.application.on(Statics.eventsNames.disableEditing, this.disableMarkingMenu, this);
-		this.application.on(Statics.eventsNames.enableEditing, this.enableMarkingMenu, this);
-		this.application.on(Statics.eventsNames.changedEditorMode, this.onChangeEditorMode, this);
-		this.application.on(Statics.eventsNames.addMarkingGroup, this.addMarkingGroup, this);
-		this.application.on(Statics.eventsNames.addMarkingButton, this.addMarkingButton, this);
-		this.application.on(Statics.eventsNames.setCustomMarkingHandler, this.setCustomMarkingHandler, this);
+            }
+        }, this);
+        app.on(Statics.eventsNames.languageLoaded, this.addMarkingMenu, this);
+        app.on(Statics.eventsNames.disableEditing, this.disableMarkingMenu, this);
+        app.on(Statics.eventsNames.enableEditing, this.enableMarkingMenu, this);
+        app.on(Statics.eventsNames.changedEditorMode, this.onChangeEditorMode, this);
+        app.on(Statics.eventsNames.addMarkingGroup, this.addMarkingGroup, this);
+        app.on(Statics.eventsNames.addMarkingButton, this.addMarkingButton, this);
+        app.on(Statics.eventsNames.setCustomMarkingHandler, this.setCustomMarkingHandler, this);
+        app.on(Statics.eventsNames.unfocusedNodes, function() {
+            this.expandButtons();
+        }, this);
 
-
-		// save a reference to the controller
-		var me = this;
-
-        this.control({
+		this.control({
             '#treeStructure, #treeCommons': {
                 // Warn that a marking button has been clicked and say which one
                 itemclick : function(view, treeNode) {
@@ -569,14 +676,15 @@ Ext.define('LIME.controller.MarkingMenu', {
                         this.application.fireEvent('markingMenuClicked', config, {
                             callback : afterMarking
                         });
-                    }
-                    if( treeNode.isExpanded() ) {
-                        treeNode.collapse();
                     } else {
-                        treeNode.expand();
+                        if( treeNode.isExpanded() ) {
+                            treeNode.collapse();
+                        } else {
+                            treeNode.expand();
+                        }
                     }
                 }
             }
-        });
+		});
 	}
 });

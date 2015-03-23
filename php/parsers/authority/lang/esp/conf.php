@@ -46,8 +46,15 @@
  */
  
 $rules = Array(
-	"main" => "/{{signature}}(\s{1,4}[<>br idext\-gen0-9=\"\/]*){{authority}}/u",
-	"signature" => "[\p{L}.]+(\s[\p{L}.]+(\s[\p{L}.]+)?)?"
+
+	"rules" => Array("r1","r2"),
+	"r1" => "/({{signature}},?[\s<>bridext\-gen0-9=\"\/]+{{authority}})/iu",
+	"signature" => "{{name}} +{{surname}}",
+	
+	"r2" => "/({{heu_signature}},?[\s<>bridext\-gen0-9=\"\/]+{{authority}})/iu",
+	"heu_signature" => "{{n}}{{s}}",
+	"n" => "[\p{L}.]+",
+	"s" => "(\s[\p{L}.]+(\s[\p{L}.]+)?)?",
 );
 
 ?>

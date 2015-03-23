@@ -1,3 +1,11 @@
 {
-	"plugins": ["xmlValidation", "xmlDiff", "importDocument", "exportDocument", "newPdfPreview"]
+    "plugins": [
+        "xmlValidation",
+        "xmlDiff",
+        "xmlJNdiff",
+        "importDocument",
+        "exportDocument",
+        "newPdfPreview",
+        "openNirDocPdfDocument"
+    ]
 }

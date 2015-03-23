@@ -49,55 +49,57 @@ Ext.define('LIME.Application', {
 
     extend: 'Ext.app.Application',
 
+    requires: [
+        'LIME.view.Viewport'
+    ],
+
     controllers: [
-        'PreferencesManager',
-        'LoginManager',
-
-        'MainToolbar',
         'CustomizationManager',
-        'Storage',
-        'Editor',
-        'MarkingMenu',
-        'Quest',
-        'Marker',
-        'Outliner',
-        'Language',
-        'ContextMenu',
-        'ContextInfoManager',
-        'WidgetManager',
-
-        'Notification',
-        'ProgressWindow',
-        'DocumentUploader'
+		'DocumentUploader', 
+		'LoginManager', 
+		'MainToolbar', 
+		'Storage', 
+		'Editor', 
+		'MarkingMenu', 
+		'Marker', 
+		'Outliner', 
+		'Language', 
+		'ProgressWindow',
+		'PreferencesManager',
+		'Notification',
+		'ContextMenu',
+		'ContextInfoManager',
+		'WidgetManager'
     ],
 
     stores: [
-        'Outliner',
-        'Languages',
-        'OpenFile',
-        'Locales',
-        'Nationalities',
-        'DocumentTypes',
-        'DocumentLanguages',
-        'MarkupLanguages',
-        'OpenedDocuments'
-    ],
-
-    launch : function() {
-        // Calling the secure launch that launches the app only if all files are loaded
-        this.secureLaunch();
-    },
-    
-    /**
-     * This function loads the MarkupLanguages store and creates
-     * the application viewport when the configuration is finished
-     * */
-    secureLaunch: function() {
-        if (!Config.loadedFinish) {
-            Ext.defer(this.secureLaunch, 100, this);
-        } else {
-            this.getStore('MarkupLanguages').loadData(Config.languages);
+		'Outliner', 
+		'Languages',
+		'OpenFile',
+		'LanguagesPlugin',
+		'Locales',
+		'Nationalities', 
+		'DocumentTypes',
+		'DocumentLanguages',
+		'MarkupLanguages',
+		'OpenedDocuments'
+	],
+	
+	launch : function() {
+	    // Calling the secure launch that launches the app only if all files are loaded
+	    this.secureLaunch();
+	},
+	
+	/**
+	 * This function loads the MarkupLanguages store and creates
+	 * the application viewport when the configuration is finished
+	 * */
+	secureLaunch: function() {
+	    if (!Config.loadedFinish) {
+	        Ext.defer(this.secureLaunch, 100, this);
+	    } else {
+	        this.getStore('MarkupLanguages').loadData(Config.languages);
             Ext.create('LIME.view.Viewport');
-        }
-    }
+	    }
+	}
 });

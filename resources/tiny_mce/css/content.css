@@ -64,16 +64,21 @@ hr[data-mce-selected] {
 	color: black;
 }
 
-.pdfstyle .breaking {
+#tinymce.pdfstyle .breaking {
 	display: none;
 }
 
-#tinymce.secondEditor *:before, #tinymce.secondEditor *:after {
+#tinymce.secondEditor *:before, #tinymce.readOnly *:before, #tinymce.secondEditor *:after, #tinymce.readOnly *:after {
 	background-color: #CCCCCC;
 	border-color: #CCCCCC;
 }
-#tinymce.secondEditor * {
+
+#tinymce.secondEditor *, #tinymce.readOnly * {
 	border-color: #CCCCCC;
+}
+
+#tinymce.readOnly *:before, #tinymce.readOnly *:after {
+	background-color: #A4E2E2;
 }
 
 span.visibleBookmark {
@@ -84,3 +89,17 @@ span.visibleBookmark {
     width: 5px  !important;
     margin: 0 5px !important;
 }
+
+span[data-mce-type="bookmark"]:not(.visibleBookmark) {
+	display: none;
+}
+
+span.visibleSelection {
+	background-color: #B0B0B0;
+}
+
+#tinymce *[highlighted=true] {
+	background-color: #fafcc0;
+}
+
+

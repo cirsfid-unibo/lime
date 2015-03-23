@@ -13,7 +13,10 @@
 		"pattern": "hcontainer"
 	},
 	"attachments": {
-		"pattern": "patternless"
+		"pattern": "container"
+	},
+	"attachment": {
+		"pattern": "container"
 	},
 	"authorialNote": {
 		"pattern": "popup"
@@ -52,7 +55,7 @@
 		"pattern": "patternless"
 	},
 	"components": {
-		"pattern": "patternless"
+		"pattern": "container"
 	},
 	"concept": {
 		"pattern": "inline"
@@ -363,19 +366,14 @@
 	"wrap": {
 		"pattern": "container"
 	},
+	"wrapUp": {
+		"pattern": "block"
+	},
 	"content": {
 		"pattern": "container"
 	},
 	"romanI": {
-		"pattern": "hcontainer",
-		"wrapperClass": "patternName patternName",
-		"wrapperRules": {
-			"applyAttributes": {
-				"values": {
-					"name": "romanI"
-				}
-			}
-		}
+		"pattern": "hcontainer"
 	},
 	"event": {
 		"pattern": "inline"

@@ -1,4 +1,4 @@
-<project name="slice-impl">
+<project name="x-slice-impl">
     <!--
     Uses the compiler to generate a special theme-only scss file containing
     rules for all framework / package / app components.  This is then used
@@ -68,14 +68,24 @@
     Compiles the scss file for the theme slicer page
     -->
     <target name="-compass-compile-slicer-css" depends="-compile-slicer-sass">
-        <x-compass-compile
-            dir="${app.example.build.dir}"
-            trace="${compass.compile.trace}"
-            boring="${compass.compile.boring}"
-            force="${compass.compile.force}"
-            sassdir="${app.example.build.dir}"
-            cssdir="${app.example.build.dir}"
-            config="${app.example.compass.config}"/>
+        <if>
+            <x-is-true value="${build.enable.fashion}"/>
+            <then>
+                <x-fashion-compile
+                        file="${app.example.scss}"
+                        toFile="${app.example.css}"/>
+            </then>
+            <else>
+                <x-compass-compile
+                        dir="${app.example.build.dir}"
+                        trace="${compass.compile.trace}"
+                        boring="${compass.compile.boring}"
+                        force="${compass.compile.force}"
+                        sassdir="${app.example.build.dir}"
+                        cssdir="${app.example.build.dir}"
+                        config="${app.example.compass.config}"/>
+            </else>
+        </if>
     </target>
 
     <!-- Produces a bootstrap.js file for ext 4.2 slicer pages -->

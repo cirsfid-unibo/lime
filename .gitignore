@@ -1,4 +1,1 @@
-.svn
-.project
-build
-php/tmp
+build/

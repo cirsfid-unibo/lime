@@ -49,7 +49,7 @@
 $rules = Array(
     "titleList" => Array("Titolo","TITOLO"),
     "chapterList" => Array("Capo","Capitolo"),
-    "articleList" => Array("Art\.","Articolo")
+    "articleList" => Array("Art\.","Art","Articolo")
 );
 
 ?>

@@ -48,7 +48,7 @@
  * This is the plugin for loading documents
  */
 
-Ext.define('LIME.ux.LoadPlugin', {
+Ext.define('LIME.ux.akoma2.LoadPlugin', {
     singleton : true,
     alternateClassName : 'LoadPlugin',
 
@@ -63,7 +63,7 @@ Ext.define('LIME.ux.LoadPlugin', {
     beforeLoad : function(params) {
         var metaResults = [], extdom, documents, treeData = [];
         if (params.docDom) {
-            extdom = Ext.get(params.docDom);
+            extdom = Ext.fly(params.docDom);
             documents = extdom.query("*[class~=" + DocProperties.documentBaseClass + "]");
             Ext.each(documents, function(doc, index) {
                 metaResults.push(Ext.Object.merge(this.processMeta(doc, params), {docDom: doc}));
@@ -93,7 +93,7 @@ Ext.define('LIME.ux.LoadPlugin', {
     },
     
     processMeta: function(doc, params) {
-        var extdom = Ext.get(doc),
+        var extdom = Ext.fly(doc),
             meta = extdom.down("*[class=" + this.metadataClass + "]"),
             result = {};
             
@@ -150,5 +150,8 @@ Ext.define('LIME.ux.LoadPlugin', {
                 parent.parentNode.appendChild(element);
             }
         }, this);
+    },
+    constructor: function (config) {
+        this.initConfig({});
     }
 });

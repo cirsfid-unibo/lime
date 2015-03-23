@@ -56,7 +56,7 @@ Ext.define('LIME.ux.documentCollection.MarkingMenu', {
     },
     
     constructor: function() {
-        this.initConfig({});
+        this.initConfig();
         Config.addCustomView(this);
     },
     

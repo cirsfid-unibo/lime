@@ -46,6 +46,9 @@
 
 Ext.define('LIME.store.OpenedDocuments', {
     extend : 'Ext.data.TreeStore',
+    proxy: {
+        type: 'memory'
+    },
     root: {
         expanded: true,
         children: []

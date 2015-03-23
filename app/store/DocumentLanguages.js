@@ -48,19 +48,19 @@
  * This store lists the languages a document can be written in.
  */
 Ext.define('LIME.store.DocumentLanguages', {
-    extend: 'Ext.data.Store',
+    extend : 'Ext.data.Store',
     autoLoad: true,
-    fields: [
+    fields : [
         'code',
         'name'
     ],
     
-    proxy: {
-        type: 'ajax',
-        url: 'config/locale/languages.json',
-        reader: {
-            type: 'json',
-            rootProperty: 'languages'
+    proxy : {
+        type : 'ajax',
+        url : 'config/locale/languages.json',
+        reader : {
+            type : 'json',
+            rootProperty : 'languages'
         }
     }
 });

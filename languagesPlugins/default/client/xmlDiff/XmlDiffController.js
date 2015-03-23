@@ -45,293 +45,420 @@
  */
 
 Ext.define('LIME.controller.XmlDiffController', {
-    extend : 'Ext.app.Controller',
+    extend: 'Ext.app.Controller',
     
-    views: ["LIME.ux.xmlDiff.DiffPanel"],
+    views: [
+      "LIME.ux.xmlDiff.AmendingDiffMainTab",
+      "LIME.ux.xmlDiff.ConsolidatingDiffMainTab"
+    ],
 
-    refs : [{
-        selector : 'appViewport',
-        ref : 'appViewport'
-    }, {
-        selector: 'xmlDiff',
-        ref: 'diffPanel'
-    }, {
-        selector: '*[cls=editButton]',
-        ref: 'editButton'
-    },{
-        ref : 'mainEditor',
-        selector : '#mainEditor mainEditor'
-    }, {
-        ref: 'secondEditor',
-        selector: '#secondEditor mainEditor'
-    }],
+    refs: [
+        { ref: 'appViewport', selector : 'appViewport' }, 
+        { ref: 'editButton', selector: 'amendingDiffMainTab *[cls=editButton]' }, 
+        { ref: 'editButtonScenarioB', selector: 'consolidatingDiffMainTab *[cls=editButton]' }, 
+        { ref: 'mainEditor', selector : '#mainEditor mainEditor' }, 
+        { ref: 'secondEditor', selector: '#secondEditor mainEditor' },
+        { ref: 'outliner', selector: 'outliner' },
+        { ref: 'mainToolbar', selector: 'mainToolbar' }, 
+        { ref: 'main', selector: 'main' }, 
+        { ref: 'markingMenuContainer', selector : '[cls=markingMenuContainer]' }, 
+        { ref: 'mainToolbar', selector: 'mainToolbar' }
+    ],
 
-    config : {
+    config: {
         pluginName : "xmlDiff",
         diffXmlServiceUrl : "php/diff/index.php",
         diffServiceUrl : "php/AKNDiff/index.php",
         initDiffPage: "php/AKNDiff/data/empty.html"
     },
-    
-    previousDiff: {
-        docsId: {},
-        docsUrl: {}
-    },
-    
-    maybeDiff : function() {
-        if(!this.getDiffPanel()) return;
-        var i = 0, diff = true;
-        for (; i < this.selectedDocs.length; i++) {
-            if (!this.selectedDocs[i].id) {
-                diff = false;
-                break;
-            }
-        }
 
-        this.setEmptyPage();
-
-        return (diff) ? this.getDocsUrl() : null;
-    },
-
-    setViewConfig : function() {
-        var me = this, diffPanel = me.getDiffPanel(), 
-            selectDocumentButtons = diffPanel.query("*[cls=selectButton]"), show = true;
-        Ext.each(selectDocumentButtons, function(selectButton, index) {
-            selectButton.docIndex = selectButton.docIndex || index;
-            var docId = me.selectedDocs[selectButton.docIndex].id;
-            selectButton.setText((docId) ? me.strings.changeDoc : me.strings.selectDoc);
-        });
-        me.maybeDiff();
-    },
-    
-    setEmptyPage: function() {
-        this.setUrl(this.getInitDiffPage());
-        this.getEditButton().setDisabled(true);
-    },
-
-    getIframePlugin : function(tab) {
-        var me = this, diffPanel = me.getDiffPanel(), 
-            cmp = tab || diffPanel.down("*[cls=diffContainer]").getActiveTab();
-        return cmp.getPlugin('iframe');
-    },
-    /**
-     * This function set the pdf by calling the pdf viewer plugin
-     * this is the only interaction with "pdfplugin" plugin
-     * @param {String} url The url of pdf to view
-     */
-    setUrl : function(url, callback) {
-        var me = this, plugin = me.getIframePlugin();
-        //plugin.setSrc(url);
-        plugin.setRawSrc(url, function(doc, contentWindow) {
-            Ext.callback(callback);
-            var newVersion = doc.querySelector(".newDocVersion");
-            var oldVersion = doc.querySelector(".oldDocVersion");
-            if(newVersion && oldVersion && !Ext.isEmpty(me.previousDiff.docsUrl)) {
-                newVersion = newVersion.getAttribute("url");
-                oldVersion = oldVersion.getAttribute("url");
-                me.previousDiff["new"] = (me.previousDiff.docsUrl["doc1"] == newVersion) ? 
-                                        "doc1" : "doc2";
-                me.previousDiff["old"] = (me.previousDiff.docsUrl["doc1"] == oldVersion) ? 
-                                        "doc1" : "doc2";
-            }
-        });
-    },
-
-    setLoading : function(loading) {
-        var diffContainer = this.getDiffPanel();
-        diffContainer.setLoading(loading);
-    },
-
-    getDiff : function(docsUrl) {
-        var me = this, diffPanel = me.getDiffPanel(), 
-            format = diffPanel.down("*[cls=diffContainer]").getActiveTab().format || 'text',
-            params = {
-                from : docsUrl.doc1,
-                to : docsUrl.doc2/*,
-                css : 'http://localhost/new-wawe/resources/stylesheets/diff.css'*/,
+    // Set the iframe source of the current tab to either the Akomantoso diff
+    // or the generic XML diff, depending on which tab is active. 
+    getDiff : function(cmp) {
+        var format = cmp.down("*[cls=diffContainer]").getActiveTab().format || 'text',
+            baseUrl = (format=="xml") ? this.getDiffXmlServiceUrl() : this.getDiffServiceUrl(),
+            url = baseUrl + '?' + Ext.urlEncode({
+                from: cmp.firstDoc.url,
+                to: cmp.secondDoc.url,
                 format: format,
                 edit: true
-            }, 
-            url = (format=="xml") ? me.getDiffXmlServiceUrl() : me.getDiffServiceUrl();
-        url += '?' + Ext.urlEncode(params);
-        me.setUrl(url, function() {
-            me.getEditButton().setDisabled(false);
-            me.setLoading(false);
+            });
+        cmp.setIframeSource(url, function(doc) {
+            cmp.enableEditButton();
+            var newDoc = doc.querySelector(".newDocVersion");
+
+            if(newDoc) {
+                var firstDocIsNewer = (newDoc.getAttribute("url") == cmp.firstDoc.url);
+                cmp.firstDoc.new = firstDocIsNewer;
+                cmp.secondDoc.new = !firstDocIsNewer;
+            }
         });
     },
 
-    getDocsUrl : function() {
-        var me = this, 
-            diffPanel = me.getDiffPanel(), 
-            params = {
-                requestedService : 'EXPORT_FILES'
-            }, changed = false;
-        me.setLoading(true);
-        Ext.each(me.selectedDocs, function(doc, index) {
-            var name = "doc" + (index + 1);
-            doc.id = (doc.id == 'editorDoc') ? DocProperties.documentInfo.docId : doc.id;
-            params[name] = doc.id;
-            if (me.previousDiff.docsId[name] != params[name]) {
-                me.previousDiff.docsId[name] = params[name];
-                changed = true;
-            }
-        }, me);
-        if (!changed && !diffPanel.enforceReload) {
-            me.getDiff(me.previousDiff.docsUrl);
-        } else {
-            Ext.Ajax.request({
-                url : Utilities.getAjaxUrl(),
-                method : 'POST',
-                params : params,
-                scope : me,
-                success : function(result, request) {
-                    var jsonData = {};
-                    jsonData = Ext.decode(result.responseText, true);
-                    if (jsonData && jsonData.docsUrl) {
-                        me.previousDiff.docsUrl = jsonData.docsUrl;
-                        me.getDiff(jsonData.docsUrl);
-                        diffPanel.enforceReload = false;
-                    } else {
-                        alert("no url");
-                        me.setLoading(false);
-                    }
-                },
-                failure : function() {
-                    alert("Ajax failure");
-                    me.setLoading(false);
+    // Call EXPORT_FILES service and get an url where the diff
+    // can access the two files.
+    getDocsUrl : function(cmp) {        
+        cmp.setLoading();
+        Ext.Ajax.request({
+            url : Utilities.getAjaxUrl(),
+            method : 'POST',
+            params : {
+                requestedService: 'EXPORT_FILES',
+                doc1: cmp.firstDoc.id,
+                doc2: cmp.secondDoc.id
+            },
+            scope : this,
+            success : function(result, request) {
+                var jsonData = Ext.decode(result.responseText, true);
+                if (jsonData && jsonData.docsUrl) {
+                    cmp.firstDoc.url = jsonData.docsUrl.doc1;
+                    cmp.secondDoc.url = jsonData.docsUrl.doc2;
+                    this.getDiff(cmp);
+                } else {
+                    Ext.Msg.alert(Locale.strings.error, Locale.strings.serverFailure);
                 }
-            });
-        }
+            },
+            failure : function() {
+                Ext.Msg.alert(Locale.strings.error, Locale.strings.serverFailure);
+            }
+        });
     },
 
-    selectDocument : function(button, docIndex) {
-        var me = this, textfield = button.up().down("textfield"), 
-            otherDoc = me.selectedDocs[1-docIndex].id, workUri, indexes, config = {};
+    selectDocument : function(cmp, changingDoc, otherDoc) {
+        var me = this,
+            otherDocId = cmp[otherDoc].id,
+            workUri;
+
         // If user is selecting the second document
-        if (otherDoc) {
-            otherDoc = (otherDoc == 'editorDoc') ? DocProperties.documentInfo.docId : otherDoc;
-            indexes = Utilities.globalIndexOf("/", otherDoc);
-            workUri = (indexes.length >= 2) ? otherDoc.substr(0, indexes[indexes.length - 2]) : otherDoc;
+        if (otherDocId) {
+            var indexes = Utilities.globalIndexOf("/", otherDocId);
+            workUri = (indexes.length >= 2) ? otherDocId.substr(0, indexes[indexes.length - 2]) : otherDocId;
         }
-        config = {
+
+        me.application.fireEvent(Statics.eventsNames.selectDocument, {
             path: workUri,
             allowOnlyInPaths: workUri,
-            notAllowedPaths: otherDoc,
+            notAllowedPaths: otherDocId,
             notAllowedPathRender: function(el, record) {
                 Ext.tip.QuickTipManager.register({
-                    target: el,
+                    target: el.dom.getAttribute('id'),
                     text: Locale.getString("forbiddenElement", me.getPluginName())
                 });
             },
             callback: function(doc) {
-                me.selectedDocs[docIndex] = Ext.clone(doc);
-                textfield.setValue(doc.path);
-                me.setViewConfig();
+                cmp[changingDoc] = Ext.clone(doc);
+                if (cmp[changingDoc].id == 'editorDoc')
+                    cmp[changingDoc].id = DocProperties.documentInfo.docId;
+                cmp.onSelectedDocsChanged();
             },
             scope: me
-        };
-        me.application.fireEvent(Statics.eventsNames.selectDocument, config); 
-
+        });
     },
     
-    clearSelectedDocuments: function(cmp) {
-        var fields = cmp.up().query("textfield");
-        
-        this.selectedDocs = [{}, {}];
-        Ext.each(fields, function(field) {
-            field.setValue("");
-        });
+    enableEditMode: function(cmp) {
+        if(cmp.firstDoc.id && cmp.secondDoc.id) {
+            var newer = cmp.firstDoc.new ? cmp.firstDoc : cmp.secondDoc,
+                older = cmp.firstDoc.new ? cmp.secondDoc : cmp.firstDoc;
+            this.application.fireEvent(Statics.eventsNames.enableDualEditorMode, {
+                diffTab: cmp,
+                editableDoc: newer.id,
+                notEditableDoc: older.id
+            });      
+        }
     },
 
-    enableEditMode: function() {
-        var me = this, config;
-        if(!Ext.isEmpty(me.previousDiff.docsId)) {
-            config = {
-                editableDoc: me.previousDiff.docsId[me.previousDiff["new"]],
-                notEditableDoc: me.previousDiff.docsId[me.previousDiff["old"]]
+    enableEditModeScenarioB: function(cmp) {
+        if(cmp.firstDoc.id && cmp.secondDoc.id) {
+            var newer = cmp.firstDoc.new ? cmp.firstDoc : cmp.secondDoc,
+                older = cmp.firstDoc.new ? cmp.secondDoc : cmp.firstDoc;
+            this.enableDualEditorMode(cmp, {
+                editableDoc: newer.id,
+                notEditableDoc: older.id
+            });    
+        }
+    },
+
+    createSecondEditor: function() {
+        var secondEditor = Ext.widget("main", {
+            id: 'secondEditor',
+            resizable : true,
+            region : 'west',
+            width: '48%',
+            margin : 2
+        });
+
+        this.getAppViewport().add(secondEditor);
+        return secondEditor;
+    },
+
+    finishEditingMode: function(editor, diff) {
+        var me = this,
+            mainTabPanel = me.getMain(),
+            viewport = me.getAppViewport(),
+            userInfo = this.getController('LoginManager').getUserInfo(),
+            editorTab = me.getMainEditor().up(),
+            newExplorer, language = me.getController("Language"),
+            markingMenuController = me.getController('MarkingMenu'),
+            editorController = me.getController("Editor");
+
+        editorController.autoSaveContent(true);
+
+        var structure = markingMenuController.getTreeButtonsStructure();
+
+        Ext.defer(function() {
+            structure.enable();
+        }, 100);
+
+        var commons = markingMenuController.getTreeButtonsCommons();
+
+        markingMenuController.clearTreeFilter(commons);
+        editorController.defaultActions = {};
+        DocProperties.documentState = '';
+
+        if(me.finishEditBtn) {
+            me.finishEditBtn.up().remove(me.finishEditBtn);
+        }
+        if(me.syncButton) {
+            if (me.syncButton.syncEnabled)
+                me.getController('DualEditorSynchronizer').disable();
+            me.syncButton.up().remove(me.syncButton);
+        }
+
+        language.beforeTranslate(function(xml) {
+            xml = xml.replace('<?xml version="1.0" encoding="UTF-8"?>', '');
+            var params = {
+                userName : userInfo.username,
+                fileContent : xml,
+                metadata: DomUtils.serializeToString(me.secondDocumentConfig.metaDom)
             };
-            me.application.fireEvent(Statics.eventsNames.enableDualEditorMode, config);      
-        }
-        /*config = {
-            "editableDoc":"/db/wawe_users_documents/provanew.lime.com/diff/uy/bill/2005-04-04/carpeta137-2005/esp.2005-05-02/3.uy_bill_2005-05-02-ejecutivo.xml",
-            "notEditableDoc":"/db/wawe_users_documents/provanew.lime.com/diff/uy/bill/2005-04-04/carpeta137-2005/esp.2005-05-02/2.uy_bill_2005-05-02.xml"
-        };
-        me.application.fireEvent(Statics.eventsNames.enableDualEditorMode, config);*/
-        
+
+            var url = me.secondDocumentConfig.docId.replace("/diff/", "/diff_modified/");
+
+            me.application.fireEvent(Statics.eventsNames.saveDocument, url, params, function() {
+                if(diff) {
+                    diff.tab.show();
+                    diff.enforceReload = true;
+                    mainTabPanel.setActiveTab(diff);
+                }
+
+                editorTab.noChangeModeEvent = false;
+                viewport.remove(editor);
+
+                newExplorer = Ext.widget("explorer", {
+                    region : 'west',
+                    expandable : true,
+                    resizable : true,
+                    width : '15%',
+                    autoScroll : true,
+                    margin : 2
+                });
+                viewport.add(newExplorer);
+            });
+        }, {}, null, editor, me.secondDocumentConfig.metaDom);
     },
 
-    focusNode: function(dom, node) {
-        // Remove the focus from previous nodes
-        Ext.each(dom.querySelectorAll("*["+DocProperties.elementFocusedCls+"]"), function(focusedNode) {
-            focusedNode.removeAttribute(DocProperties.elementFocusedCls);
+    addFinishEditingButton : function(cmp, xmlDiff) {
+        var me = this, toolbar = me.getMainToolbar();
+        if (!toolbar.down("[cls=finishEditingButton]")) {
+            me.finishEditBtn = toolbar.insert(6, {
+                cls : "finishEditingButton",
+                margin : "0 10 0 240",
+                text : "Finish editing",
+                listeners : {
+                    click : Ext.bind(me.finishEditingMode, me, [cmp, xmlDiff])
+                }
+            });
+            me.syncButton = toolbar.insert(7, {
+                margin : "0 10 0 20",
+                text : "Enable Synchronization",
+                enableToggle: true,
+                syncEnabled : false,
+                listeners : {
+                    click : function () {
+                        if (this.syncEnabled) {
+                            this.syncEnabled = false;
+                            this.setText('Enable Synchronization');
+                            me.getController('DualEditorSynchronizer').disable();
+                        } else {
+                            this.syncEnabled = true;
+                            this.setText('Disable Synchronization');
+                            me.getController('DualEditorSynchronizer').enable();
+                        }
+                    }
+                }
+            });
+
+        }
+    },
+
+    enableDualEditorMode: function(cmp, dualConfig) {
+        var me = this,
+            mainTabPanel = me.getMain(),
+            explorer = me.getOutliner(),
+            markingMenu = me.getMarkingMenuContainer(),
+            editorTab = me.getMainEditor().up(),
+            storage = me.getController("Storage"),
+            editorController = me.getController("Editor"),
+            language = me.getController("Language"),
+            xmlDiff = cmp,
+            markingMenuController = me.getController('MarkingMenu'),
+            xmlDiffController = me,
+            secondEditor;
+
+        editorTab.noChangeModeEvent = true;
+
+        // Set active the editor tab
+        mainTabPanel.setActiveTab(editorTab);
+
+        if(xmlDiff) {
+            xmlDiff.tab.hide();  
+        }
+
+        var tinyView = editorController.getEditorComponent();
+        var tinyEditor = tinyView.editor;
+
+        tinyEditor.execCommand("contentReadOnly", false, tinyEditor.getElement());
+
+        editorController.defaultActions = {
+            noExpandButtons: true
+        };
+
+        me.markingMenuMenuLoad = function() {
+            var markingMenu = markingMenuController.getMarkingMenu();
+            var structure = markingMenuController.getTreeButtonsStructure();
+
+            Ext.defer(function() {
+                structure.disable();
+            }, 100);
+
+            var commons = markingMenuController.getTreeButtonsCommons();
+            markingMenu.setActiveTab(commons);
+            Ext.defer(function() {
+                markingMenuController.filterTreeByFn(commons, function( node ) {
+                    var path = node.getPath();
+                    if ( path.match(/passiveModifications\d+\/action\d+/)  && !path.match(/split|renumbering/) ) {
+                        return true;
+                    }
+                });
+            }, 1000);
+        };
+
+
+        /*Ext.each(tinyNode.querySelectorAll('div.mce-toolbar'), function( toolbar ) {
+            Ext.fly(toolbar).parent('.mce-first').hide();
         });
 
-        if(node) {
-            node.scrollIntoView();
-            node.setAttribute(DocProperties.elementFocusedCls, "true");
+        Ext.Object.each(tinyEditor.controlManager.buttons, function(name) {
+            tinyEditor.controlManager.setDisabled(name, true);
+        });*/
+
+        DocProperties.documentState = 'diffEditingScenarioB';
+
+        explorer.up().remove(explorer);
+
+        // Bug: this causes the first editor to disappear
+        // if(markingMenu) {
+        //     markingMenu.placeholder.getEl().on('mouseenter', function(){ 
+        //         markingMenu.floatCollapsedPanel();
+        //     });
+        // }
+        
+        secondEditor = me.createSecondEditor();
+        me.secondEditor = secondEditor;
+
+        me.addFinishEditingButton(secondEditor, xmlDiff);
+
+        Ext.defer(function() {
+            storage.openDocumentNoEditor(dualConfig.notEditableDoc, function(config) {
+                language.beforeLoad(config, function(newConfig) {
+                    me.secondDocumentConfig = newConfig;
+                    editorController.loadDocument(newConfig.docText, newConfig.docId, secondEditor, true);
+                    if(newConfig.metaDom) {
+                        var manifestationUri = newConfig.metaDom.querySelector("*[class=FRBRManifestation] *[class=FRBRuri]");
+                        if(manifestationUri) {
+                            secondEditor.down("mainEditorUri").setUri(manifestationUri.getAttribute("value"));
+                        }
+                    }
+                    me.manageAfterLoad = function() {
+                        var newId = dualConfig.editableDoc.replace("/diff/", "/diff_modified/");
+                        DocProperties.documentInfo.docId = newId;
+                        Ext.each([xmlDiff.firstDoc, xmlDiff.secondDoc], function(doc, index) {
+                            var textFields = xmlDiff.query("textfield");
+                            var oldPath = doc.path;
+                            doc.path = doc.path.replace("/diff/", "/diff_modified/");
+                            doc.id = doc.id.replace("/diff/", "/diff_modified/");
+                            if(doc.id == dualConfig.editableDoc) {
+                                doc.id = newId;
+                                doc.path = doc.path.replace("/diff/", "/diff_modified/");
+                            }
+                            Ext.each(textFields, function(text) {
+                                if(text.getValue() == oldPath) {
+                                    text.setValue(doc.path);
+                                }
+                            });
+                        }, me);
+                    };
+                    storage.openDocument(dualConfig.editableDoc);
+                }, true);
+            });    
+        }, 100);       
+    },
+
+    afterDocumentLoaded: function() {
+        var me = this;
+        if(Ext.isFunction(me.manageAfterLoad)) {
+            Ext.callback(me.manageAfterLoad);
+            me.manageAfterLoad = null;
         }
     },
 
-    onNodeFocused: function(node) {
-        var secondEditor = this.getSecondEditor(),
-            editorController = this.getController("Editor"),
-            langPrefix, newElId, oldElId, secondEditorDom,
-            nodeToScrollTo, firstId, secondId, query;
-
-        if(secondEditor) {
-            secondEditorDom = editorController.getDom(secondEditor);
-            langPrefix = Language.getAttributePrefix();
-            firstId = langPrefix+"wId";
-            secondId = langPrefix+"eId";
-            newElId = node.getAttribute(firstId) || node.getAttribute(secondId);
-
-            if(newElId) {
-                query = "*["+firstId+"='"+newElId+"'], *["+secondId+"='"+newElId+"']";
-                this.focusNode(secondEditorDom, secondEditorDom.querySelector(query));
-            }
+    onMarkingMenuLoaded: function() {
+        if ( Ext.isFunction(this.markingMenuMenuLoad) ) {
+            this.markingMenuMenuLoad();
         }
+        this.markingMenuMenuLoad = null;
     },
     
     init : function() {
         var me = this;
-        me.selectedDocs = [{}, {}];
         
-        me.strings = {
-            changeDoc : Locale.getString("changeDocument", me.getPluginName()),
-            selectDoc : Locale.getString("selectDocument", me.getPluginName())
-        };
-
-        me.application.on(Statics.eventsNames.editorDomNodeFocused, me.onNodeFocused, me);
+        me.application.on(Statics.eventsNames.afterLoad, me.afterDocumentLoaded, me);
+        me.application.on(Statics.eventsNames.markingMenuLoaded, me.onMarkingMenuLoaded, me);
         
         this.control({
-            'xmlDiff': {
-                activate: me.setViewConfig
-            },
-            '*[cls=selectButton]': {
-                click: function(cmp) {
-                    me.selectDocument(cmp, cmp.docIndex);
+            'diffTab': {
+                activate: function (tab) {
+                    tab.onSelectedDocsChanged();
+                }, 
+
+                docsDeselected: function (tab) {
+                    tab.disableEditButton();
+                    tab.setIframeSource(me.getInitDiffPage());
+                },
+
+                docsSelected: function (tab) {
+                    me.getDocsUrl(tab);
+                },
+
+                firstDocSelected: function (tab) {
+                    me.selectDocument(tab, 'firstDoc', 'secondDoc');
+                },
+
+                secondDocSelected: function (tab) {
+                    me.selectDocument(tab, 'secondDoc', 'firstDoc');
+                },
+
+                diffTypeChanged: function (tab) {
+                    me.getDiff(tab);
                 }
             },
-            '*[cls=resetButton]': {
-                click: function(cmp) {
-                    me.clearSelectedDocuments(cmp);
-                    me.setViewConfig();
-                }
+
+            'amendingDiffMainTab': {
+                edit: me.enableEditMode
             },
-            '*[cls=editButton]': {
-                click: me.enableEditMode
+            'consolidatingDiffMainTab': {
+                edit: me.enableEditModeScenarioB
             },
-            '*[cls=printButton]': {
-                click: function () {
-                    var plugin = me.getIframePlugin(),
-                        url = plugin && plugin.url;
-                    if (url)
-                        window.open(url);
-                }
-            },
-            'tabpanel[cls=diffContainer]': {
-                tabchange: me.maybeDiff
-            }
         });
     }
 });

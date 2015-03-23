@@ -58,6 +58,7 @@
 		public function __construct($params) {
 			$this->_params = $params;
 			$this->_transformFile = (isset($params['transformFile']) && $params['transformFile']) ? realpath(LIMEROOT."/".$params['transformFile']) : FALSE;
+			$this->_format = (isset($params['format']) && $params['format']) ? $params['format'] : "xml";
 		}
 		
 		/**
@@ -74,7 +75,7 @@
 			$doc = new DOMDocument();
 			if ($doc->loadXML($xmlResult)) {
 				// Checking if the document is marked
-				if($doc->documentElement->tagName == $this->markedRootName) {
+				if($this->_format == "html" && $doc->documentElement->tagName == $this->markedRootName) {
 					$xmlResult = aknToHtml($doc, $this->_transformFile);
 				}
 			}

@@ -48,7 +48,7 @@
  * This is a marking menu customization
  */
 
-Ext.define('LIME.ux.MarkingMenu', {
+Ext.define('LIME.ux.akoma3.MarkingMenu', {
     singleton : true,
     
     config: {
@@ -56,7 +56,6 @@ Ext.define('LIME.ux.MarkingMenu', {
     },
     
     constructor: function() {
-        this.initConfig({});
         Config.addCustomView(this);
     },
     
@@ -67,6 +66,10 @@ Ext.define('LIME.ux.MarkingMenu', {
     },
     
     afterCreation: function(cmp) {
+    },
+    
+    constructor: function (config) {
+        this.initConfig({});
     }
     
 }); 

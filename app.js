@@ -57,30 +57,25 @@ Ext.Loader.setConfig({
     paths   : {
         'LIME' : 'app',
         'LIME.conf' : 'config',
-        'Ext.ux' : 'plugins/ux',
-        'Ext.ux.toggleslide': 'plugins/ux/toggleslide'
+        'LIME.packages' : 'packages',
+        'Ext.ux' : 'plugins/ux'
     }
 });
 
-Ext.syncRequire(['LIME.Locale','LIME.Global']);
-
-Config.load();
+Ext.syncRequire(['LIME.Locale','LIME.Config']);
 
 Ext.require([
-    'LIME.view.Viewport',
     'Ext.ux.window.Notification',
-    'Ext.ux.form.field.TinyMCE',
-    'Ext.ux.form.field.TinyMCEWindowManager',
-    'Ext.ux.form.field.CodeMirror',
-    'Ext.ux.form.field.ToggleSlide',
-    'Ext.ux.toggleslide.Thumb',
-    'Ext.ux.layout.component.field.CodeMirror',
-    'LIME.Utilities',
-    'LIME.Statics',
-    'LIME.DocProperties',
+	'Ext.ux.form.field.TinyMCE',
+	'Ext.ux.form.field.TinyMCEWindowManager',
+	'Ext.ux.form.field.CodeMirror',
+	'Ext.ux.layout.component.field.CodeMirror',
+	'LIME.Utilities',
+	'LIME.Statics',
+	'LIME.DocProperties',
     'LIME.DomUtils',
-    'LIME.Interpreters',
-    'LIME.LanguageConfigLoader'
+    'LIME.Server',
+	'LIME.Interpreters'
 ]);
 
 Ext.application({

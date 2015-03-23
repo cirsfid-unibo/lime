@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
@@ -48,7 +49,7 @@
 $rules = Array(
     "titleList" => Array("Titolo","TITOLO"),
     "chapterList" => Array("Capo","Capitolo"),
-    "articleList" => Array("Art\.","Articolo")
+    "articleList" => Array("Art\.","Art","Articolo")
 );
 
 ?>

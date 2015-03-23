@@ -58,7 +58,9 @@ Ext.define('LIME.view.modal.newSavefile.Toolbar', {
 
 	// add the toolbar items
 	items : [{
-        xtype : 'newSavefileToolbarContextualButton'
+        xtype : 'newSavefileToolbarContextualButton',
+        minWidth: 150,
+        flex: 0.5
     },'->', {
 		xtype : 'tbspacer'
 	}, {

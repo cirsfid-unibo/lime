@@ -52,7 +52,6 @@ Ext.define('Ext.ux.TabCloseMenuImproved', {
     extend: 'Ext.ux.TabCloseMenu',
     
     alias: 'plugin.tabclosemenuimproved',
-
     
     onClose : function(){
         if(this.item) {

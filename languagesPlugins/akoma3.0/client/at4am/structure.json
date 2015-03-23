@@ -1,4 +1,4 @@
 {
-	"views": ["At4amPanel"],
+	"views": ["At4amMainTab"],
 	"controllers": ["At4amController"]
 }

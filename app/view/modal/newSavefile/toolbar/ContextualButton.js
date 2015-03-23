@@ -53,6 +53,7 @@ Ext.define('LIME.view.modal.newSavefile.toolbar.ContextualButton', {
     fullText : new Ext.Template("{operation} {what}"),
     fileIcon : 'resources/images/icons/page_white_add.png',
     folderIcon : 'resources/images/icons/folder_add.png',
+    textAlign: 'left',
     
     initComponent: function(){
         this.text = Locale.strings.newLabel;

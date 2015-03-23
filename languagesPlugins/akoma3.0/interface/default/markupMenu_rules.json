@@ -22,7 +22,7 @@
 			"children": ["def", "decoration", "docPurpose"]
 		},
 		"contentInline": {
-			"children": ["omissis",  "outcome", "eop", "noteRef", "authorialNote"]
+			"children": ["del", "omissis",  "outcome", "ins", "eop", "noteRef", "authorialNote"]
 		},
 		"commonElement": {
 			"children": ["process",  "location", "concept", "quantity", "organization", "object", "date", "term", "time", "event", "person", "role", "entity", "component"]
@@ -98,7 +98,7 @@
 			"children": ["num", "heading", "subparagraph", "p"]
 		},
 		"conclusions": {
-			"children": ["docDate", "location", "blockContainer", "signature"]
+			"children": ["p", "date", "location", "blockContainer", "signature"]
 		},
 		
 		"signature": {
@@ -148,7 +148,7 @@
 		},
 
 		"list": {
-			"children": ["intro", "num", "heading", "subheading", "point", "wrap", "p"]
+			"children": ["intro", "num", "heading", "subheading", "point", "wrap", "p", "wrapUp"]
 		},
 
 		"point": {
@@ -156,15 +156,15 @@
 		},
 
 		"preamble": {
-			"children": ["toc", "formula", "recitals", "citations", "affectedDocument", "longTitle", "list", "paragraph"]
+			"children": ["p", "toc", "formula", "recitals", "citations", "affectedDocument", "longTitle", "list", "paragraph"]
 		},
 
 		"preface": {
-			"children": ["toc", "docType", "docNumber", "docDate", "docTitle", "docAuthority", "docProponent", "docStage", "docStatus", "docCommittee", "docIntroducer", "docJurisdiction", "docketNumber","shortTitle", "longTitle", "citations", "legislature"]
+			"children": ["p", "toc", "docType", "docNumber", "docDate", "docTitle", "docAuthority", "docProponent", "docStage", "docStatus", "docCommittee", "docIntroducer", "docJurisdiction", "docketNumber","shortTitle", "longTitle", "citations", "legislature"]
 		},
 		
 		"attachments": {
-			"children": ["toc"]
+			"children": ["toc", "attachment"]
 		},
 		"citations": {
 			"children": ["citation"]
@@ -181,6 +181,11 @@
 		},
 		"ref": {
 			"askFor": {
+                "type": {
+                    "label": "Type",
+                    "type": "list",
+                    "values": ["internal", "external"]
+                },
 				"nationality": {
 					"label": "Nationality",
 					"type": "nationality"
@@ -200,16 +205,34 @@
 				"number": {
 					"label": "Number",
 					"type": "text"
+				},
+				"artnum": {
+					"label": "Article number",
+					"type": "text"
 				}
 			},
 			"attributes" : {
 				"href" : {
-					"tpl": "/{nationality}/{doctype}/{date}/{number}",
-					"separator": "/"
+					"tpl": "/{nationality}/{doctype}/{date}/{number}#{artnum}",
+					"separator": "/",
+					"internalSeparator": "#"
 				}
 			}
 		},
 		"role": {
+			"askFor": {
+				"refersTo": {
+					"label": "refersTo",
+					"type": "text",
+					"insert": {
+						"attribute": {
+							"name": "refersTo"
+						}
+					}
+				}
+			}
+		},
+		"location": {
 			"askFor": {
 				"refersTo": {
 					"label": "refersTo",

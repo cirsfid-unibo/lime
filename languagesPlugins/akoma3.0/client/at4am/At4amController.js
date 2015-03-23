@@ -47,13 +47,13 @@
 Ext.define('LIME.controller.At4amController', {
     extend : 'Ext.app.Controller',
     
-    views: ["LIME.ux.at4am.At4amPanel"],
+    views: ["LIME.ux.at4am.At4amMainTab"],
 
     refs : [{
         selector : 'appViewport',
         ref : 'appViewport'
     }, {
-        selector: 'at4am',
+        selector: 'at4amMainTab',
         ref: 'at4am'
     }],
 
@@ -117,7 +117,7 @@ Ext.define('LIME.controller.At4amController', {
     init : function() {
         var me = this;
         this.control({
-            'at4am' : {
+            'at4amMainTab' : {
                 activate : me.getAknFile
             }
         });

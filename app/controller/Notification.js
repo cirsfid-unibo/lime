@@ -59,21 +59,10 @@ Ext.define('LIME.controller.Notification', {
             moreLink,
             cls = (config.status) ? 'ux-notification-success' : 'ux-notification-light';
         if (!this.notification || this.notification.cls != cls) {
-            this.notification = Ext.create('widget.uxNotification', {
+            this.notification = this.createNotificationWindow({
                 cls: cls,
                 title : Locale.strings.error,
-                position : 'tr',
-                useXAxis : true,
-                closeAction : 'hide',
-                autoClose : false,
-                shadow : false,
-                spacing : 20,
-                slideInDuration : 1500,
-                slideBackDuration : 1500,
-                slideInAnimation : 'elasticIn',
-                maxHeight: 600,
-                autoScroll: true,
-                slideBackAnimation : 'elasticIn'
+                closeAction : 'hide'
             });
         }
         if (config.width) {
@@ -95,6 +84,22 @@ Ext.define('LIME.controller.Notification', {
         if(moreLink) {
             moreLink.addListener("click", Ext.bind(this.openMoreInfo, this, [config]));
         }
+    },
+
+    createNotificationWindow: function(config) {
+        return Ext.create('widget.uxNotification', Ext.merge({
+            position : 'tr',
+            useXAxis : true,
+            autoClose : false,
+            shadow : false,
+            spacing : 20,
+            slideInDuration : 1500,
+            slideBackDuration : 1500,
+            slideInAnimation : 'elasticIn',
+            maxHeight: 600,
+            autoScroll: true,
+            slideBackAnimation : 'elasticIn'
+        }, config));
     },
 
     openMoreInfo: function(config) {

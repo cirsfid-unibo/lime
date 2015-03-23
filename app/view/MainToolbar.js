@@ -50,41 +50,42 @@
 
 Ext.define('LIME.view.MainToolbar', {
 
-    id : 'mainToolbar',
+	id : 'mainToolbar',
 
-    // extends the viewport
-    extend : 'Ext.toolbar.Toolbar',
+	// extends the viewport
+	extend : 'Ext.toolbar.Toolbar',
 
-    requires : ['LIME.view.maintoolbar.FileMenuButton',
-                'LIME.view.maintoolbar.DocumentMenuButton',
-                'LIME.view.maintoolbar.EditMenuButton',
-                'LIME.view.maintoolbar.UserButton',
-                'LIME.view.maintoolbar.PreferencesMenuButton',
-                'LIME.view.maintoolbar.WindowMenuButton'],
+	requires : ['LIME.view.maintoolbar.FileMenuButton',
+				'LIME.view.maintoolbar.DocumentMenuButton',
+				'LIME.view.maintoolbar.EditMenuButton',
+				'LIME.view.maintoolbar.UserButton',
+				'LIME.view.maintoolbar.PreferencesMenuButton',
+				'LIME.view.maintoolbar.WindowMenuButton'],
 
-    // set the alias
-    alias : 'widget.mainToolbar',
+	// set the alias
+	alias : 'widget.mainToolbar',
 
-    items : [{
-        xtype: 'image',
-        src: 'resources/images/icons/logo_lime_small.png',
-        style : {
-            'padding' : '0px !important'
-        },
-        margin : 2,
-        width: 30,
-        height: 30
-        }, {
-            xtype : 'fileMenuButton'   
-        },{
-            xtype: 'editMenuButton'
-        },{
-            xtype : 'documentMenuButton'   
-        },{
-            xtype : 'preferencesMenuButton'   
-        },{
-            xtype : 'windowMenuButton'   
-        }, '->', {
-            xtype: 'userButton'
+	items : [{
+       xtype: 'image',
+       src: 'resources/images/icons/logo_lime_small.png',
+       style : {
+           'padding' : '0px !important'
+       },
+       margin : 2,
+       width: 20
+       
+    }, {
+        xtype : 'fileMenuButton'   
+	},{
+	    xtype: 'editMenuButton'
+	},{
+        xtype : 'documentMenuButton'   
+    },{
+        xtype : 'preferencesMenuButton'   
+    },{
+        xtype : 'windowMenuButton'   
+    }, '->', {
+        xtype: 'userButton'
     }]
+
 });

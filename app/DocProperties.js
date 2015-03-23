@@ -122,7 +122,7 @@ Ext.define('LIME.DocProperties', {
      * This object contains information about widget of marked elements.
      */
     elementsWidget : {},
-    
+
     elementsConfig : {},
     elementsConfigByName: {},
     /**
@@ -177,7 +177,7 @@ Ext.define('LIME.DocProperties', {
     getNodeWidget: function(node) {
         return this.getElementWidget(DomUtils.getElementNameByNode(node));
     },
-    
+
     clearElementConfig: function() {
         this.elementsConfig = {};
         this.elementsConfigByName = {};
@@ -370,11 +370,12 @@ Ext.define('LIME.DocProperties', {
                             : parentTarget.el.lastChild;
                 firstAfterNode = afterNode;
                 Ext.each(config.data, function(attributes) {
+                    delete attributes["class"];
                     var newElConf = Ext.merge({
                         tag : 'div',
                         cls : targetNode
                     }, attributes);
-                    if(afterNode  && afterNode.children && afterNode.children.length > 0) {
+                    if(afterNode && afterNode.children && afterNode.children.length > 0) {
                         afterNode = Ext.DomHelper.insertAfter(afterNode, newElConf);    
                     } else {
                         afterNode = Ext.DomHelper.append(parentTarget.el, newElConf);
@@ -384,7 +385,7 @@ Ext.define('LIME.DocProperties', {
                     afterNode.parentNode.removeChild(firstAfterNode);
                 }
             } catch(e) {
-                Ext.log({level: "error", stack: true}, "DocProperties.updateMetadata - "+e);
+                Ext.log({level: "error"}, e);
                 result = 2;
             }
         } else {

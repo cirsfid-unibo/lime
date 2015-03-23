@@ -55,14 +55,14 @@ $rules = Array(
     
 	"preambleInitList" => Array(
 							   "La\s+Camera\s+dei\s+deputati\s+ed\s+il\s+Senato\s+della\s+Repubblica\s+hanno\s+approvato;\s+IL\s+PRESIDENTE\s+DELLA\s+REPUBBLICA",
-							   "IL PRESIDENTE DELLA REPUBBLICA",
-							   "Il Presidente della Repubblica",
+							   "IL\s+PRESIDENTE\s+DELLA\s+REPUBBLICA",	
+							   //"Il\s+Presidente\s+della\s+Repubblica\s*",						   
 							   "Attesto che"),
     
 	"preambleEndList" => Array (
-								"\s*E\s*m\s*a\s*n\s*a\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|la seguente legge):?",
-								"EMANA\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|la seguente legge):?",
-								"(P|p)romulga\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|la seguente legge):?",
+								"\s*E\s*m\s*a\s*n\s*a\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|la +seguente +legge|il +seguente +decreto(-| +)legge):?",
+								"EMANA\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|la +seguente +legge|il +seguente +decreto(-| +)legge):?",
+								"(P|p)romulga\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|la +seguente +legge|il +seguente +decreto(-| +)legge):?",
 								"Attesto che",
 								"Decreta:?"
 								),

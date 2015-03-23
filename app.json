@@ -1,28 +1,59 @@
 {
     "name": "LIME",
-
-    "requires": [
-    ],
-    
-    "resources": ["lib", "config", "languagesPlugins", "php"],
-
-    "id": "9ec55dc5-ec08-4d75-bd6f-723dddfc48c5",
-
-    //"theme": "ext-theme-crisp",
-
     "framework": "ext",
     "css": [
         {
-            "path": "bootstrap.css",
-            "bootstrap": true
+            "bootstrap": true,
+            "path": "bootstrap.css"
+        },
+        {
+            "path": "lib/codemirror/codemirror.css"
+        },
+        {
+            "path": "resources/stylesheets/extjs4.editor.css"
+        },
+        {
+            "path": "resources/stylesheets/extjs4.viewport.css"
         }
     ],
     "js": [
         {
             "path":"${ext.dir}/build/ext-all-debug.js"
-        },{
-            "path": "app.js",
-            "bundle": true
+        },
+        {
+            "bundle": true,
+            "path": "app.js"
+        },
+        {
+            "path": "lib/tinymce4/tinymce.min.js"
+        },
+        {
+            "path": "lib/codemirror/codemirror.min.js"
+        },
+        {
+            "path": "lib/vkbeautify/vkbeautify.js"
+        },
+        {
+            "path": "lib/plupload/js/plupload.js"
+        },
+        {
+            "path": "lib/plupload/js/plupload.html4.js"
+        },
+        {
+            "path": "lib/plupload/js/plupload.html5.js"
+        },
+        {
+            "path": "lib/plupload/js/plupload.flash.js"
+        },
+        {
+            "path": "lib/plupload/js/plupload.silverlight.js"
         }
-    ]
+    ],
+    "resources": [
+        "lib",
+        "config",
+        "languagesPlugins",
+        "php"
+    ],
+    "id": "9ec55dc5-ec08-4d75-bd6f-723dddfc48c5"
 }

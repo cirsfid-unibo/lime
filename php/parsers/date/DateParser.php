@@ -191,7 +191,7 @@ class DateParser {
         }
 
         $months = implode("|", $monthsNames);
-        $patterns = array("(day) month-name year" => "/((?P<day>$day)\W?\s+)?(?P<month>$months)\W?\s+(?P<year>$year)/i", 
+        $patterns = array("(day) month-name year" => "/((?P<day>$day)(\s*°)?\W?\s+)?(?P<month>$months)\W?\s+(?P<year>$year)/i", 
                     "month-name (day) year" => "/(?P<month>$months)\W?\s+((?P<day>$day)\W?\s+)?(?P<year>$year)/i", 
                     "month-name year (day)" => "/(?P<month>$months)\W?\s+(?P<year>$year)(\W?\s+(?P<day>$day))?/i");
 

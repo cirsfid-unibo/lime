@@ -65,12 +65,14 @@ Ext.define("Ext.ux.form.field.TinyMCE", {
 
         Ext.applyIf(config.tinymceConfig, me.statics().globalSettings);
 
+        /*me.addEvents({
+            "editorcreated": true
+        });*/
         me.callParent([config]);
     },
 
     initComponent: function() {
         var me = this;
-
         me.callParent(arguments);
 
         me.on('resize', function(elm, width, height) {
@@ -92,7 +94,6 @@ Ext.define("Ext.ux.form.field.TinyMCE", {
 
     initEditor: function() {
         var me = this;
-
         if (me.inProgress)
             return;
 
@@ -130,9 +131,9 @@ Ext.define("Ext.ux.form.field.TinyMCE", {
                     editor: me.editor
                 });
 
-                me.iframeEl = Ext.get(me.editor.id + "_ifr");
+                me.iframeEl = Ext.fly(me.editor.id + "_ifr");
                 tableId = me.editor.id.substring(0, me.editor.id.lastIndexOf("-"));
-                me.tableEl = Ext.get(tableId);
+                me.tableEl = Ext.fly(tableId);
                 me.edToolbar = me.tableEl.down(".mce-toolbar");
                 me.edStatusbar = me.tableEl.down(".mce-statusbar");
                /* 
@@ -165,9 +166,9 @@ Ext.define("Ext.ux.form.field.TinyMCE", {
 				// nothing
 			}
         };
-		
+
+		window.tinymce.dom.Event.domLoaded = true;
         tinymce.init(me.tinymceConfig);
-        
     },
 
     setEditorSize: function(width, height) {

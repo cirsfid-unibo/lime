@@ -185,7 +185,7 @@ Ext.define('LIME.controller.WidgetManager', {
                         for(var i=0; i<tplValues.length; i++) {
                             var key = tplValues[i].substring(1, tplValues[i].length-1),
                                 field = me.getWidgetFieldByOrigName(widget, key);
-                                
+
                             if(field && values[i]) {
                                 if ( obj.internalSeparator ) {
                                     var internalSplit = values[i].split(obj.internalSeparator);
@@ -289,6 +289,7 @@ Ext.define('LIME.controller.WidgetManager', {
     updateWidgetData: function(widget, field, value, updateAttributes) {
         var originalName = field.origName;
         value = value || field.getValue();
+        value = ( field.disabled ) ? "" : value;
         //check if field is a date and convert to the ISO format
         if (Ext.isDate(value)) {
             var newDate = Utilities.toISOString(value);
@@ -308,6 +309,10 @@ Ext.define('LIME.controller.WidgetManager', {
         
         me.addTab();
         me.application.on(Statics.eventsNames.editorDomNodeFocused, me.onNodeFocused, me);
+        me.application.on(Statics.eventsNames.unfocusedNodes, function() {
+            me.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
+                                    false, this.tabGroupName);
+        }, this);
 
         me.control({
             "markedElementWidget textfield" : {

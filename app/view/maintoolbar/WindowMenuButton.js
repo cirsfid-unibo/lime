@@ -95,20 +95,20 @@ Ext.define('LIME.view.maintoolbar.WindowMenuButton', {
                         xtype: 'menucheckitem',
                         id: 'showBoxCheckbox',
                         checked: true,
-                        text: Locale.strings.menuShowStyleBox,
+                        text: Locale.strings.menuShowStyleBox
                     }, {
                         xtype: 'menucheckitem',
                         id: 'showColorCheckbox',
                         checked: true,
-                        text: Locale.strings.menuShowStyleColor,
+                        text: Locale.strings.menuShowStyleColor
                     }, {
                         xtype: 'menucheckitem',
                         id: 'showStyleCheckbox',
-                        text: Locale.strings.menuShowStylePdf,
+                        text: Locale.strings.menuShowStylePdf
                     }]
                 }
             }]
-        },
+        };
         this.callParent(arguments);
     }
 });

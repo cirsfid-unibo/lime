@@ -47,18 +47,21 @@
 // the exist admin user
 define('EXIST_ADMIN_USER', 'admin');
 
-// the exist admin password
+// the exist admin password 
 define('EXIST_ADMIN_PASSWORD', 'exist');
 
 // the exist db base url
-define('EXIST_URL','http://sinatra.cirsfid.unibo.it:8080/exist/');
+define('EXIST_URL','http://localhost:8080/exist/');
 //define('EXIST_URL','http://sinatra.cirsfid.unibo.it:8080/exist/');
 
 // the server url 
-define('SERVER_NAME', 'http://sinatra.cirsfid.unibo.it');
+define('SERVER_NAME', 'http://localhost');
 //define('SERVER_NAME', 'http://sinatra.cirsfid.unibo.it');
 
+
 // absolute path to AbiWord utility
-define('ABIWORD_PATH', '/usr/bin/abiword');
+//define('ABIWORD_PATH', '/usr/bin/abiword');
+define('ABIWORD_PATH', 'C:\Users\octavian.bujor2\Programs\AbiWordStable\bin\AbiWord.exe');
+
 
 ?>

@@ -47,7 +47,7 @@
  * This is the plugin for translating documents
  */
 
-Ext.define('LIME.ux.TranslatePlugin', {
+Ext.define('LIME.ux.akoma2.TranslatePlugin', {
     singleton : true,
     alternateClassName : 'TranslatePlugin',
 
@@ -56,5 +56,9 @@ Ext.define('LIME.ux.TranslatePlugin', {
     },
 
     afterTranslate : function(params) {
+    },
+    
+    constructor: function (config) {
+        this.initConfig({});
     }
 });

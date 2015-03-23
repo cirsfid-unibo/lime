@@ -52,7 +52,8 @@ Ext.define('LIME.view.main.editor.Uri', {
     // set the alias
     alias : 'widget.mainEditorUri',
     frame : true,
-    
+    layout: 'fit',
+    padding: "0px 0px 5px 0px",
     linkTemplate: '<a path="{id}" class="uriSelector" style="" href="javascript:;">{text}</a>',
     style : {
         borderRadius : "0px",

@@ -103,6 +103,7 @@
 	"language": "Idioma",
 	"newLabel": "Nuevo",
 	"countryLabel": "País",
+    "docProponent": "Doc. Proponent",
 	"folderLabel": "Carpeta",
 	"docTypeLabel": "Tipo doc.",
 	"docDateLabel": "Fecha doc.",

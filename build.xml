@@ -39,10 +39,18 @@
             <target name="-after-build"/>
     -->
     <target name="-after-build">
-		<echo>Copying ExtJs locale files.</echo>
+		<echo><![CDATA[Copying ExtJs locale files.]]></echo>
 		<copy todir="${basedir}/ext/locale">  
 			<fileset dir="${build.dir}/config/locale/ext" includes="**"/>  
 		</copy>
+        <echo><![CDATA[Copying images and compiled css.]]></echo>
+        <copy todir="${basedir}/resources/ext">
+            <fileset dir="${build.dir}/resources/ext" includes="**"/>  
+        </copy>
+        <copy file="${build.dir}/resources/LIME-all.css" todir="${basedir}/resources/ext"/>
+        <echo file="${basedir}/bootstrap.css" append="false">
+            @import 'resources/ext/LIME-all.css';
+        </echo>
 	</target>
 
 </project>

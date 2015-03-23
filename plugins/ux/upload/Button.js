@@ -67,5 +67,5 @@ Ext.define('Ext.ux.upload.Button', {
         return Ext.create('Ext.ux.upload.Basic', this, Ext.applyIf({
             listeners: {}
         }, this.initialConfig));
-    },
+    }
 });

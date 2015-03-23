@@ -63,7 +63,7 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
     beforeLoad : function(params) {
         var metaResults = [], documents, treeData = [];
         if (params.docDom) {
-            documents = params.docDom.querySelectorAll('.' + DocProperties.documentBaseClass);
+            documents = params.docDom.querySelectorAll('*[class~=' + DocProperties.documentBaseClass + ']');
             if(documents.length) {
                 Ext.each(documents, function(doc, index) {
                     metaResults.push(Ext.Object.merge(this.processMeta(doc, params), {docDom: doc}));
@@ -115,10 +115,30 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
         if(documentNode && !documentNode.getAttribute("akn_name")) {
             documentNode.setAttribute("akn_name", DocProperties.getDocType());
         }
+
+        Ext.each(params.docDom.querySelectorAll('['+Language.attributePrefix+'class'+']'), function(node) {
+            var align = node.getAttribute(Language.attributePrefix+'class');
+            if ( !Ext.isEmpty(align) ) {
+                node.setAttribute('style', 'text-align: '+align+';');
+            }
+        });
+
+        // Add proprietary namespace for the given locale if it is missing
+        if(DocProperties.documentInfo.docLocale == 'uy') {
+            var el = params.docDom.querySelector('.document');
+            if (el && !el.getAttribute("xmlns:uy"))
+                el.setAttribute("xmlns:uy", "http://uruguay/propetary.xsd");
+        }
+
+        // Remove all note ref numbers from Word imported documents.
+        Ext.each(params.docDom.querySelectorAll('span.noteRefNumber'), function(node) {
+            node.parentNode.removeChild(node);
+        });
+
         me.insertFrbrData(params);
     },
-    
-        insertFrbrData: function(params) {
+
+    insertFrbrData: function(params) {
         var me = this,
             nodes, date = Ext.Date.format(new Date(), 'Y-m-d'),
             tmpNode, author = "#limeEditor", workUri, workUriTpl,
@@ -160,6 +180,9 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
                 me.setMetaAttribute(node, "date", date);
            });
 
+           tmpNode = params.metaDom.querySelector("*[class=FRBRWork] *[class=FRBRauthor]");
+           me.setMetaAttribute(tmpNode, "akn_href", '#author');
+           me.setMetaAttribute(tmpNode, "as", '#author');
            nodes = params.metaDom.querySelectorAll("*[class=FRBRauthor]");
            Ext.each(nodes, function(node) {
                 me.setMetaAttribute(node, "akn_href", author);
@@ -175,6 +198,7 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
            me.setMetaAttribute(tmpNode, "date", date);
 
            tmpNode = params.metaDom.querySelector("*[class=references]");
+
            var person = {
                 name: "TLCPerson",
                 attributes: [{
@@ -191,7 +215,9 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
             
             if(tmpNode) {
                 personNode = me.objToDom(params.metaDom.ownerDocument, person);
-                tmpNode.appendChild(personNode);
+                if ( !tmpNode.querySelector('[eId=limeEditor]') ) {
+                    tmpNode.appendChild(personNode);
+                }
             }
         }
     },
@@ -225,7 +251,6 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
         }
     },
     
-    
     getMetaDataStructure: function(schemaDoc) {
         var me = this;
         var elements = me.getSchemaElements(schemaDoc, "meta");
@@ -233,7 +258,6 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
             Language.setMetadataStructure(elements);
         }
     },
-    
     
     getSchemaElements: function(schema, elementName) {
         var me = this, 
@@ -258,6 +282,7 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
     
     processMeta: function(doc, params) {
         var extdom, meta, result = {}, ownDoc;
+        
         result.docMarkingLanguage = params.docMarkingLanguage;
         
         if(!doc || !doc.querySelector("*[class="+this.getMetadataClass()+"]")) {
@@ -311,8 +336,8 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
             }
         }, this);
     },
-
-    constructor: function() {
+    
+    constructor: function (config) {
         this.initConfig({});
     }
 });

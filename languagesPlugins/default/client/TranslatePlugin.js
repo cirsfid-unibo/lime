@@ -56,9 +56,5 @@ Ext.define('LIME.ux.TranslatePlugin', {
     },
 
     afterTranslate : function(params) {
-    },
-
-    constructor: function() {
-        this.initConfig({});
     }
 });

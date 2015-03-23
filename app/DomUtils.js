@@ -89,7 +89,7 @@ Ext.define('LIME.DomUtils', {
      */
     elementIdSeparator : '_',
     /**
-     * @property {RegExp} blockTagRegex
+     * @property {RegExp} block\\s+
      * RegExp object used for recognise if a string is a block element
      */
     blockTagRegex : /<(address|blockquote|body|center|dir|div|dlfieldset|form|h[1-6]|hr|isindex|menu|noframes|noscript|ol|pre|p|table|ul|dd|dt|frameset|li|tbody|td|tfoot|th|thead|tr|html)(\/)?>/i,
@@ -105,6 +105,9 @@ Ext.define('LIME.DomUtils', {
     vowelsRegex : /([a, e, i, o, u]|[0-9]+)/gi,
     
     tagRegex: /<(.|\n)*?>/g,
+
+    // Matches tags including their content
+    elementRegex: /<(.|\n)*?>(([^<\/]*)<\/(.|\n)*?>)?/g,
 
     /**
      * @property {Object} nodeType
@@ -195,6 +198,11 @@ Ext.define('LIME.DomUtils', {
     getSiblingsFromNode : function(node) {
         var iterator, siblings = [];
         if (node) {
+            iterator = node.previousSibling;
+            while (iterator) {
+                siblings.push(iterator);
+                iterator = iterator.previousSibling;
+            }
             iterator = node.nextSibling;
             while (iterator) {
                 siblings.push(iterator);
@@ -202,6 +210,16 @@ Ext.define('LIME.DomUtils', {
             }
         }
         return siblings;
+    },
+
+    getPreviousSiblingWithAttr: function(node, attr) {
+        node = (node) ? node.previousSibling : null;
+        while(node) {
+            if ( node.getAttribute && node.getAttribute(attr) != undefined ) {
+                return node;
+            }
+            node = node.previousSibling;
+        }
     },
 
     /**
@@ -214,6 +232,7 @@ Ext.define('LIME.DomUtils', {
      * @param {HTMLElement} to The destination
      */
     moveChildrenNodes : function(from, to, append) {
+        if (!from || !to) return;
         if (!append) {
             while (to.firstChild) {
                 to.removeChild(to.firstChild);
@@ -244,22 +263,6 @@ Ext.define('LIME.DomUtils', {
             selectedNode = selectedNode.parentNode;
         }
         return null;
-    },
-    /**
-     * Function which checks if a node @child is a descendant of @parent
-     * @param {HTMLElement} parent
-     * @param {HTMLElement} child
-     * @returns {Boolean}
-     */
-    isDescendant : function(parent, child) {
-        var node = child.parentNode;
-        while (node != null) {
-            if (node == parent) {
-                return true;
-            }
-            node = node.parentNode;
-        }
-        return false;
     },
 
     /**
@@ -335,6 +338,18 @@ Ext.define('LIME.DomUtils', {
         }
         return obj;
     },
+
+    setNodeInfoAttr : function(node, type, tpl) {
+        var info = this.getNodeExtraInfo(node, type, 15).trim();
+        tpl = new Ext.Template(tpl || "{data}");
+
+        if ( info ) {
+            node.setAttribute('data-labelinfo', tpl.apply({data: info}));
+        } else {
+            node.removeAttribute('data-labelinfo');
+        }
+    },
+
     /**
      * This function search extra information in a node that has a specific type and return it
      * @param {HTMLElement} node
@@ -346,7 +361,7 @@ Ext.define('LIME.DomUtils', {
         var info = '';
         if (node && node.getAttribute("class") && node.getAttribute("class").indexOf(type) != -1) {
             var infoLength = limit || Statics.extraInfoLimit;
-            var wrapper = Ext.get(node);
+            var wrapper = Ext.fly(node);
             //TODO: da file config
             var where = ["num", "heading", "subheading"];
             var infoNode;
@@ -395,7 +410,7 @@ Ext.define('LIME.DomUtils', {
         }
         return null;
     },
-
+    
     getMarkedParents: function(node, filterFunction) {
         var parents = [], iterNode = node;
 
@@ -525,23 +540,224 @@ Ext.define('LIME.DomUtils', {
                 Ext.log({
                     level : "error"
                 }, e);
-            }; 
+            };
         }
         return nodes;
     },
-    
+
+    // Find string inside node, string can be text (findText
+    // will be used) or html (findHtml will be used).
+    // Return list of ranges.
+    find : function (string, node) {
+        if (string.match(DomUtils.tagRegex))
+            return DomUtils.findHtml(string, node);
+        else
+            return DomUtils.findText(string, node);
+    },
+    // Search inside node (HTML Node) for the given html string.
+    // Return a list of matches (Range objects).
+    // Note: This works only for simple tags like <br> and markers.
+    findHtml : function (html, node) {
+        return this.findTextIgnoringHtml(html, node).filter(function (range) {
+            var content = DomUtils.range.getHtml(range);
+            return content.indexOf(html) != -1;
+        });
+    },
+
+    // Search inside node (HTML Node) for the given html string,
+    // ignoring all html tags.
+    // Return a list of matches (Range objects).
+    // Note: This works only for simple tags like <br> and markers.
+    findTextIgnoringHtml : function (html, node) {
+        var text = DomUtils.stripHtmlTags(html);
+        return DomUtils.findText(text, node);
+    },
+
+    // Search inside node (HTML Node) for the text string, ignoring
+    // the html tags.
+    // Return a list of matches (Range objects).
+    findText : function (text, node) {
+        // Find matches in plain string
+        var matches = [];
+        var pos = -1;
+        while ((pos = node.textContent.indexOf(text, pos+1)) > 0)
+            matches.unshift(pos);
+
+        var textNodes = DomUtils.getTextNodes(node);
+        // return the splitted text node after the given offset
+        var indexToTextNode = function (index) {
+            var pos = 0;
+            for (var i = 0; i < textNodes.length; i++) {
+                var node = textNodes[i];
+                if (index - pos < node.length)
+                    return node.splitText(index - pos);
+                pos += node.length;
+            }
+        }
+
+        // Map plain string indexes to range objects
+        return matches.map(function (index) {
+            var range = node.ownerDocument.createRange();
+            range.setEndBefore(indexToTextNode(index + text.length));
+            range.setStartBefore(indexToTextNode(index));
+            DomUtils.range.shrinkToTextNodes(range);
+            DomUtils.range.enlargeToClosingTags(range);
+            return range;
+        });
+    },
+
+    range: {
+        // Wrapper function to call all normalization functions
+        normalize: function(range) {
+            DomUtils.range.shrinkToTextNodes(range);
+            DomUtils.range.enlargeToClosingTags(range);
+        },
+        // Normalize range by making it start before the first non-empty text-node
+        // and end after the last non-empty text-node.
+        shrinkToTextNodes: function (range) {
+            var nodes = DomUtils.range.getTextNodes(range).filter(function (node) {
+                return node.textContent.length > 0;
+            });
+            range.setStartBefore(nodes[0]);
+            range.setEndAfter(nodes[nodes.length - 1]);
+        },
+
+        // Normalize range by enlarging it to include starting/closing tags around it.
+        // This should make it easier to wrap it in new tags with surroundContents. 
+        enlargeToClosingTags: function (range) {
+            // Include starting tag
+            function normalizeStart () {
+                if (range.startContainer == range.commonAncestorContainer)
+                    return;
+
+                var contentBefore = '';
+                for (var i = 0; i < range.startOffset; i++)
+                    contentBefore += range.startContainer.childNodes[i].textContent;
+                if (!contentBefore) {
+                    range.setStartBefore(range.startContainer);
+                    normalizeStart();
+                }
+            };
+            // Include ending tag
+            function normalizeEnd () {
+                if (range.endContainer == range.commonAncestorContainer)
+                    return;
+
+                var contentAfter = '';
+                for (var i = range.endOffset; i < range.endContainer.childNodes.length; i++)
+                    contentAfter += range.endContainer.childNodes[i].textContent;
+                if (!contentAfter) {
+                    range.setEndAfter(range.endContainer);
+                    normalizeEnd();
+                }
+            };
+            normalizeStart();
+            normalizeEnd();
+        },
+
+        // Traverse range in DFS order and call callbacks.
+        // {
+        //   onText: function(textNode) {},
+        //   onTagOpened: function(node) {},   
+        //   onTagClosed: function(node) {}   
+        // }
+        traverse: function (range, callbacks) {
+            var firstNode = range.startContainer.nodeType ==  DomUtils.nodeType.TEXT ?
+                            range.startContainer : 
+                            range.startContainer.childNodes[range.startOffset],
+                lastNode = range.endContainer.nodeType ==  DomUtils.nodeType.TEXT ?
+                           range.endContainer :
+                           range.endContainer.childNodes[range.endOffset - 1];
+
+            var onText = callbacks.onText || function () {};
+            var onTagOpened = callbacks.onTagOpened || function () {};
+            var onTagClosed = callbacks.onTagClosed || function () {};
+
+            var node = firstNode;
+            while (node) {
+                if (node.nodeType == DomUtils.nodeType.TEXT)
+                    onText(node);
+                if (node.nodeType == DomUtils.nodeType.ELEMENT) {
+                    onTagOpened(node);
+                    if (node.firstChild) {
+                        node = node.firstChild;
+                        continue;
+                    }
+                    else onTagClosed();
+                }
+
+                while (node && !node.nextSibling) {
+                    if (node == range.commonAncestorContainer)
+                        return console.log('warning: commonAncestorContainer found');
+                    if (node == lastNode) break;
+                    node = node.parentNode;
+                    onTagClosed(node);
+                }
+                if (node == lastNode) break;
+                else node = (node) ? node.nextSibling : node;
+            }
+        },
+
+        // Get all text nodes inside range
+        getTextNodes: function (range) {
+            var result = [];
+            DomUtils.range.traverse(range, {
+                onText: function (node) {
+                    result.push(node)
+                }
+            });
+            return result;
+        },
+
+        // Get the HTML string inside range.
+        getHtml : function (range) {
+            var output = '';
+            DomUtils.range.traverse(range, {
+                onText: function (node) {
+                    output += node.textContent;
+                },
+                onTagOpened: function (node) {
+                    output += '<' + node.tagName.toLowerCase();
+                    var attrs = node.attributes;
+                    for(var i = 0; i < attrs.length; i++) {
+                        output += ' "'  + attrs[i].name  +
+                                  '"="' + attrs[i].value + '"';
+                    }
+                    output += '>';
+                },
+                onTagClosed: function (node) {
+                    output += '</' + node.tagName.toLowerCase() + '>';
+                }
+            });
+            return output;
+        },
+        // Update range by splitting range nodes considering the range offsets
+        splitRangeNodes : function(range) {
+            if ( range.startContainer.nodeType == DomUtils.nodeType.TEXT ) {
+                range.setStartBefore(range.startContainer.splitText(range.startOffset));
+            }
+            if ( range.endContainer.nodeType == DomUtils.nodeType.TEXT ) {
+                range.setEndBefore(range.endContainer.splitText(range.endOffset));
+            }
+            return range;
+        }
+    },
+
+    // Strip HTML tags from string.
+    stripHtmlTags : function (string) {
+        return string.replace(DomUtils.tagRegex, '');
+    },
+
     smartFindTextNodes : function(text, node) {
         var me = this, textNodes = [], txtGroupNodes = [],
             tags = text.match(DomUtils.tagRegex);
-
         if (tags) {
             var re = new RegExp(tags.join("|"), "gi");
             var fragments = text.split(re);
             for (var i = 0; i < fragments.length; i++) {
                 if ( fragments[i].length ) {
                     var tList = DomUtils.findTextNodes(fragments[i], node).filter(function(tnode) {
-                        alert(tnode.data);
-                        return (tnode.data.startsWith(fragments[i]) || tnode.data.endsWith(fragments[i]));
+                        return (Ext.String.startsWith(tnode.data, fragments[i]) || Ext.String.endsWith(tnode.data, fragments[i]));
                     });
                     txtGroupNodes.push({
                         index: i,
@@ -559,7 +775,10 @@ Ext.define('LIME.DomUtils', {
                     textNodes = me.fiterTextGroups(group, nextGroup, textNodes);
                 } else if ( group ) {
                     Ext.each( group.nodes , function(txnode) {
-                        textNodes.push([{str: group.str, node: txnode}]);
+                        // This may be the second occorence, check if is the correct string
+                        if ( !textNodes.length || textNodes[0][0].str && textNodes[0][0].str == group.str ) {
+                            textNodes.push([{str: group.str, node: txnode}]);
+                        }
                     });
                 }
             }
@@ -575,7 +794,6 @@ Ext.define('LIME.DomUtils', {
     },
 
     fiterTextGroups: function(g1, g2, groups) {
-        console.log(g1, g2, groups);
         var groups = groups || [];
         for(var i = 0; i < g1.nodes.length; i++) {
             var node1 = g1.nodes[i];
@@ -583,13 +801,17 @@ Ext.define('LIME.DomUtils', {
                 var node2 = g2.nodes[j];
                 var siblings = this.getSiblings(node1, node2);
                 var sLen = siblings.length;
+                var firstNode = null;
                 if ( sLen && sLen <= (g2.index-g1.index+2) && 
                      siblings[0] == node1 && siblings[sLen-1] == node2 ) {
                     var list = this.findNodeListInGroup(node1, groups);
                     if (list) {
                         list.push({str: g2.str, node: node2});
                     } else {
-                        groups.push([{str: g1.str, node: node1}, {str: g2.str, node: node2}]);
+                        // This may be the second occorence, check if is the correct string
+                        if ( !groups.length || groups[0][0].str && groups[0][0].str == g1.str ) {
+                            groups.push([{str: g1.str, node: node1}, {str: g2.str, node: node2}]);
+                        }
                     }
                 }
             }
@@ -601,7 +823,7 @@ Ext.define('LIME.DomUtils', {
         var list = groups.filter(function(group) {
             return group.filter(function(obj) {
                 return obj.node == node; 
-            }).length;
+            }).length
         })[0];
         return list;
     },
@@ -634,34 +856,35 @@ Ext.define('LIME.DomUtils', {
                     text += w.currentNode.nodeValue + " ";
                 }
             } catch(e) {
-                Ext.log({
-                    level : "error"
-                }, e);
                 return this.getTextOfNodeClassic(node);
             };
         }
         return text;
     },
 
+    // Get list of text nodes inside node.
     getTextNodes : function(node) {
-        var w = node.ownerDocument.createTreeWalker(node, NodeFilter.SHOW_TEXT, {
-            acceptNode : function(node) {
-                return NodeFilter.FILTER_ACCEPT;
-            }
-        }, false);
-
-        var nodes = [];
+        var textNodes = [];
         try {
+            var w = node.ownerDocument.createTreeWalker(node, NodeFilter.SHOW_TEXT);
             while (w.nextNode()) {
-                nodes.push(w.currentNode);
+                textNodes.push(w.currentNode);
             }
         } catch(e) {
-            Ext.log({
-                level : "error"
-            }, "DomUtils.getTextNodes - "+e);
+            // In case TreeWalker is not supported (IE)
+            function textNodesUnder(node){
+                var all = [];
+                for (node=node.firstChild;node;node=node.nextSibling) {
+                    if (node.nodeType==3) all.push(node);
+                    else all = all.concat(textNodesUnder(node));
+                }
+                return all;
+            }
+            textNodes = textNodesUnder(node);
         };
-        return nodes;
+        return textNodes;
     },
+
     /** This function search all occurences of subStr in str, and returns all accurences position
      * @param {String} str
      * @param {String} subStr
@@ -710,6 +933,7 @@ Ext.define('LIME.DomUtils', {
         var cssText = doc.createTextNode(styleTxt);
         styleEl.appendChild(cssText);
     },
+
     /**
      * Wrapper for DOMParser.parseFromString
      */
@@ -754,7 +978,7 @@ Ext.define('LIME.DomUtils', {
             return cls.split(" ")[0];
         }
     },
-    
+
     getNameByNode: function(node) {
         var cls = node.getAttribute("class");
         if(cls) {
@@ -806,11 +1030,7 @@ Ext.define('LIME.DomUtils', {
     },
     
     isBreakingNode: function(node) {
-        var cls = node.getAttribute("class");
-        if(cls && cls.indexOf(DomUtils.breakingElementClass) != -1) {
-            return true;
-        }
-        return false;
+        return Ext.fly(node).is('.'+DomUtils.breakingElementClass);
     },
     
     isNodeFocused: function(node) {
@@ -891,17 +1111,6 @@ Ext.define('LIME.DomUtils', {
         };
     },
 
-    cleanNodeFromExtId : function(node, descendants) {
-        if(node.getAttribute("id")) {
-            node.removeAttribute("id");
-        }
-        if(descendants) {
-            Ext.each(node.querySelectorAll('[id]'), function(el) {
-                el.removeAttribute("id");
-            });
-        }
-    },
-    
     getPreviousTextNode : function(node, notEmpty) {
         while( node.previousSibling ) {
             if ( node.previousSibling.nodeType == DomUtils.nodeType.TEXT ) {
@@ -911,6 +1120,19 @@ Ext.define('LIME.DomUtils', {
             }
             node = node.previousSibling;
         }
+    },
+
+    getNodeNameLower: function(node) {
+        return (node) ? node.nodeName.toLowerCase() : "";
+    },
+
+    nodeHasClass: function(node, cls) {
+        var reg = new RegExp("\\b"+cls+"\\b");
+        return (node && node.getAttribute && reg.test(node.getAttribute('class')));
+    },
+
+    nodeHasTagName: function(node, tag) {
+        return node && node.tagName && node.tagName.toLowerCase() === tag.toLowerCase();
     },
     
     constructor: function() {

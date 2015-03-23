@@ -48,138 +48,22 @@
  * This menu is a container for all the buttons we will use to mark.
  * Each button is a TreeButton (our "panelish" implementation of a tree made of buttons)
  */
-
-Ext.override(Ext.layout.container.Card, {
-    setActiveItem: function (newCard) {
-        var me = this,
-            owner = me.owner,
-            oldCard = me.activeItem,
-            rendered = owner.rendered,
-            newIndex;
-
-        newCard = me.parseActiveItem(newCard);
-        newIndex = owner.items.indexOf(newCard);
-
-        // If the card is not a child of the owner, then add it.
-        // Without doing a layout!
-        if (newIndex === -1) {
-            newIndex = owner.items.items.length;
-            Ext.suspendLayouts();
-            newCard = owner.add(newCard);
-            Ext.resumeLayouts();
-        }
-
-        // Is this a valid, different card?
-        if (newCard && oldCard !== newCard) {
-            // Fire the beforeactivate and beforedeactivate events on the cards
-            if (newCard.fireEvent('beforeactivate', newCard, oldCard) === false) {
-                return false;
-            }
-            if (oldCard && oldCard.fireEvent('beforedeactivate', oldCard, newCard) === false) {
-                return false;
-            }
-
-            if (rendered) {
-                Ext.suspendLayouts();
-
-                // If the card has not been rendered yet, now is the time to do so.
-                if (!newCard.rendered) {
-                    me.renderItem(newCard, me.getRenderTarget(), owner.items.length);
-                }
-
-                var handleNewCard = function () {
-                    // Make sure the new card is shown
-                    if (newCard.hidden) {
-                        newCard.show();
-                    }
-
-                    var newCardEl = newCard.getEl();
-                    newCardEl.dom.style.opacity = 1;
-                    if (newCardEl.isStyle('display', 'none')) {
-                        newCardEl.setDisplayed('');
-                    } else {
-                        newCardEl.show();
-                    }
-
-                    newCardEl.up().toggleCls('flipped');
-
-                    // Layout needs activeItem to be correct, so set it if the show has not been vetoed
-                    if (!newCard.hidden) {
-                        me.activeItem = newCard;
-                    }
-                    Ext.resumeLayouts(true);
-                };
-
-                if (oldCard) {
-                    var oldCardEl = oldCard.getEl();
-
-                    if (me.hideInactive) {
-                        oldCard.hide();
-                        oldCard.hiddenByLayout = true;
-                    }
-                    oldCard.fireEvent('deactivate', oldCard, newCard);
-                    handleNewCard();
-
-                } else {
-                    handleNewCard();
-                }
-
-            } else {
-                me.activeItem = newCard;
-            }
-
-            newCard.fireEvent('activate', newCard, oldCard);
-
-            return me.activeItem;
-        }
-        return false;
-    }
-});
-
 Ext.define('LIME.view.MarkingMenu', {
-    extend : 'Ext.panel.Panel',
+    extend : 'Ext.tab.Panel',
 
     requires : ['LIME.view.NationalitySelector'],
 
     alias : 'widget.markingMenu',
 
-    id: 'markingMenu',
-
     collapsible : true,
 
-    layout : 'card',
+    layout : 'fit',
 
     listeners : {
         resize : function(cmp) {
             cmp.doLayout();
         }
     },
-
-    dockedItems: [{
-       xtype: 'toolbar',
-       dock: 'top',
-        layout : {
-            type : 'hbox',
-            pack : 'center'
-        },
-       items: [{
-            xtype: 'toggleslide',
-            onText: 'Quest buttons', 
-            offText: 'All buttons',
-            booleanMode: false,
-            state: true,
-            listeners: {
-                change: function(toggle, state) {
-                    var item = (state == toggle.onText) ? 0 : 1;
-                    Ext.getCmp('markingMenu').setActiveItem(item);
-                },
-                afterrender: function(toggle) {
-                    var markingMenu = toggle.up().up();
-                    markingMenu.toggleButtons = toggle;
-                }
-            }
-        }]
-    }],
 
     constructor : function() {
         /**
@@ -190,7 +74,7 @@ Ext.define('LIME.view.MarkingMenu', {
         this.title = Locale.strings.eastToolbarTitle;
         this.items = [{
             xtype : 'treepanel',
-            //title : Locale.strings.documentStructure,
+            title : Locale.strings.documentStructure,
             cls : 'x-tree-noicon x-tree-custom structure',
             id: 'treeStructure',
             useArrows: true,
@@ -199,46 +83,13 @@ Ext.define('LIME.view.MarkingMenu', {
             autoScroll : true
         },{
             xtype : 'treepanel',
-            //title : Locale.strings.commonButtons,
+            title : Locale.strings.commonButtons,
             cls : 'x-tree-noicon x-tree-custom commons',
             id: 'treeCommons',
             useArrows: true,
             border : false,
             rootVisible: false,
-            autoScroll : true,
-            dockedItems: [{
-                xtype: 'toolbar', 
-                dock: 'top',
-                layout : {
-                    type : 'hbox',
-                    pack : 'center'
-                },
-                items: [{
-                    xtype: 'textfield',
-                    enableKeyEvents: true,
-                    emptyText: 'Quick search',
-                    onTriggerClick: function () {
-                        this.reset();
-                        this.focus();
-                    }, 
-                    listeners: {
-                        change: function (field, newVal) {
-                            //var tree = field.up('treepanel');
-                            //tree.filter(newVal);
-                        },
-                        buffer: 250
-                    }
-                }]
-            }],
-            listeners: {
-                activate: function(cmp) {
-                    var text = cmp.down('textfield');
-                    //TODO: focus only with a manual selection
-                    /*if ( text ) {
-                        text.focus();
-                    }*/
-                }
-            }
+            autoScroll : true
         }],
         this.callParent(arguments);
     }

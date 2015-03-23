@@ -47,18 +47,20 @@ Ext.define('Ext.ux.upload.Basic', {
         me.success = [];
         me.failed = [];
         Ext.apply(me, config.listeners);
-        me.uploaderConfig = Ext.apply(me, config.uploader, me.configs.uploader);
-                
-        Ext.define('Ext.ux.upload.Model', {
-            extend: 'Ext.data.Model',
-            fields: ['id',
-                    'loaded',
-                    'name',
-                    'size',
-                    'percent',
-                    'status',
-                    'msg']
-        });
+        me.uploaderConfig = Ext.apply(me, config.uploader, me.configs.uploader);   
+        
+        if ( !Ext.ClassManager.isCreated('Ext.ux.upload.Model') ) {
+            Ext.define('Ext.ux.upload.Model', {
+                extend: 'Ext.data.Model',
+                fields: ['id',
+                        'loaded',
+                        'name',
+                        'size',
+                        'percent',
+                        'status',
+                        'msg']
+            });
+        }
         
         me.store = Ext.create('Ext.data.JsonStore', {
             model: 'Ext.ux.upload.Model',
@@ -147,8 +149,10 @@ Ext.define('Ext.ux.upload.Basic', {
     
     removeUploaded: function()
     {
+        //console.log(this.store);
         this.store.each(function(record)
         {
+            //console.log(record);
             if(record && record.get('status') == 5)
             {
                 this.removeFile(record.get('id'));
@@ -183,6 +187,7 @@ Ext.define('Ext.ux.upload.Basic', {
             me.uploader.settings.multipart_params = me.multipart_params;
         }
         me.uploader.start();
+        //console.log(me.uploader);
     },
     
     initializeUploader: function()

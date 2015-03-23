@@ -69,6 +69,11 @@
 			$this->_markingLanguage = $params['markingLanguage'];
 			
 			$this->_transformFile = (isset($params['transformFile'])) ? realpath(LIMEROOT."/".$params['transformFile']) : FALSE;
+			$this->_includeFiles = (isset($params['includeFiles'])) ? 
+					array_map(function ($str) {
+						$path = realpath(LIMEROOT."/".$str);
+						return ($path) ? "../../".$str : FALSE; //TODO: use get relative path function
+					}, explode(",",$params['includeFiles'])) : FALSE;
 		}
 		
 		/**
@@ -84,26 +89,46 @@
 			$xslProcessor = new XSLTProcessor();
 			
 			if($this->_transformFile) {
+				$xml = new DOMDocument();
+				$xslt->load($this->_transformFile);
+
+				if ( $this->_includeFiles ) {
+					addIncludesToXsl($xslt, $this->_includeFiles);
+				}
+
 				switch($this->_output)
 				{
 					case 'akn':
-					// create the xml file
-					$xml = new DOMDocument();
-					$xml->loadXML('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">' . stripcslashes($this->_input));
-					
-					$xslt->load($this->_transformFile);
-					
-					$xpath = new DOMXPath($xml);
-					// The element which has an attribute 'language' which contains 'akoma' has the akn namespace  
-					$elements = $xpath->evaluate("//*[@markinglanguage]");
-					// Loocking for the namespace
-					if (!is_null($elements) && $elements->length) {
-						foreach( $xpath->query('namespace::*', $elements->item(0)) as $node ) {
-							$name = ($node->nodeName == 'xmlns:akn') ? 'xmlns' : $node->nodeName;
-							$xslt->documentElement->setAttributeNS('http://www.w3.org/2000/xmlns/',$name,$node->nodeValue);
+						// create the xml file
+						$xml->loadXML('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">' . stripcslashes($this->_input));
+						
+						$xpath = new DOMXPath($xml);
+						// The element which has an attribute 'language' which contains 'akoma' has the akn namespace  
+						$elements = $xpath->evaluate("//*[@*]");
+						// Loocking for the namespace
+						if (!is_null($elements) && $elements->length) {
+							foreach( $xpath->query('namespace::*', $elements->item(0)) as $node ) {
+								$name = ($node->nodeName == 'xmlns:akn') ? 'xmlns' : $node->nodeName;
+								$xslt->documentElement->setAttributeNS('http://www.w3.org/2000/xmlns/',$name,$node->nodeValue);
+							}
 						}
-					}
-					break;
+						break;
+
+					case 'html':
+						$xml->loadXML(stripcslashes($this->_input));
+						$uriNamespace = $xml->documentElement -> lookupnamespaceURI(NULL);
+						
+						$xpath = new DOMXPath($xml);
+						foreach( $xpath->query('namespace::*', $xml->documentElement) as $node ) {
+							if($node->nodeName != 'xmlns:xsi' && $node->nodeName != 'xmlns') {
+								$xslt->documentElement->setAttributeNS('http://www.w3.org/2000/xmlns/',$node->nodeName,$node->nodeValue);
+							}
+						}
+
+						$xslt->documentElement->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:akn', $uriNamespace);
+						break;
+					default:
+						$xml->loadXML($this->_input);
 				}
 		
 				// add the stylesheet
@@ -116,7 +141,7 @@
 				$xslt->load(ATTRIBUTES_NORMALIZER);
 				$xslProcessor->importStylesheet($xslt);
 				$result = $xslProcessor->transformToXML($xml);
-			
+
 				// return the translated document
 				return $result;
 			} else {

@@ -1,4 +1,4 @@
 {
-	"views": ["PdfPreviewPanel"],
+	"views": ["PdfPreviewMainTab"],
 	"controllers": ["PdfPreviewController"]
 }

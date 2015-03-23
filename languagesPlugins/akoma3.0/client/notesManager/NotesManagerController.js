@@ -177,7 +177,7 @@ Ext.define('LIME.controller.NotesManagerController', {
             eId = node.getAttribute(LoadPlugin.getNoteTmpId()),
             ref = editorBody.querySelector("*["+LoadPlugin.getRefToAttribute()+"="+eId+"]"),
             linker, result = {marker: false, placement: false};
-        if(eId && ref) {
+        if(eId && ref && marker && marker.value) {
             linker = ref.querySelector('a');
             if(marker.value.trim() !=  DomUtils.getTextOfNode(linker).trim()) {
                 result.marker = true;

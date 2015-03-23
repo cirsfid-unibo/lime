@@ -56,24 +56,24 @@ Ext.define('LIME.controller.MetadataManagerController', {
         selector : 'main toolbar',
         ref : 'mainToolbar'
     }, {
-        selector: 'metaManagerPanel',
-        ref: 'metaManagerPanel'
+    	selector: 'metaManagerPanel',
+    	ref: 'metaManagerPanel'
     }, {
-        selector: 'contextPanel',
-        ref: 'contextPanel'
+    	selector: 'contextPanel',
+    	ref: 'contextPanel'
     }],
 
     config : {
         pluginName : "metadataManager",
-        btnCls : "openMetadataBtn"
+        btnCls : "editorTabButton openMetadataBtn"
     },
 
     tabMetaMap: {},
 
     addMetadataButton : function() {
         var me = this, toolbar = me.getMainToolbar();
-        if (!toolbar.down("[cls=" + me.getBtnCls() + "]")) {
-            toolbar.add("->");
+        if (!toolbar.down("[cls='" + me.getBtnCls() + "']")) {
+        	toolbar.add("->");
             toolbar.add({
                 cls : me.getBtnCls(),
                 margin : "0 10 0 0",
@@ -87,30 +87,30 @@ Ext.define('LIME.controller.MetadataManagerController', {
 
     removeMetadataButton : function() {
         var me = this, toolbar = me.getMainToolbar(),
-            btn = toolbar.down("[cls=" + me.getBtnCls() + "]");
+        	btn = toolbar.down("[cls='" + me.getBtnCls() + "']");
         if (btn) {
             toolbar.remove(btn);
         }
     },
 
     openManager: function() {
-        this.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
-                                    true, this.getPluginName());
+    	this.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
+    								true, this.getPluginName());
     },
 
-    addTab: function(conf) {
-        conf = conf || {};
-        var cmp = Ext.widget("metaManagerPanel", Ext.merge({
-            name: "metaManagerPanel",
-            autoDestroy: false,
-            groupName: this.getPluginName()
-        }, conf));
-        this.application.fireEvent(Statics.eventsNames.addContextPanelTab, cmp);
-        return cmp;
-    },
+	addTab: function(conf) {
+		conf = conf || {};
+		var cmp = Ext.widget("metaManagerPanel", Ext.merge({
+			name: "metaManagerPanel",
+			autoDestroy: false,
+			groupName: this.getPluginName()
+		}, conf));
+    	this.application.fireEvent(Statics.eventsNames.addContextPanelTab, cmp);
+    	return cmp;
+	},
 
     onInitPlugin : function() {
-        //this.application.on(Statics.eventsNames.afterLoad, this.onDocumentLoaded, this);
+    	//this.application.on(Statics.eventsNames.afterLoad, this.onDocumentLoaded, this);
         this.addMetadataButton();
         //this.addTab();
     },
@@ -120,34 +120,54 @@ Ext.define('LIME.controller.MetadataManagerController', {
     },
 
     addMetadataFields: function() {
-        var me = this,
-            metaTemplate = Config.getLanguageConfig().metaTemplate,
+    	var me = this,
+    		metaTemplate = Config.getLanguageConfig().metaTemplate,
             newTab;
 
-        Ext.Object.each(metaTemplate, function(key, value) {
-            if(key == "identification") {
-                var frbrFieldsets = Ext.Object.getKeys(value).filter(function(name) {
-                    return name.charAt(0) != "@";
-                });
-                Ext.each(frbrFieldsets, function(name) {
-                    newTab = me.addMetaFRBRFieldset(name, value[name]);
-                    me.tabMetaMap[name] = {
-                        tab: newTab,
-                        metaParent: key
-                    };
-                });
-            } else {
-                newTab = me.addMetaFieldset(key, value);
+    	Ext.Object.each(metaTemplate, function(key, value) {
+    		if(key == "identification") {
+    			var frbrFieldsets = Ext.Object.getKeys(value).filter(function(name) {
+		    		return name.charAt(0) != "@";
+		    	});
+		    	Ext.each(frbrFieldsets, function(name) {
+		    		newTab = me.addMetaFRBRFieldset(name, value[name]);
+		    		me.tabMetaMap[name] = {
+		    			tab: newTab,
+		    			metaParent: key
+		    		};
+		    	});
+    		} else {
+    			newTab = me.addMetaFieldset(key, value);
                 me.tabMetaMap[key] = {
                     tab: newTab
                 };
-            }
-        });
+    		}
+    	});
 
         me.addLifecycle();
         me.addWorkflow();
         me.addClassification();
+        me.addProprietary();
     },
+
+    fakeSavingToolbar: [{
+        xtype: 'component',
+        hidden: true,
+        flex: 1,
+        baseCls: 'form-success-state',
+        cls: Ext.baseCSSPrefix + 'success-icon',
+        html: Locale.getString('Data has been saved', 'metadataManager')
+    },'->', {
+        xtype: 'button',
+        text: Locale.getString("saveDocumentButtonLabel"),
+        handler: function(cmp) {
+            var label = cmp.up().down('component');  
+            setTimeout(function () {
+                label.show();
+                setTimeout(function () { label.hide(); }, 5000);
+            }, 300);
+        }    
+    }],
 
     // Add lifecycle tab
     addLifecycle: function() {
@@ -194,19 +214,65 @@ Ext.define('LIME.controller.MetadataManagerController', {
         ]);
     },
 
-    // Add a tab with title tabname and containing items, responsible for the metadataTag
-    addMetaTab: function (tabName, metadataTag, items) {
-        var tab = this.addTab({
-            name: metadataTag,
-            title: tabName,
-            items: items
-        });
-        this.tabMetaMap[metadataTag] = {
-            tab: tab
-        };
+    addProprietary: function() {
+        var me = this, editor = me.getController("Editor");
+        this.addMetaTab("proprietary", "proprietary", [
+            this.createFieldsetItem ("proprietary", ["source"]),
+            this.createMetaGrid (
+                "Proprietary",
+                ["name", "content"],
+                {
+                    "name": ["Asunto", "Carpeta", "WorkflowTitle", "Cuerpo", "SubType", "Variante", "Iniciativa", "Asunto", "Repartido", "Destribuito"]
+                },
+                "proprietary",
+                function(store) {
+                    var data = me.getDataObjectsFromStore(store),
+                        metadata = editor.getDocumentMetadata(),
+                        groups = {};
+
+                    Ext.each(metadata.originalMetadata.metaDom.querySelectorAll('[class=proprietary] *'), function(node) {
+                        node.parentNode.removeChild(node);
+                    });
+
+                    Ext.each(data, function(obj) {
+                       var name = obj.name;
+                       if(name) {
+                           delete obj.name;
+                           obj.html = obj.content;
+                           delete obj.content;
+                           name = DocProperties.documentInfo.docLocale + ':' + name;
+                           groups[name] = groups[name] || [];
+                           groups[name].push(obj);
+                       }
+                    });
+                    Ext.Object.each(groups, function(group, gData) {
+                       var result = DocProperties.updateMetadata(Ext.merge({
+                            metadata : editor.getDocumentMetadata(),
+                            path : "proprietary/"+group,
+                            data : gData
+                        }));
+                        if (result) {
+                            Ext.MessageBox.alert("Error", "Error " + result);
+                        } else {
+                            //remove this
+                            editor.changed = true;
+                        }
+                    });
+                }
+            )
+        ]);
     },
 
+
     storeGridChanged: function(store) {
+        var data = this.getDataObjectsFromStore(store);
+        this.updateMetadata(store.grid, data, {
+            overwrite: false,
+            after: (store.grid.name == "FRBRuri") ? "FRBRthis" : "FRBRuri"
+        });
+    },
+
+    getDataObjectsFromStore: function(store) {
         var data = [];
         store.each(function(record) {
             var recordData = record.getData(),
@@ -218,10 +284,20 @@ Ext.define('LIME.controller.MetadataManagerController', {
             });
             data.push(filtredData);
         });
-        this.updateMetadata(store.grid, data, {
-            overwrite: false,
-            after: (store.grid.name == "FRBRuri") ? "FRBRthis" : "FRBRuri"
+        return data;
+    },
+
+    // Add a tab with title tabname and containing items, responsible for the metadataTag
+    addMetaTab: function (tabName, metadataTag, items) {
+        var tab = this.addTab({
+            name: metadataTag,
+            title: tabName,
+            items: items,
+            bbar: this.fakeSavingToolbar
         });
+        this.tabMetaMap[metadataTag] = {
+            tab: tab
+        };
     },
 
     getValuesFromObj: function(obj) {
@@ -232,8 +308,9 @@ Ext.define('LIME.controller.MetadataManagerController', {
       });
     },
 
-    createMetaGrid: function(name, values, customColumns, customPath) {
-        var me = this;
+    createMetaGrid: function(name, values, customColumns, customPath, callback) {
+        var me = this,
+            callback = callback || me.storeGridChanged;
         return Ext.widget("metaGrid", {
                 title: name,
                 width: "98%",
@@ -245,32 +322,32 @@ Ext.define('LIME.controller.MetadataManagerController', {
                 store: Ext.create('Ext.data.Store', {
                     fields : values,
                     listeners: {
-                        remove: Ext.bind(me.storeGridChanged, me),
-                        update: Ext.bind(me.storeGridChanged, me)
+                        remove: Ext.bind(callback, me),
+                        update: Ext.bind(callback, me)
                     }
                 })
         });
     },
 
     addMetaFRBRFieldset: function(name, conf) {
-        var me = this,
-            items = [];
-        Ext.Object.each(conf, function(key) {
-            var values = me.getValuesFromObj(conf[key]);
-            if(key == "FRBRuri" || key == "FRBRalias") {
-                items.push(me.createMetaGrid(key, values));
-            } else {
-                items.push(me.createFieldsetItem(key, values));
-            }
-        });
-        return me.addMetaFieldset(name, conf, items);
+    	var me = this,
+    		items = [];
+    	Ext.Object.each(conf, function(key) {
+    		var values = me.getValuesFromObj(conf[key]);
+    		if(key == "FRBRuri" || key == "FRBRalias") {
+    			items.push(me.createMetaGrid(key, values));
+    		} else {
+    			items.push(me.createFieldsetItem(key, values));
+    		}
+    	});
+    	return me.addMetaFieldset(name, conf, items);
     },
 
     addMetaFieldset: function(name, conf, items) {
-        var me = this,
-            tab = me.getMetaManagerPanel(),
-            possibleChildren = conf["!possibleChildren"],
-            values;
+    	var me = this,
+    		tab = me.getMetaManagerPanel(),
+    		possibleChildren = conf["!possibleChildren"],
+    		values;
 
       if(!Ext.isArray(items)) {
         items = [me.createFieldsetItem(name, me.getValuesFromObj(conf))];
@@ -287,15 +364,16 @@ Ext.define('LIME.controller.MetadataManagerController', {
             //     items.push(me.createMetaGrid("Children", values, {}));
             // }
         }
-        return me.addTab({
-            name: name,
-            title: name,
-            items: items
-        });
+  		return me.addTab({
+  			name: name,
+  			title: name,
+  			items: items,
+            bbar: me.fakeSavingToolbar
+  		});
     },
 
     createFieldsetItem: function(name, values) {
-        return {
+    	return {
             xtype: "form",
             width: "98%",
             name: name,
@@ -323,7 +401,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
 
     // TODO: update every time
     fillMetadataFields: function(tab) {
-        var me = this, editor = me.getController("Editor"),
+    	var me = this, editor = me.getController("Editor"),
             metadata = editor.getDocumentMetadata(),
             tabMap = me.tabMetaMap[tab.name];
 
@@ -338,10 +416,10 @@ Ext.define('LIME.controller.MetadataManagerController', {
                 sourceField.setValue(source);
             }
 
-            Ext.each(metadata[tab.name].children, function(el) {
-                var cmpToFill = tabMap.tab.down("*[name='"+el.attr.class+"']");
+        	Ext.each(metadata[tab.name].children, function(el) {
+        		var cmpToFill = tabMap.tab.down("*[name='"+el.attr.class+"']");
 
-                if(tabMap.tab.down("*[name='Children']")) {
+        		if(tabMap.tab.down("*[name='Children']")) {
                     cmpToFill = tabMap.tab.down("*[name='Children']");
                     el.attr["type"] = el.attr["class"];
                 }
@@ -358,39 +436,45 @@ Ext.define('LIME.controller.MetadataManagerController', {
                     el.attr["type"] = el.attr["class"];
                 }
 
-                if(cmpToFill) {
-                    if(cmpToFill.xtype == "metaGrid") {
-                        me.fillGridFields(cmpToFill, el);
-                    } else {
-                        me.fillFormFields(cmpToFill, el);
-                    }
-                } else {
+                if(tabMap.tab.down("*[name='Proprietary']")) {
+                    cmpToFill = tabMap.tab.down("*[name='Proprietary']");
+                    el.attr["name"] = el.attr["class"].substring(el.attr["class"].indexOf(':')+1);
+                    el.attr["content"] = el.el.innerHTML;
                 }
-            });
+
+        		if(cmpToFill) {
+					if(cmpToFill.xtype == "metaGrid") {
+						me.fillGridFields(cmpToFill, el);
+					} else {
+						me.fillFormFields(cmpToFill, el);
+					}
+        		} else {
+        		}
+        	});
         }
 
         tabMap.filled = true;
     },
 
     fillGridFields: function(grid, data) {
-        this.addRecord(grid, data.attr, false, true);
+    	this.addRecord(grid, data.attr, false, true);
     },
 
     fillFormFields: function(form, data) {
-        Ext.Object.each(data.attr, function(attr, val) {
-            var field = form.down("*[name='"+attr+"']");
-            if(field) {
-                if(Ext.isEmpty(val)) {
+    	Ext.Object.each(data.attr, function(attr, val) {
+    		var field = form.down("*[name='"+attr+"']");
+    		if(field) {
+    		    if(Ext.isEmpty(val)) {
                     field.reset();
-                } else {
-                  field.setValue(val);
-                }
-            }
-        });
+    		    } else {
+    		      field.setValue(val);
+    		    }
+    		}
+    	});
     },
 
     tabActivated: function(tab) {
-        this.fillMetadataFields(tab);
+    	this.fillMetadataFields(tab);
     },
 
     addRecord : function(grid, record, index, noEdit) {
@@ -399,24 +483,24 @@ Ext.define('LIME.controller.MetadataManagerController', {
         index = index || store.getCount();
         store.insert(index, [record]);
         if(!noEdit) {
-            plugin.startEdit(index, 0);
+        	plugin.startEdit(index, 0);
         }
     },
 
     /*resetFields: function() {
-        var me = this;
-        Ext.Object.each(me.tabMetaMap, function(el, obj) {
-            obj.filled = false;
-            if(obj.tab) {
-                Ext.each(obj.tab.query("textfield"), function(cmp) {
-                    cmp.reset();
-                });
-                Ext.each(obj.tab.query("metaGrid"), function(cmp) {
-                    cmp.getStore().removeAll(true);
-                });
-            }
-        });
-        this.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
+    	var me = this;
+    	Ext.Object.each(me.tabMetaMap, function(el, obj) {
+    		obj.filled = false;
+    		if(obj.tab) {
+    			Ext.each(obj.tab.query("textfield"), function(cmp) {
+    				cmp.reset();
+    			});
+    			Ext.each(obj.tab.query("metaGrid"), function(cmp) {
+    				cmp.getStore().removeAll(true);
+    			});
+    		}
+    	});
+    	this.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
                                     false, this.getPluginName());
     },
     */
@@ -428,27 +512,27 @@ Ext.define('LIME.controller.MetadataManagerController', {
     },
 
     updateMetadata: function(cmp, data, conf) {
-        var me = this, editor = me.getController("Editor"),
-            tab = cmp.up("metaManagerPanel"),
-            tabMap = me.tabMetaMap[tab.name],
-            name = cmp.name,
-            path = "";
-        conf = conf || {};
+    	var me = this, editor = me.getController("Editor"),
+    		tab = cmp.up("metaManagerPanel"),
+    		tabMap = me.tabMetaMap[tab.name],
+    		name = cmp.name,
+    		path = "";
+    	conf = conf || {};
 
-        if(tabMap && cmp) {
-            path = (tabMap.metaParent) ? tabMap.metaParent + "/" : "";
-            if(name == "Children") {
-               var groups = {};
-               Ext.each(data, function(obj) {
-                   var type = obj.type;
-                   if(type != undefined) {
-                       delete obj.type;
-                       groups[type] = groups[type] || [];
-                       groups[type].push(obj);
-                   }
-               });
-               Ext.Object.each(groups, function(group, gData) {
-                   var result = DocProperties.updateMetadata(Ext.merge({
+    	if(tabMap && cmp) {
+    	    path = (tabMap.metaParent) ? tabMap.metaParent + "/" : "";
+    	    if(name == "Children") {
+    	       var groups = {};
+    	       Ext.each(data, function(obj) {
+    	           var type = obj.type;
+    	           if(type != undefined) {
+    	               delete obj.type;
+    	               groups[type] = groups[type] || [];
+    	               groups[type].push(obj);
+    	           }
+    	       });
+    	       Ext.Object.each(groups, function(group, gData) {
+    	           var result = DocProperties.updateMetadata(Ext.merge({
                         metadata : editor.getDocumentMetadata(),
                         path : path+tab.name+"/"+group,
                         data : gData
@@ -459,8 +543,8 @@ Ext.define('LIME.controller.MetadataManagerController', {
                         //remove this
                         editor.changed = true;
                     }
-               });
-            } else if (name == "Lifecycle" || name == "Workflow" || name == "Classification") {
+    	       });
+    	    } else if (name == "Lifecycle" || name == "Workflow" || name == "Classification") {
                 var result = DocProperties.updateMetadata(Ext.merge({
                     metadata : editor.getDocumentMetadata(),
                     path : cmp.customPath,
@@ -489,8 +573,8 @@ Ext.define('LIME.controller.MetadataManagerController', {
                     //remove this
                     editor.changed = true;
                 }
-            }
-        }
+    	    }
+    	}
         editor.showDocumentUri();
     },
 
@@ -498,25 +582,25 @@ Ext.define('LIME.controller.MetadataManagerController', {
         var me = this;
         me.application.on(Statics.eventsNames.afterLoad, me.docLoaded, me);
         me.control({
-            'metaManagerPanel': {
-                activate: me.tabActivated
-            },
-            'metaManagerPanel textfield': {
-                change: function(cmp, newValue, oldValue) {
-                    if(!cmp.up("metaGrid")) {
-                        var form = cmp.up("form");
-                        me.updateMetadata(form, form.getValues());
-                    }
-                }
-            },
+        	'metaManagerPanel': {
+        		activate: me.tabActivated
+        	},
+        	'metaManagerPanel textfield': {
+        		change: function(cmp, newValue, oldValue) {
+        			if(!cmp.up("metaGrid")) {
+        				var form = cmp.up("form");
+        				me.updateMetadata(form, form.getValues());
+        			}
+        		}
+        	},
             'metaGrid tool' : {
                 click : function(cmp) {
-                    var grid = cmp.up("metaGrid");
-                    var records = {};
-                    Ext.each(grid.columnsNames, function(name) {
-                        records[name] = name;
-                    });
-                    me.addRecord(grid, records);
+                	var grid = cmp.up("metaGrid");
+                	var records = {};
+                	Ext.each(grid.columnsNames, function(name) {
+                		records[name] = name;
+                	});
+                	me.addRecord(grid, records);
                 }
             },
         });

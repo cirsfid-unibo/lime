@@ -67,6 +67,7 @@ Ext.define('LIME.controller.ExportController', {
             text : Locale.getString("exportDocument", me.getPluginName()),
             icon : 'resources/images/icons/export-icon.png',
             name : 'exportAs',
+            id : 'exportMenu',
             hideOnClick: false,
             menu : {
                 plain : true,

@@ -52,7 +52,7 @@
 		"pattern": "patternless"
 	},
 	"components": {
-		"pattern": "patternless"
+		"pattern": "container"
 	},
 	"concept": {
 		"pattern": "inline"
@@ -148,7 +148,7 @@
 		"pattern": "container"
 	},
 	"formula": {
-		"pattern": "block"
+		"pattern": "container"
 	},
 	"hcontainer": {
 		"pattern": "hcontainer"
@@ -196,7 +196,7 @@
 		"pattern": "inline"
 	},
 	"mod": {
-		"pattern": "container"
+		"pattern": "inline"
 	},
 	"mref": {
 		"pattern": "inline"

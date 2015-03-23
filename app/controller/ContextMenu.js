@@ -93,7 +93,7 @@ Ext.define('LIME.controller.ContextMenu', {
             } catch(e) {
                 Ext.log({
                     level : "error"
-                }, "ContextMenu.showContextMenu - "+e);
+                }, e);
             }
         });
         
@@ -120,8 +120,9 @@ Ext.define('LIME.controller.ContextMenu', {
                 /* TODO Distinguere i due casi basandosi sui due bottoni */
                 click : function(cmp, e) {
                     var parentXtype = cmp.parentMenu.getXType(), id = cmp.id,
-                        selectedNode = editor.getSelectedNode(true);
-                        
+                        selectedNode = editor.getFocusedNode();
+                    
+                    if ( !selectedNode ) return;    
                     // Call the unmark only with one of the inner buttons
                     if (parentXtype != "contextMenu") {
                         try {
@@ -137,7 +138,7 @@ Ext.define('LIME.controller.ContextMenu', {
                         } catch(e) {
                             Ext.log({
                                 level : "error"
-                            }, "ContextMenu.contextMenu menuitem.click - "+e);
+                            }, e);
                         }
                     } else {
                         /* TODO Don't let the menu hide when the main item is clicked */

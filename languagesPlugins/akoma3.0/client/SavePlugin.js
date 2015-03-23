@@ -49,7 +49,6 @@
  */
 
 Ext.define('LIME.ux.akoma3.SavePlugin', {
-    override: 'LIME.ux.SavePlugin',
     singleton : true,
     alternateClassName : 'SavePlugin',
     
@@ -66,7 +65,8 @@ Ext.define('LIME.ux.akoma3.SavePlugin', {
         if (metadataDom && metadataDom.parentNode)
             metadataDom.parentNode.removeChild(metadataDom);
     },
-    constructor: function() {
+    
+    constructor: function (config) {
         this.initConfig({});
     }
     

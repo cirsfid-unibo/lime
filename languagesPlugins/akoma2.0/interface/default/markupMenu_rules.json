@@ -98,7 +98,7 @@
 			"children": ["num", "heading", "subparagraph"]
 		},
 		"conclusions": {
-			"children": ["date", "location", "blockContainer", "signature"]
+			"children": ["p", "date", "location", "blockContainer", "signature"]
 		},
 		
 		"signature": {

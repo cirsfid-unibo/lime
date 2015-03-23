@@ -1,4 +1,4 @@
-<project name="resources-impl">
+<project name="x-resources-impl">
     <target name="-before-resources"/>
     <target name="-after-resources"/>
     

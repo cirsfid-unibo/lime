@@ -57,7 +57,7 @@ Ext.define('LIME.Locale', {
 	pStrings: {},
 
     constructor: function() {
-        this.detectLanguage();
+		this.detectLanguage();
         this.initConfig();
 		this.loadLanguage();
     },

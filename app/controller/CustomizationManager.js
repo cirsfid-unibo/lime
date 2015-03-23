@@ -79,12 +79,11 @@ Ext.define('LIME.controller.CustomizationManager', {
         ref : 'markingMenuContainer'
     }],
 
-    onLanguageLoaded : function(controllers) {
+    onLanguageLoaded : function() {
         this.customCallbacks = {};
         this.loadControllers(Config.customControllers);
     },
 
-    //Config.customDefaultControllers
     loadControllers : function(controllers) {
         var me = this, 
             controllers = controllers || [];
@@ -172,6 +171,14 @@ Ext.define('LIME.controller.CustomizationManager', {
 
         editorController.autoSaveContent(true);
 
+        if(me.finishEditBtn) {
+            me.finishEditBtn.up().remove(me.finishEditBtn);
+        }
+        if(me.syncButton) {
+            if (me.syncButton.syncEnabled)
+                me.getController('DualEditorSynchronizer').disable();
+            me.syncButton.up().remove(me.syncButton);
+        }
         language.beforeTranslate(function(xml) {
             xml = xml.replace('<?xml version="1.0" encoding="UTF-8"?>', '');
             var params = {
@@ -201,13 +208,9 @@ Ext.define('LIME.controller.CustomizationManager', {
                     margin : 2
                 });
                 viewport.add(newExplorer);
-                if(me.finishEditBtn) {
-                    me.finishEditBtn.up().remove(me.finishEditBtn);
-                }
             });
         }, {}, null, editor, me.secondDocumentConfig.metaDom);
     },
-
 
     addFinishEditingButton : function(cmp, xmlDiff) {
         var me = this, toolbar = me.getMainToolbar();
@@ -221,19 +224,38 @@ Ext.define('LIME.controller.CustomizationManager', {
                     click : Ext.bind(me.finishEditingMode, me, [cmp, xmlDiff])
                 }
             });
+            me.syncButton = toolbar.insert(7, {
+                margin : "0 10 0 20",
+                text : "Enable Synchronization",
+                enableToggle: true,
+                syncEnabled : false,
+                listeners : {
+                    click : function () {
+                        if (this.syncEnabled) {
+                            this.syncEnabled = false;
+                            this.setText('Enable Synchronization');
+                            me.getController('DualEditorSynchronizer').disable();
+                        } else {
+                            this.syncEnabled = true;
+                            this.setText('Disable Synchronization');
+                            me.getController('DualEditorSynchronizer').enable();
+                        }
+                    }
+                }
+            });
         }
     },
 
     enableDualEditorMode: function(dualConfig) {
         var me = this,
             mainTabPanel = me.getMain(),
-            outliner = me.getOutliner(),
+            explorer = me.getOutliner(),
             markingMenu = me.getMarkingMenuContainer(),
             editorTab = me.getMainEditor().up(),
             storage = me.getController("Storage"),
             editorController = me.getController("Editor"),
             language = me.getController("Language"),
-            xmlDiff = mainTabPanel.down("xmlDiff"),
+            xmlDiff = dualConfig.diffTab,
             xmlDiffController = me.getController("XmlDiffController"),
             secondEditor;
 
@@ -248,20 +270,20 @@ Ext.define('LIME.controller.CustomizationManager', {
             xmlDiff.tab.hide();  
         }
         
-        //outliner.setVisible(false);
+        //explorer.setVisible(false);
 
-        outliner.up().remove(outliner);
+        explorer.up().remove(explorer);
 
         //markingMenu.collapse();
 
-        if(markingMenu) {
-            markingMenu.placeholder.getEl().on('mouseenter', function(){ 
-                markingMenu.floatCollapsedPanel();
-            });
-        }
+        // Bug: this causes the first editor to disappear
+        // if(markingMenu) {
+        //     markingMenu.placeholder.getEl().on('mouseenter', function(){ 
+        //         markingMenu.floatCollapsedPanel();
+        //     });
+        // }
         
         secondEditor = me.createSecondEditor();
-
         me.secondEditor = secondEditor;
 
         me.addFinishEditingButton(secondEditor, xmlDiff);
@@ -280,7 +302,7 @@ Ext.define('LIME.controller.CustomizationManager', {
                     me.manageAfterLoad = function() {
                         var newId = dualConfig.editableDoc.replace("/diff/", "/diff_modified/");
                         DocProperties.documentInfo.docId = newId;
-                        Ext.each(xmlDiffController.selectedDocs, function(doc, index) {
+                        Ext.each([xmlDiff.firstDoc, xmlDiff.secondDoc], function(doc, index) {
                             var textFields = xmlDiff.query("textfield");
                             var oldPath = doc.path;
                             doc.path = doc.path.replace("/diff/", "/diff_modified/");
@@ -302,7 +324,6 @@ Ext.define('LIME.controller.CustomizationManager', {
         }, 100);
         
     },
-
 
     afterDocumentLoaded: function() {
         var me = this;
@@ -336,6 +357,7 @@ Ext.define('LIME.controller.CustomizationManager', {
         var loadDefaultPlugin = function () {
             me.loadControllers(Config.customDefaultControllers);
         }
+
         if (Config.loaded) {
             loadDefaultPlugin();
         } else {
@@ -356,6 +378,13 @@ Ext.define('LIME.controller.CustomizationManager', {
                 }
             },
             'docLocaleSelector': {
+                afterrender: function(cmp) {
+                    if(Config.fieldsDefaults[cmp.name]) {
+                        cmp.setValue(Config.fieldsDefaults[cmp.name]);
+                    }
+                }
+            },
+            'docTypeSelector': {
                 afterrender: function(cmp) {
                     if(Config.fieldsDefaults[cmp.name]) {
                         cmp.setValue(Config.fieldsDefaults[cmp.name]);

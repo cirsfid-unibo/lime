@@ -67,13 +67,25 @@ class Proxies_Services_FileToHtml implements Proxies_Services_Interface
 	 */
 	public function __construct($params)
 	{
-		if ($_FILES['file']['error'] == UPLOAD_ERR_OK               //checks for errors
-		      && is_uploaded_file($_FILES['file']['tmp_name'])) { //checks that file is uploaded
+		$this->_delete = FALSE;
+		if (isset($_FILES['file'])
+	        && $_FILES['file']['error'] == UPLOAD_ERR_OK               //checks for errors
+		    && is_uploaded_file($_FILES['file']['tmp_name'])) { //checks that file is uploaded
 		  		$this->_filePath = $_FILES['file']['tmp_name']; 
 				$this->_fileName = $_FILES['file']['name']; 
 				$this->_fileSize = $_FILES['file']['size'];
                 $this->cleaningXslDom = new DOMDocument();
                 $this->cleaningXslDom->load($this->cleaningXsl);
+		} else if (isset($params['fileExistPath']) && $params['fileExistPath']) {
+			// Crappy code to allow to specify file url.
+			$url = EXIST_URL.'rest'.$params['fileExistPath'];
+			$this->_fileName = str_replace("/", "__", $params['fileExistPath']);
+	  		$this->_filePath = dirname(__FILE__)."/../../tmp/".$this->_fileName;
+			file_put_contents($this->_filePath, fopen($url, 'r'));
+			$this->_delete = TRUE;
+			$this->_fileSize = 42;
+            $this->cleaningXslDom = new DOMDocument();
+            $this->cleaningXslDom->load($this->cleaningXsl);
 		}
 		$this->_transformFile = (isset($params['transformFile']) && $params['transformFile']) ? realpath(LIMEROOT."/".$params['transformFile']) : FALSE;
 	}
@@ -107,7 +119,8 @@ class Proxies_Services_FileToHtml implements Proxies_Services_Interface
 					$output['html'] = "Unable to load XML file";
 				}
             } else if ($this->isTypeAllowed($fileType)) {			
-				$tmpDir = ini_get('upload_tmp_dir');
+				$tmpDir = dirname($this->_filePath);
+				// ini_get('upload_tmp_dir');
 				$fileName = "conv_".basename($this->_filePath);
 				$filePath = tempnam($tmpDir, "cnv");
 				$cmd = ABIWORD_PATH.' --to=html '.$this->_filePath.' -o '.$filePath;
@@ -137,6 +150,7 @@ class Proxies_Services_FileToHtml implements Proxies_Services_Interface
 			}	
 		}
 		
+		if ($this->_delete) unlink($this->_filePath);
 		return str_replace('\/','/',json_encode($output));
 	}
     

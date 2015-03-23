@@ -326,7 +326,7 @@ Ext.define('LIME.controller.ParsersController', {
             Ext.each(response, function(item) {
                 var docNumImpossible = me.docNumImpossibleParents;
                 me.searchInlinesToMark(node, item.match, config, function(n) {
-                    var extNode = Ext.get(n);
+                    var extNode = Ext.fly(n);
                     for (var i = 0; i < docNumImpossible.length; i++) {
                         if (extNode.up(docNumImpossible[i])) {
                             return false;
@@ -423,7 +423,7 @@ Ext.define('LIME.controller.ParsersController', {
         Ext.each(parts, function(element) {
             if(!element.value.trim()) return; 
             var textNodes = DomUtils.findTextNodes(element.value, node), 
-                extNode = Ext.get(textNodes[0]), 
+                extNode = Ext.fly(textNodes[0]), 
                 extParent = extNode.parent("." + DomUtils.tempParsingClass, true), parent;
             if (extParent || textNodes.length == 0) {
                 return;
@@ -436,7 +436,7 @@ Ext.define('LIME.controller.ParsersController', {
         }, this);
         Ext.each(nodesToMark, function(node) {
             me.wrapPartNodeSibling(node, function(sibling) {
-                var extSib = Ext.get(sibling), elButton = DomUtils.getButtonByElement(sibling);
+                var extSib = Ext.fly(sibling), elButton = DomUtils.getButtonByElement(sibling);
                 /* If sibling is marked with the same button or it is temp element then stop the loop */
                 if ((elButton && (elButton.id === markButton.id)) || (extSib.is('.' + DomUtils.tempParsingClass))) {
                     return true;
@@ -485,7 +485,7 @@ Ext.define('LIME.controller.ParsersController', {
     wrapStructurePart : function(name, delimiter, prevPartNode) {
         var me = this, app = me.application, editor = me.getController("Editor"), 
             body = editor.getBody(), partNode, wrapNode, 
-            iterNode = body.querySelector('*[class="'+DocProperties.getDocClassList()+'"]');
+            iterNode = body.querySelector('*[class='+DocProperties.getDocClassList()+']');
 
         if (!prevPartNode) {
             while (iterNode && iterNode.childNodes.length == 1) {
@@ -618,6 +618,8 @@ Ext.define('LIME.controller.ParsersController', {
         });
         Ext.defer(function() {
             // Clean docuement, removing white spaces, before parsing
+            /*var extNode = Ext.get(editor.getBody());
+             extNode.clean();*/
             app.fireEvent(Statics.eventsNames.progressUpdate, Locale.getString("parsing", me.getPluginName()));
             me.callParser("structure", editor.getContent(), function(result) {
                 var jsonData = Ext.decode(result.responseText, true);

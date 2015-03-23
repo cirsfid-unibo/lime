@@ -56,9 +56,5 @@ Ext.define('LIME.ux.SavePlugin', {
     },
 
     afterSave : function(){
-    },
-
-    constructor: function() {
-        this.initConfig({});
     }
 }); 

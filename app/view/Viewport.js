@@ -52,17 +52,7 @@ Ext.define('LIME.view.Viewport', {
 
     alias : 'widget.appViewport',
 
-    requires : [
-        'LIME.view.Outliner',
-        'LIME.view.QuestPanel',
-        'LIME.view.MainToolbar',
-        'LIME.view.MarkingMenu',
-        'LIME.view.Main',
-        'LIME.view.ContextMenu',
-        'LIME.view.DownloadManager',
-        'LIME.view.ProgressWindow',
-        'LIME.view.Login'
-    ],
+    requires : ['LIME.view.Outliner', 'LIME.view.MainToolbar', 'LIME.view.MarkingMenu', 'LIME.view.Main', 'LIME.view.ContextMenu', 'LIME.view.DownloadManager', 'LIME.view.ProgressWindow', 'LIME.view.modal.Login'],
 
     style : {
         background : '#FFFFFF'
@@ -93,6 +83,9 @@ Ext.define('LIME.view.Viewport', {
     markingMenu : {
         xtype : 'markingMenu',
         cls: 'markingMenuContainer',
+        //floating: true,
+        //draggable: true,
+        //collapsed: true,
         region : 'east',
         width : '22%',
         collapsible : true,
@@ -103,10 +96,14 @@ Ext.define('LIME.view.Viewport', {
     },
 
     editorItems : [{
-        xtype : 'mainToolbar',
+        xtype: 'panel',
+        border: 0,
         region : 'north',
         width : '100%',
-        margin : 2
+        margin : 2,
+        items: [{
+            xtype : 'mainToolbar'
+        }]
     }, {
         xtype : 'main',
         region : 'center',
@@ -116,30 +113,15 @@ Ext.define('LIME.view.Viewport', {
         resizable : true,
         margin : 2
     }, {
-        xtype : 'panel',
+        xtype : 'outliner',
         region : 'west',
+        //draggable : true,
+        //hidden: true,
+        expandable : true,
+        resizable : true,
         width : '15%',
         autoScroll : true,
-        expandable : true,
-        //collapsible : true,
-        resizable : true,
-        padding : 2,
-        /*layout : {
-            type : 'vbox',
-            align : 'stretch'
-        },*/
-        layout: {
-            type: 'accordion',
-            titleCollapse: false,
-            animate: true,
-            multi: true
-        },
-        items: [{
-            xtype : 'outliner'
-        }, {
-            xtype : 'questPanel',
-            margin : '4 0 0 0'
-        }]
+        margin : 2
     },
     {
         // Context menu related to the editor

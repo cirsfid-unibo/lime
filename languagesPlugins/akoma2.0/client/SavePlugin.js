@@ -48,7 +48,7 @@
  * This is a save as plugin
  */
 
-Ext.define('LIME.ux.SavePlugin', {
+Ext.define('LIME.ux.akoma2.SavePlugin', {
     singleton : true,
     alternateClassName : 'SavePlugin',
     
@@ -64,6 +64,9 @@ Ext.define('LIME.ux.SavePlugin', {
         // Remove the metadata from the editor's content
         if (metadataDom && metadataDom.parentNode)
             metadataDom.parentNode.removeChild(metadataDom);
+    },
+    constructor: function (config) {
+        this.initConfig({});
     }
     
 }); 

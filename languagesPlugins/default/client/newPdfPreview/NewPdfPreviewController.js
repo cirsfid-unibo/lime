@@ -47,7 +47,7 @@
 Ext.define('LIME.controller.NewPdfPreviewController', {
     extend : 'Ext.app.Controller',
     
-    views: ["LIME.ux.newPdfPreview.NewPdfPreviewPanel"],
+    views: ["LIME.ux.newPdfPreview.NewPdfPreviewMainTab"],
 
     refs : [{
         selector : 'appViewport',

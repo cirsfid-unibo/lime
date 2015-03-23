@@ -1,4 +1,4 @@
-<project name="js-impl">
+<project name="x-js-impl">
     <!--
     this target extracts split mode information from the compiler's app
     processor to determine various pieces of information

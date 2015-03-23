@@ -51,6 +51,9 @@ Ext.define('LIME.controller.chImportController', {
         pluginName : "chImportDocument"
     },
 
+    checkNumReg : new RegExp("^(\\d+)[-]?\\s*[\\).]*\\s*$", 'i'),
+    checkLetterReg : new RegExp("^([a-zA-Z])[-]?\\s*[\\).]*\\s*$", 'i'),
+
     initMenu : function() {
         var me = this;
         menu = {
@@ -114,9 +117,91 @@ Ext.define('LIME.controller.chImportController', {
         uploaderView.show();
     },
     
-    parseDocument: function() {
-        var me = this;
+    finalCleaning: function(node) {
+        var parsers = this.getController("ParsersController");
         
+        Ext.each(node.querySelectorAll('ol'), function(el) {
+            Ext.fly(el).addCls('toMark');
+        });
+        
+        parsers.markOlBlockList(node);
+        
+        Ext.each(node.querySelectorAll('.formula'), function(el) {
+            el.setAttribute(Language.getAttributePrefix()+'name', 'enactingFormula');
+        });
+        
+        Ext.each(node.querySelectorAll('p'), function(el) {
+            Ext.fly(el).insertHtml('afterBegin', '<br>');
+            Ext.fly(el).insertHtml('beforeEnd', '<br>');
+            while(el.firstChild) {
+                el.parentNode.insertBefore(el.firstChild, el);
+            };
+            el.parentNode.removeChild(el);
+        });
+        
+        Ext.each(node.querySelectorAll('span > span'), function(el) {
+            var parent = el.parentNode;
+            
+            if ( !parent.getAttribute('class') ) {
+                while(parent.firstChild) {
+                    parent.parentNode.insertBefore(parent.firstChild, parent);
+                };
+                parent.parentNode.removeChild(parent);
+            }
+        });
+
+        Ext.each(node.querySelectorAll('.hcontainer'), function(el) {
+            if ( !el.textContent.trim() ) {
+                el.parentNode.removeChild(el);
+            } else {
+                var childHcontainer = Ext.Array.toArray(el.querySelectorAll('.hcontainer')).filter(function(chEl) {
+                    if ( chEl.parentNode == el) {
+                        return true;
+                    }
+                });
+            }
+        });
+        
+        parsers.addChildWrapper(node.querySelectorAll('.container'));
+        parsers.normalizeNodes(node);
+    },
+
+    parseReferences: function(callback) {
+        var me = this, parsers = this.getController("ParsersController"),
+            editor = me.getController("Editor"),
+            content = editor.getContent('text');
+            
+        parsers.callReferenceParser(callback, content);
+    },
+    
+    normalizeDocDates: function() {
+        var me = this, editor = me.getController("Editor"),
+            body = editor.getBody();
+        var parsers = this.getController("ParsersController");
+        var preface = body.querySelector('.preface');
+        
+        if (preface) {
+            var dates = preface.querySelectorAll('.docDate');
+            var contentToParse = Ext.fly(preface).getHtml();
+            var button = DomUtils.getButtonByElement(preface);
+    
+            parsers.callParser("docDate", contentToParse, function(result) {
+                var jsonData = Ext.decode(result.responseText, true);
+                if (jsonData && !Ext.Object.isEmpty(jsonData.response.dates)) {
+                    Ext.each(dates, function(date) {
+                        DomUtils.unwrapNode(date);
+                    });
+                    parsers.parseDocDate(jsonData, preface, button, true);
+                }
+            }, function() {});
+        }
+    },
+    
+    parseDocument: function() {
+        var me = this,
+            parsers = me.getController("ParsersController"), 
+            editor = me.getController("Editor");
+
         me.application.fireEvent(Statics.eventsNames.progressStart, null, {
             value : 0.1,
             text : Locale.getString("parsing", "parsers")
@@ -124,13 +209,28 @@ Ext.define('LIME.controller.chImportController', {
         try {
             me.searchNodesToMark(function(markingConfigs) {
                 Ext.each(markingConfigs, function(markingConf) {
-                    var silent = (markingConf.button.markupConfig.pattern == "inline") ? false : true;
-                    me.application.fireEvent('markingRequest', markingConf.button, {silent:silent, nodes:markingConf.nodes});            
+                    //var silent = (markingConf.button.markupConfig.pattern == "inline") ? false : true;
+                    parsers.requestMarkup(markingConf.button, {
+                        silent : true,
+                        noEvent : true,
+                        noDoubleMarkingCheck : true,
+                        nodes : markingConf.nodes,
+                        noExpandButtons: true
+                    });
                 });
                 if(markingConfigs.length) {
-                    me.detectHcontainerNumsToMark();    
+                    me.detectHcontainerNumsToMark();
+                    me.normalizeDocDates();
+                    me.finalCleaning(editor.getBody());
+                    parsers.callAttachmentParser(function() {
+                        me.parseReferences(function() {
+                            me.application.fireEvent(Statics.eventsNames.progressEnd);
+                        });
+                    });
+                    
+                } else {
+                    me.application.fireEvent(Statics.eventsNames.progressEnd);
                 }
-                me.application.fireEvent(Statics.eventsNames.progressEnd);
             });    
         } catch(e) {
             console.log(e);
@@ -172,16 +272,17 @@ Ext.define('LIME.controller.chImportController', {
             hcontainers = Array.prototype.slice.call(body.querySelectorAll(".hcontainer")).filter(function(el) {
                 return !el.querySelector(".num");
             }), button,
-            checkNum = new RegExp("\\d+[-]?\\w*\\s*[\\)]", 'i'), //TODO: include letters
+            checkNum = new RegExp("^\\d+[-]?\\w*\\s*[\\)]", 'i'), //TODO: include letters
             nodesToMark = [];
-            
+
         Ext.each(hcontainers, function(node) {
             var leafs = Array.prototype.slice.call(node.querySelectorAll("*")).filter(function(el) {
-                return !el.querySelector("*");
+                return (!el.querySelector("*") && el.textContent.trim() );
             }), maybeNumNode = leafs[0],
-                text = DomUtils.getTextOfNode(maybeNumNode)+")";
+                text = (maybeNumNode) ? maybeNumNode.textContent.trim()+")" : '';
+
             // Filter only very short texts
-            if(text.length < 6 && checkNum.test(text)) {
+            if(checkNum.test(text)) {
                 nodesToMark.push(maybeNumNode);
             }
         });
@@ -192,11 +293,12 @@ Ext.define('LIME.controller.chImportController', {
         }
     },
 
-    wrapBodyPars: function(body, type, config) {
-        var me = this, 
+    wrapBodyPars: function(body, type, cls, config) {
+        var me = this,
             parsers = me.getController("ParsersController"),
-            partitions = body.querySelectorAll(".partitionHeader"),
-            button = DocProperties.getFirstButtonByName(type);
+            partitions = body.querySelectorAll("[class='"+cls+"']"),
+            button = DocProperties.getFirstButtonByName(type), 
+            nodes = [];
         
         if(button) {
             partitions = Array.prototype.slice.call(partitions);
@@ -210,12 +312,51 @@ Ext.define('LIME.controller.chImportController', {
                 });
                 partEl.setAttribute("class", DomUtils.tempParsingClass+" "+button.name);
                 me.addElementToConfig(config, button.id, partEl);
+                Ext.fly(partition).removeCls("partitionHeader");
+                nodes.push(partEl);
             });
         }
+        return nodes;
     },
 
+    getTypeByPartitionCls : function(cls) {
+        var lastCls = cls.split(" ");
+        lastCls = lastCls[lastCls.length-1];
+        var type = "";
+        switch(lastCls) {
+            case "h1":
+                type = "chapter";
+                break;
+            case "h2":
+                type = "section";
+                break;
+            case "h6":
+                type = "article";
+                break;
+        }
+        return type;
+    },
+    
+    wrapPartitionsRicorsive: function(node, config) {
+        var me = this, partition = node.querySelector(".partitionHeader"),
+            cls, type, nodes;
+        if(partition) {
+            cls = partition.getAttribute("class");
+            type = me.getTypeByPartitionCls(cls);
+            if(type) {
+                nodes = me.wrapBodyPars(node, type, cls, config);
+                Ext.each(nodes, function(nd) {
+                    me.wrapPartitionsRicorsive(nd, config);
+                });    
+            }
+        }
+    },
     
     detectBodyParts: function(body, config, callback) {
+        if (!body) {
+            Ext.callback(callback, this);
+            return;
+        }
         var me = this,
             parsers = me.getController("ParsersController"),
             nums = body.querySelectorAll(".num"),
@@ -224,18 +365,112 @@ Ext.define('LIME.controller.chImportController', {
         Ext.each(nums, function(node) {
             contentToParse+= "<span>"+DomUtils.getTextOfNode(node)+ "</span>";
         });
-  
-        parsers.callParser("body", contentToParse, function(result) {
-            var jsonData = Ext.decode(result.responseText, true), type;
-            if (jsonData) {
-                me.application.fireEvent(Statics.eventsNames.progressUpdate, Locale.getString("parsing", "parsers"));
-                type = Ext.Object.getKeys(jsonData.response)[0];
-                me.wrapBodyPars(body, type, config);
-                Ext.callback(callback, me);
-            }
-        }, function() {
-            Ext.callback(callback, me);
+        
+        me.wrapPartitionsRicorsive(body, config);
+        
+        Ext.each(body.querySelectorAll('.article'), function(node) {
+            me.detectArticleParts(node, config);
         });
+
+        Ext.callback(callback, me);
+    },
+
+    detectArticleParts: function(node, config) {
+        var me = this, items= [], nums = [],
+            parsers = me.getController("ParsersController"),
+            blockListButton = DocProperties.getChildConfigByName(DocProperties.getFirstButtonByName("article"), 'blockList')
+                                || DocProperties.getFirstButtonByName('blockList'),
+            itemButton = DocProperties.getChildConfigByName(blockListButton, 'item') 
+                            || DocProperties.getFirstButtonByName('item'),
+            numButton = DocProperties.getChildConfigByName(itemButton, 'num') 
+                        || DocProperties.getFirstButtonByName('num');
+
+        Ext.each(node.querySelectorAll('p, .paragraph'), function(paraNode) {
+            var numNode = paraNode.firstChild;
+
+            // Check if this p may be an item
+            if ( numNode && numNode.textContent.trim() && 
+                    ( me.checkNumReg.test(numNode.textContent) || me.checkLetterReg.test(numNode.textContent) ) ) {
+
+                var wrapNode = me.createAndInsertWrapper(paraNode);
+
+                numNode.setAttribute("class", DomUtils.tempParsingClass+" "+numButton.name);
+                me.addElementToConfig(config, numButton.id, numNode);
+                me.addElementToConfig(config, itemButton.id, wrapNode);
+
+                DomUtils.moveChildrenNodes(paraNode, wrapNode, true);
+                parsers.wrapItemText(wrapNode);
+                items.push(wrapNode);
+                nums.push(numNode);
+            }
+        });
+
+        if (items.length ) {
+            me.wrapItemsBlockLists(items, nums, config, blockListButton);
+        } 
+    },
+
+    wrapItemsBlockLists: function(items, nums, config, button) {
+        var me = this, 
+            parsers = me.getController("ParsersController"),
+            itemsToInsert = Ext.Array.clone(items);
+
+        // There may be many blocklists
+        while( itemsToInsert.length ) {
+            var wrapNode = me.createAndInsertWrapper(itemsToInsert[0]);
+
+            parsers.wrapPartNodeSibling(wrapNode, function(node) {
+                if ( itemsToInsert.length != Ext.Array.remove(itemsToInsert, node).length) {
+                    return false;
+                }
+                if ( node.nodeType == DomUtils.nodeType.ELEMENT &&  
+                            (node.nodeName.toLowerCase() == "br") || 
+                             Ext.fly(node).hasCls(DomUtils.breakingElementClass)) {
+                    return false;
+                } else if ( Ext.isEmpty(node.textContent.trim()) ) {
+                    return false;
+                }
+                return true;
+            });
+
+            me.addElementToConfig(config, button.id, wrapNode);
+        }
+
+        me.nestListsByCmpNums(nums, config, button);
+    },
+
+    nestListsByCmpNums: function(nums, config, listButton) {
+        var me = this, 
+            parsers = me.getController("ParsersController");
+
+        var prevNum = nums[0];
+        Ext.each(nums.splice(1), function(numNode) {
+            if ( me.checkNumReg.test(prevNum.textContent) && 
+                    me.checkLetterReg.test(numNode.textContent) && 
+                    Ext.String.endsWith(prevNum.parentNode.textContent.trim(), ':') ) {
+
+                var wrapNode = me.createAndInsertWrapper(numNode.parentNode);
+                parsers.wrapPartNodeSibling(wrapNode, function(node) {
+                    var num = node.querySelector('.num');
+                    if ( num && me.checkNumReg.test(num.textContent) != me.checkNumReg.test(numNode.textContent) ) {
+                        return true;
+                    }
+                });
+                prevNum.parentNode.appendChild(wrapNode);
+
+                me.addElementToConfig(config, listButton.id, wrapNode);
+            }
+            prevNum = numNode;
+        });
+    },
+
+    createAndInsertWrapper: function(targetNode) {
+        var wrapNode = Ext.DomHelper.createDom({
+            tag : 'div',
+            cls : DomUtils.tempParsingClass
+        });
+        targetNode.parentNode.insertBefore(wrapNode, targetNode);
+        return wrapNode;
     },
     
     detectBody: function(node, config) {
@@ -283,6 +518,11 @@ Ext.define('LIME.controller.chImportController', {
         
         if(preambleEl) {
             config[button.id] = [preambleEl];
+            Ext.each(preambleEl.querySelectorAll('span:not(class)'), function(span) {
+                if ( span.textContent ) {
+                    DomUtils.unwrapNode(span);
+                }
+            });
         }
         
         return preambleEl;
@@ -303,15 +543,19 @@ Ext.define('LIME.controller.chImportController', {
             }
         }
         
+        /*if ( prefaceEl ) {
+            parsers.parseInsidePreface(prefaceEl, button);
+        }*/
+        
         return prefaceEl;
     },
-    
+
     searchNodesToMark: function(callback) {
         var me = this, editor = me.getController("Editor"),
             body = editor.getBody(), toMarkNodes = body.querySelectorAll(".toMark"),
             parsers = me.getController("ParsersController"),
             markingConfigs = {}, result = [], bodyEl, preambleEl, notesManager;
-        
+
         if(toMarkNodes.length) {
             Ext.each(toMarkNodes, function(node) {
                 var type = me.getMarkingTypeByNode(node),
@@ -320,15 +564,17 @@ Ext.define('LIME.controller.chImportController', {
                     Ext.callback(getNodeFn, me, [node, type, markingConfigs]);
                 } else {
                     me.getElementsToMarkGeneric(node, type, markingConfigs);
-                } 
+                }
             });
-            
+
             bodyEl = me.detectBody(body, markingConfigs);
             preambleEl = me.detectPreamble(body, bodyEl, markingConfigs) || bodyEl;
             me.detectPreface(body, preambleEl, markingConfigs);
+            
+
             me.detectBodyParts(bodyEl, markingConfigs, function() {
                 Ext.each(Ext.Object.getKeys(markingConfigs), function(buttonId) {
-                    var button  = Ext.getCmp(buttonId);
+                    var button  = DocProperties.getElementConfig(buttonId);
                     if(button) {
                         result.push({
                             button: button,
@@ -340,7 +586,13 @@ Ext.define('LIME.controller.chImportController', {
                 Ext.each(toMarkNodes, function(node) {
                     node.removeAttribute("class");
                 });
-                Ext.callback(callback, me, [result]);
+                if ( preambleEl != bodyEl ) {
+                    parsers.parseInsidePreamble(preambleEl, DocProperties.getFirstButtonByName("preamble"), function() {
+                        Ext.callback(callback, me, [result]);
+                    }, true);
+                } else {
+                    Ext.callback(callback, me, [result]);
+                }
             });
         } else {
             Ext.callback(callback, me, [result]);
@@ -361,7 +613,8 @@ Ext.define('LIME.controller.chImportController', {
 
     init : function() {
         var me = this;
-
+        
+        __CH = me;
         this.control({
             'menu [name=chImportDocument]' : {
                 click : function() {

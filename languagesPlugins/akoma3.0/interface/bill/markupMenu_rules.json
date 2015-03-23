@@ -25,7 +25,10 @@
 			"children": ["ref", "rref", "mref"]
 		},
 		"preamble": {
-			"children": ["toc", "session", "formula", "recitals", "citations", "affectedDocument", "longTitle"]
+			"children": ["p", "toc", "session", "formula", "recitals", "citations", "affectedDocument", "longTitle"]
+		},
+		"conclusions": {
+			"children": ["p", "date", "location", "blockContainer", "signature"]
 		}
 	}
 }

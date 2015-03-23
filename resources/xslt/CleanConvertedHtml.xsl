@@ -1,19 +1,19 @@
 <xsl:stylesheet version="1.0" 
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
- <xsl:output omit-xml-declaration="yes"
-  doctype-public="-//ABISOURCE//DTD XHTML plus AWML 2.2//EN"
-  doctype-system="http://www.abisource.com/2004/xhtml-awml/xhtml-awml.mod" encoding="UTF-8"/>
+ <xsl:output omit-xml-declaration="yes" encoding="UTF-8"/>
  <xsl:strip-space elements="*"/>
  
  <xsl:template match="/">
-  <xsl:choose>
-   <xsl:when test="//*[@id = 'main']">
-    <xsl:apply-templates select="//*[@id = 'main']"/>
-   </xsl:when>
-   <xsl:otherwise>
-    <xsl:apply-templates select="//*[name()='body']"/>
-   </xsl:otherwise>
-  </xsl:choose>
+  <div>
+    <xsl:choose>
+     <xsl:when test="//*[@id = 'main']">
+      <xsl:apply-templates select="//*[@id = 'main']"/>
+     </xsl:when>
+     <xsl:otherwise>
+      <xsl:apply-templates select="//*[name()='body']"/>
+     </xsl:otherwise>
+    </xsl:choose>
+  </div>
  </xsl:template>
  
  <xsl:template match="*[name()='body']">
@@ -30,7 +30,7 @@
  
  <xsl:template match="*[name()='p']">
   <xsl:apply-templates />
-  <br/>
+  <br/><br/>
  </xsl:template>
 
  <xsl:template match="*[name()='div']">
@@ -39,7 +39,19 @@
  </xsl:template>
  
  <xsl:template match="*[name()='span']">
-  <xsl:apply-templates />
+  <xsl:choose>
+   <xsl:when test="contains(@class, 'footnote_reference') and not(contains(../@class, 'footnote_text'))">
+    <xsl:element name="{name()}">
+      <xsl:attribute name="class">
+          <xsl:value-of select="'noteRefNumber'"/>
+      </xsl:attribute>
+      <xsl:apply-templates />
+    </xsl:element>
+   </xsl:when>
+   <xsl:otherwise>
+      <xsl:apply-templates />
+   </xsl:otherwise>
+  </xsl:choose>
  </xsl:template>
 
  <xsl:template match="*[name()='ol']">

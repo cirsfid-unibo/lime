@@ -1,6 +1,11 @@
 {
 	"en": {
-		"tabTitle": "Differences Viewer",
+		"consolidatingTabTitle": "Differences Viewer (Consolidation)",
+		"consolidatingEditButtonTitle": "Edit (Consolidation mode)",
+
+		"amendingTabTitle": "Differences Viewer (Amendments)",
+		"amendingEditButtonTitle": "Edit (Amendment mode)",
+
 		"textTabTitle": "Text",
 		"xmlTabTitle": "XML",
 		"firstDocumentLabel":"Document 1",
@@ -12,7 +17,12 @@
 		"forbiddenElement": "This document was already selected"
 	},
 	"it": {
-		"tabTitle": "Confronta documenti",
+		"consolidatingTabTitle": "Confronta documenti (Consolidamento)",
+		"consolidatingEditButtonTitle": "Modifica (Modalitá consolidamento)",
+		
+		"amendingTabTitle": "Confronta documenti (Emendamenti)",
+		"amendingEditButtonTitle": "Modifica (Modalitá emendamento)",
+
 		"textTabTitle": "Testo",
 		"xmlTabTitle": "XML",
 		"firstDocumentLabel":"Documento 1",

@@ -56,8 +56,25 @@ Ext.define('LIME.view.modal.newOpenfile.ListView', {
         dataIndex : 'name',
         flex : 1,
         renderer : function(value, cmp, record) {
+            value = value || "";
             if (!record.data.leaf) {
                 value = '<div style="float:left;">' + value + '</div><img class="openfile-expander" src="data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">';
+            }
+            // Add file type label.
+            if(record.data.leaf) {
+                var label = '';
+                if (record.data.mime == 'application/xml') {
+                    label = 'XML';
+                    if (record.data.namespace.indexOf('nir') != -1)
+                        label = 'NIR';
+                    if (record.data.namespace.indexOf('akn') != -1)
+                        label = 'AKN';
+                } else if (record.data.mime == 'application/msword') {
+                    label = 'DOC';
+                } else if (record.data.mime == 'application/pdf') {
+                    label = 'PDF';
+                } 
+                value = '<div style="float:left;">' + value + '</div><i style="float:right;border: 1px solid #888;border-radius: 5px;padding: 0 5px;background: #ccc;">'+label+'</i>';
             }
             return value;
         }

@@ -1,4 +1,4 @@
 {
-	"views": ["AknPreviewPanel"],
+	"views": ["AknPreviewMainTab"],
 	"controllers": ["AknPreviewController"]
 }

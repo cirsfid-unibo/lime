@@ -3,7 +3,7 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:html="http://www.w3.org/1999/xhtml"
-    xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD11"
+    xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD13"
     xmlns:xml="http://www.w3.org/XML/1998/namespace"
     exclude-result-prefixes="xs"
     version="1.0">
@@ -160,7 +160,7 @@
                     <xsl:apply-templates select="./table/following-sibling::node()"/>
                 </p>
             </xsl:when>
-            <xsl:when test="count(div[contains(@class, 'block')]) = 0">
+            <xsl:when test="count(div[contains(@class, 'block') or contains(@class, 'container')]) = 0">
                 <p>
                     <xsl:apply-templates />
                 </p>
@@ -339,13 +339,15 @@
     
 	<!-- Elements to ignore -->
     <xsl:template match="   div[contains(@class,'akoma_ntoso')] | 
-                            p[contains(@class, 'breaking')] |
-                            span[contains(@class, 'breaking')] |
                             div[contains(@class, 'toMarkNode')] |
                             div[contains(@class, 'block p') and contains(../@class, 'hcontainer') and not(contains(../@class, 'item'))] |
                             div[contains(@class,'notesContainer')] |
                             span[not(@*)]">
         <xsl:apply-templates />
+    </xsl:template>
+
+    <xsl:template match="p[contains(@class, 'breaking')] |
+                         span[contains(@class, 'breaking')]">
     </xsl:template>
     
     <!-- Called template -->

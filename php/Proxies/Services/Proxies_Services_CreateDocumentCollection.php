@@ -217,22 +217,22 @@
 		private function addDocumentComponent($docCollection, $collectionBody, $components, $docNode, $baseId) {
 			$docId = 'doc'.$baseId;
 			$newColComponent = $docCollection->createElement('component');
-			$newColComponent->setAttribute('currentId', 'comp'.$baseId);
+			$newColComponent->setAttribute('eId', 'comp'.$baseId);
 			$newRef = $docCollection->createElement('documentRef');
-			$newRef->setAttribute('currentId', $docId);
+			$newRef->setAttribute('eId', $docId);
 			$newRef->setAttribute('href', '#'.$docId);
 			$newColComponent->appendChild($newRef);
 			
 			$newComponent = $docCollection->createElement('component');
-			$newComponent->setAttribute('currentId', $docId);
+			$newComponent->setAttribute('eId', $docId);
 			
 			$xpath = new DOMXPath($docNode->ownerDocument);
 			if($docNode) {
-				$nodesToChange = $xpath->query(".//*[@currentId]", $docNode);
+				$nodesToChange = $xpath->query(".//*[@eId]", $docNode);
 				foreach($nodesToChange as $nodeToChange) {
-					$attVal = $nodeToChange->getAttribute("currentId");
+					$attVal = $nodeToChange->getAttribute("eId");
 					$attVal = preg_replace("/doc(\d)*-/i", "", $attVal);
-					$nodeToChange->setAttribute("currentId", $docId."-".$attVal);
+					$nodeToChange->setAttribute("eId", $docId."-".$attVal);
 				}
 				$docNode = $docCollection->importNode($docNode, true);
 				$newComponent->appendChild($docNode);

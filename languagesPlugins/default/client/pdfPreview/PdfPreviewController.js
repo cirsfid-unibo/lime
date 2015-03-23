@@ -47,13 +47,13 @@
 Ext.define('LIME.controller.PdfPreviewController', {
     extend : 'Ext.app.Controller',
     
-    views: ["LIME.ux.pdfPreview.PdfPreviewPanel"],
+    views: ["LIME.ux.pdfPreview.PdfPreviewMainTab"],
 
     refs : [{
         selector : 'appViewport',
         ref : 'appViewport'
     }, {
-        selector: 'pdf',
+        selector: 'pdfPreviewMainTab',
         ref: 'pdf'
     }],
 
@@ -149,7 +149,7 @@ Ext.define('LIME.controller.PdfPreviewController', {
     init : function() {
         var me = this;
         this.control({
-            'pdf' : {
+            'pdfPreviewMainTab' : {
                 activate : me.initPdf
             }
         });

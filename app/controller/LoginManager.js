@@ -47,20 +47,17 @@
 /**
  * This controller manages login and registration processes.
  */
-Ext.define('LIME.controller.LoginManager', {
-    extend : 'Ext.app.Controller',
 
-    // set the references for this controller
-    views : [
-        'Login',
-        'modal.Registration',
-        'maintoolbar.UserButton'
-    ],
-    
-    refs : [{
-        selector : 'viewport',
-        ref : 'viewport'
-    },{
+
+Ext.define('LIME.controller.LoginManager', {
+	extend : 'Ext.app.Controller',
+	// set the references for this controller
+	views : ['modal.Login', 'modal.Registration', 'maintoolbar.UserButton'],
+	
+	refs : [{
+		selector : 'viewport',
+		ref : 'viewport'
+	},{
         selector : 'login',
         ref : 'login'
     },{
@@ -73,102 +70,102 @@ Ext.define('LIME.controller.LoginManager', {
      * @type {Array} 
      */
     userInfo : ['username', 'password', 'userCollection', 'editorLanguage'],
-    
-    /**
-     * This function starts the Editor 
-     * TODO: move
-     */
-    startEditor: function() {
-        var viewport = this.getViewport();
-        this.cleanViewport();
-        this.addViewportItems(viewport.editorItems);
-    },
-    
-    /**
-     * This function shows the login view
-     */
-    showLogin: function() {
-        var viewport = this.getViewport();
-        this.cleanViewport();
-        this.addViewportItems(viewport.loginItems);
-    },
-    
-    /**
-     * Empty the viewport so that new components
-     * can be added without conflicts.
-     * @private 
-     */
-    cleanViewport: function() {
-        var viewport = this.getViewport();
-        viewport.removeAll(true);
-    },
-    
-    /**
-     * Helps rendering the editor by adding all the
-     * editor's components to the viewport.
-     * @private 
-     */
-    addViewportItems: function(items) {
-        var viewport = this.getViewport();
-        items = Ext.Array.merge(items, viewport.commonItems);
+	
+	/**
+	 * This function starts the Editor 
+	 * TODO: move
+	 */
+	startEditor: function() {
+	   var viewport = this.getViewport();
+	   this.cleanViewport();
+	   this.addViewportItems(viewport.editorItems);
+	},
+	
+	/**
+	 * This function shows the login view
+	 */
+	showLogin: function() {
+	   var viewport = this.getViewport();
+	   this.cleanViewport();
+	   this.addViewportItems(viewport.loginItems);
+	},
+	
+	/**
+	 * Empty the viewport so that new components
+	 * can be added without conflicts.
+	 * @private 
+	 */
+	cleanViewport: function() {
+	   var viewport = this.getViewport();
+	   viewport.removeAll(true);
+	},
+	
+	/**
+	 * Helps rendering the editor by adding all the
+	 * editor's components to the viewport.
+	 * @private 
+	 */
+	addViewportItems: function(items) {
+	    var viewport = this.getViewport();
+	    items = Ext.Array.merge(items, viewport.commonItems);
         viewport.add(items);
-    },
-    
-    /**
-     * Return true if all the user's data is loaded in
-     * the local storage. False otherwise
-     * @return {Boolean} True or False 
-     */
-    isLoggedIn : function(){
-        for (var i = 0; i < this.userInfo.length; i++){
-            if (!localStorage.getItem(this.userInfo[i])){
-                return false;
-            }
-            return true;
-        }
-    },
-    
-    /**
-     * Set the user's info in the local storage
-     * Data that can be set:
-     *     - username
-     *     - password
-     *     - userCollection (for the DB)
-     *     - editorLanguage (language used for the editor, not the document)
-     * 
-     * @param {Object} userData The user's data
-     */
-    setUserInfo : function(userData){
-        if (userData){
-            localStorage.setItem('username', userData.username);
+	},
+	
+	/**
+	 * Return true if all the user's data is loaded in
+	 * the local storage. False otherwise
+	 * @return {Boolean} True or False 
+	 */
+	isLoggedIn : function(){
+	    for (var i = 0; i < this.userInfo.length; i++){
+	        if (!localStorage.getItem(this.userInfo[i])){
+	            return false;
+	        }
+	        return true;
+	    }
+	},
+	
+	/**
+	 * Set the user's info in the local storage
+	 * Data that can be set:
+	 *     - username
+	 *     - password
+	 *     - userCollection (for the DB)
+	 *     - editorLanguage (language used for the editor, not the document)
+	 * 
+	 * @param {Object} userData The user's data
+	 */
+	setUserInfo : function(userData){
+	    if (userData){
+    	    localStorage.setItem('username', userData.username);
             localStorage.setItem('password', userData.password);
             localStorage.setItem('userCollection', userData.userCollection);
             localStorage.setItem('editorLanguage', userData.editorLanguage);
         } else {
             throw "Either username or password or userCollection were not specified";
         }
-    },
-    
-    /**
-     * If user is logged in returns all user's info
-     * from the localStorage
-     * @returns {Object}  
-     */
-    getUserInfo: function() {
-        var result = {};
-        if (this.isLoggedIn()) {
-            for (var i = 0, length = this.userInfo.length; i < length; i++){
-                result[this.userInfo[i]] = localStorage.getItem(this.userInfo[i]);
+	},
+	
+	/**
+	 * If user is logged in returns all user's info
+	 * from the localStorage
+	 * @returns {Object}  
+	 */
+	getUserInfo: function() {
+	    var result = {};
+	    if (this.isLoggedIn()) {
+	        for (var i = 0, length = this.userInfo.length; i < length; i++){
+	            result[this.userInfo[i]] = localStorage.getItem(this.userInfo[i]);
             }
             return result;
-        }
-        
-        return null;
-    },
-    
-    
-    prepareLogin: function() {
-        var me = this, loginView = this.getLogin(),
+	    }
+	    
+	    return null;
+	},
+	
+	
+	prepareLogin: function() {
+	    var me = this, loginView = this.getLogin(),
             data = loginView.getData(),  requestUrl,
             preferencesManager = this.getController('PreferencesManager');
        
@@ -222,10 +219,10 @@ Ext.define('LIME.controller.LoginManager', {
             loginView.loginFailed(); 
             Ext.Msg.alert(errorMsg.title, errorMsg.content);
         });
-    },
-    
-    prepareRegister: function(cmp) {
-        // cmp is the registration button
+	},
+	
+	prepareRegister: function(cmp) {
+	    // cmp is the registration button
         var form = cmp.up('form').getForm(),
             modal = cmp.up('window'),
             me = this,
@@ -277,8 +274,8 @@ Ext.define('LIME.controller.LoginManager', {
         } else {
             modal.registrationFailed();
         }
-    },
-    /**
+	},
+	/**
      * Start the login procedure calling the related web service.
      * If the login is successful it loads the editor
      * otherwise it shows some message. 
@@ -323,11 +320,11 @@ Ext.define('LIME.controller.LoginManager', {
 
     },
     
-    /**
-     * Starts the registration procedure calling the related web service.
-     * If the registration is successful the user is created and can now login.
-     * Otherwise a message is shown to the user. 
-     */
+	/**
+	 * Starts the registration procedure calling the related web service.
+	 * If the registration is successful the user is created and can now login.
+	 * Otherwise a message is shown to the user. 
+	 */
     
     register : function(email, password, name, success, failure) {
         var me = this, requestUrl;
@@ -364,7 +361,7 @@ Ext.define('LIME.controller.LoginManager', {
         });
     },
 
-    /**
+	/**
      * Perform a logout cleaning whatever is needed from the
      * localStorage.
      * Refresh the page to force the user to login again. 
@@ -381,17 +378,17 @@ Ext.define('LIME.controller.LoginManager', {
          window.location.reload();
     },
     
-    /**
-     * Show a form where the user can add his 
-     * registration details (e.g. username, password, email).
-     * Once the user submits the registration a call to a
-     * web service is performed.
-     */
-    showRegistration: function() {
+	/**
+	 * Show a form where the user can add his 
+	 * registration details (e.g. username, password, email).
+	 * Once the user submits the registration a call to a
+	 * web service is performed.
+	 */
+	showRegistration: function() {
         var registrationView = Ext.widget('registration').show();
-    },
-    
-    init : function() {
+	},
+	
+	init : function() {
         var loginManager = this;
         this.control({
             'viewport': {
@@ -408,7 +405,7 @@ Ext.define('LIME.controller.LoginManager', {
                         loginView.setData({username: user, password: password});  
                         this.prepareLogin();
                     } else {
-                        cmp.show();
+                        cmp.show();    
                     }
                 }
             },

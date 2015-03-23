@@ -51,23 +51,23 @@
  */
 Ext.define('LIME.controller.MainToolbar', {
 
-    // extend the ext controller
-    extend : 'Ext.app.Controller',
-    // set the references for this controller
+	// extend the ext controller
+	extend : 'Ext.app.Controller',
+	// set the references for this controller
 
-    refs : [{
-        // the open document button
-        selector : 'openDocumentButton',
-        ref : 'openDocumentButton'
-    }, {
-        // The reference to the open file window
-        selector : 'modalOpenfileMain',
-        ref : 'openFileWindowMain'
-    }, {
-        // The reference to the open file window
-        selector : 'languageSelectionBox',
-        ref : 'LanguagesComboBox'
-    },{
+	refs : [{
+		// the open document button
+		selector : 'openDocumentButton',
+		ref : 'openDocumentButton'
+	}, {
+		// The reference to the open file window
+		selector : 'modalOpenfileMain',
+		ref : 'openFileWindowMain'
+	}, {
+		// The reference to the open file window
+		selector : 'languageSelectionBox',
+		ref : 'LanguagesComboBox'
+	},{
         ref : 'downloadManager',
         selector : 'downloadManager'
     },{
@@ -108,43 +108,42 @@ Ext.define('LIME.controller.MainToolbar', {
         selector : 'mainToolbar'
     }],
 
-    // set up the views
-    views : ['MainToolbar', 
+	// set up the views
+	views : ['MainToolbar', 
                'Main',
-               'maintoolbar.OpenDocumentButton', 
-               'maintoolbar.LocaleSelector', 
-               'maintoolbar.LanguageSelectionBox', 
-               'maintoolbar.LanguageSelectionMenu',
-               'modal.newOpenfile.Main',
-               'modal.newSavefile.Main',
-               'maintoolbar.FileMenuButton', 
-               'maintoolbar.DocumentMenuButton',
-               'maintoolbar.WindowMenuButton',
-               'modal.SaveAs',
-               'modal.NewDocument'],
-               
-    /**
-     * Create a new document by performing all the necessary
-     * operations (replace editor's content and document's id) 
-     */
-    createNewDocument : function(params){
-       var app = this.application,
-           documentId = DocProperties.currentEditorFile.id,
-           config = {
-               docText: params.docText || '',
-               docId: ''
-           };
-       // If a document's id is not specified it means the document is saved
-       // in a temporary file on the server, we have to make the user save it with save as
-       if (Ext.isEmpty(documentId)) {
-           // TODO Dialog for save as
-       }
-       // Load an empty document with empty id
-       app.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(config, params));
-    },
+	           'maintoolbar.OpenDocumentButton', 
+	           'maintoolbar.LocaleSelector', 
+	           'maintoolbar.LanguageSelectionBox', 
+	           'maintoolbar.LanguageSelectionMenu',
+	           'modal.newOpenfile.Main',
+	           'modal.newSavefile.Main',
+	           'maintoolbar.FileMenuButton', 
+	           'maintoolbar.DocumentMenuButton',
+	           'maintoolbar.WindowMenuButton',
+	           'modal.NewDocument'],
+	           
+	/**
+	 * Create a new document by performing all the necessary
+	 * operations (replace editor's content and document's id) 
+	 */
+	createNewDocument : function(params){
+	   var app = this.application,
+	       documentId = DocProperties.currentEditorFile.id,
+	       config = {
+	           docText: params.docText || '<div> &nbsp; </div>',
+	           docId: ''
+	       };
+	   // If a document's id is not specified it means the document is saved
+	   // in a temporary file on the server, we have to make the user save it with save as
+	   if (Ext.isEmpty(documentId)) {
+	       // TODO Dialog for save as
+	   }
+	   // Load an empty document with empty id
+	   app.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(config, params));
+	},
+	
     
-    
-    /**
+	/**
      * Highlight file menu
      * TODO Generalize for different buttons
      */
@@ -156,13 +155,13 @@ Ext.define('LIME.controller.MainToolbar', {
             domEl.frame("#ff0000", 1, { duration: 1000 });
         }, 1000);
     },
-    
-    
-    /**
-     * This function is called on selection of a language in the menu
-     * @param {Ext.menu.Menu} item, the clicked menu item
-     */
-    selectLanguage: function(item) {
+	
+	
+	/**
+	 * This function is called on selection of a language in the menu
+	 * @param {Ext.menu.Menu} item, the clicked menu item
+	 */
+	selectLanguage: function(item) {
         var langCode = item.record.get("code"),
             preferencesManager = this.getController('PreferencesManager');
             
@@ -176,14 +175,14 @@ Ext.define('LIME.controller.MainToolbar', {
             defaultLanguage : langCode
         }, false, callback);
         
-    },
-    
-    
-    /**
+	},
+	
+	
+	/**
      * This function is called on selection of a locale in the menu
      * @param {Ext.menu.Menu} item, the clicked menu item
      */
-    selectLocale: function(item) {
+	selectLocale: function(item) {
         var selectedLocale = item.record.get("locale");
         var preferencesManager = this.getController('PreferencesManager');
         var params = Ext.urlDecode(window.location.search);
@@ -211,7 +210,7 @@ Ext.define('LIME.controller.MainToolbar', {
             if(newTab) {
                 main.add(newTab);
             } else {
-                Ext.log({level: "error"}, "Error creating tab "+xtype);
+                this.removeMainTabFromPreferences(xtype);
             }
         }
     },
@@ -219,7 +218,7 @@ Ext.define('LIME.controller.MainToolbar', {
      setAllowedViews : function() {
         var mainMenu = this.getWindowMenuButton(),
             viewsMenu = mainMenu.menu.down("*[id=showViews]"),
-            configData = LanguageConfigLoader.getConfig(),
+            configData = this.getStore('LanguagesPlugin').getConfigData(),
             preferencesManager = this.getController('PreferencesManager'),
             openViews = preferencesManager.userPreferences.views,
             menu =  {
@@ -236,6 +235,7 @@ Ext.define('LIME.controller.MainToolbar', {
                  * The text of menu item will be the title of the widget in order to obtain
                  * a localized text for the menu button.
                  *  */
+                if ( !Ext.ClassManager.getByAlias('widget.'+view) ) return;
                 widget = Utilities.createWidget(view);
                 if(widget) {
                     icon = (openViews.indexOf(view) != -1) ? mainMenu.checkedIcon : Ext.BLANK_IMAGE_URL;
@@ -281,14 +281,15 @@ Ext.define('LIME.controller.MainToolbar', {
     addMenuItemRaw: function(config, menuConfig) {
         var mainMenu = this.getMainToolbar(), newMenu,
             menu = mainMenu.down(config.menu+" menu"),
-            refItem = config.before || config.after, refItemIndex = -1,
-            posIndex = config.posIndex || -1;
+            refItem = config.before || config.after || config.replace,
+            refItemIndex = -1, posIndex = config.posIndex || -1;
+
         if(menu && !menu.down("*[name="+menuConfig.name+"]")) {
             newMenu = menu.add(menuConfig);
             if (refItem) {
-                refItemIndex = menu.items.indexOf(menu.down(refItem));
-                refItemIndex = (refItemIndex != -1) ? refItemIndex : menu.items.indexOf(menu.down("*[name="+refItem+"]"));
-                   
+                var refCmp = menu.down(refItem) || menu.down("*[name="+refItem+"]");
+                refItemIndex = menu.items.indexOf(refCmp);
+                if ( config.replace ) refCmp.hide();
             }
             if (refItemIndex != -1 || posIndex != -1) {
                 posIndex = (posIndex != -1) ? posIndex : (refItemIndex+((config.before) ? 0 : 1));
@@ -296,45 +297,60 @@ Ext.define('LIME.controller.MainToolbar', {
                     menu.move(newMenu, posIndex);
                 } 
             }
+
         }
     },
+    
+    removeMainTabFromPreferences: function(xtype) {
+        var preferencesManager = this.getController('PreferencesManager');
 
-    init : function() {
-        // save a reference to the controller
-        var me = this;
-        
-        this.application.on(Statics.eventsNames.languageLoaded, this.onLanguageLoaded, this);
-        
-        // set up the control
-        this.control({
-            'openDocumentButton' : {
-                // when the button is clicked
-                click : function() {
+        preferencesManager.setUserPreferences({
+            views : preferencesManager.userPreferences.views.filter(function(el) {
+                if (el == xtype) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }) 
+        });
+    },
+
+	init : function() {
+		// save a reference to the controller
+		var me = this;
+		
+		this.application.on(Statics.eventsNames.languageLoaded, this.onLanguageLoaded, this);
+		
+		// set up the control
+		this.control({
+			'openDocumentButton' : {
+				// when the button is clicked
+				click : function() {
                     Ext.widget('newOpenfileMain').show();
-                }
-            },
-            'languageSelectionBox' : {
-                afterrender : function(cmp) {
-                    var record = Ext.getStore('Languages').findRecord('code', Locale.strings.languageCode, null, null, null, true);
-                    // if language was found in store, assign it as current value in combobox
-                    if (record) {
-                        cmp.setValue(record.data.language);
-                    }
-                },
-                // when a language is selected
-                select : {
-                    // register the function
-                    fn : function(cb, records) {
-                        // get the store record of the language
-                        var langCode = records[0].get("code");
-                        
-                        // Change the language
-                        Utilities.changeLanguage(langCode);
-                            
-                    }
-                }
-            },
-            'languageSelectionMenu': {
+				}
+			},
+			'languageSelectionBox' : {
+				afterrender : function(cmp) {
+					var record = Ext.getStore('Languages').findRecord('code', Locale.strings.languageCode, null, null, null, true);
+					// if language was found in store, assign it as current value in combobox
+					if (record) {
+						cmp.setValue(record.data.language);
+					}
+				},
+				// when a language is selected
+				select : {
+					// register the function
+					fn : function(cb, records) {
+						// get the store record of the language
+						var langCode = records[0].get("code");
+						
+						// Change the language
+						Utilities.changeLanguage(langCode);
+						    
+					}
+				}
+			},
+			'languageSelectionMenu': {
                 beforerender: function(cmp) {
                     var menu = Ext.create('Ext.menu.Menu'),
                         languageStore = this.getStore(cmp.store),
@@ -356,9 +372,9 @@ Ext.define('LIME.controller.MainToolbar', {
                     }, this);
                     cmp.setMenu(menu);
                 }
-            },
-            'localeSelector' : {
-                beforerender: function(cmp) {
+			},
+			'localeSelector' : {
+			    beforerender: function(cmp) {
                     var menu = Ext.create('Ext.menu.Menu'),
                         localeStore = this.getStore(cmp.store),
                         currentLocale = Ext.urlDecode(window.location.search).locale;
@@ -378,23 +394,23 @@ Ext.define('LIME.controller.MainToolbar', {
                     }, this);
                     cmp.setMenu(menu);
                 }
-                
-            },
-            
-            'logoutButton': {
-                 click: function() {
-                     var loginManager = this.getController('LoginManager');
-                         confirm = Ext.Msg.confirm(Locale.strings.warning, Locale.strings.logoutWarning,
-                         function(buttonId){
-                             if (buttonId == 'yes'){
-                                // If the user confirmed perform a logout
-                                loginManager.logout();
+				
+			},
+			
+			'logoutButton': {
+			     click: function() {
+			         var loginManager = this.getController('LoginManager');
+			             confirm = Ext.Msg.confirm(Locale.strings.warning, Locale.strings.logoutWarning,
+			             function(buttonId){
+			                 if (buttonId == 'yes'){
+			                    // If the user confirmed perform a logout
+    			                loginManager.logout();
                              }
-                         });
-                 }  
-            },
+			             });
+			     }  
+			},
             
-            '[cls=editorTab]' : {
+            '[cls~=editorTab]' : {
                 added : function(cmp){
                     var preferencesManager = this.getController('PreferencesManager'),
                         menu = this.getWindowMenuButton(),
@@ -402,8 +418,8 @@ Ext.define('LIME.controller.MainToolbar', {
                         xtype = cmp.getXType(),
                         menuItem = menu.menu.down('*[openElement='+cmp.xtype+']');
                         if (menuItem) {
-                            // Just set the icon (it will be rendered later)
-                            menuItem.icon = menu.checkedIcon;
+                        	// Just set the icon (it will be rendered later)
+                        	menuItem.icon = menu.checkedIcon;
                         }
                         // If the view is not in the preferences add it
                         if (openViews && openViews.indexOf(xtype) == -1){
@@ -420,21 +436,7 @@ Ext.define('LIME.controller.MainToolbar', {
                 },
                 
                 removed : function(cmp){
-                    var preferencesManager = this.getController('PreferencesManager'),
-                        menu = this.getWindowMenuButton();
-                    try {
-                        preferencesManager.setUserPreferences({
-                            views : preferencesManager.userPreferences.views.filter(function(el){
-                                if (el == cmp.getXType()){
-                                    return false;
-                                } else {
-                                    return true;
-                                }
-                            }) 
-                        });
-                    } catch (e) {
-                        Ext.log({level: "error"}, "MainToolbar.removed"+e);
-                    }
+                    me.removeMainTabFromPreferences(cmp.getXType());
                 }
             },
             
@@ -534,7 +536,10 @@ Ext.define('LIME.controller.MainToolbar', {
                afterrender: function(cmp) {
                     var newWindow = cmp,
                         config = newWindow.tmpConfig;
-                        
+                    
+                    // Setting the first language as default selected
+                    newWindow.down("docMarkingLanguageSelector").setValue((Config.languages[0]) ? Config.languages[0].name : "");
+                    
                     if(config) {
                         if(config.docMarkingLanguage && !cmp.onlyLanguage) {
                             newWindow.down("docMarkingLanguageSelector").setValue(config.docMarkingLanguage);
@@ -572,9 +577,9 @@ Ext.define('LIME.controller.MainToolbar', {
             },
             
             'windowMenuButton *[id=showViews]' : {
-                beforerender: function() {
-                    this.setAllowedViews();
-                }
+            	beforerender: function() {
+            		this.setAllowedViews();
+            	}
             },
             
             'windowMenuButton *[id=showViews] menuitem': {
@@ -637,6 +642,6 @@ Ext.define('LIME.controller.MainToolbar', {
                     me.menuItemsToAdd = [];
                 }
             }
-        });
-    }
+		});
+	}
 });

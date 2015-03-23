@@ -87,15 +87,6 @@ Ext.define('LIME.Statics', {
 		nationality: 'nationalitySelector',
 		list: 'combo'
 	},
-	/**
-	 * @property {Object} treeIcon
-	 * Paths of tree icons 
-	 */
-	treeIcon: {
-		'container' : 'resources/images/icons/wawe_container_icon.png',
-		'hcontainer' : 'resources/images/icons/wawe_hcontainer_icon.png',
-		'inline' : 'resources/images/icons/wawe_inline_icon.png'
-	},
 	
 	/**
 	 * @property {String} defaultContentLang
@@ -108,7 +99,7 @@ Ext.define('LIME.Statics', {
 	extraInfoLimit: 13,
 
 	 
-	 eventsNames: {
+    eventsNames: {
 	     translateRequest: "translateRequest",
 	     progressStart: "progressStart",
 	     progressUpdate: "progressUpdate",
@@ -135,6 +126,7 @@ Ext.define('LIME.Statics', {
          setCustomMarkingHandler: "setCustomMarkingHandler",
          editorDomNodeFocused: "editorDomNodeFocused",
          nodeFocusedExternally: "nodeFocusedExternally",
+         unfocusedNodes: "unfocusedNodes",
          unmarkNodes: "unmarkNodes",
          unmarkedNodes: "unmarkedNodes",
          nodeAttributesChanged: "nodeAttributesChanged",
@@ -145,8 +137,7 @@ Ext.define('LIME.Statics', {
          removeGroupContextPanel: "removeGroupContextPanel",
          addMenuItem: "addMenuItem",
          enableDualEditorMode: "enableDualEditorMode",
-         markingMenuLoaded: "markingMenuLoaded",
-         languageConfigLoaded: "languageConfigLoaded"
+         markingMenuLoaded: "markingMenuLoaded"
 	 },
 	 
 	 services: {

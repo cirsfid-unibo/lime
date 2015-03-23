@@ -64,7 +64,6 @@
 
 .ux-notification-window .x-window-body {
 	text-align: center;
-	padding: 15px 5px 15px 5px;
 	width: 300px;
 }
 
@@ -205,50 +204,33 @@ body .ux-notification-success {
 .x-tree-custom .x-tree-elbow-img {
 }
 
-#markingMenu {
-	-webkit-perspective: 1000;
-	-moz-perspective: 1000;
-	-o-perspective: 1000;
-	perspective: 1000;
+.x-panel-error {
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    padding: 4px;
+    color: #a94442;
 }
 
-#markingMenu-body {
-	-webkit-transition: 0.5s;
-	-webkit-transform-style: preserve-3d;
-
-	-moz-transition: 0.5s;
-	-moz-transform-style: preserve-3d;
-  
-	-o-transition: 0.5s;
-	-o-transform-style: preserve-3d;
-
-	transition: 0.5s;
-	transform-style: preserve-3d;
-
-	position: relative;
+.goToElement {
+	cursor: pointer;
 }
 
-#treeStructure, #treeCommons {
-	position: absolute;
-	top: 0;
-	left: 0;
+.x-panel-error {
+	text-align: left;
 }
 
-#markingMenu-body.flipped #treeCommons, #markingMenu-body.flipped #treeStructure {
-	-webkit-transform: rotateY(180deg);
-	-moz-transform: rotateY(180deg);
-	-o-transform: rotateY(180deg);
-	transform: rotateY(180deg);
+.x-panel-error .errorsInfo span {
+	display: block;
 }
 
-#markingMenu-body.flipped {
-	-webkit-transform: rotateY(-180deg);
-    -moz-transform: rotateY(-180deg);
-    -o-transform: rotateY(-180deg);
-    transform: rotateY(-180deg);
+.x-panel-error h4 {
+	margin: 5px 0px 5px 0px;
 }
 
-#mainlogo {
-	width: 369px;
-	height: 185;
+.x-panel-error .errorsInfo ul {
+	padding-left: 20px;
+	margin: 0px;
 }

@@ -12,7 +12,10 @@
 		"action": "Action",
 		"renumbered": "renumbered",
 		"joined": "joined",
-		"splitted": "splitted"
+		"splitted": "splitted",
+        "inserted": "inserted",
+        "deleted": "deleted",
+        "replaced": "replaced"
 	},
 	"it": {
 		"insertion": "Inserimento",
@@ -25,7 +28,10 @@
 		"renumbering": "Rinumerazione",
 		"renumbered": "renumerato",
 		"joined": "unito",
-		"splitted": "diviso"
+		"splitted": "diviso",
+        "inserted": "inserito",
+        "deleted": "rimosso",
+        "replaced": "sostituito"
 	},
 	"es": {
 		"insertion": "Insertion",
@@ -38,6 +44,9 @@
 		"renumbering": "Renumeración",
 		"renumbered": "renumerado",
 		"joined": "unido",
-		"splitted": "diviso"
+		"splitted": "diviso",
+        "inserted": "adicional",
+        "deleted": "eliminado",
+        "replaced": "reemplazado"
 	}
 }

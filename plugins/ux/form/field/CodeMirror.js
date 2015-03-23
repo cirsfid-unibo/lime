@@ -927,6 +927,43 @@ Ext.define('Ext.ux.form.field.CodeMirror', {
         }
         me.callParent();
     },
+
+    goToLine: function(line, highlight) {
+        var me = this;
+
+         //Line number is zero based index
+        line = line - 1;
+        me.editor.setCursor({line:line,ch:0});
+        var coords = me.editor.charCoords({line: line, ch: 0}, "local"); 
+        me.editor.scrollTo(null, coords.y - (me.getHeight() / 2));
+
+        if ( highlight ) {
+            me.highlightLine(line, true);
+        }
+    },
+
+    highlightLine: function(line, removePrevious) {
+        var highlightCls = 'line-error';
+
+        if ( removePrevious ) {
+            this.removeHighlight(highlightCls);
+        }
+
+        //Set line CSS class to the line number & affecting the background of the line with the css class
+        this.editor.setLineClass(line, 'background', highlightCls);
+    },
+
+    removeHighlight : function(highlightCls) {
+        var editor = this.editor;
+        editor.operation(function() {
+            for (var i = 0, e = editor.lineCount(); i < e; ++i) {
+                var lineInfo = editor.getLineHandle(i);
+                if ( lineInfo.bgClassName && lineInfo.bgClassName == highlightCls ) {
+                    editor.setLineClass(i, 'background', 'no-'+highlightCls);
+                }
+            }
+        });
+    },
     
     /**
     * Object collection of toolbar tooltips for the buttons in the editor. The key
