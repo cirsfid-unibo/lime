@@ -5,7 +5,7 @@
         "xmlJNdiff",
         "importDocument",
         "exportDocument",
-        "newPdfPreview",
+        "pdfPreview",
         "openNirDocPdfDocument"
     ]
 }

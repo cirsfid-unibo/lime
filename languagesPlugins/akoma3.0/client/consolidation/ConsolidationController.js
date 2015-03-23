@@ -312,7 +312,7 @@ Ext.define('LIME.controller.ConsolidationController', {
                 editorTab.noChangeModeEvent = false;
                 viewport.remove(editor);
 
-                newExplorer = Ext.widget("explorer", {
+                newExplorer = Ext.widget("outliner", {
                     region : 'west',
                     expandable : true,
                     resizable : true,

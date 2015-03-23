@@ -66,7 +66,7 @@ Ext.define('LIME.controller.PdfPreviewController', {
             html = editor.getDocHtml(), styleSheet,
             iframePlugin  = pdfTab.getIframePlugin(), stylesheets;
         
-        iframePlugin.setRawSrc(" ", function(iframeDoc) {
+        /*iframePlugin.setRawSrc(" ", function(iframeDoc) {
             iframeDoc = iframePlugin.getIfameDoc();
             if(iframeDoc) {
                 iframeDoc.open();
@@ -82,8 +82,8 @@ Ext.define('LIME.controller.PdfPreviewController', {
                 } catch(e) {}
             }
             html = DomUtils.serializeToString(iframeDoc);
-            me.callPdfService(html);
-        });
+        });*/
+        me.callPdfService(html);
         
     },
     

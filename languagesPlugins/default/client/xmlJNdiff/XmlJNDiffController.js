@@ -233,7 +233,7 @@ Ext.define('LIME.controller.XmlJNDiffController', {
             notAllowedPaths: otherDoc,
             notAllowedPathRender: function(el, record) {
                 Ext.tip.QuickTipManager.register({
-                    target: el.dom.getAttribute('id'),
+                    target: el.getAttribute('id'),
                     text: Locale.getString("forbiddenElement", me.getPluginName())
                 });
             },

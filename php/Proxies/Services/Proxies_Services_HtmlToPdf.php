@@ -104,6 +104,7 @@ class Proxies_Services_HtmlToPdf implements Proxies_Services_Interface
 				    		//header(':', true, CONVERSION_ERROR_CODE);
 							$output["status"] = "error";
 							$output["description"] = "Impossible to generate PDF";
+							$output["cmd"] = $cmd;
 							$output["path"]	= $pdfFullPath;			
 						}
 					}

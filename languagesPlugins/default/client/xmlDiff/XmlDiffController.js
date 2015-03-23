@@ -141,7 +141,7 @@ Ext.define('LIME.controller.XmlDiffController', {
             notAllowedPaths: otherDocId,
             notAllowedPathRender: function(el, record) {
                 Ext.tip.QuickTipManager.register({
-                    target: el.dom.getAttribute('id'),
+                    target: el.getAttribute('id'),
                     text: Locale.getString("forbiddenElement", me.getPluginName())
                 });
             },
@@ -244,7 +244,7 @@ Ext.define('LIME.controller.XmlDiffController', {
                 editorTab.noChangeModeEvent = false;
                 viewport.remove(editor);
 
-                newExplorer = Ext.widget("explorer", {
+                newExplorer = Ext.widget("outliner", {
                     region : 'west',
                     expandable : true,
                     resizable : true,
