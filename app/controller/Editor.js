@@ -56,7 +56,6 @@
 Ext.define('LIME.controller.Editor', {
 
 	extend : 'Ext.app.Controller',
-
 	views : ['main.Editor', 'main.editor.Path', 'main.editor.Uri','modal.NewDocument'],
 
 	refs : [{
