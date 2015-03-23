@@ -49,7 +49,7 @@
  * This controller takes care of manipulating the text area reserved for the
  * actual document. It also provides a useful interface for getting and putting data
  * through a lot of getter and setter and utility methods.
- *
+ * 
  * It also includes the path view where the current hierarchy (starting from the selected
  * node and going up) can be easily seen.
  */
