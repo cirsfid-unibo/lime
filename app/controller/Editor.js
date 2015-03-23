@@ -1514,9 +1514,7 @@ Ext.define('LIME.controller.Editor', {
                         tinyView = me.getEditorComponent(cmp),
                         tinyConfig = me.getTinyMceConfig();
 
-                    if (!WaweDebug) {
-                        tinyConfig.menubar = false;
-                    }
+                    tinyConfig.menubar = false;
 
                     tinyConfig.plugins = tinyConfig.plugins.replace("tinyautosave,", "");
                     tinyConfig.readonly = 1;

@@ -131,9 +131,10 @@ Ext.define("Ext.ux.form.field.TinyMCE", {
                     editor: me.editor
                 });
 
-                me.iframeEl = Ext.fly(me.editor.id + "_ifr");
+                console.warn('Prova: ', me.editor.id);
+                me.iframeEl = Ext.get(me.editor.id + "_ifr");
                 tableId = me.editor.id.substring(0, me.editor.id.lastIndexOf("-"));
-                me.tableEl = Ext.fly(tableId);
+                me.tableEl = Ext.get(tableId);
                 me.edToolbar = me.tableEl.down(".mce-toolbar");
                 me.edStatusbar = me.tableEl.down(".mce-statusbar");
                /* 
