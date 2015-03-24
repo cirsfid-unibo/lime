@@ -55,14 +55,24 @@ Ext.define('LIME.ux.comments.CommentsMainTab', {
     padding : 0,
     margin : 0,
     border : 0,
+    autoScroll: true,
     layout : {
         type : 'vbox',
         padding : '0',
         align : 'stretch'
     },
 
-    initComponent : function() {
+    items: [{
+        xtype: 'container',
+        cls: 'akomantosoViewer'
+    }],
+
+    initComponent: function () {
         this.title = Locale.getString('tabTitle', 'comments');
         this.callParent(arguments);
+    },
+
+    setContent: function (html) {
+        this.down('container').update(html);
     }
 });

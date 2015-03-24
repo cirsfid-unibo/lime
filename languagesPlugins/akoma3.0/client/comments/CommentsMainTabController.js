@@ -51,6 +51,16 @@ Ext.define('LIME.controller.CommentsMainTabController', {
     views: ["LIME.ux.comments.CommentsMainTab"],
 
     init: function () {
-
+        this.control({
+            'commentsMainTab' : {
+                activate: function (cmp) {
+                    var id = DocProperties.documentInfo.docId;
+                    this.getController('Storage').openDocumentNoEditor(id, function (doc) {
+                        console.info(doc);
+                        cmp.setContent(doc.docText);
+                    })
+                }
+            }
+        });
     }
 });
