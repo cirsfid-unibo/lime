@@ -131,7 +131,6 @@ Ext.define("Ext.ux.form.field.TinyMCE", {
                     editor: me.editor
                 });
 
-                console.warn('Prova: ', me.editor.id);
                 me.iframeEl = Ext.get(me.editor.id + "_ifr");
                 tableId = me.editor.id.substring(0, me.editor.id.lastIndexOf("-"));
                 me.tableEl = Ext.get(tableId);

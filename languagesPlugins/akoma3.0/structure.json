@@ -134,6 +134,7 @@
 	"plugins": ["aknPreview",
 				"nirPreview",
 				"consolidation",
+				"comments",
 				"parsers", 
 				"documentCollection",
 				"modsMarker", 

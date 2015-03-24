@@ -445,6 +445,8 @@ Ext.define('LIME.Utilities', {
         try {
             widget = Ext.widget(name, config);
         } catch(e) {
+            console.warn('Could not instantiate widget ', name, config);
+            console.warn(e);
         }
         return widget;
     },
