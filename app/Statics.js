@@ -157,7 +157,8 @@ Ext.define('LIME.Statics', {
 	     userManager: 'USER_MANAGER',
 	     userPreferences: 'USER_PREFERENCES',
 	     createDocumentCollection: 'CREATE_DOCUMENT_COLLECTION',
-	     filterUrls: 'FILTER_URLS'
+	     filterUrls: 'FILTER_URLS',
+         publishDocument: 'PUBLISH_DOCUMENT'
 	 }
 	
 });

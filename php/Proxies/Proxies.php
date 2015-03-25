@@ -172,6 +172,10 @@
 					header("Content-Type: application/json");
 					$this->_service = new Proxies_Services_AknToPdfFop($this->_params);
 					break;
+				case 'PUBLISH_DOCUMENT':
+					header("Content-Type: application/json");
+					$this->_service = new Proxies_Services_PublishDoc($this->_params);
+					break;
 			}
 			
 		}

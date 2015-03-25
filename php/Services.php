@@ -73,6 +73,7 @@
 	require('./Proxies/Services/Proxies_Services_FilterUrls.php');
 	require('./Proxies/Proxies.php');
 	require('./Proxies/Services/Proxies_Services_AknToPdfFop.php');
+	require('./Proxies/Services/Proxies_Services_PublishDoc.php');
 	
 	// the method of the request
 	$type = $_SERVER['REQUEST_METHOD'];

@@ -153,6 +153,11 @@ class DBInterface {
 		$text = file_get_contents(dirname(__FILE__) . '/../query/save_document_html.xql'); 
 		return $this->unwrap_xml($this->exec_query($params, $text, $variables));
 	}
+
+	public function publish_doc($params,$variables) {
+		$text = file_get_contents(dirname(__FILE__) . '/../query/publish_doc.xql'); 
+		return $this->unwrap_xml($this->exec_query($params, $text, $variables));
+	}
 	
 	public function save_image($params) {
 		$text = file_get_contents(dirname(__FILE__) . '/../query/save_image.xql'); 
