@@ -50,6 +50,8 @@ Ext.define('LIME.ux.comments.CommentsMainTab', {
     alias : 'widget.commentsMainTab',
 
     cls : 'editorTab',
+    
+    notEditMode : true,
 
     width : '100%',
     padding : 0,
@@ -64,11 +66,23 @@ Ext.define('LIME.ux.comments.CommentsMainTab', {
 
     items: [{
         xtype: 'container',
-        cls: 'akomantosoViewer'
+        cls: 'akomantosoViewer',
+        listeners: {
+            afterrender: function(cmp){
+                // Add contextmenu event to the view
+                cmp.getEl().on('contextmenu', function(e) {
+                    cmp.fireEvent('contextmenu', cmp, e);
+                });
+                cmp.getEl().on('click', function(e) {
+                    cmp.fireEvent('click', cmp, e);
+                });
+            }
+        }
     }],
 
     initComponent: function () {
         this.title = Locale.getString('tabTitle', 'comments');
+        this.closable = false;
         this.callParent(arguments);
     },
 

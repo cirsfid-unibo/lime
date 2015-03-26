@@ -50,17 +50,69 @@ Ext.define('LIME.controller.CommentsMainTabController', {
     
     views: ["LIME.ux.comments.CommentsMainTab"],
 
+    refs: [
+        { ref: 'viewport', selector: 'appViewport' },
+        { ref: 'outliner', selector: 'outliner' },
+        { ref: 'markingMenu', selector: '[cls=markingMenuContainer]'},
+        { ref : 'editor', selector : '#mainEditor mainEditor'}
+    ],
+
     init: function () {
+        var me  = this;
         this.control({
             'commentsMainTab' : {
                 activate: function (cmp) {
                     var id = DocProperties.documentInfo.docId;
-                    this.getController('Storage').openDocumentNoEditor(id, function (doc) {
-                        console.info(doc);
-                        cmp.setContent(doc.docText);
-                    })
+                    me.reorganizeInterface();
+                    me.loadDocument(id, cmp);
+                }
+            },
+            'commentsMainTab *[cls*=akomantosoViewer]' : {
+                contextmenu: function(cmp, e) {
+                    e.preventDefault();
+                    me.contextMenu = Ext.widget('menu', {
+                        items: [{
+                            text: 'Add a comment',
+                            icon: 'resources/images/icons/comment_add.png'
+                        },{
+                            text: 'Add a modify',
+                            icon: 'resources/images/icons/pencil.png'
+                        }]
+                    }).showAt([e.pageX, e.pageY]);
+                },
+                click: function(cmp, e) {
+                    if ( me.contextMenu ) {
+                        me.contextMenu.close();
+                    }
                 }
             }
+        });
+    },
+
+    reorganizeInterface: function() {
+        var viewport = this.getViewport();
+        viewport.remove(this.getMarkingMenu());
+
+        this.commentsPanel = viewport.add({
+            xtype: 'panel',
+            title: 'Comments',
+            region : 'east',
+            width : '25%',
+            margin : '2 0 0 0',
+            titleAlign: 'right',
+            autoScroll : true
+        });
+
+        this.getEditor().up().tab.setVisible(false);
+    },
+
+    loadDocument: function(docId, cmp) {
+        var me = this;
+        console.log(docId);
+        me.getController('Storage').openDocumentNoEditor(docId, function (config) {
+            me.getController("Language").beforeLoad(config, function(doc) {
+                cmp.setContent(doc.docText);
+            }, true);
         });
     }
 });
