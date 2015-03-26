@@ -295,7 +295,7 @@ Ext.define('LIME.controller.Storage', {
                 includeFiles: Config.getLocaleXslPath(markingLang, config.docLocale)});
         };
         
-        Server.getDocument(filePath, localStorage.getItem('username'), localStorage.getItem('password'), function(responseText) {
+        Server.getDocument(filePath, function(responseText) {
             var markingLang = me.detectMarkingLang(responseText) || config.docMarkingLanguage || Config.languages[0].name,
                 transformFile = (markingLang) ? Config.getLanguageTransformationFile("languageToLIME", markingLang) : "";
 

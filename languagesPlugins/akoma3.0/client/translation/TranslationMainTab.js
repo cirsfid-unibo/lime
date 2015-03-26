@@ -45,31 +45,37 @@
  */
 
 Ext.define('LIME.ux.translation.TranslationMainTab', {
-    extend : 'Ext.panel.Panel',
+    extend: 'Ext.panel.Panel',
 
-    alias : 'widget.translationMainTab',
+    alias: 'widget.translationMainTab',
+    controller: 'translationMainTabController',
 
-    cls : 'editorTab',
+    cls: 'editorTab',
 
-    width : '100%',
-    padding : 0,
-    margin : 0,
-    border : 0,
-    layout : {
-        type : 'fit',
+    width: '100%',
+    padding: 0,
+    margin: 0,
+    border: 0,
+    layout: {
+        type: 'fit',
     },
 
     items: [{
         xtype: 'uxiframe',
-        src: '/translation/'
+        src: 'languagesPlugins/akoma3.0/client/translation/iframe/index.html',
+        listeners: {
+            'load': function () {
+                // Export window Translator object
+                var mainCmp = this.up('translationMainTab'),
+                    win = this.getWin(),
+                    Translator = win.Translator;
+                mainCmp.fireEvent('ready', Translator);
+            }
+        }
     }],
 
     initComponent: function () {
         this.title = Locale.getString('tabTitle', 'translation');
         this.callParent(arguments);
-    },
-
-    setContent: function (html) {
-        // this.down('container').update(html);
     }
 });

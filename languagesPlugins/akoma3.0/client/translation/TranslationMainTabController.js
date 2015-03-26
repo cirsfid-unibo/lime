@@ -44,23 +44,31 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
 Ext.define('LIME.controller.TranslationMainTabController', {
-    extend : 'Ext.app.Controller',
+    extend: 'Ext.app.ViewController',
     
-    views: ["LIME.ux.translation.TranslationMainTab"],
+    alias: 'controller.translationMainTabController',
 
     init: function () {
+        var me = this;
         this.control({
-            'translationMainTab' : {
-                activate: function (cmp) {
-                    var id = DocProperties.documentInfo.docId;
-                    this.getController('Storage').openDocumentNoEditor(id, function (doc) {
-                        console.info(doc);
-                        cmp.setContent(doc.docText);
-                    });
+            '#': {
+                // activate: function (cmp) {
+                // }
+
+                ready: function (Translator){
+                    me.Translator = Translator;
+                    me.loadDocument();
                 }
             }
         });
+    },
+
+    loadDocument: function () {
+        var me = this,
+            id = DocProperties.documentInfo.docId;
+        Server.getDocument(id, function (xml) {
+            me.Translator.start(xml, {}, {});
+        })
     }
 });
