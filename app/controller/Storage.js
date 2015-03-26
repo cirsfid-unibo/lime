@@ -221,6 +221,9 @@ Ext.define('LIME.controller.Storage', {
             app = this.application, 
             LanguageController = this.getController('Language'),
             noOpeningEffects = Ext.isFunction(openNoEffectCallback);
+        
+        // prevents to open a folder
+        if ( filePath.indexOf('.') == -1 ) return;
 
         this.application.fireEvent(Statics.eventsNames.progressStart, null, {
             value : 0.1,
