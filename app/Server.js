@@ -50,7 +50,11 @@ Ext.define('LIME.Server', {
     alternateClassName: 'Server',
 
     // Get document content.
-    getDocument: function (path, username, password, success, failure) {
+    getDocument: function (path, success, failure) {
+        // Todo: use loginManager
+        var username = localStorage.getItem('username'),
+            password = localStorage.getItem('password');
+
         var requestUrl = Utilities.getAjaxUrl({
             'requestedService': Statics.services.getFileContent,
             'requestedFile': path,
