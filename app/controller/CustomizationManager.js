@@ -90,9 +90,14 @@ Ext.define('LIME.controller.CustomizationManager', {
 
         if (controllers) {
             Ext.each(controllers, function(controller) {
-                var cntr = me.getController(controller);
-                //TODO: hide application and make custom fire event
-                Ext.callback(cntr.onInitPlugin, cntr);
+                try {
+                    var cntr = me.getController(controller);
+                    //TODO: hide application and make custom fire event
+                    Ext.callback(cntr.onInitPlugin, cntr);
+                } catch (e) {
+                    console.log('Error loading controller ', controller);
+                    console.log(e);
+                }
             });
         }
     },
