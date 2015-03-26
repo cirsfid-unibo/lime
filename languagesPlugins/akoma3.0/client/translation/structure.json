@@ -1,0 +1,4 @@
+{
+    "views": ["TranslationMainTab"],
+    "controllers": ["TranslationMainTabController"]
+}
