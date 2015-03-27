@@ -531,8 +531,11 @@ Ext.define('LIME.controller.Language', {
             parser = new DOMParser(), doc, docCounters = {}, openedDocumentsData = [];
         // Checking that before load will be called just one time per document
         if (beforeLoad && !newParams.beforeLoaded) {
-            DocProperties.docsMeta = {};
-            DocProperties.frbrDom = null;
+            if ( !noSideEffects ) {
+                DocProperties.docsMeta = {};
+                DocProperties.frbrDom = null;
+            }
+
             if (params.docText) {
             	// IE exception
             	try {
