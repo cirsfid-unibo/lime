@@ -48,14 +48,18 @@
 Ext.define('LIME.controller.CommentsMainTabController', {
     extend : 'Ext.app.Controller',
     
-    views: ["LIME.ux.comments.CommentsMainTab"],
+    views: ["LIME.ux.comments.CommentsMainTab", "LIME.ux.comments.CommentsWindow"],
 
     refs: [
         { ref: 'viewport', selector: 'appViewport' },
         { ref: 'outliner', selector: 'outliner' },
         { ref: 'markingMenu', selector: '[cls=markingMenuContainer]'},
-        { ref : 'editor', selector : '#mainEditor mainEditor'}
+        { ref : 'editor', selector : '#mainEditor mainEditor'},
+        { ref: 'akomantosoViewer', selector: 'commentsMainTab *[cls*=akomantosoViewer]'},
+        { ref: 'commentsMainTab', selector: 'commentsMainTab'}
     ],
+
+    comments: {},
 
     init: function () {
         var me  = this;
@@ -73,20 +77,96 @@ Ext.define('LIME.controller.CommentsMainTabController', {
                     me.contextMenu = Ext.widget('menu', {
                         items: [{
                             text: 'Add a comment',
-                            icon: 'resources/images/icons/comment_add.png'
+                            icon: 'resources/images/icons/comment_add.png',
+                            handler: me.addComment.bind(me, e.target)
                         },{
                             text: 'Add a modify',
-                            icon: 'resources/images/icons/pencil.png'
+                            icon: 'resources/images/icons/pencil.png',
+                            handler: me.addModify.bind(me, e.target)
                         }]
                     }).showAt([e.pageX, e.pageY]);
+                    me.focusNode(e.target);
                 },
                 click: function(cmp, e) {
                     if ( me.contextMenu ) {
                         me.contextMenu.close();
                     }
+                    me.unFocusNodes();
+                }
+            },
+            'commentsWindow button[cls*=save]' : {
+                click: function(cmp) {
+                    var winCmp = cmp.up('window'),
+                        type = winCmp.down('tabpanel').query('segmentedbutton button[pressed]')[0].type,
+                        value = winCmp.down('textarea').getValue();
+
+                    me.saveNote(this.selectedNode, type, value);
+
+                    winCmp.down('textarea').setValue('');
+                    winCmp.close();
                 }
             }
         });
+    },
+
+    addComment: function(node) {
+        this.selectedNode = node;
+
+        var div = this.getCommentsMainTab().getEl().down('div');
+
+        var scrollTop = div.scrollTop;
+        this.commentWindow.show();
+        div.scrollTop = scrollTop;
+    },
+
+    addModify: function() {
+
+    },
+
+    focusNode: function(node) {
+        node.setAttribute(DocProperties.elementFocusedCls, "true");
+    },
+
+    unFocusNodes: function(fireEvent) {
+        node = this.getAkomantosoViewer().getEl().dom;
+        Ext.each(node.querySelectorAll("*["+DocProperties.elementFocusedCls+"]"), function(node) {
+            node.removeAttribute(DocProperties.elementFocusedCls);
+        });
+    },
+
+    saveNote: function(node, type, text) {
+        //console.log(winCmp, value, node, type);
+
+        this.comments[type] = this.comments[type] || [];
+        this.comments[type].push({
+            comment: text,
+            node: node
+        });
+
+        this.addOrUpdateBadge(node, type);
+    },
+
+    addOrUpdateBadge: function(node, type) {
+        var badgeContainer = node.querySelector('.badgeContainer');
+
+        if (!badgeContainer) {
+            badgeContainer = Ext.fly(node).appendChild({
+                tag: 'span',
+                cls: 'badgeContainer'
+            }, true);
+        }
+        
+        var badge = badgeContainer.querySelector('.badge.'+type);
+
+        if (!badge) {
+            Ext.fly(badgeContainer).appendChild({
+                tag: 'span',
+                cls: 'badge '+type,
+                html: 1
+            });
+        } else {
+            badge.textContent = parseInt(badge.textContent)+1;
+        }
     },
 
     reorganizeInterface: function() {
@@ -104,6 +184,16 @@ Ext.define('LIME.controller.CommentsMainTabController', {
         });
 
         this.getEditor().up().tab.setVisible(false);
+        viewport.setVisibleEditorToolbar(false);
+
+        this.commentWindow = viewport.add({
+            xtype: 'commentsWindow',
+            region: 'south',
+            height: 150,
+            draggable: false,
+            resizable: false,
+            floating: false
+        });
     },
 
     loadDocument: function(docId, cmp) {

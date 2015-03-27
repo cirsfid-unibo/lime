@@ -135,13 +135,13 @@
 				"nirPreview",
 				"consolidation",
 				"comments",
-				"translation",
 				"parsers", 
 				"documentCollection",
 				"modsMarker", 
 				"notesManager",
 				"metadataManager",
-                "widgetManager"],
+                "widgetManager",
+                "translation"],
 	"transformationFiles": {
 		"languageToLIME": "AknToXhtml.xsl",
 		"LIMEtoLanguage": "HtmlToAkn.xsl"

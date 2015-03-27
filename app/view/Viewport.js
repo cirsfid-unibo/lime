@@ -128,5 +128,9 @@ Ext.define('LIME.view.Viewport', {
         xtype : 'contextMenu'
     }, {
         xtype : 'downloadManager'
-    }]
+    }],
+
+    setVisibleEditorToolbar: function(visible) {
+        this.down('main').down('toolbar').setVisible(visible);
+    }
 });
