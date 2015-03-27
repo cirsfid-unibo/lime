@@ -7,7 +7,8 @@ body, html { padding: 0; margin: 0; }
 }
 .document.original {
     left: 0;
-    background-color: #eee; 
+
+
 }
 .document.translated {
     right: 0;
@@ -15,15 +16,15 @@ body, html { padding: 0; margin: 0; }
         background-color: #ccc;
     }
 
-    .fragment.todo {
+    .fragment[data-status='todo'] {
         background-color: #faa;
     }
 
-    .fragment.toreview {
+    .fragment[data-status='pending'] {
         background-color: #ffa;
     }
 
-    .fragment.done {
+    .fragment[data-status='translated'] {
         background-color: #afa;
     }
 
@@ -33,7 +34,6 @@ body, html { padding: 0; margin: 0; }
 }
 .fragment {
     display: inline-block;
-    // padding: 4px;
     border-radius: 5px;
 }
 

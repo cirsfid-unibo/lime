@@ -53,12 +53,19 @@ Ext.define('LIME.controller.TranslationMainTabController', {
         var me = this;
         this.control({
             '#': {
-                // activate: function (cmp) {
-                // }
+                activate: function (cmp) {
+                    
+                },
 
                 ready: function (Translator){
                     me.Translator = Translator;
                     me.loadDocument();
+                },
+
+                updateItem: function (item, status) {
+                    var translations = me.Translator.getTranslations();
+                    translations[item].status = status;
+                    me.Translator.setTranslations(translations);
                 }
             }
         });
@@ -70,5 +77,5 @@ Ext.define('LIME.controller.TranslationMainTabController', {
         Server.getDocument(id, function (xml) {
             me.Translator.start(xml, {}, {});
         })
-    }
+    },
 });

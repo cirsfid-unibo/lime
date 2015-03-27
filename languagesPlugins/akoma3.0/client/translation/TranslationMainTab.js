@@ -70,12 +70,37 @@ Ext.define('LIME.ux.translation.TranslationMainTab', {
                     win = this.getWin(),
                     Translator = win.Translator;
                 mainCmp.fireEvent('ready', Translator);
+                Translator.contextMenuCallback = mainCmp.onContextMenu.bind(mainCmp);
             }
         }
+    }, {
+        xtype: 'menu',
+        hidden: true,
+        items: [{
+            text: 'Translated',
+            handler: function () {
+                this.up('translationMainTab').fireEvent('updateItem', this.up().focusedItem, 'translated');
+            }
+        },{
+            text: 'Not translated',
+            handler: function () {
+                this.up('translationMainTab').fireEvent('updateItem', this.up().focusedItem, 'todo');
+            }
+        },{
+            text: 'Pending',
+            handler: function () {
+                this.up('translationMainTab').fireEvent('updateItem', this.up().focusedItem, 'pending');
+            }
+        }]
     }],
 
     initComponent: function () {
         this.title = Locale.getString('tabTitle', 'translation');
         this.callParent(arguments);
+    },
+
+    onContextMenu: function (id, screenX, screenY) {
+        this.down('menu').focusedItem = parseInt(id)
+        this.down('menu').showAt(screenX, screenY);
     }
 });
