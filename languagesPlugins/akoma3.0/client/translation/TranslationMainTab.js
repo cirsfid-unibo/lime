@@ -51,6 +51,7 @@ Ext.define('LIME.ux.translation.TranslationMainTab', {
     controller: 'translationMainTabController',
 
     cls: 'editorTab',
+    notEditMode: true,
 
     width: '100%',
     padding: 0,
