@@ -51,7 +51,7 @@ Ext.define('LIME.ux.comments.CommentsWindow', {
 
     title: 'Add a new comment',
     closeAction: 'hide',
-
+    layout: 'fit',
     header: {
         titlePosition: 0,
         items:[{
@@ -78,16 +78,36 @@ Ext.define('LIME.ux.comments.CommentsWindow', {
                 items: [{
                   text: 'Editorial',
                   type: 'editorial',
+                    style: {
+                        backgroundImage: 'linear-gradient(to bottom, #5bc0de, #5bc0de)',
+                        border: '1px solid #008c00',
+                        boxShadow: '2px 2px 2px #666'
+                    },
                   pressed: true
                 },{
                   text: 'Substantive',
-                  type: 'substantive'
+                  type: 'substantive',
+                  style: {
+                        backgroundImage: 'linear-gradient(to bottom, #5bb85d, #5bb85d)',
+                        border: '1px solid #008c00',
+                        boxShadow: '2px 2px 2px #666'
+                    }
                 },{
                   text: 'Translation',
-                  type: 'translation'
+                  type: 'translation',
+                  style: {
+                        backgroundImage: 'linear-gradient(to bottom, #efad4d, #efad4d)',
+                        border: '1px solid #008c00',
+                        boxShadow: '2px 2px 2px #666'
+                    }
                 },{
                   text: 'Technical',
-                  type: 'technical'
+                  type: 'technical',
+                  style: {
+                        backgroundImage: 'linear-gradient(to bottom, #d9544f, #d9544f)',
+                        border: '1px solid #008c00',
+                        boxShadow: '2px 2px 2px #666'
+                    }
                 }]
             }]
         },
@@ -100,7 +120,12 @@ Ext.define('LIME.ux.comments.CommentsWindow', {
                 anchor: '100%'
             }]
         },{
-            title: 'Explanation'
+            title: 'Explanation',
+            layout : 'fit',
+            items: [{
+                xtype: 'textarea',
+                anchor: '100%'
+            }]
         }]
     }],
 
