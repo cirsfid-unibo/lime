@@ -3,9 +3,11 @@ var Translator = {
     start: start,
     setTranslations: setTranslations,
     getTranslations: getTranslations,
+    focus: focus,
     originalDom: undefined,
     translatedDom: undefined,
-    contextMenuCallback: undefined
+    contextMenuCallback: undefined,
+    focusCallback: undefined
 };
 
 function start (xml, translations, dict) {
@@ -108,6 +110,12 @@ function setupTranslator () {
             this.dataset.status = 'pending';
         });
 
+        $(this).on('focus', function (e) {
+            if (Translator.focusCallback) {
+                Translator.focusCallback(parseInt(this.dataset.id));
+            }
+        });
+
         $(this).on('contextmenu', function(e) {
             if (Translator.contextMenuCallback) {
                 e.preventDefault();
@@ -116,6 +124,22 @@ function setupTranslator () {
         });
     });
 }
+
+function focus (n) {
+    var node = Translator.translatedDom.querySelector('*[data-id="' + n + '"]');
+    node.focus();
+    selectElementContents(node);
+}
+
+
+function selectElementContents(el) {
+    var range = document.createRange();
+    range.selectNodeContents(el);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
 
 window.Translator = Translator;
 

@@ -71,6 +71,7 @@ Ext.define('LIME.ux.translation.TranslationMainTab', {
                     Translator = win.Translator;
                 mainCmp.fireEvent('ready', Translator);
                 Translator.contextMenuCallback = mainCmp.onContextMenu.bind(mainCmp);
+                Translator.focusCallback = mainCmp.onFocus.bind(mainCmp);
             }
         }
     }, {
@@ -94,6 +95,10 @@ Ext.define('LIME.ux.translation.TranslationMainTab', {
         }]
     }],
 
+    dockedItems: [{
+        xtype: 'widget.simplepagingtoolbar'
+    }],
+
     initComponent: function () {
         this.title = Locale.getString('tabTitle', 'translation');
         this.callParent(arguments);
@@ -102,5 +107,10 @@ Ext.define('LIME.ux.translation.TranslationMainTab', {
     onContextMenu: function (id, screenX, screenY) {
         this.down('menu').focusedItem = parseInt(id)
         this.down('menu').showAt(screenX, screenY);
+        var me = this;
+    },
+
+    onFocus: function (id) {
+        this.down('pagingtoolbar').moveTo(id+1);
     }
 });
