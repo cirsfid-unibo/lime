@@ -564,7 +564,7 @@ body .ux-notification-success {
   border-radius: 5px;
 }
 
-.akomantosoViewer .badge {
+.akomantosoViewer .badge,  .commentsRender .badge {
     background-color: #337ab7;
     border-radius: 10px;
     color: #fff;
@@ -594,15 +594,108 @@ body .ux-notification-success {
 }
 
 .akomantosoViewer .technical {
-    background-color: #FFFFFF;
-    border: 2px solid #2f5f9f;
-    color: #2f5f9f;
+    background-color: #d9544f;
 }
 
 .akomantosoViewer .badgeContainer {
     padding-bottom: 2px;
+    margin-left: 3px;
     border-bottom: 3px solid #2f5f9f;
     display: inline-block;
+    position: absolute;
+    width: 2000px;
+}
+
+.commentsRender {
+  padding: 10px;
+}
+
+.commentsRender .boxContainer {
+  position: absolute;
+  width: 95%;
+  padding-left: 3px;
+  padding-top: 3px;
+  border-radius: 5px;
+  border-left: 3px solid #2f5f9f;
+}
+
+.commentsRender .commentBox {
+  border-radius: 5px;
+  margin-bottom: 10px;
+  padding: 3px;
+}
+
+.commentsRender .commentBox .content, .commentsRender .commentBox .actions {
+  display: none;
+}
+
+.commentsRender .commentBox:hover .content, .commentsRender .commentBox:hover .actions {
+  display: inherit;
+}
+
+.commentsRender .commentBox.editorial {
+  background-color: #5bc0de;
+}
+
+.commentsRender .commentBox.editorial .content, .commentsRender .commentBox.editorial .actions {
+  background-color: #D9EDF7;
+}
+
+.commentsRender .commentBox.substantive {
+  background-color: #5bb85d;
+}
+
+.commentsRender .commentBox.substantive .content, .commentsRender .commentBox.substantive .actions {
+  background-color: #e5f3e4;
+}
+
+.commentsRender .commentBox.translation {
+  background-color: #efad4d;
+}
+
+.commentsRender .commentBox.translation .content, .commentsRender .commentBox.translation .actions {
+  background-color: #FCF8E3;
+}
+
+.commentsRender .commentBox.technical {
+  background-color: #d9544f;
+}
+
+.commentsRender .commentBox.technical .content, .commentsRender .commentBox.technical .actions {
+  background-color: #fae2e2;
+}
+
+.commentsRender .header .title {
+  float: right;
+  color: white;
+  font-weight: bold;
+}
+
+.commentsRender .header {
+  padding: 2px 20px 5px 5px;
+  clear: both;
+}
+
+.commentsRender .content, .commentsRender .actions {
+  height: 50px;
+}
+
+.commentsRender .content {
+  float: left;
+  width: 80%;
+  padding: 10px;
+  margin-right: 2px;
+}
+
+.commentsRender .actions {
+  float: right;
+  width: 19%;
+  cursor: pointer;
+  background: url("../images/icons/delete_bin.png") no-repeat center;
+}
+
+.commentsRender .commentBox .clear {
+  clear: both;
 }
 
 

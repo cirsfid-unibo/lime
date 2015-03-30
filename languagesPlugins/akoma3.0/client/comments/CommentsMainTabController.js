@@ -56,7 +56,8 @@ Ext.define('LIME.controller.CommentsMainTabController', {
         { ref: 'markingMenu', selector: '[cls=markingMenuContainer]'},
         { ref : 'editor', selector : '#mainEditor mainEditor'},
         { ref: 'akomantosoViewer', selector: 'commentsMainTab *[cls*=akomantosoViewer]'},
-        { ref: 'commentsMainTab', selector: 'commentsMainTab'}
+        { ref: 'commentsMainTab', selector: 'commentsMainTab'},
+        { ref: 'commentsRender', selector: 'appViewport *[cls*=commentsRender]'},
     ],
 
     comments: {},
@@ -109,6 +110,81 @@ Ext.define('LIME.controller.CommentsMainTabController', {
         });
     },
 
+    reorganizeInterface: function() {
+        var viewport = this.getViewport();
+        viewport.remove(this.getMarkingMenu());
+
+        this.commentsPanel = viewport.add({
+            xtype: 'panel',
+            title: 'Comments',
+            region : 'east',
+            width : '25%',
+            margin : '2 0 0 0',
+            titleAlign: 'right',
+            items: [{
+                xtype: 'container',
+                cls: 'commentsRender'
+            }],
+            autoScroll : true
+        });
+
+        this.getEditor().up().tab.setVisible(false);
+        viewport.setVisibleEditorToolbar(false);
+
+        this.commentWindow = viewport.add({
+            xtype: 'commentsWindow',
+            region: 'south',
+            height: 300,
+            draggable: false,
+            resizable: false,
+            floating: false
+        });
+    },
+    
+    loadDocument: function(docId, cmp) {
+        var me = this;
+        console.log(docId);
+        me.getController('Storage').openDocumentNoEditor(docId, function (config) {
+            me.getController("Language").beforeLoad(config, function(doc) {
+                cmp.setContent(doc.docText);
+                me.genTmpIds(cmp.getContentDom());
+                me.addExampleComments(cmp.getContentDom());
+                me.renderComments(cmp.getContentDom());
+                me.enableScrollSync();
+            }, true);
+        });
+    },
+
+    genTmpIds: function(root) {
+        var counter = 0;
+        Ext.each(root.querySelectorAll('*'), function(node) {
+            node.setAttribute('id', 'paragraph '+counter++);
+        });
+    },
+
+    addExampleComments: function(root) {
+        var commentValue = "Comment example comment example comment example";
+        this.saveNote(root.querySelector('.preamble').querySelectorAll('*')[1], 'editorial', commentValue);
+        this.saveNote(root.querySelectorAll('.p')[2], 'technical', commentValue);
+        this.saveNote(root.querySelectorAll('.p')[5], 'translation', commentValue);
+    },
+
+    enableScrollSync: function() {
+        var nodeA = this.getCommentsMainTab().body,
+            nodeB = this.getCommentsRender().up('panel').body;
+
+        var setScroll = function(e) {
+            if ( nodeA.dom == e.target ) {
+                nodeB.dom.scrollTop = nodeA.dom.scrollTop;
+            } else if ( nodeB.dom == e.target ) {
+                nodeA.dom.scrollTop = nodeB.dom.scrollTop;
+            }
+        };
+
+        nodeA.on('scroll', setScroll);
+        nodeB.on('scroll', setScroll);
+    },
+
     addComment: function(node) {
         this.selectedNode = node;
 
@@ -136,14 +212,18 @@ Ext.define('LIME.controller.CommentsMainTabController', {
 
     saveNote: function(node, type, text) {
         //console.log(winCmp, value, node, type);
+        var id = node.getAttribute('id');
 
-        this.comments[type] = this.comments[type] || [];
-        this.comments[type].push({
+        this.comments[id] = this.comments[id] || [];
+        this.comments[id].push({
             comment: text,
-            node: node
+            node: node,
+            type: type
         });
 
         this.addOrUpdateBadge(node, type);
+        
+        this.renderComments(this.getCommentsMainTab().getContentDom());
     },
 
     addOrUpdateBadge: function(node, type) {
@@ -169,40 +249,38 @@ Ext.define('LIME.controller.CommentsMainTabController', {
         }
     },
 
-    reorganizeInterface: function() {
-        var viewport = this.getViewport();
-        viewport.remove(this.getMarkingMenu());
+    renderComments: function(root) {
+        var me = this,
+            commentsRender = me.getCommentsRender(),
+            documentBox = me.getCommentsMainTab().getContentDom().getBoundingClientRect();
 
-        this.commentsPanel = viewport.add({
-            xtype: 'panel',
-            title: 'Comments',
-            region : 'east',
-            width : '25%',
-            margin : '2 0 0 0',
-            titleAlign: 'right',
-            autoScroll : true
+        var html = '';
+        var counter = 1;
+        Ext.each(root.querySelectorAll('.badgeContainer'), function(node) {
+            var id = node.parentNode.getAttribute('id'),
+                containerHtml = "",
+                comments = me.comments[id],
+                nodePos = me.getNodePosition(node.parentNode);
+
+            if ( Ext.isEmpty(comments) ) return;
+            comments.forEach(function(obj) {
+                containerHtml += '<div class="commentBox '+obj.type+'"><div class="header"><span class="badge">'+ (counter++) +'</span><span class="title">'+ id +'</span></div><div class="content">'+obj.comment+'</div><div class="actions"></div><div class="clear"></div></div>';
+            });
+
+            html += '<div class="boxContainer" style="top:'+ nodePos.top +'px;" data-for-node="'+id+'">'+containerHtml+'</div>';
         });
 
-        this.getEditor().up().tab.setVisible(false);
-        viewport.setVisibleEditorToolbar(false);
-
-        this.commentWindow = viewport.add({
-            xtype: 'commentsWindow',
-            region: 'south',
-            height: 150,
-            draggable: false,
-            resizable: false,
-            floating: false
-        });
+        html += '<div class="boxContainer" style="top:'+ (documentBox.top+documentBox.height) +'px; position:relative; height:1px;"></div>';
+        commentsRender.update(html);
     },
 
-    loadDocument: function(docId, cmp) {
-        var me = this;
-        console.log(docId);
-        me.getController('Storage').openDocumentNoEditor(docId, function (config) {
-            me.getController("Language").beforeLoad(config, function(doc) {
-                cmp.setContent(doc.docText);
-            }, true);
-        });
+    getNodePosition: function(node) {
+        var pos = node.getBoundingClientRect(),
+            containerPos = this.getCommentsMainTab().getContentDom().getBoundingClientRect();
+
+        return {
+            top: pos.top - containerPos.top - 5,
+            height: pos.height
+        };
     }
 });

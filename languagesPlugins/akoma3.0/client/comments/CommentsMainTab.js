@@ -88,5 +88,10 @@ Ext.define('LIME.ux.comments.CommentsMainTab', {
 
     setContent: function (html) {
         this.down('container').update(html);
+    },
+
+    getContentDom: function(extNode) {
+        var node = this.down('container').el.down('.x-autocontainer-innerCt');
+        return (extNode) ? node : node.dom;
     }
 });
