@@ -90,7 +90,7 @@ Ext.define('LIME.controller.CustomOpenButtonController', {
                     // Todo: use loginManager
                     var username = localStorage.getItem('username'),
                         password = localStorage.getItem('password');
-                    Server.getDocument(path, username, password, function (content) {
+                    Server.getDocument(path, function (content) {
                         if(content.indexOf('http://www.normeinrete.it/nir/') != -1)
                             me.onNirSelected(path, content);
                         else {
