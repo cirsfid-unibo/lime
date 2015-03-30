@@ -33,13 +33,11 @@ function getTranslations () {
     var translations = {};
     $(Translator.translatedDom).find('.fragment').each(function () {
         var id = this.dataset.id;
-        console.log('id', id);
         translations[id] = {
             status: this.dataset.status,
             value: this.textContent
         }
     });
-    console.log('getTranslations', translations);
     return translations;
 }
 
@@ -63,11 +61,13 @@ function transform (input, output) {
     case 3: // Text
       var text = input.wholeText.trim()
       if(text) {
-        var el = document.createElement('span');
-        el.className = 'fragment';
-        el.appendChild(document.createTextNode(text));
-        el.dataset.id = counter++;
-        output.appendChild(el);
+        splitFragments(text).forEach(function (fragment) {
+            var el = document.createElement('span');
+            el.className = 'fragment';
+            el.appendChild(document.createTextNode(fragment));
+            el.dataset.id = counter++;
+            output.appendChild(el);
+        });
       }
       break;
 
@@ -85,6 +85,21 @@ function transform (input, output) {
       console.log('Unknown node type:', input.nodeType);
   }
 };
+
+
+function splitFragments (text) {
+    var SEPARATOR = '.',
+        fragments = [],
+        last = 0;
+    for (var i = 0; i < text.length; i++) {
+        if ((text[i] == SEPARATOR) || (i == text.length-1)) {
+            if (i+1<text.length && text[i+1] == ' ') i++;
+            fragments.push(text.substring(last, i+1));
+            last = i+1;
+        }
+    }
+    return fragments;
+}
 
 function setupTranslator () {
     $(Translator.translatedDom).find('.fragment').each(function () {
@@ -115,6 +130,10 @@ $(document).ready(function () {
     }
     if (!inIframe())
         $.get('./example.xml', undefined, function (value) {
-            Translator.start(value, {}, {});
+            Translator.start(value, {
+                0: {status:'todo'},
+                1: {status:'pending'},
+                2: {status:'translated', value: 'Titolo 3'}
+            }, {});
         }, 'text');
 });

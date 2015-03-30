@@ -13,28 +13,40 @@ body, html { padding: 0; margin: 0; }
 .document.translated {
     right: 0;
     .fragment {
-        background-color: #ccc;
-    }
-
-    .fragment[data-status='todo'] {
-        background-color: #faa;
-    }
-
-    .fragment[data-status='pending'] {
-        background-color: #ffa;
-    }
-
-    .fragment[data-status='translated'] {
-        background-color: #afa;
+        //  background-color: #ccc;
+        border-bottom: 2px solid black;
     }
 
     .fragment:focus {
-        background-color: transparent;
+        color: black;
+        outline: none;
+    }
+
+    .fragment[data-status='todo'] {
+        &:focus {
+            background-color: hsla(0, 40%, 50%,  15%);
+        }
+        border-color: hsl(0, 80%, 40%);
+    }
+
+    .fragment[data-status='pending'] {
+        &:focus {
+            background-color: hsla(40, 40%, 50%, 15%);
+        }
+        border-color: hsl(50, 80%, 40%);
+    }
+
+    .fragment[data-status='translated'] {
+        &:focus {
+            background-color: hsla(80, 40%, 50%, 15%);
+        }
+        border-color: hsl(100, 80%, 40%);
     }
 }
 .fragment {
-    display: inline-block;
+    display: inline;
     border-radius: 5px;
+    padding: 0px 5px;
 }
 
 
@@ -68,25 +80,25 @@ body, html { padding: 0; margin: 0; }
         border-top-right-radius: 4px;
         border-bottom-right-radius: 4px;
         color: white;
-        background-color: hsl(@color, 60%, 40%);
+        background-color: hsl(@color, 30%, 40%);
     }
 }
 
 .mainPart(@color, @label) {
     .hcontainer(@color);
     .label(@color, @label);
-    border-color: hsl(@color, 60%, 40%);
+    border-color: hsl(@color, 30%, 40%);
 }
 
 .hcontainer(@color) {
     position: relative;
     margin: 10px 0;
     padding: 0 10px;
-    border-left: 4px solid hsl(@color, 40%, 65%);
+    border-left: 4px solid hsl(@color, 30%, 65%);
 
     >.num {
         position: relative;
-        color: hsl(@color, 60%, 40%);
+        color: hsl(@color, 0%, 40%);
         margin: 8px 0 15px;
         font-size: 25px;
         font-weight: bold;
@@ -95,7 +107,7 @@ body, html { padding: 0; margin: 0; }
 
     >.heading {
         position: relative;
-        color: hsl(@color, 60%, 40%);
+        color: hsl(@color, 0%, 40%);
         margin-left: 15px;
         font-size: 13px;
         font-style: italic;
@@ -104,7 +116,7 @@ body, html { padding: 0; margin: 0; }
 }
 
 .inline (@color, @label) {
-    border-bottom: 1px solid hsl(@color, 40%, 65%);
+    border-bottom: 1px solid hsl(@color, 0%, 65%);
     display: inline-block;
     position: relative;
     margin: 5px 0 3px;
@@ -125,7 +137,7 @@ body, html { padding: 0; margin: 0; }
         border-top-right-radius: 4px;
         border-top-left-radius: 4px;
         color: white;
-        background-color: hsl(@color, 40%, 65%);
+        background-color: hsl(@color, 0%, 65%);
     }
 }
 
@@ -140,16 +152,16 @@ body, html { padding: 0; margin: 0; }
     .section { .hcontainer(90); }
     .article { .hcontainer(110); }
 
-    .formula {
-        .inline(206, 'formula');
-        font-style: italic;
-    }
-    .docAuthority { .inline(206, 'authority'); }
-    .signature {
-        .inline(206, 'signature');
-        text-align: right;
-        margin: 0 5px;
-    }
+    // .formula {
+    //     .inline(206, 'formula');
+    //     font-style: italic;
+    // }
+    // .docAuthority { .inline(206, 'authority'); }
+    // .signature {
+    //     .inline(206, 'signature');
+    //     text-align: right;
+    //     margin: 0 5px;
+    // }
 
 
     .list>.point {
