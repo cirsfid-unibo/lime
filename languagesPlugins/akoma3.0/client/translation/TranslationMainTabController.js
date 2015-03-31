@@ -66,6 +66,16 @@ Ext.define('LIME.controller.TranslationMainTabController', {
                     var translations = me.Translator.getTranslations();
                     translations[item].status = status;
                     me.Translator.setTranslations(translations);
+                },
+
+                useProposed: function (translation) {
+                    console.log('useProposed', translation);
+                    var translations = me.Translator.getTranslations();
+                    translations[me.Translator.focusedFragment] = {
+                        status: 'translated',
+                        value: translation
+                    }
+                    me.Translator.setTranslations(translations);
                 }
             },
 
@@ -73,6 +83,7 @@ Ext.define('LIME.controller.TranslationMainTabController', {
                 'changeSelection': function (n) {
                     if (me.Translator)
                         me.Translator.focus(n -1);
+                    me.proposeTranslations();
                 }
             }
         });
@@ -82,9 +93,44 @@ Ext.define('LIME.controller.TranslationMainTabController', {
         var me = this,
             id = DocProperties.documentInfo.docId;
         Server.getDocument(id, function (xml) {
-            me.Translator.start(xml, {}, {});
+
+            me.Translator.start(xml, {
+                // Translations
+                1: { status: 'translated', value: 'Lorem ipsum dolor sit amet' },
+                5: { status: 'pending', value: 'Lorem ipsum.. (Proposed translation N. 1)' },
+                11: { status: 'translated', value: 'consectetur adipiscing elit' },
+                12: { status: 'translated', value: 'sed do eiusmod' },
+                13: { status: 'translated', value: 'tempor incididunt.' }
+            });
+            
             var len = Object.keys(me.Translator.getTranslations()).length;
             me.getView().down('pagingtoolbar').setLength(len);
         })
     },
+
+    proposeTranslations: function () {
+        if (!this.Translator) return;
+        var store = Ext.data.StoreManager.lookup('proposedTranslationsStore');
+        console.log('loading data');
+        var id = this.Translator.focusedFragment;
+        var data = id != 5 ? [] : [
+            { 'pos': '1',  "translation": "Lorem ipsum.. (Proposed translation N. 1)",  "stats": "Used in 2312 documents" },
+            { 'pos': '2',  "translation": "Lorem ipsum.. (Proposed translation N. 2)",  "stats": "Used in 212 documents" },
+            { 'pos': '3',  "translation": "Lorem ipsum.. (Proposed translation N. 3)",  "stats": "Used in 31 documents" }
+        ];
+        store.loadRawData({ 'items': data });
+    }
+});
+
+Ext.create('Ext.data.Store', {
+    storeId:'proposedTranslationsStore',
+    fields:['pos', 'translation', 'stats'],
+    data:{ 'items': []},
+    proxy: {
+        type: 'memory',
+        reader: {
+            type: 'json',
+            rootProperty: 'items'
+        }
+    }
 });

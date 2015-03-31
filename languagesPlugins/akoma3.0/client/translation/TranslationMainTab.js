@@ -58,12 +58,15 @@ Ext.define('LIME.ux.translation.TranslationMainTab', {
     margin: 0,
     border: 0,
     layout: {
-        type: 'fit',
+        type: 'vbox',
+        align : 'stretch',
+        pack  : 'start',
     },
 
     items: [{
         xtype: 'uxiframe',
         src: 'languagesPlugins/akoma3.0/client/translation/iframe/index.html',
+        flex: 1,
         listeners: {
             'load': function () {
                 // Export window Translator object
@@ -94,6 +97,31 @@ Ext.define('LIME.ux.translation.TranslationMainTab', {
                 this.up('translationMainTab').fireEvent('updateItem', this.up().focusedItem, 'pending');
             }
         }]
+    }, {
+        xtype: 'grid',
+        height: 150,
+        title: 'Proposed translations',
+        store: 'proposedTranslationsStore',
+        columns: [
+            { text: '#',  dataIndex: 'pos' },
+            { text: 'Proposed translation', dataIndex: 'translation', flex: 3 },
+            { text: 'Usage statistics', dataIndex: 'stats', flex: 1 }
+        ],
+        bbar: [
+            { 
+                xtype: 'button', 
+                text: 'Use selected translation',
+                handler: function () {
+                    try {
+                        var selection = this.up('grid').getSelectionModel().getSelection();
+                        var translation = selection[0].get('translation');
+                        this.up('translationMainTab').fireEvent('useProposed', translation);
+                    } catch (e) {
+                        console.log('Nothing was selected');
+                    }
+                }
+            }
+        ]
     }],
 
     dockedItems: [{

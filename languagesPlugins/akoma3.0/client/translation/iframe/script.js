@@ -4,13 +4,14 @@ var Translator = {
     setTranslations: setTranslations,
     getTranslations: getTranslations,
     focus: focus,
+    focusedFragment: undefined,
     originalDom: undefined,
     translatedDom: undefined,
     contextMenuCallback: undefined,
     focusCallback: undefined
 };
 
-function start (xml, translations, dict) {
+function start (xml, translations) {
     cloneDocs(xml);
     setupTranslator();
     setTranslations(translations)
@@ -25,6 +26,8 @@ function setTranslations (translations) {
             this.textContent = translations[id].value;
         } else if (status == 'pending') {
             this.dataset.status = 'pending';
+            if (translations[id].value)
+                this.textContent = translations[id].value;
         } else {
             this.dataset.status = 'todo';
         }
@@ -119,7 +122,6 @@ function setupTranslator () {
         });
 
         $(this).focus(function (e) {
-            console.log('focus event', id);
             focus(id);
             if (Translator.focusCallback) {
                 e.preventDefault();
@@ -136,14 +138,10 @@ function setupTranslator () {
     });
 }
 
-var focusedFragment;
 function focus (id) {
-    console.info('focus()', id, 'was', focusedFragment);
     var node = Translator.translatedDom.querySelector('.fragment[data-id="' + id + '"]');
-
-    if (focusedFragment != id) {
-        console.log('Eseguo azione')
-        focusedFragment = id;
+    if (Translator.focusedFragment != id) {
+        Translator.focusedFragment = id;
         $('.document .fragment.highlight').removeClass('highlight');
         $('.document .fragment[data-id="'+id+'"]').addClass('highlight');
         
