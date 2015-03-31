@@ -58,34 +58,40 @@ function cloneDocs (xml) {
 var counter = 0;
 
 // Transform the input XML DOM in HTML and copy it to output. 
+// Split text nodes in fragments.
 function transform (input, output) {
-  switch (input.nodeType) {
+    // Don't split in fragments inside the following tags
+    var noSplitTags = ['num', 'heading', 'subheading'];
+
+    switch (input.nodeType) {
     case 3: // Text
-      var text = input.wholeText.trim()
-      if(text) {
-        splitFragments(text).forEach(function (fragment) {
-            var el = document.createElement('span');
-            el.className = 'fragment';
-            el.appendChild(document.createTextNode(fragment));
-            el.dataset.id = counter++;
-            output.appendChild(el);
-        });
-      }
-      break;
+        var text = input.wholeText.trim();
+        if(text) {
+            var canSplit = noSplitTags.indexOf(input.parentNode.nodeName) == -1,
+            fragments = canSplit ? splitFragments(text) : [text];
+            fragments.forEach(function (fragment) {
+                var el = document.createElement('span');
+                el.className = 'fragment';
+                el.appendChild(document.createTextNode(fragment));
+                el.dataset.id = counter++;
+                output.appendChild(el);
+            });
+        }
+        break;
 
     case 9: // Document
     case 1: // Element
-      var el = document.createElement('div');
-      output.appendChild(el);
-      el.className = input.nodeName;
-      var children = input.childNodes;
-      for (var i = 0; i < children.length; i++)
-        transform(children[i], el);
-      break;
+        var el = document.createElement('div');
+        output.appendChild(el);
+        el.className = input.nodeName;
+        var children = input.childNodes;
+        for (var i = 0; i < children.length; i++)
+            transform(children[i], el);
+        break;
 
     default:
-      console.log('Unknown node type:', input.nodeType);
-  }
+        console.log('Unknown node type:', input.nodeType);
+    }
 };
 
 
