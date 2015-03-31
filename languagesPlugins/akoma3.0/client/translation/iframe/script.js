@@ -105,21 +105,31 @@ function splitFragments (text) {
 
 function setupTranslator () {
     $(Translator.translatedDom).find('.fragment').each(function () {
+        var id = this.dataset.id,
+            original = $(Translator.originalDom).find('.fragment[data-id="' + id +'"]');
         this.setAttribute("contentEditable", true);
+
         $(this).on('input', function() {
             this.dataset.status = 'pending';
         });
 
         $(this).on('focus', function (e) {
+            focus(id);
+            original.addClass('highlight');
             if (Translator.focusCallback) {
-                Translator.focusCallback(parseInt(this.dataset.id));
+                e.preventDefault();
+                Translator.focusCallback(parseInt(id));
             }
+        });
+        
+        $(this).on('blur', function (e) {
+            original.removeClass('highlight');
         });
 
         $(this).on('contextmenu', function(e) {
             if (Translator.contextMenuCallback) {
                 e.preventDefault();
-                Translator.contextMenuCallback(this.dataset.id, e.clientX, e.clientY);
+                Translator.contextMenuCallback(id, e.clientX, e.clientY);
             }
         });
     });
@@ -131,7 +141,6 @@ function focus (n) {
     selectElementContents(node);
 }
 
-
 function selectElementContents(el) {
     var range = document.createRange();
     range.selectNodeContents(el);
@@ -140,9 +149,7 @@ function selectElementContents(el) {
     sel.addRange(range);
 }
 
-
 window.Translator = Translator;
-
 
 $(document).ready(function () {
     function inIframe () {
