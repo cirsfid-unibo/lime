@@ -872,6 +872,7 @@ body .ux-notification-success {
 }
 
 .commentsRender .boxContainer {
+  position: absolute;
   width: 95%;
   padding-left: 3px;
   padding-top: 3px;

@@ -284,8 +284,8 @@ Ext.define('LIME.controller.CommentsMainTabController', {
                 containerHtml += '<div class="commentBox '+obj.type+'"><div class="header"><span class="badge">'+ (counter++) +'</span><span class="title">'+ id +'</span></div><div class="content">'+obj.comment+'</div><div class="actions"></div><div class="clear"></div></div>';
             });
 
-            //html += '<div class="boxContainer" style="top:'+ nodePos.top +'px;" data-for-node="'+id+'">'+containerHtml+'</div>';
-            html += '<div class="boxContainer" data-for-node="'+id+'">'+containerHtml+'</div>';
+            html += '<div class="boxContainer" style="top:'+ nodePos.top +'px;" data-for-node="'+id+'">'+containerHtml+'</div>';
+            //html += '<div class="boxContainer" data-for-node="'+id+'">'+containerHtml+'</div>';
         });
 
         html += '<div class="boxContainer" style="top:'+ (documentBox.top+documentBox.height) +'px; position:relative; height:1px;"></div>';
