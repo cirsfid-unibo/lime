@@ -17,27 +17,27 @@ body, html { padding: 0; margin: 0; }
         border-bottom: 2px solid black;
     }
 
-    .fragment:focus {
+    .fragment.highlight {
         color: black;
         outline: none;
     }
 
     .fragment[data-status='todo'] {
-        &:focus {
+        &.highlight {
             background-color: hsla(0, 40%, 50%,  15%);
         }
         border-color: hsl(0, 80%, 40%);
     }
 
     .fragment[data-status='pending'] {
-        &:focus {
+        &.highlight {
             background-color: hsla(40, 40%, 50%, 15%);
         }
         border-color: hsl(50, 80%, 40%);
     }
 
     .fragment[data-status='translated'] {
-        &:focus {
+        &.highlight {
             background-color: hsla(80, 40%, 50%, 15%);
         }
         border-color: hsl(100, 80%, 40%);

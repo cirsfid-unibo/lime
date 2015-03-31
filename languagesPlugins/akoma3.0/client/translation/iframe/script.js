@@ -111,28 +111,23 @@ function splitFragments (text) {
 
 function setupTranslator () {
     $(Translator.translatedDom).find('.fragment').each(function () {
-        var id = this.dataset.id,
-            original = $(Translator.originalDom).find('.fragment[data-id="' + id +'"]');
+        var id = this.dataset.id;
         this.setAttribute("contentEditable", true);
 
         $(this).on('input', function() {
             this.dataset.status = 'pending';
         });
 
-        $(this).on('focus', function (e) {
+        $(this).focus(function (e) {
+            console.log('focus event', id);
             focus(id);
-            original.addClass('highlight');
             if (Translator.focusCallback) {
                 e.preventDefault();
                 Translator.focusCallback(parseInt(id));
             }
         });
         
-        $(this).on('blur', function (e) {
-            original.removeClass('highlight');
-        });
-
-        $(this).on('contextmenu', function(e) {
+        $(this).contextmenu(function(e) {
             if (Translator.contextMenuCallback) {
                 e.preventDefault();
                 Translator.contextMenuCallback(id, e.clientX, e.clientY);
@@ -141,18 +136,36 @@ function setupTranslator () {
     });
 }
 
-function focus (n) {
-    var node = Translator.translatedDom.querySelector('*[data-id="' + n + '"]');
-    node.focus();
-    selectElementContents(node);
+var focusedFragment;
+function focus (id) {
+    console.info('focus()', id, 'was', focusedFragment);
+    var node = Translator.translatedDom.querySelector('.fragment[data-id="' + id + '"]');
+
+    if (focusedFragment != id) {
+        console.log('Eseguo azione')
+        focusedFragment = id;
+        $('.document .fragment.highlight').removeClass('highlight');
+        $('.document .fragment[data-id="'+id+'"]').addClass('highlight');
+        
+        selectElementContents(node);
+        scrollToNode(node);
+    }
 }
 
-function selectElementContents(el) {
+function selectElementContents(node) {
     var range = document.createRange();
-    range.selectNodeContents(el);
+    range.selectNodeContents(node);
     var sel = window.getSelection();
     sel.removeAllRanges();
     sel.addRange(range);
+}
+
+function scrollToNode (node) {
+    var offset = $(node).offset().top,
+        wOffset = $(window).scrollTop(),
+        wHeight = window.innerHeight;
+    if(offset < wOffset || offset > wOffset + wHeight)
+        $(window).scrollTop($(node).offset().top);
 }
 
 window.Translator = Translator;
