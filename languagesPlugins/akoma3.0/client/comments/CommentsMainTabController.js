@@ -114,38 +114,43 @@ Ext.define('LIME.controller.CommentsMainTabController', {
         var viewport = this.getViewport();
         viewport.remove(this.getMarkingMenu());
 
-        this.commentsPanel = viewport.add({
-            xtype: 'panel',
-            title: 'Comments',
-            region : 'east',
-            width : '25%',
-            margin : '2 0 0 0',
-            titleAlign: 'right',
-            items: [{
-                xtype: 'container',
-                cls: 'commentsRender'
-            }],
-            autoScroll : true
-        });
+        if ( !viewport.down('*[cls*=commentsRender]') ) {
+            this.commentsPanel = viewport.add({
+                xtype: 'panel',
+                title: 'Comments',
+                region : 'east',
+                width : '25%',
+                margin : '2 0 0 0',
+                titleAlign: 'right',
+                items: [{
+                    xtype: 'container',
+                    cls: 'commentsRender'
+                }],
+                autoScroll : true
+            });
+        }
 
         this.getEditor().up().tab.setVisible(false);
         viewport.setVisibleEditorToolbar(false);
 
-        this.commentWindow = viewport.add({
-            xtype: 'commentsWindow',
-            region: 'south',
-            height: 300,
-            draggable: false,
-            resizable: false,
-            floating: false
-        });
+        if ( !viewport.down('commentsWindow') ) {
+            this.commentWindow = viewport.add({
+                xtype: 'commentsWindow',
+                region: 'south',
+                height: 300,
+                draggable: false,
+                resizable: false,
+                floating: false
+            });
+        }
     },
     
     loadDocument: function(docId, cmp) {
         var me = this;
-        console.log(docId);
+        if ( docId == me.loadedDocId ) return;
         me.getController('Storage').openDocumentNoEditor(docId, function (config) {
             me.getController("Language").beforeLoad(config, function(doc) {
+                me.loadedDocId = docId;
                 cmp.setContent(doc.docText);
                 me.genTmpIds(cmp.getContentDom());
                 me.addExampleComments(cmp.getContentDom());
@@ -175,14 +180,17 @@ Ext.define('LIME.controller.CommentsMainTabController', {
 
     enableScrollSync: function() {
         var nodeA = this.getCommentsMainTab().body,
-            nodeB = this.getCommentsRender().up('panel').body;
+            nodeB = this.getCommentsRender().up('panel').body,
+            lastScrollTime = 0;
 
         var setScroll = function(e) {
+            if ( (e.time-lastScrollTime) <= 5 ) return;
             if ( nodeA.dom == e.target ) {
                 nodeB.dom.scrollTop = nodeA.dom.scrollTop;
             } else if ( nodeB.dom == e.target ) {
                 nodeA.dom.scrollTop = nodeB.dom.scrollTop;
             }
+            lastScrollTime = e.time;
         };
 
         nodeA.on('scroll', setScroll);
@@ -260,6 +268,7 @@ Ext.define('LIME.controller.CommentsMainTabController', {
 
         var html = '';
         var counter = 1;
+        var renderOrder = ['editorial', 'substantive', 'translation', 'technical'];
         Ext.each(root.querySelectorAll('.badgeContainer'), function(node) {
             var id = node.parentNode.getAttribute('id'),
                 containerHtml = "",
@@ -267,6 +276,10 @@ Ext.define('LIME.controller.CommentsMainTabController', {
                 nodePos = me.getNodePosition(node.parentNode);
 
             if ( Ext.isEmpty(comments) ) return;
+
+            comments.sort(function(a, b) {
+                return renderOrder.indexOf(a.type) - renderOrder.indexOf(b.type);
+            });
             comments.forEach(function(obj) {
                 containerHtml += '<div class="commentBox '+obj.type+'"><div class="header"><span class="badge">'+ (counter++) +'</span><span class="title">'+ id +'</span></div><div class="content">'+obj.comment+'</div><div class="actions"></div><div class="clear"></div></div>';
             });

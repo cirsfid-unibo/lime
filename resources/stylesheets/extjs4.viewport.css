@@ -244,7 +244,7 @@ body .ux-notification-success {
 
 /*======================================================*/
 
-@import url(http://fonts.googleapis.com/css?family=Libre+Baskerville|Titillium+W                                                                                                      eb);
+/*@import url(http://fonts.googleapis.com/css?family=Libre+Baskerville|Titillium+W                                                                                                      eb);
 .akomaNtoso {
   max-width: 1240px;
   margin: auto;
@@ -556,6 +556,267 @@ body .ux-notification-success {
 .akomantosoViewer .list > .intro {
   font-style: italic;
 }
+*/
+
+@import url(http://fonts.googleapis.com/css?family=Libre+Baskerville|Titillium+Web);
+
+.akomantosoViewer .document {
+    color: #333;
+    font: 16px "Libre Baskerville",​serif;
+    text-align: justify;
+}
+
+.akomantosoViewer .fragment {
+  display: inline;
+  border-radius: 5px;
+  padding: 0px 5px;
+}
+.akomantosoViewer .akomaNtoso {
+  max-width: 1240px;
+  margin: auto;
+  font: 14px/20px 'Libre Baskerville', serif;
+  color: #333;
+  text-align: justify;
+}
+.akomantosoViewer .preamble {
+  position: relative;
+  margin: 10px 0;
+  padding: 0 10px;
+  border-left: 4px solid #8ba9c1;
+  padding: 25px 10px 0;
+  margin: 20px 20px 10px;
+  border-color: #476a85;
+}
+.akomantosoViewer .preamble > .num .preamble > .num {
+  position: relative;
+  color: #666666;
+  margin: 8px 0 15px;
+  font-size: 25px;
+  font-weight: bold;
+  display: inline-block;
+}
+.akomantosoViewer .preamble > .heading .preamble > .heading {
+  position: relative;
+  color: #666666;
+  margin-left: 15px;
+  font-size: 13px;
+  font-style: italic;
+  display: inline-block;
+}
+.akomantosoViewer .preamble:before {
+  content: 'preamble';
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  font: 13px/16px 'Titillium Web', sans-serif;
+  display: inline-block;
+  padding: 0px 6px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  color: white;
+  background-color: #476a85;
+}
+.akomantosoViewer .preface {
+  position: relative;
+  margin: 10px 0;
+  padding: 0 10px;
+  border-left: 4px solid #8ba9c1;
+  padding: 25px 10px 0;
+  margin: 20px 20px 10px;
+  border-color: #476a85;
+}
+.akomantosoViewer .preface > .num .preface > .num {
+  position: relative;
+  color: #666666;
+  margin: 8px 0 15px;
+  font-size: 25px;
+  font-weight: bold;
+  display: inline-block;
+}
+.akomantosoViewer .preface > .heading .preface > .heading {
+  position: relative;
+  color: #666666;
+  margin-left: 15px;
+  font-size: 13px;
+  font-style: italic;
+  display: inline-block;
+}
+.akomantosoViewer .preface:before {
+  content: 'preface';
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  font: 13px/16px 'Titillium Web', sans-serif;
+  display: inline-block;
+  padding: 0px 6px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  color: white;
+  background-color: #476a85;
+}
+.akomantosoViewer .conclusions {
+  position: relative;
+  margin: 10px 0;
+  padding: 0 10px;
+  border-left: 4px solid #8ba9c1;
+  padding: 25px 10px 0;
+  margin: 20px 20px 10px;
+  border-color: #476a85;
+}
+.akomantosoViewer .conclusions > .num .conclusions > .num {
+  position: relative;
+  color: #666666;
+  margin: 8px 0 15px;
+  font-size: 25px;
+  font-weight: bold;
+  display: inline-block;
+}
+.akomantosoViewer .conclusions > .heading .conclusions > .heading {
+  position: relative;
+  color: #666666;
+  margin-left: 15px;
+  font-size: 13px;
+  font-style: italic;
+  display: inline-block;
+}
+.akomantosoViewer .conclusions:before {
+  content: 'conclusions';
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  font: 13px/16px 'Titillium Web', sans-serif;
+  display: inline-block;
+  padding: 0px 6px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  color: white;
+  background-color: #476a85;
+}
+.akomantosoViewer .body {
+  position: relative;
+  margin: 10px 0;
+  padding: 0 10px;
+  border-left: 4px solid #c1b88b;
+  padding: 25px 10px 0;
+  margin: 20px 20px 10px;
+  border-color: #857a47;
+}
+.akomantosoViewer .body > .num {
+  position: relative;
+  color: #666666;
+  margin: 8px 0 15px;
+  font-size: 25px;
+  font-weight: bold;
+  display: inline-block;
+}
+.akomantosoViewer .body > .heading .body > .heading {
+  position: relative;
+  color: #666666;
+  margin-left: 15px;
+  font-size: 13px;
+  font-style: italic;
+  display: inline-block;
+}
+.akomantosoViewer .body:before {
+  content: 'body';
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  font: 13px/16px 'Titillium Web', sans-serif;
+  display: inline-block;
+  padding: 0px 6px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  color: white;
+  background-color: #857a47;
+}
+.akomantosoViewer .title {
+  position: relative;
+  margin: 10px 0;
+  padding: 0 10px;
+  border-left: 4px solid #b8c18b;
+}
+.akomantosoViewer .title > .num {
+  position: relative;
+  color: #666666;
+  margin: 8px 0 15px;
+  font-size: 25px;
+  font-weight: bold;
+  display: inline-block;
+}
+.akomantosoViewer .title > .heading {
+  position: relative;
+  color: #666666;
+  margin-left: 15px;
+  font-size: 13px;
+  font-style: italic;
+  display: inline-block;
+}
+.akomantosoViewer .section {
+  position: relative;
+  margin: 10px 0;
+  padding: 0 10px;
+  border-left: 4px solid #a6c18b;
+}
+.akomantosoViewer .section > .num {
+  position: relative;
+  color: #666666;
+  margin: 8px 0 15px;
+  font-size: 25px;
+  font-weight: bold;
+  display: inline-block;
+}
+.akomantosoViewer .section > .heading {
+  position: relative;
+  color: #666666;
+  margin-left: 15px;
+  font-size: 13px;
+  font-style: italic;
+  display: inline-block;
+}
+.akomantosoViewer .article {
+  position: relative;
+  margin: 10px 0;
+  padding: 0 10px;
+  border-left: 4px solid #94c18b;
+}
+.akomantosoViewer .article > .num {
+  position: relative;
+  color: #666666;
+  margin: 8px 0 15px;
+  font-size: 25px;
+  font-weight: bold;
+  display: inline-block;
+}
+.akomantosoViewer .article > .heading {
+  position: relative;
+  color: #666666;
+  margin-left: 15px;
+  font-size: 13px;
+  font-style: italic;
+  display: inline-block;
+}
+.akomantosoViewer .list > .point {
+  margin-top: 15px;
+  position: relative;
+  min-height: 30px;
+}
+.akomantosoViewer .list > .point > .num {
+  position: absolute;
+  top: 0px;
+  left: 5px;
+  font-size: 17px;
+  font-weight: bold;
+}
+.akomantosoViewer .list > .point > .content .list > .point > .content,
+.akomantosoViewer .list > .point > .list {
+  margin-left: 60px;
+  display: inline-block;
+}
+.akomantosoViewer .list > .intro {
+  font-style: italic;
+}
+
 
 .akomantosoViewer *[focused = 'true'] {
   -webkit-box-shadow: 0px 0px 10px 2px rgba(105,105,105,1);
