@@ -134,15 +134,13 @@
 	"plugins": ["aknPreview",
 				"nirPreview",
 				"consolidation",
-				"comments",
 				"parsers", 
 				"documentCollection",
 				"modsMarker", 
 				"notesManager",
 				"metadataManager",
                 "widgetManager",
-                "tocGenerator",
-                "translation"],
+                "tocGenerator"],
 	"transformationFiles": {
 		"languageToLIME": "AknToXhtml.xsl",
 		"LIMEtoLanguage": "HtmlToAkn.xsl"
