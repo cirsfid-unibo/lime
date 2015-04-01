@@ -266,7 +266,12 @@ Ext.define('LIME.controller.MetadataManagerController', {
 
     storeGridChanged: function(store) {
         var data = this.getDataObjectsFromStore(store);
-        //console.log(data);
+        if ( store.grid.name == "FRBRalias" ) {
+            data = data.map(function(obj) {
+                obj.name = (obj.name == "name") ? 'alias' : obj.name;
+                return obj;
+            });
+        }
         this.updateMetadata(store.grid, data, {
             overwrite: false,
             after: (store.grid.name == "FRBRuri") ? "FRBRthis" : "FRBRuri"

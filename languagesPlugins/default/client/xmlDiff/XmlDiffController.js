@@ -202,6 +202,7 @@ Ext.define('LIME.controller.XmlDiffController', {
             editorController = me.getController("Editor");
 
         editorController.autoSaveContent(true);
+        editorController.setEditorReadonly(false);
 
         var structure = markingMenuController.getTreeButtonsStructure();
 
@@ -314,10 +315,8 @@ Ext.define('LIME.controller.XmlDiffController', {
             xmlDiff.tab.hide();  
         }
 
-        var tinyView = editorController.getEditorComponent();
-        var tinyEditor = tinyView.editor;
-
-        tinyEditor.execCommand("contentReadOnly", false, tinyEditor.getElement());
+        
+        editorController.setEditorReadonly(true);
 
         editorController.defaultActions = {
             noExpandButtons: true

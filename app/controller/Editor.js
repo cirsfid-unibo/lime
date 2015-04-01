@@ -1145,6 +1145,13 @@ Ext.define('LIME.controller.Editor', {
         this.getBody().setAttribute('contenteditable', true);
     },
 
+    setEditorReadonly: function(readonly) {
+        var tinyView = this.getEditorComponent(),
+            tinyEditor = tinyView.editor;
+
+        tinyEditor.execCommand("contentReadOnly", false, (readonly) ? tinyEditor.getElement() : tinyEditor.getElement().disabled);
+    },
+
     getTinyMceConfig: function() {
     	var config = {
                 doctype : '<!DOCTYPE html>',
