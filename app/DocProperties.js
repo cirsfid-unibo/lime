@@ -221,6 +221,12 @@ Ext.define('LIME.DocProperties', {
         });
     },
 
+    getMarkedElementsByName: function(name) {
+        return Ext.Object.getValues(this.markedElements).filter(function(obj) {
+            return obj.button.name == name;
+        });
+    },
+
     /**
      * This function set the properties of a given marked element id
      * @param {String} markingId

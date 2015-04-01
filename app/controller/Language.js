@@ -151,7 +151,6 @@ Ext.define('LIME.controller.Language', {
         
         //temporary trick to remove focus class when removeCls don't work
         tmpHtml = tmpHtml.replace(/(class=\"[^\"]+)(\s+\bfocused\")/g, '$1"').replace(/\bid="[^"]*"/g, "");
-
         Language.translateContent(tmpHtml, DocProperties.documentInfo.docMarkingLanguage, {
             success : function(response) {
                 // pretty print the code because codemirror is not enough
