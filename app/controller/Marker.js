@@ -432,7 +432,7 @@ Ext.define('LIME.controller.Marker', {
         Ext.callback(config.onFinish, this, [markedElements]);
         
         if (!config.noEvent) {
-            this.application.fireEvent('nodeChangedExternally', newElements, Ext.merge(config, Ext.merge(this.nodeChangedConfig, {
+            this.application.fireEvent('nodeChangedExternally', markedElements, Ext.merge(config, Ext.merge(this.nodeChangedConfig, {
                 click : (config.silent) ? false : true
             })));
         }

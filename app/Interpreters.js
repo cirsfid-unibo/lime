@@ -127,11 +127,15 @@ Ext.define('LIME.Interpreters', {
 			 * Put this element on top of the hierarchy
 			 */ 
 			headingElement : function(rule, markedNode, buttonConfig) {
+
 				if (rule.conditions["parentClassContains"]) {
 					var extEl = Ext.fly(markedNode),
 						parent = extEl.parent('.'+rule.conditions["parentClassContains"]),
 						contentElement = extEl.parent('.content'),
 						contentChild = parent.down('.content');
+
+                    return; //TODO: fix this!!
+
 					//If content elements are the same	
 					if(parent && contentElement && contentChild && contentChild==contentElement){
 						extEl.insertBefore(contentElement);

@@ -140,7 +140,9 @@
 				"modsMarker", 
 				"notesManager",
 				"metadataManager",
-                "widgetManager"],
+                "widgetManager",
+                "tocGenerator",
+                "translation"],
 	"transformationFiles": {
 		"languageToLIME": "AknToXhtml.xsl",
 		"LIMEtoLanguage": "HtmlToAkn.xsl"

@@ -101,7 +101,7 @@
     </xsl:template>
     
     <xsl:template mode="notAknPrefixAttributes" match="@*" >
-    	<xsl:if test="not(substring-before(name(.),'_') = 'akn')">
+    	<xsl:if test="not(substring-before(name(.),'_') = 'akn') and not(contains(name(.), 'internalid'))">
         	<xsl:attribute name="{name(.)}"><xsl:value-of select="." /></xsl:attribute>
         </xsl:if>	
     </xsl:template>

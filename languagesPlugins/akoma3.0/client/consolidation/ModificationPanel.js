@@ -150,7 +150,6 @@ Ext.define('LIME.ux.consolidation.ModificationPanel', {
                     });
                 }
             },
-
         }, {
             xtype: 'button',
             itemId: 'applyButton',

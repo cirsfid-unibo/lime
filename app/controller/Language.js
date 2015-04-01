@@ -151,7 +151,6 @@ Ext.define('LIME.controller.Language', {
         
         //temporary trick to remove focus class when removeCls don't work
         tmpHtml = tmpHtml.replace(/(class=\"[^\"]+)(\s+\bfocused\")/g, '$1"').replace(/\bid="[^"]*"/g, "");
-
         Language.translateContent(tmpHtml, DocProperties.documentInfo.docMarkingLanguage, {
             success : function(response) {
                 // pretty print the code because codemirror is not enough
@@ -531,8 +530,11 @@ Ext.define('LIME.controller.Language', {
             parser = new DOMParser(), doc, docCounters = {}, openedDocumentsData = [];
         // Checking that before load will be called just one time per document
         if (beforeLoad && !newParams.beforeLoaded) {
-            DocProperties.docsMeta = {};
-            DocProperties.frbrDom = null;
+            if ( !noSideEffects ) {
+                DocProperties.docsMeta = {};
+                DocProperties.frbrDom = null;
+            }
+
             if (params.docText) {
             	// IE exception
             	try {

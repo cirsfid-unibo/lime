@@ -1,4 +1,4 @@
 {
-    "views": ["CommentsMainTab"],
+    "views": ["CommentsMainTab", "CommentsWindow"],
     "controllers": ["CommentsMainTabController"]
 }

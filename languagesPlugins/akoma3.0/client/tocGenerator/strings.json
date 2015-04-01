@@ -1,0 +1,9 @@
+{
+	"en": {
+        "generateToc": "Generate TOC",
+        "noPreambleFound": "Document markup is required"
+	},
+	"it": {
+        "generateToc": "Genera il TOC"
+	}
+}

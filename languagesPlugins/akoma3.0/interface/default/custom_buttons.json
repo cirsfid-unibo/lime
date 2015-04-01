@@ -236,6 +236,10 @@
 			}
 		}
 	},
+
+    "toc": {
+        "exceptionalAllowedElements": ["tocItem"]
+    },
 	"tocItem": {
 		"wrapperStyle": {
 			"this": "display: block;"
