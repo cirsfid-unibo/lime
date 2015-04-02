@@ -157,10 +157,9 @@ Ext.define('LIME.controller.LoginManager', {
 	        for (var i = 0, length = this.userInfo.length; i < length; i++){
 	            result[this.userInfo[i]] = localStorage.getItem(this.userInfo[i]);
             }
-            return result;
 	    }
 	    
-	    return null;
+        return result;
 	},
 	
 	
