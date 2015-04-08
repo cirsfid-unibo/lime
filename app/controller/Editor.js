@@ -1015,7 +1015,8 @@ Ext.define('LIME.controller.Editor', {
 	 */
 	tinyInit : function(editor, autoSaveContent) {
 		/* The context is the one from the plugin! */
-		var tinyautosave = this;
+		var tinyautosave = this,
+			mainToolbarController = editor.getController('MainToolbar');
 		tinyautosave.onPreSave = autoSaveContent;
 		userPreferences = editor.getController('PreferencesManager').getUserPreferences();
 
