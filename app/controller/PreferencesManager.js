@@ -66,7 +66,7 @@ Ext.define('LIME.controller.PreferencesManager', {
         userFullName : null,
         defaultLanguage : null,
         defaultLocale : null,
-        views : null,
+        views : [],
         lastOpened : null
     },
 
