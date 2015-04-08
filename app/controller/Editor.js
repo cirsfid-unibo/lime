@@ -266,7 +266,7 @@ Ext.define('LIME.controller.Editor', {
 	    var editorContainer = this.getMainEditor().up(), 
 	    	title, main = this.getMain(),
 	        uri = this.getDocumentUri();
-	    //!docId || !Ext.isString(docId) || DocProperties.isAutosaveId(docId) ||
+
         uri = (!uri) ? Locale.getString("newDocument") : uri.replace(/%3A/g, ':');
 	    editorContainer.tab.setTooltip(uri);
 	    main.down("mainEditorUri").setUri(uri);
@@ -1009,6 +1009,7 @@ Ext.define('LIME.controller.Editor', {
 		/* Check if there has been a change */ /* TODO: pensare a una soluzione più intelligente */
 		if (!userRequested && !this.changed || this.parserWorking)
 			return;
+        console.info('Saving...')
 		this.changed = false;
 		this.getController('Storage').saveDocument({
 		    silent: true,
@@ -1021,23 +1022,21 @@ Ext.define('LIME.controller.Editor', {
 	 * Do NOT rely on the existence of this function.
 	 * @private
 	 */
-	tinyInit : function(editor, autoSaveContent) {
-		/* The context is the one from the plugin! */
-		var tinyautosave = this;
-		tinyautosave.onPreSave = autoSaveContent;
-		userPreferences = editor.getController('PreferencesManager').getUserPreferences();
+	tinyInit : function() {
+        var me = this;
+		userPreferences = me.getController('PreferencesManager').getUserPreferences();
 
 		/* Load exemple document if there is no saved document */
 
 		if (!userPreferences.lastOpened) {
 			/*Config.setLanguage(Config.languages[0].name, function() {
-	            editor.application.fireEvent(Statics.eventsNames.languageLoaded, {});
+	            me.application.fireEvent(Statics.eventsNames.languageLoaded, {});
             });*/
 
     		Ext.Ajax.request({
     			url : Statics.editorStartContentUrl,
     			success : function(response) {
-    				var animation = editor.getController('MainToolbar').highlightFileMenu();
+    				var animation = me.getController('MainToolbar').highlightFileMenu();
                     // Create a window containing the example document and highlight the file menu
                     var exampleWin = Ext.widget('window', {
                         height : 400,
@@ -1074,7 +1073,7 @@ Ext.define('LIME.controller.Editor', {
     		});
 
 		} else {
-		    editor.restoreSession();
+		    me.restoreSession();
 		}
 	},
 
@@ -1177,7 +1176,7 @@ Ext.define('LIME.controller.Editor', {
                 nonbreaking_force_tab: true,
                 statusbar : false,
                 // the enabled plugins in the editor
-                plugins : "compat3x, code, tinyautosave, table, link, image, searchreplace, jbimages, paste, noneditable",
+                plugins : "code, table, link, image, searchreplace, paste, noneditable",
 
                 noneditable_leave_contenteditable: true,
 
@@ -1361,6 +1360,8 @@ Ext.define('LIME.controller.Editor', {
         this.application.on(Statics.eventsNames.enableEditing, this.enableEditor, this);
         this.application.on(Statics.eventsNames.afterSave, this.afterSave, this);
 
+        window.setInterval(me.autoSaveContent.bind(me), 10000);
+
 		// save a reference to the controller
 		var editorController = this;
 		var markerController = this.getController('Marker');
@@ -1428,23 +1429,16 @@ Ext.define('LIME.controller.Editor', {
                     	editorView = cmp, 
                     	tinyView = me.getEditorComponent(cmp),
                     	tinyConfig = me.getTinyMceConfig();
-
-
-                    // trick for a global scope (needed by the autosave plugin)
-					__tinyInit = function() {
-					   var plugin = this;
-					   // Call 'tinyInit' with the plugin scope, pass 'autoSaveContent' with editor scope
-					   Ext.bind(me.tinyInit, plugin, [me, Ext.bind(me.autoSaveContent, me)])();
-					};
 						
 					tinyConfig = Ext.merge(tinyConfig, {
-						// set the controller of the autosave
-	                    tinyautosave_oninit : '__tinyInit', // global reference to a local method
-	                    tinyautosave_minlength : 10,
-	                    tinyautosave_interval_seconds : 10,
 
 	                    // Events and callbacks
 	                    mysetup : function(editor) {
+                            editor.on('init', function(e) {
+                                console.log('init event', e);
+                                me.tinyInit();
+                            });
+
 	                        editor.on('change', function(e) {
 	                            editorView.fireEvent('change', editor, e);
 	                        });
@@ -1522,7 +1516,6 @@ Ext.define('LIME.controller.Editor', {
 
                     tinyConfig.menubar = false;
 
-                    tinyConfig.plugins = tinyConfig.plugins.replace("tinyautosave,", "");
                     tinyConfig.readonly = 1;
 
                     tinyConfig.mysetup =  function(editor) {
