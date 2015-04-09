@@ -86,6 +86,7 @@ Ext.define('LIME.controller.Outliner', {
     expandItem: function(node) {
         var me = this, tree = this.getOutliner(), root, row, parents,
             nodeToSelect = null;
+
         root = tree.store.getRootNode();
         if (!node) {
             tree.getSelectionModel().select(root, false, true);
@@ -300,7 +301,6 @@ Ext.define('LIME.controller.Outliner', {
     beforeBuildTree: function(node, type, config) {
         var me = this, treeView = this.getOutliner();
         config = config || {};
-
         if(treeView) {
             treeView.setLoading(true);
             Ext.defer(function() {
@@ -348,12 +348,14 @@ Ext.define('LIME.controller.Outliner', {
                         });
                     }
                 },
-                itemexpand: function(item) {
-                    var node = DocProperties.markedElements[item.getData().cls];
-                    if (node) {
+                rowclick: function(view, rec, item, index, e) {
+                    var node = DocProperties.markedElements[rec.getData().cls];
+                    if ( e.target && Ext.fly(e.target).is('.x-tree-expander') 
+                        && node && ( !rec.childNodes.length || !rec.getChildAt(0).isVisible() ) ) {
                         this.beforeExpandItem(node.htmlElement);
                     }
                 },
+
                 itemcontextmenu : function(view, rec, item, index, e, eOpts) {
                     var coordinates = [];
                     // Prevent the default context menu to show
