@@ -1535,12 +1535,9 @@ Ext.define('LIME.controller.Editor', {
                 }
             },
             '#secondEditor mainEditor tinymcefield': {
-                editorcreated: function(editor) {
+                editorcreated: function(tinyEditor) {
                     var editor2 = Ext.fly(this.getEditor(this.getSecondEditor()).getBody());
                     editor2.addCls('secondEditor');
-					Ext.Object.each(editor.controlManager.buttons, function(name) {
-						editor.controlManager.setDisabled(name, true);
-					});
 				}
 			}
 		});
