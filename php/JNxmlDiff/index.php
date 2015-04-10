@@ -55,8 +55,11 @@ curl_setopt( $ch, CURLOPT_POST, true );
 curl_setopt( $ch, CURLOPT_POSTFIELDS, $_POST);
 curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true);
 $data = curl_exec($ch);
+$json = json_decode($data);
 curl_close( $ch );
 
-echo $data;
-
+if (isset($json->absolutePathMERGED))
+	echo file_get_contents($json->absolutePathMERGED);
+else
+	echo $data;
 ?>

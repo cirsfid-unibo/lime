@@ -106,7 +106,6 @@ Ext.define('LIME.Server', {
                 fileExistPath: path
             },
             success: function(response) {
-                    console.log(response)
                 try {
                     var res = JSON.parse(response.responseText);
                     console.log(res)
@@ -121,6 +120,40 @@ Ext.define('LIME.Server', {
             },
             failure: failure || function(error) {
                 Ext.log('Html conversion failed', path, error);
+            }
+        });
+    },
+
+    // Export a document from Exist to a url 
+    export: function (paths, success, failure) {
+        var params = {
+            requestedService: 'EXPORT_FILES',
+        }
+
+        paths.forEach(function (path, i) {
+            params['doc' + (i+1)] = path;
+        });
+
+        Ext.Ajax.request({
+            url: Utilities.getAjaxUrl(),
+            method: 'POST',
+            params: params,
+            scope: this,
+            success: function (result) {
+                var jsonData = Ext.decode(result.responseText, true);
+                if (jsonData && jsonData.docsUrl) {
+                    var urls = [];
+                    for (url in jsonData.docsUrl) {
+                        urls.push(jsonData.docsUrl[url]);
+                    }
+                    success(urls)
+                } else {
+                    console.warn('Error exporting files (Decode error)', result.responseText);
+                    if (failure) failure();
+                }
+            },
+            failure: failure || function (error) {
+                console.warn('Error exporting files', error);
             }
         });
     }
