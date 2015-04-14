@@ -10,6 +10,28 @@ body, html { padding: 0; margin: 0; }
 }
 .document.modified {
     right: 0;
+
+    div[data-status="deleted"] {
+        background-color: hsl(0, 30%, 80%);
+    }
+
+    div[data-status="inserted"] {
+        background-color: hsl(120, 30%, 80%);
+    }
+
+    div[data-status="editing"] {
+        background-color: hsl(60, 30%, 80%);
+    }
+
+    div[data-status="movedFrom"] {
+        background-color: hsl(0, 50%, 70%);
+    }
+
+    div[data-status="movedTo"] {
+        background-color: hsl(120, 50%, 70%);
+    }
+
+
 }
 
 
@@ -104,6 +126,8 @@ body, html { padding: 0; margin: 0; }
 }
 
 .document.original, .document.modified {
+
+    .meta { display:none; }
 
     .preamble { .mainPart(206, 'preamble'); }
     .preface { .mainPart(206, 'preface'); }

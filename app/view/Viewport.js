@@ -52,7 +52,18 @@ Ext.define('LIME.view.Viewport', {
 
     alias : 'widget.appViewport',
 
-    requires : ['LIME.view.Outliner', 'LIME.view.MainToolbar', 'LIME.view.MarkingMenu', 'LIME.view.Main', 'LIME.view.ContextMenu', 'LIME.view.DownloadManager', 'LIME.view.ProgressWindow', 'LIME.view.modal.Login'],
+    requires : [
+        'LIME.view.Outliner',
+        'LIME.view.MainToolbar',
+        'LIME.view.MarkingMenu',
+        'LIME.view.Main',
+        'LIME.view.ContextMenu',
+        'LIME.view.DownloadManager',
+        'LIME.view.ProgressWindow',
+        'LIME.view.modal.Login',
+        'LIME.view.generic.SimplePagingToolbar'
+     ],
+
 
     style : {
         background : '#FFFFFF'

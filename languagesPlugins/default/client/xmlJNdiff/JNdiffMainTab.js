@@ -68,8 +68,27 @@ Ext.define('LIME.ux.xmlJNdiff.JNdiffMainTab', {
     
     items: [{
         xtype: 'doubleDocSelector',
-        editButtonLabel: 'Show diff',
-        title: 'Advanced Difference Viewer'
+        editButtonLabel: 'Show diff'
+    }, {
+        xtype: 'widget.simplepagingtoolbar',
+        beforePageText: 'Modification',
+        listeners: {
+            'beforerender': function () {
+                this.add({
+                    xtype: 'button',
+                    text: 'Accept',
+                    handler: function () {
+                        this.up('jnDiffMainTab').fireEvent('accept');
+                    }
+                });
+                this.add({
+                    text: 'Save',
+                    handler: function () {
+                        this.up('jnDiffMainTab').fireEvent('save');
+                    }
+                });
+            }
+        }
     }, {
         xtype: 'uxiframe',
         flex: 1,
@@ -88,9 +107,5 @@ Ext.define('LIME.ux.xmlJNdiff.JNdiffMainTab', {
     initComponent: function () {
         var me = this;
         me.callParent(arguments);
-    },
-
-    switchToDiff: function () {
-
     }
 });

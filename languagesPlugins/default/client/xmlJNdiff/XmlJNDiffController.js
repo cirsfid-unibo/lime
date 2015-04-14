@@ -45,21 +45,31 @@
  */
 
 Ext.define('LIME.controller.XmlJNDiffController', {
-    extend : 'Ext.app.Controller',
+    extend: 'Ext.app.Controller',
 
-    init : function() {
+    refs : [
+        { ref: 'pagingToolbar', selector: 'pagingtoolbar' }
+    ],
+
+    init: function() {
         var me = this;
                 
         this.control({
             'jnDiffMainTab doubleDocSelector': {
                 afterrender: function (cmp) {
                     cmp.onSelectedDocsChanged();
-                }, 
+                    // me.getPagingToolbar().setLength(5);
+                },
 
                 docsSelected: function (cmp) {
                     Server.getDocument(cmp.firstDoc.id, function (doc1) {
                         Server.getDocument(cmp.secondDoc.id, function (doc2) {
                             me.JNDiff.start(doc1, doc2);
+                            // TODO: Add a callback to start method
+                            setTimeout(function () {
+                                var count = me.JNDiff.getCount();
+                                me.getPagingToolbar().setLength(count);
+                            }, 2000);
                         });
                     });
                 },
@@ -69,10 +79,20 @@ Ext.define('LIME.controller.XmlJNDiffController', {
             'jnDiffMainTab': {
                 ready: function (JNDiff) {
                     me.JNDiff = JNDiff;
+                },
+
+                accept: function () {
+                    me.JNDiff.accept(me.getPagingToolbar().store.currentPage);
+                },
+
+                save: function () {
+                    me.JNDiff.save();
                 }
             }
         });
-    }
+    },
+
+
 });
 
 

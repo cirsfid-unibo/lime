@@ -44,12 +44,12 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('LIME.ux.translation.FakeEmptyModel', {
+Ext.define('LIME.view.generic.FakeEmptyModel', {
     extend: 'Ext.data.Model',
     fields: [ 'type' ]
 });
 
-Ext.define('LIME.ux.translation.SimplePagingToolbar', {
+Ext.define('LIME.view.generic.SimplePagingToolbar', {
     extend: 'Ext.toolbar.Paging',
     xtype: 'widget.simplepagingtoolbar',
     dock: 'top',
@@ -75,7 +75,7 @@ Ext.define('LIME.ux.translation.SimplePagingToolbar', {
                 { name: "ExtJS sucks"+i }));
 
         var store = Ext.create('Ext.data.Store', {
-            model: 'LIME.ux.translation.FakeEmptyModel',
+            model: 'LIME.view.generic.FakeEmptyModel',
             pageSize: 1,
             data: items,
             proxy: {
