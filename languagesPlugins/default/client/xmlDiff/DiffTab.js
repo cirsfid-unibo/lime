@@ -67,48 +67,6 @@ Ext.define('LIME.ux.xmlDiff.DiffTab', {
         align : 'stretch'
     },
 
-    // Properties id (string), url (string), new (boolean)
-    firstDoc : {},
-    secondDoc : {},
-
-    // Called when docs change
-    // Updates selection button/texfield labels and fires either 'docsSelected'
-    // or 'docsDeselected' event.
-    onSelectedDocsChanged: function () {
-        var firstButton = this.down('fieldset:first *[cls=selectButton]'),
-            secondButton = this.down('fieldset:last *[cls=selectButton]'),
-            changeMsg = Locale.getString("changeDocument", this.getPluginName()),
-            selectMsg = Locale.getString("selectDocument", this.getPluginName());
-
-        firstButton.setText(this.firstDoc.id ? changeMsg : selectMsg);
-        secondButton.setText(this.secondDoc.id ? changeMsg : selectMsg);
-        
-        this.down('fieldset:first textfield').setValue(this.firstDoc.path);
-        this.down('fieldset:last textfield').setValue(this.secondDoc.path);
-
-        if (this.firstDoc.id && this.secondDoc.id)
-            this.fireEvent('docsSelected', this);
-        else
-            this.fireEvent('docsDeselected', this);
-    },
-
-    // Unselect both documents.
-    clearSelectedDocuments: function() {
-        this.firstDoc = {};
-        this.secondDoc = {};
-        this.query("textfield").forEach(function (field) {
-            field.setValue("");
-        });
-        this.onSelectedDocsChanged();
-    },
-
-    disableEditButton: function () {
-        this.down('*[cls=editButton]').disable();
-    },
-
-    enableEditButton: function () {
-        this.down('*[cls=editButton]').enable();
-    },
 
     iframeSource: '',
 
@@ -116,7 +74,10 @@ Ext.define('LIME.ux.xmlDiff.DiffTab', {
     setIframeSource: function (url, callback) {
         this.iframeSource = url;
         var iframe = this.down('*[cls=diffContainer]').getActiveTab().getPlugin('iframe');
-        iframe.setRawSrc(url, callback);
+        // TODO: fix this
+        setTimeout(function () {
+            iframe.setRawSrc(url, callback);
+        }, 1000);
     },
 
     // Set the iframe as loading.
@@ -129,86 +90,8 @@ Ext.define('LIME.ux.xmlDiff.DiffTab', {
         var me = this;
 
         me.items = [{
-            xtype : "panel",
-            frame : true,
-            style : {
-                borderRadius : "0px",
-                border : "0px"
-            },
-            layout : {
-                type : 'hbox'
-            },
-            items : [{
-                xtype : 'fieldset',
-                collapsible : false,
-                border : 0,
-                flex : 97,
-                items : [{
-                    xtype : 'fieldcontainer',
-                    layout : 'hbox',
-                    items : [{
-                        xtype : 'textfield',
-                        fieldLabel : Locale.getString("firstDocumentLabel", me.getPluginName()),
-                        //value : Locale.getString("currentDocument", me.getPluginName()),
-                        readOnly : true,
-                        labelWidth : 80,
-                        flex : 1
-                    }, {
-                        xtype : 'button',
-                        cls : 'selectButton',
-                        handler: function () {
-                            this.up('diffTab').fireEvent('firstDocSelected', this.up('diffTab'));
-                        }
-                    }]
-                }]
-            }, {
-                xtype : 'button',
-                cls : 'resetButton',
-                text : Locale.getString("resetDocument", me.getPluginName()),
-                handler : function () {
-                    this.up('diffTab').clearSelectedDocuments();
-                } 
-            },{
-                xtype : 'button',
-                cls : 'editButton',
-                text : me.editButtonLabel,
-                margin: "0px 0px 0px 5px",
-                handler: function () {
-                    this.up('diffTab').fireEvent('edit', this.up('diffTab'));
-                }
-            }, {
-                xtype : 'fieldset',
-                collapsible : false,
-                border : 0,
-                flex : 100,
-                items : [{
-                    xtype : 'fieldcontainer',
-                    layout : 'hbox',
-                    items : [{
-                        xtype : 'textfield',
-                        fieldLabel : Locale.getString("secondDocumentLabel", me.getPluginName()),
-                        readOnly : true,
-                        labelWidth : 80,
-                        flex : 1
-                    }, {
-                        xtype : 'button',
-                        cls : 'selectButton',
-                        handler: function () {
-                            this.up('diffTab').fireEvent('secondDocSelected', this.up('diffTab'));
-                        }
-                    }]
-                }]
-            }, {
-                xtype : 'button',
-                cls : 'printDiffButton',
-                text : "Print",
-                margin: "0px 0px 0px 5px",
-                handler: function () {
-                    var url = cmp.up('diffTab').iframeSource;
-                    if (url)
-                        window.open(url);
-                }
-            }]
+            xtype: "doubleDocSelector",
+            editButtonLabel: me.editButtonLabel
         }, {
             xtype : "tabpanel",
             cls : 'diffContainer',
@@ -237,6 +120,8 @@ Ext.define('LIME.ux.xmlDiff.DiffTab', {
                 }
             }
         }];
+
+        // me.down("button[cls='editButton']").setValue('Hello')
         me.callParent(arguments);
     }
 });

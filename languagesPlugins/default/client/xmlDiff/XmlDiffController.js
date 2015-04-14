@@ -74,46 +74,46 @@ Ext.define('LIME.controller.XmlDiffController', {
 
     // Set the iframe source of the current tab to either the Akomantoso diff
     // or the generic XML diff, depending on which tab is active. 
-    getDiff : function(cmp) {
-        var format = cmp.down("*[cls=diffContainer]").getActiveTab().format || 'text',
+    getDiff: function(tab, selector) {
+        var format = tab.down("*[cls=diffContainer]").getActiveTab().format || 'text',
             baseUrl = (format=="xml") ? this.getDiffXmlServiceUrl() : this.getDiffServiceUrl(),
             url = baseUrl + '?' + Ext.urlEncode({
-                from: cmp.firstDoc.url,
-                to: cmp.secondDoc.url,
+                from: selector.firstDoc.url,
+                to: selector.secondDoc.url,
                 format: format,
                 edit: true
             });
-        cmp.setIframeSource(url, function(doc) {
-            cmp.enableEditButton();
+        tab.setIframeSource(url, function(doc) {
+            selector.enableEditButton();
             var newDoc = doc.querySelector(".newDocVersion");
 
             if(newDoc) {
-                var firstDocIsNewer = (newDoc.getAttribute("url") == cmp.firstDoc.url);
-                cmp.firstDoc.new = firstDocIsNewer;
-                cmp.secondDoc.new = !firstDocIsNewer;
+                var firstDocIsNewer = (newDoc.getAttribute("url") == selector.firstDoc.url);
+                selector.firstDoc.new = firstDocIsNewer;
+                selector.secondDoc.new = !firstDocIsNewer;
             }
         });
     },
 
     // Call EXPORT_FILES service and get an url where the diff
     // can access the two files.
-    getDocsUrl : function(cmp) {        
-        cmp.setLoading();
+    getDocsUrl : function(tab, selector) {        
+        tab.setLoading();
         Ext.Ajax.request({
             url : Utilities.getAjaxUrl(),
             method : 'POST',
             params : {
                 requestedService: 'EXPORT_FILES',
-                doc1: cmp.firstDoc.id,
-                doc2: cmp.secondDoc.id
+                doc1: selector.firstDoc.id,
+                doc2: selector.secondDoc.id
             },
             scope : this,
             success : function(result, request) {
                 var jsonData = Ext.decode(result.responseText, true);
                 if (jsonData && jsonData.docsUrl) {
-                    cmp.firstDoc.url = jsonData.docsUrl.doc1;
-                    cmp.secondDoc.url = jsonData.docsUrl.doc2;
-                    this.getDiff(cmp);
+                    selector.firstDoc.url = jsonData.docsUrl.doc1;
+                    selector.secondDoc.url = jsonData.docsUrl.doc2;
+                    this.getDiff(tab, selector);
                 } else {
                     Ext.Msg.alert(Locale.strings.error, Locale.strings.serverFailure);
                 }
@@ -124,43 +124,13 @@ Ext.define('LIME.controller.XmlDiffController', {
         });
     },
 
-    selectDocument : function(cmp, changingDoc, otherDoc) {
-        var me = this,
-            otherDocId = cmp[otherDoc].id,
-            workUri;
-
-        // If user is selecting the second document
-        if (otherDocId) {
-            var indexes = Utilities.globalIndexOf("/", otherDocId);
-            workUri = (indexes.length >= 2) ? otherDocId.substr(0, indexes[indexes.length - 2]) : otherDocId;
-        }
-
-        me.application.fireEvent(Statics.eventsNames.selectDocument, {
-            path: workUri,
-            allowOnlyInPaths: workUri,
-            notAllowedPaths: otherDocId,
-            notAllowedPathRender: function(el, record) {
-                Ext.tip.QuickTipManager.register({
-                    target: el.getAttribute('id'),
-                    text: Locale.getString("forbiddenElement", me.getPluginName())
-                });
-            },
-            callback: function(doc) {
-                cmp[changingDoc] = Ext.clone(doc);
-                if (cmp[changingDoc].id == 'editorDoc')
-                    cmp[changingDoc].id = DocProperties.documentInfo.docId;
-                cmp.onSelectedDocsChanged();
-            },
-            scope: me
-        });
-    },
     
     enableEditMode: function(cmp) {
         if(cmp.firstDoc.id && cmp.secondDoc.id) {
             var newer = cmp.firstDoc.new ? cmp.firstDoc : cmp.secondDoc,
                 older = cmp.firstDoc.new ? cmp.secondDoc : cmp.firstDoc;
             this.application.fireEvent(Statics.eventsNames.enableDualEditorMode, {
-                diffTab: cmp,
+                diffTab: cmp.up('diffTab'),
                 editableDoc: newer.id,
                 notEditableDoc: older.id
             });      
@@ -171,7 +141,7 @@ Ext.define('LIME.controller.XmlDiffController', {
         if(cmp.firstDoc.id && cmp.secondDoc.id) {
             var newer = cmp.firstDoc.new ? cmp.firstDoc : cmp.secondDoc,
                 older = cmp.firstDoc.new ? cmp.secondDoc : cmp.firstDoc;
-            this.enableDualEditorMode(cmp, {
+            this.enableDualEditorMode(cmp.up('diffTab'), {
                 editableDoc: newer.id,
                 notEditableDoc: older.id
             });    
@@ -419,44 +389,35 @@ Ext.define('LIME.controller.XmlDiffController', {
         this.markingMenuMenuLoad = null;
     },
     
-    init : function() {
+    init: function() {
         var me = this;
         
         me.application.on(Statics.eventsNames.afterLoad, me.afterDocumentLoaded, me);
         me.application.on(Statics.eventsNames.markingMenuLoaded, me.onMarkingMenuLoaded, me);
         
         this.control({
-            'diffTab': {
-                activate: function (tab) {
-                    tab.onSelectedDocsChanged();
-                }, 
-
-                docsDeselected: function (tab) {
-                    tab.disableEditButton();
-                    tab.setIframeSource(me.getInitDiffPage());
+            'diffTab doubleDocSelector': {
+                afterrender: function (cmp) {
+                    cmp.onSelectedDocsChanged();
                 },
 
-                docsSelected: function (tab) {
-                    me.getDocsUrl(tab);
+                docsDeselected: function (selector) {
+                    selector.up('diffTab').setIframeSource(me.getInitDiffPage());
                 },
 
-                firstDocSelected: function (tab) {
-                    me.selectDocument(tab, 'firstDoc', 'secondDoc');
+                docsSelected: function (selector) {
+                    me.getDocsUrl(selector.up('diffTab'), selector);
                 },
 
-                secondDocSelected: function (tab) {
-                    me.selectDocument(tab, 'secondDoc', 'firstDoc');
-                },
-
-                diffTypeChanged: function (tab) {
-                    me.getDiff(tab);
+                diffTypeChanged: function (selector) {
+                    me.getDiff(selector.up('diffTab'), selector);
                 }
             },
 
-            'amendingDiffMainTab': {
+            'amendingDiffMainTab doubleDocSelector': {
                 edit: me.enableEditMode
             },
-            'consolidatingDiffMainTab': {
+            'consolidatingDiffMainTab doubleDocSelector': {
                 edit: me.enableEditModeScenarioB
             },
         });

@@ -1,4 +1,4 @@
 {
-	"views": ["DiffTab", "AmendingDiffMainTab", "ConsolidatingDiffMainTab"],
-	"controllers": ["XmlDiffController", "DualEditorSynchronizer"]
+	"views": ["DiffTab", "DoubleDocSelector", "AmendingDiffMainTab", "ConsolidatingDiffMainTab"],
+	"controllers": ["XmlDiffController", "DualEditorSynchronizer", "DoubleDocSelectorController"]
 }
