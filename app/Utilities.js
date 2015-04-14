@@ -53,6 +53,8 @@ Ext.define('LIME.Utilities', {
 	/* Since this is merely a utility class define it as a singleton (static members by default) */
 	singleton : true,
 	alternateClassName : 'Utilities',	
+
+	requires : ["LIME.Statics"],
 	
 	/**
 	 * @property {String} buttonFieldDefault

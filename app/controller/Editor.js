@@ -1028,7 +1028,7 @@ Ext.define('LIME.controller.Editor', {
             });*/
 
     		Ext.Ajax.request({
-    			url : Statics.editorStartContentUrl,
+    			url : editor.getEditorStartContentUrl(),
     			success : function(response) {
     				var animation = mainToolbarController.highlightFileMenu();
                     // Create a window containing the example document and highlight the file menu
@@ -1542,5 +1542,12 @@ Ext.define('LIME.controller.Editor', {
 				}
 			}
 		});
+	},
+
+	/**
+	 * The path of default editor content file 
+	 */
+	getEditorStartContentUrl : function() {
+	    return 'config/examples/editorStartContent-'+Locale.getLang()+'.html';
 	}
 });

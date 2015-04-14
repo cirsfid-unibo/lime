@@ -53,6 +53,8 @@ Ext.define('LIME.Global', {
     alternateClassName : 'Config',
     uxPath : 'LIME.ux',
 
+    requires : ["LIME.Utilities", "LIME.Statics"],
+
     extensionScripts : ['LoadPlugin', 'Language', 'SavePlugin', 'TranslatePlugin'],
 
     language : 'default',
