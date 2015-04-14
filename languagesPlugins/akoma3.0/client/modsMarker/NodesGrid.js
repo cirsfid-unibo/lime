@@ -44,66 +44,33 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+Ext.define('LIME.ux.modsMarker.NodesGrid', {
+    extend : 'Ext.grid.Panel',
+    alias : 'widget.nodesGrid',
 
-Ext.define('LIME.ux.modsMarker.ModsMarkerWindow', {
-
-    extend : 'Ext.window.Window',
-
-    alias : 'widget.modsMarkerWindow',
-
-    layout : 'card',
-
-    draggable : true,
-
-    border : false,
-
-    modal : false,
-
-    title : Locale.getString("windowTitle", "modsMarker"),
-
-    width : 605,
-
-    /**
-     * Return the data set in the view
-     * @return {Object} An object containing the key-value pairs in the form
-     */
-    getData : function() {
-        var form = this.down('form[itemId=step1]').getForm();
-        if (!form.isValid())
-            return null;
-        return form.getValues(false, false, false, true);
-    },
-    
-    setData: function(data) {
-        var form = this.down('form[itemId=step1]').getForm();
-        form.setValues(data);
-    },
-
-    items : [{
-        xtype : 'form',
-        frame : true,
-        padding : '10px',
-        layout : 'anchor',
-        defaults : {
-            anchor : '100%'
-        },
-
-        defaultType : 'textfield',
-        items : [{
-            name: "selection",
-            fieldLabel: 'Selection'
-        }],
-
-        dockedItems : [{
-            xtype : 'toolbar',
-            dock : 'bottom',
-            ui : 'footer',
-            items : ['->', {
-                xtype : 'button',
-                cls: 'createDocumentCollection',
-                minWidth : 100,
-                text : Locale.getString("ok")
+    columns: [
+        { text: 'Name',  dataIndex: 'name' },
+        { text: 'Content', dataIndex: 'content', flex: 1 }, {
+            xtype : 'actioncolumn',
+            width : 30,
+            sortable : false,
+            menuDisabled : true,
+            items : [{
+                icon : 'resources/images/icons/delete.png',
+                tooltip : 'Remove',
+                handler : function(grid, rowIndex) {
+                    grid.getStore().removeAt(rowIndex);
+                }
             }]
-        }]
-    }]
+        }
+    ],
+    initComponent : function() {
+        Ext.apply(this, {
+            store : Ext.create('Ext.data.Store', {
+                fields:['name', 'content', 'id', 'eId'],
+                data: []
+            })
+        });
+        this.callParent(arguments);
+    }
 });

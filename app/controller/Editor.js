@@ -1144,8 +1144,8 @@ Ext.define('LIME.controller.Editor', {
         this.getBody().setAttribute('contenteditable', true);
     },
 
-    setEditorReadonly: function(readonly) {
-        var tinyView = this.getEditorComponent(),
+    setEditorReadonly: function(readonly, tinyView) {
+        var tinyView = tinyView || this.getEditorComponent(),
             tinyEditor = tinyView.editor;
 
         tinyEditor.execCommand("contentReadOnly", false, (readonly) ? tinyEditor.getElement() : tinyEditor.getElement().disabled);
@@ -1519,11 +1519,21 @@ Ext.define('LIME.controller.Editor', {
                     tinyConfig.readonly = 1;
 
                     tinyConfig.mysetup =  function(editor) {
+                        /*
+                        tinyMce not firing events in readonly mode
                         editor.on('click', function(e) {
+                            console.log(e);
                             // Fire a click event only if left mousebutton was used
                             if (e.which == 1){
                                 cmp.fireEvent('click', editor, e);
                             }
+                        });*/
+                        editor.on('PostRender', function() {
+                            editor.getBody().addEventListener('click', function(e) {
+                                if (e.which == 1){
+                                    cmp.fireEvent('click', editor, e);
+                                }
+                            });
                         });
                     };
 

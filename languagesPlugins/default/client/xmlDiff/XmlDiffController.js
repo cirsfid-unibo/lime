@@ -314,7 +314,6 @@ Ext.define('LIME.controller.XmlDiffController', {
         if(xmlDiff) {
             xmlDiff.tab.hide();  
         }
-
         
         editorController.setEditorReadonly(true);
 
@@ -335,7 +334,7 @@ Ext.define('LIME.controller.XmlDiffController', {
             Ext.defer(function() {
                 markingMenuController.filterTreeByFn(commons, function( node ) {
                     var path = node.getPath();
-                    if ( path.match(/passiveModifications\d+\/action\d+/)  && !path.match(/split|renumbering/) ) {
+                    if ( path.match(/passiveModifications\d+\/action\d+/)  && !path.match(/renumbering/) ) {
                         return true;
                     }
                 });
@@ -372,13 +371,15 @@ Ext.define('LIME.controller.XmlDiffController', {
                 language.beforeLoad(config, function(newConfig) {
                     me.secondDocumentConfig = newConfig;
                     editorController.loadDocument(newConfig.docText, newConfig.docId, secondEditor, true);
+                    var body = editorController.getEditor(secondEditor).getBody();
                     if(newConfig.metaDom) {
+                        secondEditor.metaConf = DomUtils.nodeToJson(newConfig.metaDom);
                         var manifestationUri = newConfig.metaDom.querySelector("*[class=FRBRManifestation] *[class=FRBRuri]");
                         if(manifestationUri) {
                             secondEditor.down("mainEditorUri").setUri(manifestationUri.getAttribute("value"));
                         }
                     }
-                    me.manageAfterLoad = function() {
+                    me.manageAfterLoad = function(docConfig) {
                         var newId = dualConfig.editableDoc.replace("/diff/", "/diff_modified/");
                         DocProperties.documentInfo.docId = newId;
                         Ext.each([xmlDiff.firstDoc, xmlDiff.secondDoc], function(doc, index) {
@@ -406,7 +407,7 @@ Ext.define('LIME.controller.XmlDiffController', {
     afterDocumentLoaded: function() {
         var me = this;
         if(Ext.isFunction(me.manageAfterLoad)) {
-            Ext.callback(me.manageAfterLoad);
+            Ext.callback(me.manageAfterLoad, me);
             me.manageAfterLoad = null;
         }
     },
