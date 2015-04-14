@@ -140,7 +140,8 @@
 				"notesManager",
 				"metadataManager",
                 "widgetManager",
-                "tocGenerator"],
+                "tocGenerator",
+				"visualPreview"],
 	"transformationFiles": {
 		"languageToLIME": "AknToXhtml.xsl",
 		"LIMEtoLanguage": "HtmlToAkn.xsl"

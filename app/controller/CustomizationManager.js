@@ -90,6 +90,9 @@ Ext.define('LIME.controller.CustomizationManager', {
 
         if (controllers) {
             Ext.each(controllers, function(controller) {
+                // Don't run this code on View Controllers since it would
+                // rise an exception.
+                if (controller.indexOf('VController') != -1) return;
                 try {
                     var cntr = me.getController(controller);
                     //TODO: hide application and make custom fire event

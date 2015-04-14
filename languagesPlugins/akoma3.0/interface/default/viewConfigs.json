@@ -11,6 +11,7 @@
         "jnDiffMainTab",
         "newPdfPreviewMainTab",
         "nirPreviewMainTab",
+        "visualPreviewMainTab",
         "consolidationMainTab"
     ]
 }
