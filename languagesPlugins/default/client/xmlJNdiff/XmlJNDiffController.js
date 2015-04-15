@@ -58,6 +58,7 @@ Ext.define('LIME.controller.XmlJNDiffController', {
             'jnDiffMainTab doubleDocSelector': {
                 afterrender: function (cmp) {
                     cmp.onSelectedDocsChanged();
+
                     // me.getPagingToolbar().setLength(5);
                 },
 
@@ -79,6 +80,22 @@ Ext.define('LIME.controller.XmlJNDiffController', {
             'jnDiffMainTab': {
                 ready: function (JNDiff) {
                     me.JNDiff = JNDiff;
+
+                    // Test
+                    var a = '/db/wawe_users_documents/aasd.gmail.com/my_documents/uy/bill/2005-04-04/2005-04-04/esp.2005-05-02/esp.2005-05-02%3A00%3A00/1.xml';
+                    var b = '/db/wawe_users_documents/aasd.gmail.com/my_documents/uy/bill/2005-04-04/2005-04-04/esp.2005-05-02/esp.2005-05-02%3A00%3A00/2.xml';
+                    setTimeout(function () {
+                        Server.getDocument(a, function (doc1) {
+                            Server.getDocument(b, function (doc2) {
+                                me.JNDiff.start(doc1, doc2);
+                                // TODO: Add a callback to start method
+                                setTimeout(function () {
+                                    var count = me.JNDiff.getCount();
+                                    me.getPagingToolbar().setLength(count);
+                                }, 2000);
+                            });
+                        });
+                    }, 100)
                 },
 
                 accept: function () {
@@ -87,6 +104,14 @@ Ext.define('LIME.controller.XmlJNDiffController', {
 
                 save: function () {
                     me.JNDiff.save();
+                }
+            },
+
+            'pagingtoolbar': {
+                'changeSelection': function (n) {
+                    console.log('selecting ', n);
+                    if (me.JNDiff)
+                        me.JNDiff.focus(n -1);
                 }
             }
         });

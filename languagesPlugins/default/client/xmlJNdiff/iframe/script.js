@@ -3,7 +3,8 @@ var JNDiff = {
     start: start,
     save: save,
     getCount: getCount,
-    accept: accept
+    accept: accept,
+    focus: focus
 };
 
 function start (original, modified) {
@@ -18,10 +19,12 @@ function start (original, modified) {
         source1: original,
         source2: modified
     }, function (xmlDiff) {
-        console.log('INFINE:', xmlDiff)
-        transform(xmlDiff, JNDiff.modifiedDom);
-        setupModifications(original, modified);
-    }, 'xml');
+        // Hack alert: namespaces are hard/impossible to use from Css/Js
+        // we brutally replace them with a prefix.
+        xmlDiff = xmlDiff.replace(/ndiff:/g, 'ndiff_');
+        transform(parser.parseFromString(xmlDiff, "text/xml"), JNDiff.modifiedDom);
+        setupModifications();
+    }, 'text');
 }
 
 // Transform the input XML DOM in HTML and copy it to output. 
@@ -45,7 +48,7 @@ function transform (input, output) {
         el.className = input.nodeName;
         if (input.hasAttributes && input.hasAttributes())
             for (var i = 0; i < input.attributes.length; i++) {
-                var name = input.attributes[i].name.replace('ndiff:', '');
+                var name = input.attributes[i].name;
                 el.dataset[name] = input.attributes[i].value;
             }
 
@@ -57,12 +60,22 @@ function transform (input, output) {
     default:
         console.log('Unknown node type:', input.nodeType);
     }
-};
+}
 
-
-function setupModifications (original, modified) {
-    console.log('setupModifications', JNDiff, modified);
+function setupModifications () {
+    // console.log('setupModifications', JNDiff, modified);
     JNDiff.accepted = {};
+    JNDiff.count = 0;
+    console.info('Searching for modifications..')
+    $(JNDiff.modifiedDom)
+        .find('.body')
+        .find('.ndiff_editing, *[data-ndiff_status]:not([data-ndiff_status="modified"])')
+        .each(function (i, el) {
+            JNDiff.count++;
+            el.dataset.jndiff_id = i;
+        });
+
+    // $('')
 }
 
 // Output Xml string of AkomaNtoso with passive modifications for accepted
@@ -81,6 +94,27 @@ function getCount () {
 function accept (n) {
     console.info('accepting', n)
     JNDiff.accepted[n] = true;
+}
+
+function focus (n) {
+    console.log('FOCUS N', n);
+    var node = $(JNDiff.modifiedDom).find('*[data-jndiff_id="' + n + '"]')[0];
+    if (node) {
+        var range = document.createRange();
+        range.selectNodeContents(node);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+
+
+        // Scroll to node
+        var offset = $(node).offset().top,
+            wOffset = $(window).scrollTop(),
+            wHeight = window.innerHeight;
+        if(offset < wOffset || offset > wOffset + wHeight)
+            $(window).scrollTop($(node).offset().top);
+
+    }
 }
 
 window.JNDiff = JNDiff;

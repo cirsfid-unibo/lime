@@ -5,7 +5,8 @@ var Preview = {
 
 function start (xml) {
     cloneDoc(xml);
-    setTimeout(calculateLineNumbers, 500);
+    // Todo: test
+    setTimeout(calculateLineNumbers, 0);
 }
 
 function cloneDoc (xml) {

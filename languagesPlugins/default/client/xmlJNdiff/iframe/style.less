@@ -1,4 +1,8 @@
+@import '../../../../../resources/stylesheets/aknVisualizer.less';
+
+
 body, html { padding: 0; margin: 0; }
+
 
 .document.original, .document.modified {
     width: 50%;
@@ -11,167 +15,31 @@ body, html { padding: 0; margin: 0; }
 .document.modified {
     right: 0;
 
-    div[data-status="deleted"] {
-        background-color: hsl(0, 30%, 80%);
-    }
-
-    div[data-status="inserted"] {
-        background-color: hsl(120, 30%, 80%);
-    }
-
-    div[data-status="editing"] {
-        background-color: hsl(60, 30%, 80%);
-    }
-
-    div[data-status="movedFrom"] {
-        background-color: hsl(0, 50%, 70%);
-    }
-
-    div[data-status="movedTo"] {
-        background-color: hsl(120, 50%, 70%);
-    }
-
-
-}
-
-
-@import url(http://fonts.googleapis.com/css?family=Libre+Baskerville|Titillium+Web);
-
-.akomaNtoso {
-    max-width: 1240px;
-    margin: auto;
-    font: 14px/20px 'Libre Baskerville', serif;
-    color: #333;
-    text-align: justify;
-}
-
-.label(@color, @label) {
-
-    padding: 25px 10px 0;
-    margin: 20px 20px 10px;
-
-    &:before {
-        content: @label;
-
-        position: absolute;
-        top: 0px;
-        left: 0px;
-
-        font: 13px/16px 'Titillium Web', sans-serif;
-
+    .ndiff_editing {
         display: inline-block;
-        padding: 0px 6px;
-        border-top-right-radius: 4px;
-        border-bottom-right-radius: 4px;
-        color: white;
-        background-color: hsl(@color, 30%, 40%);
-    }
-}
+        background-color: hsl(60, 80%, 90%);
 
-.mainPart(@color, @label) {
-    .hcontainer(@color);
-    .label(@color, @label);
-    border-color: hsl(@color, 30%, 40%);
-}
-
-.hcontainer(@color) {
-    position: relative;
-    margin: 10px 0;
-    padding: 0 10px;
-    border-left: 4px solid hsl(@color, 30%, 65%);
-
-    >.num {
-        position: relative;
-        color: hsl(@color, 0%, 40%);
-        margin: 8px 0 15px;
-        font-size: 25px;
-        font-weight: bold;
-        display: inline-block;
-    }
-
-    >.heading {
-        position: relative;
-        color: hsl(@color, 0%, 40%);
-        margin-left: 15px;
-        font-size: 13px;
-        font-style: italic;
-        display: inline-block;
-    }
-}
-
-.inline (@color, @label) {
-    border-bottom: 1px solid hsl(@color, 0%, 65%);
-    display: inline-block;
-    position: relative;
-    margin: 5px 0 3px;
-    padding-right: 80px;
-
-    &:before {
-        content: @label;
-        width: 60px;
-        text-align: center;
-
-        font: 13px/16px 'Titillium Web', sans-serif;
-
-        position: absolute;
-        right: 0px;
-        bottom: 0px;
-
-        padding: 0px 4px;
-        border-top-right-radius: 4px;
-        border-top-left-radius: 4px;
-        color: white;
-        background-color: hsl(@color, 0%, 65%);
-    }
-}
-
-.document.original, .document.modified {
-
-    .meta { display:none; }
-
-    .preamble { .mainPart(206, 'preamble'); }
-    .preface { .mainPart(206, 'preface'); }
-    .conclusions { .mainPart(206, 'conclusions'); }
-    .body { .mainPart(50, 'body'); }
-
-    .title { .hcontainer(70); }
-    .section { .hcontainer(90); }
-    .article { .hcontainer(110); }
-
-    // .formula {
-    //     .inline(206, 'formula');
-    //     font-style: italic;
-    // }
-    // .docAuthority { .inline(206, 'authority'); }
-    // .signature {
-    //     .inline(206, 'signature');
-    //     text-align: right;
-    //     margin: 0 5px;
-    // }
-
-
-    .list>.point {
-        margin-top: 15px;
-        position: relative;
-        min-height: 30px;
-
-        >.num {
-            position: absolute;
-            top: 0px;
-            left: 5px;
-            
-            font-size: 17px;
-            font-weight: bold;
-        }
-
-        >.content, >.list {
-            margin-left: 60px;
+        .ndiff_text-edit {
+            margin-left: 5px;
             display: inline-block;
+            border-bottom: 2px solid hsl(120, 60%, 50%);
         }
     }
 
+    div[data-ndiff_status="deleted"] {
+        border-bottom: 2px solid hsl(0, 60%, 50%);
+    }
 
-    .list>.intro {
-        font-style: italic;
+    div[data-ndiff_status="inserted"] {
+        border-bottom: 2px solid hsl(120, 60%, 50%);
+    }
+
+    div[data-ndiff_status="movedFrom"] {
+        border-bottom: 2px solid hsl(0, 60%, 50%);
+    }
+
+    div[data-ndiff_status="movedTo"] {
+        border-bottom: 2px solid hsl(120, 60%, 50%);
     }
 }
+
