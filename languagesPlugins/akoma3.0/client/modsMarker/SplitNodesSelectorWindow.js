@@ -44,66 +44,84 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
-Ext.define('LIME.ux.modsMarker.ModsMarkerWindow', {
-
+Ext.define('LIME.ux.modsMarker.SplitNodesSelectorWindow', {
     extend : 'Ext.window.Window',
+    alias : 'widget.splitWindow',
 
-    alias : 'widget.modsMarkerWindow',
+    requires: ['LIME.ux.modsMarker.NodesGrid'],
 
     layout : 'card',
 
-    draggable : true,
+    width: 400,
 
-    border : false,
+    bbar: [{
+        itemId: 'move-prev',
+        text: 'Back',
+        disabled: true,
+        handler: function(btn) {
+            btn.up('window').navigate(btn.up("panel"), "prev");
+        }
+    },'->',{
+        itemId: 'move-next',
+        text: 'Next',
+        handler: function(btn) {
+            btn.up('window').navigate(btn.up("panel"), "next");
+        }
+    },{
+        itemId: 'accept',
+        disabled: true,
+        text : Locale.getString("ok"),
+        icon : 'resources/images/icons/accept.png'
+    }],
 
-    modal : false,
+    initComponent: function() {
+        this.title = 'Select elements to split';
+        this.items = [{
+                xtype: 'nodesGrid',
+                winTitle: 'Select the element to split',
+                itemId: 'toSplit',
+                flex: 1
+        }, {
+            xtype: 'nodesGrid',
+            winTitle: 'Select the splitted elements',
+            itemId: 'splitted',
+            flex: 1
+        }];
 
-    title : Locale.getString("windowTitle", "modsMarker"),
-
-    width : 605,
-
-    /**
-     * Return the data set in the view
-     * @return {Object} An object containing the key-value pairs in the form
-     */
-    getData : function() {
-        var form = this.down('form[itemId=step1]').getForm();
-        if (!form.isValid())
-            return null;
-        return form.getValues(false, false, false, true);
+        this.callParent(arguments);
     },
-    
-    setData: function(data) {
-        var form = this.down('form[itemId=step1]').getForm();
-        form.setValues(data);
+
+    navigate : function(panel, direction){
+        var layout = panel.getLayout();
+        layout[direction]();
+        panel.down('[itemId=move-prev]').setDisabled(!layout.getPrev());
+        panel.down('[itemId=move-next]').setDisabled(!layout.getNext());
+        panel.down('[itemId=accept]').setDisabled(layout.getNext());
     },
 
-    items : [{
-        xtype : 'form',
-        frame : true,
-        padding : '10px',
-        layout : 'anchor',
-        defaults : {
-            anchor : '100%'
-        },
-
-        defaultType : 'textfield',
-        items : [{
-            name: "selection",
-            fieldLabel: 'Selection'
-        }],
-
-        dockedItems : [{
-            xtype : 'toolbar',
-            dock : 'bottom',
-            ui : 'footer',
-            items : ['->', {
-                xtype : 'button',
-                cls: 'createDocumentCollection',
-                minWidth : 100,
-                text : Locale.getString("ok")
-            }]
-        }]
-    }]
+    getNodesGridConfig: function() {
+        return {
+            xtype: 'gridpanel',
+            store: Ext.create('Ext.data.Store', {
+                fields:['name', 'content', 'id', 'eId'],
+                data: []
+            }),
+            columns: [
+                { text: 'Name',  dataIndex: 'name' },
+                { text: 'Content', dataIndex: 'content', flex: 1 }, {
+                    xtype : 'actioncolumn',
+                    width : 30,
+                    sortable : false,
+                    menuDisabled : true,
+                    items : [{
+                        icon : 'resources/images/icons/delete.png',
+                        tooltip : 'Remove',
+                        handler : function(grid, rowIndex) {
+                            grid.getStore().removeAt(rowIndex);
+                        }
+                    }]
+                }
+            ]
+        };
+    }
 });

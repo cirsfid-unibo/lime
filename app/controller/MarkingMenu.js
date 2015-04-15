@@ -420,7 +420,7 @@ Ext.define('LIME.controller.MarkingMenu', {
      */
     expandButtons : function(node) {
         var me = this, markingMenu = this.getMarkingMenu(), markingId, relatedButton;
-
+        Ext.suspendLayouts();
         if ( node ) {
             markingId = node.getAttribute(DomUtils.elementIdAttribute);
             relatedButton = me.getTreeButton(DomUtils.getButtonIdByElementId(markingId));
@@ -466,6 +466,7 @@ Ext.define('LIME.controller.MarkingMenu', {
                 me.expandedPath = null;
             }
         }
+        Ext.resumeLayouts(true);
     },
 
     getTreeButton: function(id) {

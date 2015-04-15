@@ -97,6 +97,7 @@ Ext.define('LIME.controller.Outliner', {
         parents.push(DomUtils.getFirstMarkedAncestor(node));
         parents = Ext.Array.unique(parents);
 
+        Ext.suspendLayouts();
         Ext.each(parents, function(parent) {
             var treeNode = me.getTreeNodeFromDomNode(root, parent);
             if ( treeNode && !treeNode.hasChildNodes() && parent.querySelector('['+DomUtils.elementIdAttribute+']') ) {
@@ -109,6 +110,7 @@ Ext.define('LIME.controller.Outliner', {
                 nodeToSelect = treeNode;
             }
         });
+        Ext.resumeLayouts(true);
 
         if ( nodeToSelect ) {
             //select the node
@@ -269,17 +271,14 @@ Ext.define('LIME.controller.Outliner', {
                     nodeIter = nodeIter.parentNode;
                 }
                 var rawData;
-
                 if (nodeBuild) {
                     data = me.createTreeDataNew(nodeBuild, depth);
                 } else {
                     data = me.createTreeDataNew(node, depth);
                 }
-
                 if (!Ext.isArray(data)) {
                     data = [data];
                 }
-
                 Ext.each(data, function(dataNode, index) {
                     var storedNode = root.findChild('cls', dataNode.cls, true);
                     if (!storedNode) {
@@ -303,8 +302,10 @@ Ext.define('LIME.controller.Outliner', {
         config = config || {};
         if(treeView) {
             treeView.setLoading(true);
+            Ext.suspendLayouts();
             Ext.defer(function() {
                 me.buildTree(node, type);
+                Ext.resumeLayouts(true);
                 treeView.setLoading(false);
                 Ext.callback(config.callback);
             }, 5);

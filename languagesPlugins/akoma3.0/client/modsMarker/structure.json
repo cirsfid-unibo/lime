@@ -1,4 +1,4 @@
 {
-	"views": ["ModsMarkerWindow"],
+	"views": ["NodesGrid", "ModsMarkerWindow", "SplitNodesSelectorWindow"],
 	"controllers": ["ModsMarkerController"]
 }

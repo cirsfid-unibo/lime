@@ -47,7 +47,7 @@
 Ext.define('LIME.controller.ModsMarkerController', {
     extend : 'Ext.app.Controller',
 
-    views : ['LIME.ux.modsMarker.ModsMarkerWindow'],
+    views : ['LIME.ux.modsMarker.ModsMarkerWindow', 'LIME.ux.modsMarker.SplitNodesSelectorWindow'],
 
     refs : [{
         ref : 'contextMenu',
@@ -61,6 +61,12 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },{
         selector: 'modsMarkerWindow textfield[name=selection]',
         ref: 'selectionField'
+    },{
+        ref : 'mainEditor',
+        selector : '#mainEditor mainEditor'
+    }, {
+        ref: 'secondEditor',
+        selector: '#secondEditor mainEditor'
     }],
     
     config: {
@@ -77,6 +83,46 @@ Ext.define('LIME.controller.ModsMarkerController', {
         this.control({
             '#secondEditor mainEditor' : {
                 click: me.secondEditorClickHandler
+            },
+            'splitWindow': {
+                close: function() {
+                    me.getMainEditor().unmask();
+                    me.getSecondEditor().unmask();
+                }
+            },
+            'splitWindow grid': {
+                activate: function(cmp) {
+                    var firstEditor = me.getMainEditor(),
+                        secondEditor = me.getSecondEditor();
+
+                    cmp.up('window').setTitle(cmp.winTitle);
+                    if ( cmp.itemId == 'toSplit' ) {
+                        firstEditor.mask();
+                        secondEditor.unmask();
+                    } else {
+                        secondEditor.mask();
+                        firstEditor.unmask();
+                    }
+                }
+            },
+            'splitWindow [itemId=accept]': {
+                click: function(btn) {
+                    var secondMeta = me.getSecondEditor().up().up().metaConf,
+                        cmp = btn.up('window'),
+                        dataToSplit = me.getNodeDataFromGrid(cmp.down('[itemId=toSplit]')),
+                        splittedNodes = me.getNodeDataFromGrid(cmp.down('[itemId=splitted]')).map(function(data) {
+                            return data.node;
+                        });
+
+                    if ( splittedNodes.length && dataToSplit.length ) {
+                        me.setSplitNodesStyle(splittedNodes);
+                        me.setSplitMetadata(dataToSplit[0].node, secondMeta, splittedNodes);
+                        btn.up('window').close();
+                    } else {
+                        Ext.MessageBox.alert("Error", 'Not enough elements selected');
+                        console.warn('Not enough elements selected');
+                    }
+                }
             }
         });
     },
@@ -1338,7 +1384,91 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },
 
     splitHandlerB: function(button) {
-        //TODO
+        var me = this,
+            editor = me.getController("Editor"),
+            body = document.querySelector('body');
+
+        var winCmp = Ext.widget('splitWindow').show().center();
+
+        me.editorClickHandlerCustom = function(node, ed) {
+            if ( !node ) return;
+            var markButton = DocProperties.getFirstButtonByName(DomUtils.getNameByNode(node)),
+                body = ed.getBody();
+
+            if ( markButton && winCmp && winCmp.isVisible() && winCmp.down('[itemId=splitted]').isVisible() ) {
+                var grid = winCmp.down('[itemId=splitted]');
+                var toSplitGrid = winCmp.down('[itemId=toSplit]');
+                var selectedToSplit = toSplitGrid.editor.getBody().querySelector('['+DomUtils.elementIdAttribute+'='+toSplitGrid.store.getAt(0).get('id')+']');
+                var toSplitButton = DocProperties.getFirstButtonByName(DomUtils.getNameByNode(selectedToSplit));
+                grid.editor = ed;
+
+                if ( markButton.name != toSplitButton.name ) {
+                    Ext.Msg.alert(Locale.strings.error, 'You have to select "'+toSplitButton.name+'" element');
+                    return;
+                }
+
+                if ( !grid.store.getCount() ) {
+                    editor.unFocusNodes(false, body);
+                } else {
+                    var firstNode = body.querySelector('['+DomUtils.elementIdAttribute+'='+grid.store.getAt(0).get('id')+']');
+                    if ( firstNode && DomUtils.getSiblingsFromNode(firstNode).indexOf(node) == -1 ) {
+                        Ext.Msg.alert(Locale.strings.error, "You can split only sibling nodes");
+                        return;
+                    }
+                }
+
+                editor.setFocusStyle(node);
+
+                grid.store.loadData([{
+                    name: markButton.shortLabel,
+                    content: node.textContent,
+                    id: node.getAttribute(DomUtils.elementIdAttribute),
+                    eId: node.getAttribute(Language.getAttributePrefix()+'eid')
+                }], true);
+            }
+        };
+
+        me.secondEditorClickHandlerCustom = function(node, evt, ed) {
+            if ( !node ) return;
+            var markButton = DocProperties.getFirstButtonByName(DomUtils.getNameByNode(node)),
+                body = ed.getBody();
+            if ( markButton && winCmp && winCmp.isVisible() && winCmp.down('[itemId=toSplit]').isVisible() ) {
+                var grid = winCmp.down('[itemId=toSplit]');
+                editor.unFocusNodes(false, body);
+                editor.setFocusStyle(node);
+                grid.editor = ed;
+
+                grid.store.loadData([{
+                    name: markButton.shortLabel,
+                    content: node.textContent,
+                    id: node.getAttribute(DomUtils.elementIdAttribute),
+                    eId: node.getAttribute(Language.getAttributePrefix()+'eid')
+                }]);
+            }
+        };
+    },
+
+    getNodeDataFromGrid: function(grid) {
+        var data = [];
+        grid.store.each(function(record) {
+            var node = (grid.editor) ? grid.editor.getBody().querySelector('['+DomUtils.elementIdAttribute+'='+record.get('id')+']') : null;
+            data.push({
+                id: record.get('id'),
+                langId: record.get('eId'),
+                node: node
+            });
+        });
+        return data;
+    },
+
+    setSplitNodesStyle: function(nodes) {
+        var button = DomUtils.getButtonByElement(nodes[0]);
+        this.setElementStyles(nodes, button, button, {
+            shortLabel: button.shortLabel+" "+Locale.getString("splitted", this.getPluginName()),
+            modType: this.getSplitAttr(),
+            elementStyle: "",
+            labelStyle: "background-color: #75d6ff; border: 1px solid #44b4d5;"
+        });
     },
 
     getRadioSelectedValue: function(name) {
@@ -1377,7 +1507,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     nodes : [newElement]
                 });
                 if(initialSplitNode == node) {
-                    me.setSplitMetadata(node, newElement);
+                    me.setSplitMetadata(node, null, [node, newElement]);
                 }
             }
         } else if(node.compareDocumentPosition(posNode) & Node.DOCUMENT_POSITION_CONTAINED_BY) {
@@ -1386,7 +1516,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         }
     },
     
-    setSplitMetadata: function(node1, node2) {
+    setSplitMetadataB: function(node1, node2) {
         var me = this,
             editorMeta = me.getDocumentMetadata(),
             langPrefix = editorMeta.langPrefix,
@@ -1450,51 +1580,167 @@ Ext.define('LIME.controller.ModsMarkerController', {
         textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
         passiveModifications.appendChild(textualMod);   
     },
+
+    setSplitMetadata: function(prevNode, prevMeta, nodes) {
+        var me = this,
+            editorMeta = me.getDocumentMetadata();
+
+        prevMeta = prevMeta || editorMeta.metadata.obj;
+
+        var lpre = editorMeta.langPrefix,
+            language = me.getController("Language"),
+            metaDom = editorMeta.metadata.originalMetadata.metaDom,
+            passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
+            prevId = language.nodeGetLanguageAttribute(prevNode, "eId").value || prevNode.getAttribute(DomUtils.elementIdAttribute),
+            expressionThis = prevMeta.identification && 
+                            prevMeta.identification.FRBRExpression && 
+                            prevMeta.identification.FRBRExpression.FRBRthis;
+
+        var prevId = (expressionThis && expressionThis.attr.value)
+                ? expressionThis.attr.value+"#"+prevId : "#"+prevId;
+
+        var children = [{
+                name: "source",
+                attributes: [{
+                    name: lpre+"href",
+                    value: " "
+                }]
+            }];
+
+        children = children.concat(nodes.map(function(node) {
+            return {
+                name : "destination",
+                attributes : [{
+                    name : lpre + "href",
+                    value : "#" + node.getAttribute(DomUtils.elementIdAttribute)
+                }]
+            };
+        }));
+
+        children = children.concat([{
+            name: "previous",
+            attributes: [{
+                name: lpre+"href",
+                value: prevId
+            },{
+                name: lpre+"showAs",
+                value: "previous"
+            }]
+        }, {
+            name: "old",
+            attributes: [{
+                name: lpre+"href",
+                value: prevId
+            }]
+        }]);
+            
+        textModObj = {
+            name: "textualMod",
+            attributes: [{
+                name: "type",
+                value: "split"
+            },{
+                name: "period",
+                value: "#"
+            },{
+                name: "eId",
+                value: me.getTextualModId(passiveModifications)
+            }],
+            children: children
+        };
+
+        textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
+        passiveModifications.appendChild(textualMod);   
+    },
     
     joinHandler: function(button) {
-        var me = this, editor = me.getController("Editor"),
-            selection = editor.getSelectionObject(null, null, true),
-            language = me.getController("Language"),
-            start = DomUtils.getFirstMarkedAncestor(selection.start),
-            end = DomUtils.getFirstMarkedAncestor(selection.end),
-            node = DomUtils.getFirstMarkedAncestor(selection.node),
-            button, iternode, toUnmark = [], joinedData = [];
-        
-        if(start && end && node && start != end && start.parentNode == node && end.parentNode == node) {
-            button = DomUtils.getButtonByElement(start);
-            if(button) {
-                joinedData.push({
-                    id: start.getAttribute(DomUtils.elementIdAttribute),
-                    langId: language.nodeGetLanguageAttribute(start, "eId").value
+        var me = this, editor = me.getController("Editor");
+
+        var onClose = function(cmp) {
+            cmp.close();
+        };
+
+        var winCmp = me.createAndShowFloatingForm(editor.getBody(), 'Select the elements to join', false, false, function(cmp) {
+            var grid = cmp.down('[itemId=toJoin]');
+            grid.editor = editor;
+            var joinData = me.getNodeDataFromGrid(cmp.down('[itemId=toJoin]'));
+
+            if ( joinData.length ) {
+                var siblings = Ext.Array.toArray(joinData[0].node.parentNode.children);
+                joinData.sort(function(a, b) {
+                    return siblings.indexOf(a.node) - siblings.indexOf(b.node);
                 });
-                iternode = start.nextElementSibling;
+                var startNode = joinData[0].node;
+                var endNode = joinData[joinData.length-1].node;
+                var button = DomUtils.getButtonByElement(startNode);
+                startNode.setAttribute(me.getJoinAttr(), "true");
+
+                var iternode = startNode.nextElementSibling;
                 while(iternode) {
-                    DomUtils.moveChildrenNodes(iternode, start, true);
-                    if(DomUtils.getButtonByElement(iternode)) {
-                        joinedData.push({
-                            id: iternode.getAttribute(DomUtils.elementIdAttribute),
-                            langId: language.nodeGetLanguageAttribute(iternode, "eId").value
-                        });
-                        toUnmark.push(iternode);    
-                    }
-                    if(iternode == end) {
+                    DomUtils.moveChildrenNodes(iternode, startNode, true);
+                    if(iternode == endNode) {
                         break;
                     }
                     iternode = iternode.nextElementSibling;
                 }
-                start.setAttribute(me.getJoinAttr(), "true");
-                me.setElementStyles([start], button, button, {
+                me.setElementStyles([startNode], button, button, {
                     shortLabel: button.shortLabel+" "+Locale.getString("joined", me.getPluginName()),
                     modType: me.getJoinAttr(),
                     elementStyle: "",
                     labelStyle: "background-color: #75d6ff; border: 1px solid #44b4d5;"
                 });
+                var toUnmark = joinData.map(function(data) {
+                    return data.node;
+                }).slice(1);
                 me.application.fireEvent(Statics.eventsNames.unmarkNodes, toUnmark);
-                me.setJoinMetadata(start, joinedData);
+                me.setJoinMetadata(startNode, joinData);
+                onClose(cmp);
+            } else {
+                Ext.MessageBox.alert("Error", 'Not enough elements selected');
+                console.warn('Not enough elements selected');
             }
-        } else {
-            Ext.MessageBox.alert("Error", "Select more than one siblings!");
-        } 
+        }, onClose, {
+            items : [{
+                xtype: 'nodesGrid',
+                itemId: 'toJoin'
+            }],
+            width: 400
+        }).center();
+
+
+        me.editorClickHandlerCustom = function(node, ed) {
+            if ( !node ) return;
+            var markButton = DocProperties.getFirstButtonByName(DomUtils.getNameByNode(node)),
+                body = ed.getBody();
+
+            if ( markButton && winCmp && winCmp.isVisible() && winCmp.down('[itemId=toJoin]').isVisible() ) {
+                var grid = winCmp.down('[itemId=toJoin]');
+
+                if ( !grid.store.getCount() ) {
+                    editor.unFocusNodes(false, body);
+                } else {
+                    var firstNode = body.querySelector('['+DomUtils.elementIdAttribute+'='+grid.store.getAt(0).get('id')+']');
+                    var toJoinButton = DocProperties.getFirstButtonByName(DomUtils.getNameByNode(firstNode));
+                    if ( markButton.name != toJoinButton.name ) {
+                        Ext.Msg.alert(Locale.strings.error, 'You have to select "'+toJoinButton.name+'" element');
+                        return;
+                    }
+                    if ( firstNode && DomUtils.getSiblingsFromNode(firstNode).indexOf(node) == -1 ) {
+                        Ext.Msg.alert(Locale.strings.error, "You can split only sibling nodes");
+                        return;
+                    }
+                }
+
+                editor.setFocusStyle(node);
+
+                grid.store.loadData([{
+                    name: markButton.shortLabel,
+                    content: node.textContent,
+                    id: node.getAttribute(DomUtils.elementIdAttribute),
+                    eId: node.getAttribute(Language.getAttributePrefix()+'eid')
+                }], true);
+            }
+        };
     },
 
     joinHandlerB : function(button) {
@@ -1572,32 +1818,6 @@ Ext.define('LIME.controller.ModsMarkerController', {
         }
     },
 
-    getNodesGridConfig: function() {
-        return {
-            xtype: 'gridpanel',
-            store: Ext.create('Ext.data.Store', {
-                fields:['name', 'content', 'id', 'eId'],
-                data: []
-            }),
-            columns: [
-                { text: 'Name',  dataIndex: 'name' },
-                { text: 'Content', dataIndex: 'content', flex: 1 }, {
-                    xtype : 'actioncolumn',
-                    width : 30,
-                    sortable : false,
-                    menuDisabled : true,
-                    items : [{
-                        icon : 'resources/images/icons/delete.png',
-                        tooltip : 'Remove',
-                        handler : function(grid, rowIndex) {
-                            grid.getStore().removeAt(rowIndex);
-                        }
-                    }]
-                }
-            ]
-        };
-    },
-    
     setJoinMetadata: function(joinedNode, joinedData) {
         var me = this,
             editorMeta = me.getDocumentMetadata(),
@@ -2230,6 +2450,8 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 Ext.log({level: "error"}, e);
             }
         }
+        
+        Ext.callback(this.editorClickHandlerCustom, this, [node, me.getController("Editor").getEditor()]);
     },
     
     nodesUnmarked: function(nodesIds) {
