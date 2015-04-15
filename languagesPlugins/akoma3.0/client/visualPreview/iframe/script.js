@@ -5,6 +5,7 @@ var Preview = {
 
 function start (xml) {
     cloneDoc(xml);
+    setTimeout(calculateLineNumbers, 500);
 }
 
 function cloneDoc (xml) {
@@ -24,7 +25,10 @@ function transform (input, output) {
     case 3: // Text
         var text = input.wholeText.trim();
         if(text) {
-            output.appendChild(document.createTextNode(text));
+            var el = document.createElement('span');
+            el.className = 'fragment';
+            el.appendChild(document.createTextNode(text));
+            output.appendChild(el);
         }
         break;
  
@@ -49,4 +53,86 @@ function transform (input, output) {
     }
 };
 
+function calculateLineNumbers () {
+    getAllFragments()
+        .sort(startingOrder)
+        .filter(getOverlappingLinesFilter())
+        .reduce(displayLineNumbers, 0);
+}
+
+function getAllFragments () {
+    return $(Preview.dom).find('.body .fragment').map(function () {
+        var top = $(this).offset().top,
+            height = this.getBoundingClientRect().height;
+        return {
+            node: this,
+            start: top,
+            end: top + height,
+            lines: countLines(this)
+        }
+    }).toArray();
+}
+
+function startingOrder (a, b) {
+    return (a.start - b.start) || (b.end - a.end);
+}
+
+// Possible bug: this greedy algorithm assumes bigger elements are before
+function getOverlappingLinesFilter () {
+    var pos = 0;
+    return function (fragment, index, fragments) {
+        var res = fragment.start >= pos;
+        pos = Math.max(pos, fragment.end);
+        return res;
+    }
+}
+
+// Return the number of lines the fragment spans.
+function countLines (node) {
+    var lineHeight = parseInt($(node).css('line-height'), 10),
+        height = $(node).height();
+    if (height != 0)
+        return height/lineHeight + (height%lineHeight > 0);
+    else
+        return 1;
+}
+
+// Display line number every 5 lines
+function displayLineNumbers (currentLine, fragment) {
+    var N = 5;
+    var step = $(fragment.node).height() / fragment.lines;
+
+    for (var line = currentLine + 1; line <= currentLine + fragment.lines; line++) {
+        if ((line % N) == 0) {
+            var el = $('<div>' + line + '</div>');
+            $('#lineNumbers').append(el);
+
+            var offset = fragment.start + step * (line - currentLine -1);
+            el.offset({
+                top: offset
+            });
+        }
+    }
+    return currentLine + fragment.lines;
+}
+
+function highlight (fragment) {
+    $(fragment.node).css('background-color', '#afa');
+}
+
 window.Preview = Preview;
+
+
+$(document).ready(function () {
+    function inIframe () {
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
+    }
+    if (!inIframe())
+        $.get('./example.xml', undefined, function (value) {
+            Preview.start(value);
+        }, 'text');
+});
