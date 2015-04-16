@@ -75,11 +75,13 @@ Ext.define('LIME.ux.xmlJNdiff.JNdiffMainTab', {
         listeners: {
             'beforerender': function () {
                 this.add({
-                    xtype: 'button',
-                    text: 'Accept',
-                    handler: function () {
-                        this.up('jnDiffMainTab').fireEvent('accept');
-                    }
+                    xtype: 'segmentedbutton',
+                    value: 'pending',
+                    items: [
+                        { text: 'Accepted', value: 'accepted'},
+                        { text: 'Rejected', value: 'rejected'},
+                        { text: 'Pending', value: 'pending'}
+                    ]
                 });
                 this.add({
                     text: 'Save',

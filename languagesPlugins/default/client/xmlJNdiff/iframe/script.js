@@ -4,6 +4,9 @@ var JNDiff = {
     save: save,
     getCount: getCount,
     accept: accept,
+    reject: reject,
+    reset: reset,
+    getStatus: getStatus,
     focus: focus
 };
 
@@ -64,7 +67,6 @@ function transform (input, output) {
 
 function setupModifications () {
     // console.log('setupModifications', JNDiff, modified);
-    JNDiff.accepted = {};
     JNDiff.count = 0;
     console.info('Searching for modifications..')
     $(JNDiff.modifiedDom)
@@ -74,15 +76,13 @@ function setupModifications () {
             JNDiff.count++;
             el.dataset.jndiff_id = i;
         });
-
-    // $('')
 }
 
 // Output Xml string of AkomaNtoso with passive modifications for accepted
 // modifications
 function save () {
     var output = '';
-    console.log(JNDiff.accepted);
+    console.log('SAVE');
     return output;
 }
 
@@ -93,11 +93,33 @@ function getCount () {
 // Accept the -nth modification
 function accept (n) {
     console.info('accepting', n)
-    JNDiff.accepted[n] = true;
+    getModification(n).dataset.jndiff_status = 'accepted';
 }
 
+// Reject the -nth modification
+function reject (n) {
+    console.info('rejecting', n)
+    getModification(n).dataset.jndiff_status = 'rejected';
+}
+
+// Set the -nth modification as pending
+function reset (n) {
+    console.info('resetting', n)
+    getModification(n).dataset.jndiff_status = '';
+}
+
+// Get the -nth modification status ('accepted'/'rejected'/'pending')
+function getStatus (n) {
+    return getModification(n).dataset.jndiff_status || 'pending';    
+}
+
+// Get the n-th modification node
+function getModification (n) {
+    return $(JNDiff.modifiedDom).find('*[data-jndiff_id="' + n + '"]')[0];
+}
+
+// Select -nth modification and scroll to it.
 function focus (n) {
-    console.log('FOCUS N', n);
     var node = $(JNDiff.modifiedDom).find('*[data-jndiff_id="' + n + '"]')[0];
     if (node) {
         var range = document.createRange();

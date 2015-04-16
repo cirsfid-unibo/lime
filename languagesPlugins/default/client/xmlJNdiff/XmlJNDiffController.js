@@ -48,7 +48,8 @@ Ext.define('LIME.controller.XmlJNDiffController', {
     extend: 'Ext.app.Controller',
 
     refs : [
-        { ref: 'pagingToolbar', selector: 'pagingtoolbar' }
+        { ref: 'pagingToolbar', selector: 'pagingtoolbar' },
+        { ref: 'statusButtons', selector: 'segmentedbutton' },
     ],
 
     init: function() {
@@ -98,10 +99,6 @@ Ext.define('LIME.controller.XmlJNDiffController', {
                     }, 100)
                 },
 
-                accept: function () {
-                    me.JNDiff.accept(me.getPagingToolbar().store.currentPage);
-                },
-
                 save: function () {
                     me.JNDiff.save();
                 }
@@ -110,14 +107,35 @@ Ext.define('LIME.controller.XmlJNDiffController', {
             'pagingtoolbar': {
                 'changeSelection': function (n) {
                     console.log('selecting ', n);
-                    if (me.JNDiff)
-                        me.JNDiff.focus(n -1);
+                    var modification = n-1;
+                    if (me.JNDiff) {
+                        me.JNDiff.focus(modification);
+                        var status = me.JNDiff.getStatus(modification);
+                        console.log('setting status', modification, status);
+                        me.getStatusButtons().setValue(status);
+                    }
+                }
+            },
+
+            'segmentedbutton': {
+                'toggle': function (button) {
+                    var modification = me.getPagingToolbar().store.currentPage -1;
+                    console.log('toggle', modification, button.getValue())
+                    switch (button.getValue()) {
+                        case 'accepted':
+                            me.JNDiff.accept(modification);
+                            break;
+                        case 'rejected':
+                            me.JNDiff.reject(modification);
+                            break;
+                        case 'pending':
+                            me.JNDiff.reset(modification);
+                            break;
+                    }
                 }
             }
         });
     },
-
-
 });
 
 
