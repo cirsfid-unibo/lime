@@ -44,7 +44,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('LIME.ux.translation.VisualPreviewMainTab', {
+Ext.define('AknTabVisualizer.view.VisualPreviewMainTab', {
     extend: 'Ext.panel.Panel',
 
     alias: 'widget.visualPreviewMainTab',
@@ -60,12 +60,12 @@ Ext.define('LIME.ux.translation.VisualPreviewMainTab', {
     layout: {
         type: 'vbox',
         align : 'stretch',
-        pack  : 'start',
+        pack  : 'start'
     },
 
     items: [{
         xtype: 'uxiframe',
-        src: 'languagesPlugins/akoma3.0/client/visualPreview/iframe/index.html',
+        src: '',
         flex: 1,
         listeners: {
             'load': function () {
@@ -74,12 +74,18 @@ Ext.define('LIME.ux.translation.VisualPreviewMainTab', {
                     win = this.getWin(),
                     Preview = win.Preview;
                 mainCmp.fireEvent('ready', Preview);
+            },
+            'afterRender': function () {
+                Server.getResourceFile('iframe/index.html', 'akn-tab-visualizer', function (data, path) {
+                    console.log('hello ' path);
+                    this.load(path);
+                });
             }
         }
     }],
 
     initComponent: function () {
-        this.title = Locale.getString('tabTitle', 'visualPreview');
+        this.title = Locale.getString('tabTitle', 'akn-tab-visualizer');
         this.callParent(arguments);
     }
 });

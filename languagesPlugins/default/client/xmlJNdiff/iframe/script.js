@@ -33,9 +33,6 @@ function start (original, modified) {
 // Transform the input XML DOM in HTML and copy it to output. 
 // Split text nodes in fragments.
 function transform (input, output) {
-    // Don't split in fragments inside the following tags
-    var noSplitTags = ['num', 'heading', 'subheading'];
-
     switch (input.nodeType) {
     case 3: // Text
         var text = input.wholeText.trim();

@@ -1,5 +1,8 @@
 {
     "name": "LIME",
+    "requires": [
+        "akn-tab-visualizer"
+    ],
     "framework": "ext",
     "css": [
         {

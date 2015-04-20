@@ -44,32 +44,16 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('LIME.controller.VisualPreviewMainTabVController', {
-    extend: 'Ext.app.ViewController',
-    
-    alias: 'controller.visualPreviewMainTabVController',
 
-    init: function () {
-        var me = this;
-        this.control({
-            '#': {
-                activate: function (cmp) {
+Ext.define('AknTabVisualizer.Application', {
+    override: 'LIME.Application',
 
-                },
+    requires: [
+        'AknTabVisualizer.view.VisualPreviewMainTab'
+    ],
 
-                ready: function (Preview){
-                    me.Preview = Preview;
-                    me.loadDocument();
-                },
-            },
-        });
-    },
-
-    loadDocument: function () {
-        var me = this,
-            id = DocProperties.documentInfo.docId;
-        Server.getDocument(id, function (xml) {
-            me.Preview.start(xml);
-        })
+    initControllers : function() {
+        Locale.getPackageStrings('akn-tab-visualizer');
+        this.callParent();
     }
 });

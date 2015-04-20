@@ -127,8 +127,8 @@ Ext.define('LIME.Server', {
     // Export a document from Exist to a url 
     export: function (paths, success, failure) {
         var params = {
-            requestedService: 'EXPORT_FILES',
-        }
+            requestedService: 'EXPORT_FILES'
+        };
 
         paths.forEach(function (path, i) {
             params['doc' + (i+1)] = path;
@@ -155,6 +155,62 @@ Ext.define('LIME.Server', {
             failure: failure || function (error) {
                 console.warn('Error exporting files', error);
             }
+        });
+    },
+
+    // Given a list of urls, return the ones which exist.
+    // Parameters:
+    // - reqUrls: list of relative urls
+    // - content: auto-read response ... 
+    // Check (Server-side) which file exist and return them (If 'content' param is set to true)
+    // Example reqUrls: [{"name":"patterns","url":"config/Patterns.json"},
+    filterUrls: function(reqUrls, content, success, failure, scope) {
+        var params = {
+            requestedService: Statics.services.filterUrls,
+            urls: Ext.encode(reqUrls)
+        };
+        if(content) {
+            params = Ext.merge(params, {content: true});
+        }
+        Ext.Ajax.request({
+            // the url of the web service
+            url: Utilities.getAjaxUrl(),
+            method: 'POST',
+            params: params,
+            scope: this,
+            success: function(result, request) {
+                var newUrls  = Ext.decode(result.responseText, true);
+                if (Ext.isFunction(success) && newUrls) {
+                    Ext.bind(success, scope)(newUrls);
+                } else if(Ext.isFunction(failure)) {
+                    Ext.bind(failure, scope)(reqUrls);
+                }
+            },
+            failure: function() {
+                if (Ext.isFunction(failure)) {
+                    Ext.bind(failure, scope)(reqUrls);
+                }
+            }
+        });
+    },
+
+    // Execute callback on the resource file found on path for the
+    // given package name.
+    // We must detect whether we're in a build environment or a dev one.
+    getResourceFile: function (file, packageName, success, failure) {
+        var possiblePaths = [
+            'packages/' + packageName + '/resources/' + file, // Dev mode
+            'resources/' + packageName + '/' + file // Build mode
+        ];
+        possiblePaths.forEach(function (path) {
+            Ext.Ajax.request({
+                url: path,
+                success: function (response) {
+                    var data = Ext.decode(response.responseText, true);
+                    success(path, data);
+                },
+                failure: failure
+            });     
         });
     }
 });

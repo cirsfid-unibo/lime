@@ -1,4 +1,0 @@
-{
-    "views": ["VisualPreviewMainTab"],
-    "controllers": ["VisualPreviewMainTabVController"]
-}

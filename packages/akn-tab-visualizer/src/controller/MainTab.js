@@ -44,73 +44,32 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('LIME.Locale', {
-    singleton : true,
-    alternateClassName : 'Locale',
+Ext.define('AknTabVisualizer.controller.MainTab', {
+    extend: 'Ext.app.ViewController',
+    
+    alias: 'controller.visualPreviewMainTabVController',
 
-	config: {
-		lang : 'en',
-		defaultLang: 'en'
-	},
-	
-	strings: {},
-	pStrings: {},
+    init: function () {
+        var me = this;
+        this.control({
+            '#': {
+                activate: function (cmp) {
 
-    constructor: function() {
-		this.detectLanguage();
-        this.initConfig();
-		this.loadLanguage();
-    },
-    
-    setPluginStrings: function(name, strings) {
-        this.pStrings[name] = strings;
-    },
+                },
 
-    // Load strings from the strings.json file in the given package.
-    getPackageStrings: function(packageName) {
-        Server.getResourceFile('strings.json', packageName, function (path, data) {
-            console.info('Loaded', packageName, 'from', path, data);
-            Locale.setPluginStrings(packageName, data);            
-        });
-    },
-    
-    getString: function(name, scope) {
-        if (scope && this.pStrings[scope]) {
-            if(this.pStrings[scope][this.getLang()])
-                return this.pStrings[scope][this.getLang()][name] || name;
-                
-            if(this.pStrings[scope][this.getDefaultLang()])
-                return this.pStrings[scope][this.getDefaultLang()][name] || name;
-        }
-        return this.strings[name];
-    },
-    
-    detectLanguage : function() {
-        var lang = Ext.urlDecode(window.location.search.substring(0)).lang;
-        if (!(lang == null || lang == undefined || Ext.isEmpty(lang))) {
-            this.initConfig({lang : lang.toLowerCase()});
-        }
-    },
-    
-    loadLanguage: function() {
-        var langUrl = 'config/locale/lang-'+this.config.lang+'.json';
-        var extLangUrl = 'config/locale/ext/ext-lang-'+this.config.lang+'.js';
-        Ext.Ajax.request({
-            url : langUrl,
-            async: false,
-            scope: this,
-            success : function(response, opts) {
-                try {
-                    this.strings = Ext.decode(response.responseText);
-                } catch(e) {
-                    alert("Fatal error on loading localization files");
+                ready: function (Preview){
+                    me.Preview = Preview;
+                    me.loadDocument();
                 }
-            },
-            failure : function(response, opts) {
-                alert("Fatal error on loading localization files");
             }
         });
-        
-        Ext.Loader.loadScript({url : extLangUrl});
+    },
+
+    loadDocument: function () {
+        var me = this,
+            id = DocProperties.documentInfo.docId;
+        Server.getDocument(id, function (xml) {
+            me.Preview.start(xml);
+        })
     }
 });

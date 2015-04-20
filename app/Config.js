@@ -210,7 +210,7 @@ Ext.define('LIME.Config', {
             });
 
             if(!Ext.isEmpty(urls)) {
-                Utilities.filterUrls(urls, false, function(newUrls) {
+                Server.filterUrls(urls, false, function(newUrls) {
                     langConf.transformationUrls = {};
                     Ext.each(newUrls, function(obj) {
                         langConf.transformationUrls[obj.name] = obj.url;

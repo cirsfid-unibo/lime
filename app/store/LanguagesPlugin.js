@@ -266,13 +266,13 @@ Ext.define('LIME.store.LanguagesPlugin', {
             }
         }
         me.reqUrls = reqUrls;
-        Utilities.filterUrls(styleUrls, false, me.setStyleAndRequestFiles, me.setStyleAndRequestFiles, me);
+        Server.filterUrls(styleUrls, false, me.setStyleAndRequestFiles, me.setStyleAndRequestFiles, me);
     },
     
     setStyleAndRequestFiles: function(styleUrls) {
         var me = this;
         me.styleUrls = styleUrls;
-        Utilities.filterUrls(me.reqUrls, true, me.requestSyncLoader, function(reqUrls) {
+        Server.filterUrls(me.reqUrls, true, me.requestSyncLoader, function(reqUrls) {
             for (objIndex in reqUrls) {
                 /* Add a lister that waits for the given key file to be loaded */
                 var eventName = 'makeRequest' + objIndex;

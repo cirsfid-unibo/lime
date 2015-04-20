@@ -469,32 +469,7 @@ Ext.define('LIME.Utilities', {
     },
     
     filterUrls: function(reqUrls, content, success, failure, scope) {
-        var params = {
-            requestedService : Statics.services.filterUrls,
-            urls : Ext.encode(reqUrls)
-        };
-        if(content) {
-            params = Ext.merge(params, {content: true});
-        }
-        Ext.Ajax.request({
-            // the url of the web service
-            url : Utilities.getAjaxUrl(),
-            method : 'POST',
-            params : params,
-            scope : this,
-            success : function(result, request) {
-                var newUrls  = Ext.decode(result.responseText, true);
-                if (Ext.isFunction(success) && newUrls) {
-                    Ext.bind(success, scope)(newUrls);
-                } else if(Ext.isFunction(failure)) {
-                    Ext.bind(failure, scope)(reqUrls);
-                }
-            },
-            failure: function() {
-                if (Ext.isFunction(failure)) {
-                    Ext.bind(failure, scope)(reqUrls);
-                }
-            }
-        });
+        console.warn('Utilities.filterUrls is deprecated, use Server.filterUrls');
+        return Server.filterUrls(reqUrls, content, success, failure, scope);
     }
 });
