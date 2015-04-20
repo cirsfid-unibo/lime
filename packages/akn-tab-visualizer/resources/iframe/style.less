@@ -12,6 +12,26 @@ body, html { padding: 0; margin: 0; width: 100%; }
 
 .fragment {
     display: inline-block;
+    border-bottom: 2px solid black;
+    border-radius: 5px;
+    padding: 0px 5px;
+}
+.p .fragment:before {
+    content: '';
+    // font-family: "FontAwesome";
+    // color: transparent;
+    // font-size: .8em;
+
+    background-color: white;
+
+    font-style: normal;
+    margin-right: 5px;
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    // vertical-align: middle;
+    box-shadow: inset 2px 2px 3px #666;
+    border-radius: 4px;
 }
 
 .document {
@@ -25,3 +45,35 @@ body, html { padding: 0; margin: 0; width: 100%; }
         margin: auto;
     }
 }
+
+
+
+    .title .fragment{
+        background-color: hsla(70, 30%, 65%,15%);
+        border-bottom-color: hsl(70, 30%, 65%);
+       
+    }
+    .section .fragment{
+        background-color: hsla(91, 30%, 65%,15%) ;
+        border-bottom-color: hsl(91, 30%, 65%) ;
+        }
+    .article .fragment{
+        background-color: hsla(109, 30%, 65%,15%) ;
+        border-bottom-color: hsl(109, 30%, 65%);
+         }
+    .list .fragment{
+        background-color: hsla(159, 30%, 65%,15%) ;
+        border-bottom-color: hsl(159, 30%, 65%);
+         }
+    .preamble .fragment{
+        background-color: hsla(206, 30%, 65%,15%) ;
+        border-bottom-color: hsl(206, 30%, 65%);
+         }
+    .preface .fragment{
+        background-color: hsla(206, 30%, 65%,15%) ;
+        border-bottom-color: hsl(206, 30%, 65%);
+         }
+    .conclusions .fragment{
+        background-color: hsla(206, 30%, 65%,15%) ;
+        border-bottom-color: hsl(206, 30%, 65%);
+         }

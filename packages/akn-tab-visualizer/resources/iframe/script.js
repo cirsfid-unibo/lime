@@ -58,7 +58,8 @@ function transform (input, output) {
 
 function renderLineNumbers () {
     $('#lineNumbers').empty();
-    
+    console.info('renderLineNumbers');
+
     getAllFragments()
         .sort(startingOrder)
         .filter(getOverlappingLinesFilter())
@@ -131,7 +132,6 @@ function setSize (size) {
 }
 
 window.Preview = Preview;
-
 
 $(document).ready(function () {
     function inIframe () {
