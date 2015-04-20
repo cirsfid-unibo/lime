@@ -58,8 +58,15 @@ Ext.define('AknTabVisualizer.controller.MainTab', {
                 },
 
                 ready: function (Preview){
+                    console.log(Preview);
                     me.Preview = Preview;
                     me.loadDocument();
+                }
+            },
+
+            'segmentedbutton': {
+                'toggle': function (button) {
+                    me.Preview.setSize(button.getValue());
                 }
             }
         });

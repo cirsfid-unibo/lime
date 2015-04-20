@@ -1,12 +1,14 @@
 
 var Preview = {
-    start: start
+    start: start,
+    setSize: setSize
 };
 
 function start (xml) {
     cloneDoc(xml);
     // Todo: test
-    setTimeout(calculateLineNumbers, 0);
+    setTimeout(renderLineNumbers, 0);
+    setSize('A4');
 }
 
 function cloneDoc (xml) {
@@ -54,7 +56,9 @@ function transform (input, output) {
     }
 };
 
-function calculateLineNumbers () {
+function renderLineNumbers () {
+    $('#lineNumbers').empty();
+    
     getAllFragments()
         .sort(startingOrder)
         .filter(getOverlappingLinesFilter())
@@ -119,6 +123,11 @@ function displayLineNumbers (currentLine, fragment) {
 
 function highlight (fragment) {
     $(fragment.node).css('background-color', '#afa');
+}
+
+function setSize (size) {
+    Preview.dom.dataset.size = size;
+    setTimeout(renderLineNumbers, 0);
 }
 
 window.Preview = Preview;

@@ -104,7 +104,7 @@ Ext.define('LIME.controller.XmlJNDiffController', {
                 }
             },
 
-            'pagingtoolbar': {
+            'jnDiffMainTab pagingtoolbar': {
                 'changeSelection': function (n) {
                     console.log('selecting ', n);
                     var modification = n-1;
@@ -117,7 +117,7 @@ Ext.define('LIME.controller.XmlJNDiffController', {
                 }
             },
 
-            'segmentedbutton': {
+            'jnDiffMainTab segmentedbutton': {
                 'toggle': function (button) {
                     var modification = me.getPagingToolbar().store.currentPage -1;
                     console.log('toggle', modification, button.getValue())

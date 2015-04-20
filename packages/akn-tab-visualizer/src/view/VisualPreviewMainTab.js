@@ -64,6 +64,16 @@ Ext.define('AknTabVisualizer.view.VisualPreviewMainTab', {
     },
 
     items: [{
+        xtype: 'toolbar',
+        items: [{
+            xtype: 'segmentedbutton',
+            value: 'A4',
+            items: [
+                { text: 'A4', value: 'A4'},
+                { text: '100%', value: 'full'}
+            ]
+        }]
+    }, {
         xtype: 'uxiframe',
         src: '',
         flex: 1,
@@ -73,11 +83,13 @@ Ext.define('AknTabVisualizer.view.VisualPreviewMainTab', {
                 var mainCmp = this.up('visualPreviewMainTab'),
                     win = this.getWin(),
                     Preview = win.Preview;
-                mainCmp.fireEvent('ready', Preview);
+                if (Preview)
+                    mainCmp.fireEvent('ready', Preview);
             },
             'afterRender': function () {
-                Server.getResourceFile('iframe/index.html', 'akn-tab-visualizer', function (data, path) {
-                    this.load(path);
+                var me = this;
+                Server.getResourceFile('iframe/index.html', 'akn-tab-visualizer', function (path, data) {
+                    me.load(path);
                 });
             }
         }

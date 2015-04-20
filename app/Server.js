@@ -206,8 +206,7 @@ Ext.define('LIME.Server', {
             Ext.Ajax.request({
                 url: path,
                 success: function (response) {
-                    var data = Ext.decode(response.responseText, true);
-                    success(path, data);
+                    success(path, response.responseText);
                 },
                 failure: failure
             });     

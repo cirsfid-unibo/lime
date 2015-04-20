@@ -1,12 +1,12 @@
-@import '../../../../../resources/stylesheets/aknVisualizer.less';
+@import '../../../../resources/stylesheets/aknVisualizer.less';
 
 body, html { padding: 0; margin: 0; width: 100%; }
 
 #lineNumbers {
     position: absolute;
+    right: 35px;
     div {
         position: absolute;
-        left: 915px;
     }
 }
 
@@ -17,8 +17,10 @@ body, html { padding: 0; margin: 0; width: 100%; }
 .document {
     min-height: 200px;
     position: absolute;
+    padding: 0 40px;
     width: 100%;
-    .akomaNtoso {
+    box-sizing: border-box;
+    &[data-size='A4'] .akomaNtoso {
         width: 600px;
         margin: auto;
     }
