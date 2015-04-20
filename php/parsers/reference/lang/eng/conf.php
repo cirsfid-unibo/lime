@@ -45,4 +45,9 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+$rules = Array(
+
+	"references" => Array("trial"),
+	"trial" => "/{{refs}}/"
+);
 ?>
