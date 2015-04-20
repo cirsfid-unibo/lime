@@ -77,7 +77,6 @@ Ext.define('AknTabVisualizer.view.VisualPreviewMainTab', {
             },
             'afterRender': function () {
                 Server.getResourceFile('iframe/index.html', 'akn-tab-visualizer', function (data, path) {
-                    console.log('hello ' path);
                     this.load(path);
                 });
             }
