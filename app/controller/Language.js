@@ -523,7 +523,6 @@ Ext.define('LIME.controller.Language', {
     
     beforeLoad: function(params, callback, noSideEffects) {
         var me = this, app = this.application, beforeLoad = LoadPlugin.beforeLoad,
-            XMLS = new XMLSerializer(),
             editorController = me.getController("Editor"),
             newParams = params,
             newFn, docDom, docText,
@@ -543,9 +542,10 @@ Ext.define('LIME.controller.Language', {
 	                    params.docDom = docDom;
 	                }
                 } catch(e) {
+                    console.log(e);
                 }
             }
-            
+
             newFn = Ext.Function.bind(beforeLoad, LoadPlugin, [params]);
             newParams = newFn();
             if (newParams) {
@@ -565,12 +565,13 @@ Ext.define('LIME.controller.Language', {
                 }
                 
                 if(newParams.docDom) {
-                    try {
+                    /*try {
+                        console.log(newParams.docDom.firstChild);
                         docText = editorController.serialize(newParams.docDom.firstChild);
                     } catch(e) {
                         docText = "";
-                    }
-                    params.docText = docText || XMLS.serializeToString(newParams.docDom);
+                    }*/
+                    params.docText = DomUtils.serializeToString(newParams.docDom);
                 }
                 if (newParams.metaDom && !noSideEffects) {
                     this.parseFrbrMetadata(newParams.metaDom);
