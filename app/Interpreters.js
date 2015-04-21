@@ -134,8 +134,6 @@ Ext.define('LIME.Interpreters', {
 						contentElement = extEl.parent('.content'),
 						contentChild = parent.down('.content');
 
-                    return; //TODO: fix this!!
-
 					//If content elements are the same	
 					if(parent && contentElement && contentChild && contentChild==contentElement){
 						extEl.insertBefore(contentElement);

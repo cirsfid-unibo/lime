@@ -158,6 +158,30 @@
         	</xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+
+
+    <xsl:template match="div[contains(@class,'hcontainer')]">
+        <xsl:variable name="aknName">
+            <xsl:if test="substring-after(./@class,' ') != ''">
+                <xsl:value-of select="translate(substring-after(./@class,' '),'_','')" />
+            </xsl:if>
+            <xsl:if test="substring-after(./@class,' ') = ''">
+                <xsl:value-of select="translate(@class,'_','')" />
+            </xsl:if>
+            <xsl:if test="./@class = ''">
+                <xsl:value-of select="name(.)" />
+            </xsl:if>
+        </xsl:variable>
+        <xsl:element name="{$aknName}">
+            <xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
+            <xsl:apply-templates select="./*[contains(@class,'num')]"/>
+            <xsl:apply-templates select="./*[contains(@class,'heading')]"/>
+            <xsl:apply-templates select="./*[contains(@class,'subheading')]"/>
+            <xsl:apply-templates select="./*[not(contains(@class,'num')) and 
+                                            not(contains(@class,'heading')) and 
+                                            not(contains(@class,'subheading'))]"/>
+        </xsl:element>
+    </xsl:template>
     
     <xsl:template match="div[contains(@class,'preface')] |
     					 div[contains(@class,'preamble')] |
