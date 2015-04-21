@@ -61,7 +61,7 @@
 .label(@color, @label) {
 
     padding: 25px 10px 0;
-    margin: 20px 20px 10px;
+    margin: 20px 0 10px;
 
     &:before {
         content: @label;
@@ -144,53 +144,60 @@
 
     .meta { display:none; }
 
+    // Main parts
     .preamble { .mainPart(206, 'preamble'); }
     .preface { .mainPart(206, 'preface'); }
     .conclusions { .mainPart(206, 'conclusions'); }
     .body { .mainPart(50, 'body'); }
 
+    // HContainers
     .title { .hcontainer(70); }
     .section { .hcontainer(90); }
     .article { .hcontainer(110); }
-
-    // .formula {
-    //     .inline(206, 'formula');
-    //     font-style: italic;
-    // }
-    // .docAuthority { .inline(206, 'authority'); }
-    // .signature {
-    //     .inline(206, 'signature');
-    //     text-align: right;
-    //     margin: 0 5px;
-    // }
+    .chapter { .hcontainer(130); }
+    .clause { .hcontainer(150); }
 
 
-    .list>.point {
-        margin-top: 15px;
-        position: relative;
-        min-height: 30px;
+    // Lists
+    .list, .blockList {
+        >.point, >.item {
+            margin-top: 15px;
+            position: relative;
+            min-height: 30px;
 
-        >.num {
-            position: absolute;
-            top: 0px;
-            left: 5px;
-            
-            font-size: 17px;
-            font-weight: bold;
+            >.num {
+                position: absolute;
+                top: 0px;
+                left: 5px;
+                
+                font-size: 17px;
+                font-weight: bold;
+            }
+
+            >.content, >.list, >.num ~ .p {
+                margin-left: 60px;
+                display: inline-block;
+            }
         }
-
-        >.content, >.list {
-            margin-left: 60px;
-            display: inline-block;
+        >.intro, >.listIntroduction {
+            font-style: italic;
         }
     }
 
 
-    .list>.intro {
-        font-style: italic;
-    }
 
-    .ins {
+    // Inlines
+    .ins { display: inline-block; }
+    .omissis { .inline(206, 'omissis'); }
+    .def {
         display: inline-block;
+        font-style: inline;
+    }
+    .ref {
+        display: inline-block;
+        color: hsl(206, 100%, 50%);
+        * {
+            text-decoration: underline;
+        }
     }
 }
