@@ -29,17 +29,39 @@ body, html { padding: 0; margin: 0; width: 100%; }
     }
 }
 
-.aknVisualizer {
+// Display a line separator at @dist from element
+.separator(@dist) {
+    &:after {
+        content: '';
+        display: block;
+        margin: auto;
+        width: 100px;
+        height: @dist;
+        border-bottom: 1px solid black;
+    }
+}
+.separatorBefore(@dist) {
+    &:before {
+        content: '';
+        display: block;
+        margin: auto;
+        width: 100px;
+        height: @dist;
+        border-top: 1px solid black;
+    }
+}
 
+.aknVisualizer {
     .formula {
-        .inline(206, 'formula');
+        // .inline(206, 'formula');
+        display: inline-block;
         font-style: italic;
     }
-    .docAuthority { .inline(206, 'authority'); }
-    .docProponent { .inline(206, 'proponent'); }
-    .docType { .inline(206, 'docType'); }
+    .docAuthority { display: inline-block; }
+    .docProponent { display: inline-block; }
+    .docType { display: inline-block; }
     .signature {
-        .inline(206, 'signature');
+        display: inline-block;
         text-align: right;
         margin: 0 5px;
     }
@@ -57,16 +79,53 @@ body, html { padding: 0; margin: 0; width: 100%; }
         display: inline-block;
     }
 
-    .p[data-class="heading"] {
-        text-align: center;
-        font-size: 1.5em;
-        margin: 5px;
-    }
-    .p[data-class="subheading"] {
-        text-align: center;
+    .preface .p[data-class="heading"] {
         font-size: 1em;
+        font-weight: bold;
+        text-align: center;
+        margin: 20px 0px;
+        .separator(20px);
+    }
+    .docTitle {
+        font-size: 2em;
+        line-height: 2em;
+        font-weight: bold;
+        text-align: center;
+        margin: 50px 0px;
+        .separator(150px);
+    }
+    .preface>.p[data-class="center"] {
+        text-align: center;
         font-style: italic;
-        margin: 2px 0 15px;
+        font-weight: bolder;
+        font-size: .9em;
+    }
+    .docProponent {
+        margin-top: 20px;
+        .separatorBefore(100px);
+        font-size: .9em;
+    }
+    .docType {
+        font-size: 3em;
+        line-height: 3em;
+        margin: 50px 20px;
+    }
+    .longTitle {
+        font-size: .9em;
+        font-weight: bolder;
+    }
+
+    .formula {
+        margin-top: 30px;
+        padding-left: 15px;
+        *:first-letter {
+            font-size: 2em;
+            position: relative;
+            display: inline-block;
+            float: left;
+            padding: 5px;
+            font-size: 2em;
+        }
     }
 }
 
