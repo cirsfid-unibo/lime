@@ -16,23 +16,6 @@ body, html { padding: 0; margin: 0; width: 100%; }
     border-radius: 5px;
     padding: 0px 5px;
 }
-.p .fragment:before {
-    content: '';
-    // font-family: "FontAwesome";
-    // color: transparent;
-    // font-size: .8em;
-
-    background-color: white;
-
-    font-style: normal;
-    margin-right: 5px;
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    // vertical-align: middle;
-    box-shadow: inset 2px 2px 3px #666;
-    border-radius: 4px;
-}
 
 .document {
     min-height: 200px;
@@ -46,6 +29,46 @@ body, html { padding: 0; margin: 0; width: 100%; }
     }
 }
 
+.aknVisualizer {
+
+    .formula {
+        .inline(206, 'formula');
+        font-style: italic;
+    }
+    .docAuthority { .inline(206, 'authority'); }
+    .docProponent { .inline(206, 'proponent'); }
+    .docType { .inline(206, 'docType'); }
+    .signature {
+        .inline(206, 'signature');
+        text-align: right;
+        margin: 0 5px;
+    }
+
+    .chapter { .mainPart(70, 'chapter'); }
+    .section { .mainPart(90, 'section'); }
+    .clause { .mainPart(110, 'clause'); }
+
+    .clause>.content>.num {
+        position: relative;
+        color: hsl(0, 0%, 40%);
+        margin: 8px 0 15px;
+        font-size: 25px;
+        font-weight: bold;
+        display: inline-block;
+    }
+
+    .p[data-class="heading"] {
+        text-align: center;
+        font-size: 1.5em;
+        margin: 5px;
+    }
+    .p[data-class="subheading"] {
+        text-align: center;
+        font-size: 1em;
+        font-style: italic;
+        margin: 2px;
+    }
+}
 
 
     .title .fragment{

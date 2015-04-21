@@ -7,7 +7,7 @@ var Preview = {
 function start (xml) {
     cloneDoc(xml);
     // Todo: test
-    setTimeout(renderLineNumbers, 0);
+    setInterval(renderLineNumbers, 2000);
     setSize('A4');
 }
 
@@ -57,13 +57,18 @@ function transform (input, output) {
 };
 
 function renderLineNumbers () {
+    if (!isRenderingNeeded()) return;
     $('#lineNumbers').empty();
-    console.info('renderLineNumbers');
 
     getAllFragments()
         .sort(startingOrder)
         .filter(getOverlappingLinesFilter())
         .reduce(displayLineNumbers, 0);
+}
+
+var lastHeight = 0;
+function isRenderingNeeded () {
+    return lastHeight != (lastHeight = $(Preview.dom).height());
 }
 
 function getAllFragments () {
