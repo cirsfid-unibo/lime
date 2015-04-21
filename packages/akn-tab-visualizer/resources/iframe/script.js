@@ -61,6 +61,7 @@ function renderLineNumbers () {
     $('#lineNumbers').empty();
 
     getAllFragments()
+        .filter(getAfterFormulaFilter())
         .sort(startingOrder)
         .filter(getOverlappingLinesFilter())
         .reduce(displayLineNumbers, 0);
@@ -72,7 +73,7 @@ function isRenderingNeeded () {
 }
 
 function getAllFragments () {
-    return $(Preview.dom).find('.body .fragment').map(function () {
+    return $(Preview.dom).find('.fragment').map(function () {
         var top = $(this).offset().top,
             height = this.getBoundingClientRect().height;
         return {
@@ -82,6 +83,16 @@ function getAllFragments () {
             lines: countLines(this)
         }
     }).toArray();
+}
+
+function getAfterFormulaFilter () {
+    var firstFormula = Preview.dom.querySelector('.formula'),
+        firstFragment = Preview.dom.querySelector('.fragment'),
+        firstDom = firstFormula || firstFragment,
+        start = $(firstDom).offset().top;
+    return function (fragment) {
+        return fragment.start >= start;
+    }
 }
 
 function startingOrder (a, b) {
