@@ -46,7 +46,7 @@
  */
 
  $rules = Array(
-	"quote" => "/(?P<start>[\"«“])(?P<quoted>\p{L}[^\"^“^”^«^»]+)(?P<end>[\"“”»])/u",
+	"quote" => "/(?P<start>[\"«“])(?P<quoted>[^\"^“^”^«^»]+)(?P<end>[\"“”»])/u",
 	"struct" => "/<br\/?>|<\/?p>/"
 );
 
