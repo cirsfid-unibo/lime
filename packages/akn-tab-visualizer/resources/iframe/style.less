@@ -10,6 +10,13 @@ body, html { padding: 0; margin: 0; width: 100%; }
     }
 }
 
+*[data-size='A4'] + #lineNumbers {
+    right: 50%;
+    div {
+        left: 322px;
+    }
+}
+
 .fragment {
     display: inline-block;
     border-bottom: 2px solid black;
@@ -24,9 +31,10 @@ body, html { padding: 0; margin: 0; width: 100%; }
     width: 100%;
     box-sizing: border-box;
 
-
-    background-color: #eee;
-    padding-top: 25px;
+    &[data-size='A4'] {
+        background-color: #eee;
+        padding: 25px 0;
+    }
 
     
     overflow-x: hidden;

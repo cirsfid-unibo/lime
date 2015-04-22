@@ -62,18 +62,18 @@ function addPages () {
     console.log('addPages', $(Preview.dom).height());
 
     // var eops = Preview.dom.querySelectorAll('span.pageBreak');
-    var pos = 0;
+    var page = 0;
     getAllFragments().sort(startingOrder).forEach(function (fragment) {
-        if (fragment.start > pos + PAGE_SIZE) {
-            pos += PAGE_SIZE;
-            console.log('Adding page at', fragment.start, fragment.node);
+        if (fragment.start > (page+1) * PAGE_SIZE) {
+            page++;
+            // console.log('Adding page at', fragment.start, fragment.node);
             var node = fragment.node;
             while (node == node.parentNode.firstChild) {
-                console.log('going up');
                 node = node.parentNode;
             }
             $(node).before('<span class="pageBreak"/>');
         }
+        fragment.node.dataset.page = page;
     });
 }
 
@@ -86,7 +86,10 @@ function renderLineNumbers () {
         .sort(startingOrder)
         .filter(getOverlappingLinesFilter())
         // .forEach(highlight);
-        .reduce(displayLineNumbers, 0);
+        .reduce(groupByPage, [])
+        .forEach(function (fragments) {
+            fragments.reduce(displayLineNumbers, 0);
+        });
 }
 
 var lastHeight = 0;
@@ -102,7 +105,8 @@ function getAllFragments () {
             node: this,
             start: top,
             end: top + height,
-            lines: countLines(this)
+            lines: countLines(this),
+            page: this.dataset.page
         }
     }).toArray();
 }
@@ -139,6 +143,21 @@ function countLines (node) {
         return Math.ceil(height/lineHeight);
     else
         return 1;
+}
+
+
+function groupByPage (output, fragment) {
+    var output = output || [];
+    // console.log('page', fragment.page)
+        // console.log('Adding ', fragment.node, 'to', fragment.page);
+    // console.warn(output);
+    var page = Preview.dom.dataset.size == 'A4' ? fragment.page : 0;
+    if (page != undefined) {
+        // console.info('page', page);
+        output[page] = output[page] || [];
+        output[page].push(fragment);
+    }
+    return output;
 }
 
 // Display line number every 5 lines
