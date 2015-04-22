@@ -46,7 +46,7 @@
  */
  
 $rules = Array(
-    "sectionList" => Array("Section","SECTION","SEC\.","Sec\."),
+    "sectionList" => Array("Section","SECTION","SEC\.","Sec\.")
 );
 
 ?>
