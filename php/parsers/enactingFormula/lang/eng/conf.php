@@ -44,14 +44,13 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+ 
 $rules = Array(
-    "preambleInitList" => Array("LEGISLATIVE COUNSEL",
-    	                        "Legislative Counsel",
-    	                        "Legislative counsel",
-    	                        "(BE IT ENACTED|Be it enacted) by the Parliament of (the Republic of)?"),
 
-    "preambleEndList" => Array("The people of", "do enact as follows",
-    	                       "as follows:?")
+	"main" => "/{{enactingFormula}}/i",
+	"enactingFormula" => "{{init}}.+{{ending}}:?",
+	"init" => Array("be +it +enacted"),
+	"ending" => Array("as +follows")
 );
 
 ?>

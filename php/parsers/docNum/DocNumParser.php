@@ -99,6 +99,20 @@ class DocNumParser {
 		$patterns = array(
 			"n|num"	=> "/(^|>|\s)(?P<match>(n|num|no|nr$decs)(\.|º|°|\s)\s*(?P<num>(\d+)\s*[.-\/]?\s*(\d+)?))/i",
 		);
+
+    /*********************
+     TEMPORARY CRAPPY FIX
+     *********************/
+
+    if ($this->lang == "eng") {
+      $patterns = array();
+    }
+
+     /*********************
+      *********************
+      *********************/
+
+
 		if (isset($localpatterns)) {
 			$patterns = array_merge($localpatterns,$patterns);
 		}
