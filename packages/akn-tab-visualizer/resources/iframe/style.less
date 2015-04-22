@@ -23,9 +23,46 @@ body, html { padding: 0; margin: 0; width: 100%; }
     padding: 0 40px;
     width: 100%;
     box-sizing: border-box;
+
+
+    background-color: #eee;
+    padding-top: 25px;
+
+    
+    overflow-x: hidden;
     &[data-size='A4'] .akomaNtoso {
-        width: 600px;
+        background-color: white;
+        margin: 30px 0;
+        padding: 25px;
+        width: 700px;
+        box-sizing: border-box;
         margin: auto;
+        span.pageBreak {
+            display: block;
+            height: 100px;
+            // width: 700px;
+            &:before {
+                content: ' ';
+                display: block;
+                width: 100000px;
+                height: 100px;
+                position: absolute;
+                left: -10000px;
+                background-color: #eee;
+                // border-top: 1px solid #888;
+                // border-bottom: 1px solid #888;
+            }
+
+            margin: 30px;
+        }
+        box-shadow: 0 0 5px #888;
+
+    }
+    &[data-size='full'] .akomaNtoso {
+        background-color: white;
+        // span.pageBreak {
+        //     display: none;
+        // }
     }
 }
 
@@ -69,6 +106,7 @@ body, html { padding: 0; margin: 0; width: 100%; }
     .chapter { .mainPart(70, 'chapter'); }
     .section { .mainPart(90, 'section'); }
     .clause { .mainPart(110, 'clause'); }
+    .subsection { .mainPart(130, 'subsection'); }
 
     .clause>.content>.num {
         position: relative;
@@ -109,6 +147,8 @@ body, html { padding: 0; margin: 0; width: 100%; }
         font-size: 3em;
         line-height: 3em;
         margin: 50px 20px;
+        display: block;
+        text-align: center;
     }
     .longTitle {
         font-size: .9em;
@@ -127,6 +167,30 @@ body, html { padding: 0; margin: 0; width: 100%; }
             font-size: 2em;
         }
     }
+
+    .quotedStructure {
+        // border-right: 1px solid black;
+        // border-top: 1px solid black;
+        margin: 5px 0;
+        padding: 15px;
+        box-shadow: 3px 3px 15px black;
+        background-color: #FFFCEF;
+        position: relative;
+
+        &:before {
+            content: 'quoted structure';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font: 13px/14px 'Titillium Web', sans-serif;
+            background-color: darken(#FFFCEF, 10%);
+            padding: 0 4px;
+            border-radius: 2px;
+            box-shadow: 1px 1px 5px #555;
+        }
+    }
+
+
 }
 
 

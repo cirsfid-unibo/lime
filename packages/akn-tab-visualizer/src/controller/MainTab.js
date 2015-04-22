@@ -58,7 +58,6 @@ Ext.define('AknTabVisualizer.controller.MainTab', {
                 },
 
                 ready: function (Preview){
-                    console.log(Preview);
                     me.Preview = Preview;
                     me.loadDocument();
                 }

@@ -7,6 +7,7 @@ var Preview = {
 function start (xml) {
     cloneDoc(xml);
     // Todo: test
+    setTimeout(addPages, 500);
     setInterval(renderLineNumbers, 2000);
     setSize('A4');
 }
@@ -56,6 +57,26 @@ function transform (input, output) {
     }
 };
 
+function addPages () {
+    var PAGE_SIZE = 840;
+    console.log('addPages', $(Preview.dom).height());
+
+    // var eops = Preview.dom.querySelectorAll('span.pageBreak');
+    var pos = 0;
+    getAllFragments().sort(startingOrder).forEach(function (fragment) {
+        if (fragment.start > pos + PAGE_SIZE) {
+            pos += PAGE_SIZE;
+            console.log('Adding page at', fragment.start, fragment.node);
+            var node = fragment.node;
+            while (node == node.parentNode.firstChild) {
+                console.log('going up');
+                node = node.parentNode;
+            }
+            $(node).before('<span class="pageBreak"/>');
+        }
+    });
+}
+
 function renderLineNumbers () {
     if (!isRenderingNeeded()) return;
     $('#lineNumbers').empty();
@@ -64,6 +85,7 @@ function renderLineNumbers () {
         .filter(getAfterFormulaFilter())
         .sort(startingOrder)
         .filter(getOverlappingLinesFilter())
+        // .forEach(highlight);
         .reduce(displayLineNumbers, 0);
 }
 
@@ -114,7 +136,7 @@ function countLines (node) {
     var lineHeight = parseInt($(node).css('line-height'), 10),
         height = $(node).height();
     if (height != 0)
-        return height/lineHeight + (height%lineHeight > 0);
+        return Math.ceil(height/lineHeight);
     else
         return 1;
 }
@@ -123,7 +145,6 @@ function countLines (node) {
 function displayLineNumbers (currentLine, fragment) {
     var N = 5;
     var step = $(fragment.node).height() / fragment.lines;
-
     for (var line = currentLine + 1; line <= currentLine + fragment.lines; line++) {
         if ((line % N) == 0) {
             var el = $('<div>' + line + '</div>');
