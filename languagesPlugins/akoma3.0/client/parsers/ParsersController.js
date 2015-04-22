@@ -711,6 +711,8 @@ Ext.define('LIME.controller.ParsersController', {
             }
         };
 
+        if ( !Ext.isArray(signatures) ) return;
+
         signatures = signatures.filter(function(obj, index, arr) {
             var itemLikeMe = arr.filter(function(item) {
                 return ((item.value == obj.value) 
@@ -1094,7 +1096,7 @@ Ext.define('LIME.controller.ParsersController', {
                     docNumNodes = me.searchInlinesToMark(node, item.match.trim(), config, function(n) {
                         var extNode = Ext.fly(n);
                         for (var i = 0; i < docNumImpossible.length; i++) {
-                            if (extNode.up(docNumImpossible[i])) {
+                            if (extNode && extNode.up(docNumImpossible[i])) {
                                 return false;
                             }
                         }
