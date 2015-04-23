@@ -5,6 +5,7 @@ var Preview = {
 };
 
 function start (xml) {
+    $('.document').empty();
     cloneDoc(xml);
     // Todo: test
     setTimeout(addPages, 500);
@@ -12,7 +13,7 @@ function start (xml) {
     setSize('A4');
 }
 
-function cloneDoc (xml) {
+function cloneDoc (xml) {   
     Preview.dom = $('.document')[0];
     var parser = new DOMParser();
     var dom = parser.parseFromString(xml, "text/xml");

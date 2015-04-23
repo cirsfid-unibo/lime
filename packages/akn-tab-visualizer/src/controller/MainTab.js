@@ -54,7 +54,9 @@ Ext.define('AknTabVisualizer.controller.MainTab', {
         this.control({
             '#': {
                 activate: function (cmp) {
-
+                    if (me.Preview) {
+                        me.loadDocument();
+                    }
                 },
 
                 ready: function (Preview){
