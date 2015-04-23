@@ -67,7 +67,7 @@ function setupModifications () {
     JNDiff.count = 0;
     console.info('Searching for modifications..')
     $(JNDiff.modifiedDom)
-        .find('.body')
+        .find('.preface, .preamble, .body')
         .find('.ndiff_editing, *[data-ndiff_status]:not([data-ndiff_status="modified"])')
         .each(function (i, el) {
             JNDiff.count++;
