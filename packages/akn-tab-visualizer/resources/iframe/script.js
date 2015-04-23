@@ -58,11 +58,16 @@ function transform (input, output) {
     }
 };
 
+// Add pages to the document: take the first fragment every PAGE_SIZE
+// pixels and add a span.pageBreak before it.
+// Add some computations to set its css to start relative to the page instead of
+// the parent element.
+// Set the data-page attribute of each fragment with the relative page.
 function addPages () {
     var PAGE_SIZE = 840;
     console.log('addPages', $(Preview.dom).height());
 
-    // var eops = Preview.dom.querySelectorAll('span.pageBreak');
+    var pagePos = Preview.dom.querySelector('.akomaNtoso').getBoundingClientRect().left;
     var page = 0;
     getAllFragments().sort(startingOrder).forEach(function (fragment) {
         if (fragment.start > (page+1) * PAGE_SIZE) {
@@ -72,7 +77,10 @@ function addPages () {
             while (node == node.parentNode.firstChild) {
                 node = node.parentNode;
             }
-            $(node).before('<span class="pageBreak"/>');
+            var eop = $('<span class="pageBreak"><span class="inner"/></span>')
+            eop.insertBefore($(node));
+            var pos = eop[0].getBoundingClientRect().left;
+            eop.css('left', (pagePos - pos)+'px');
         }
         fragment.node.dataset.page = page;
     });
@@ -148,13 +156,8 @@ function countLines (node) {
 
 
 function groupByPage (output, fragment) {
-    var output = output || [];
-    // console.log('page', fragment.page)
-        // console.log('Adding ', fragment.node, 'to', fragment.page);
-    // console.warn(output);
     var page = Preview.dom.dataset.size == 'A4' ? fragment.page : 0;
     if (page != undefined) {
-        // console.info('page', page);
         output[page] = output[page] || [];
         output[page].push(fragment);
     }

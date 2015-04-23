@@ -48,17 +48,34 @@ body, html { padding: 0; margin: 0; width: 100%; }
         span.pageBreak {
             display: block;
             height: 100px;
-            // width: 700px;
+            position: relative;
+            width: 0px;
+
             &:before {
                 content: ' ';
-                display: block;
                 width: 100000px;
                 height: 100px;
                 position: absolute;
                 left: -10000px;
                 background-color: #eee;
-                // border-top: 1px solid #888;
-                // border-bottom: 1px solid #888;
+            }
+
+            .inner {
+                height: 100%;
+                width: 701px;
+                display: block;
+                position: relative;
+                box-sizing: border-box;
+                overflow: hidden;
+                
+                &:before {
+                    content: ' ';
+                    width: 100000px;
+                    height: 100px;
+                    position: absolute;
+                    left: -10000px;
+                    box-shadow: inset 0 0 5px #888;
+                }
             }
 
             margin: 30px;
