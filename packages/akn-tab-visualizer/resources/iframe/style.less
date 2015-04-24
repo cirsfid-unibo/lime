@@ -26,9 +26,12 @@ body, html { padding: 0; margin: 0; width: 100%; }
 
 .fragment {
     display: inline-block;
-    border-bottom: 2px solid black;
+    border-bottom: 1px solid black;
     border-radius: 5px;
     padding: 0px 5px;
+    margin-right: 1px;
+    position: relative;
+    left: 7px;
 }
 
 .document {
@@ -48,7 +51,7 @@ body, html { padding: 0; margin: 0; width: 100%; }
     &[data-size='A4'] .akomaNtoso {
         background-color: white;
         margin: 30px;
-        padding: 25px 35px 25px 25px;
+        padding: 25px 35px 25px 15px;
         width: 700px;
         box-sizing: border-box;
         margin: auto;
@@ -57,7 +60,7 @@ body, html { padding: 0; margin: 0; width: 100%; }
             height: 50px;
             position: relative;
             width: 0px;
-            margin: 50px 30px;
+            margin: 50px 40px;
 
 
             &:before {
@@ -219,39 +222,69 @@ body, html { padding: 0; margin: 0; width: 100%; }
         }
     }
 
-    .ref .fragment {
-        display: inline;
-        vertical-align: middle;
+    .ref {
+        text-decoration: none;
+        border-radius: 5px;
+        display: inline-block;
+        .fragment {
+            text-decoration: underline;
+
+            display: inline;
+            padding-left: 0;
+            background-color: hsl(206, 80%, 97%);
+
+            border-color: hsl(206, 80%, 70%);
+            border-radius: 5px;
+            margin: 0 3px;
+            border-bottom: 2px solid hsl(206, 80%, 50%);
+
+            &:before {
+                box-shadow: 2px 1px 3px -2px #333333;
+                background-color: hsl(206, 80%, 50%);
+                display: inline-block;
+                content: '\f0c1';
+
+                font: 1em 'FontAwesome';
+                line-height: 20px;
+                border-radius: 5px;
+                border-radius: 0 5px 0 5px;
+                color: white;
+
+                padding: 0 5px 0 5px;
+                margin-right: 5px;
+            }
+
+        }
+
     }
 }
 
 
-    .title .fragment{
-        background-color: hsla(70, 30%, 65%,15%);
-        border-bottom-color: hsl(70, 30%, 65%);
-       
-    }
-    .section .fragment{
-        background-color: hsla(91, 30%, 65%,15%) ;
-        border-bottom-color: hsl(91, 30%, 65%) ;
-        }
-    .article .fragment{
-        background-color: hsla(109, 30%, 65%,15%) ;
-        border-bottom-color: hsl(109, 30%, 65%);
-         }
-    .list .fragment{
-        background-color: hsla(159, 30%, 65%,15%) ;
-        border-bottom-color: hsl(159, 30%, 65%);
-         }
-    .preamble .fragment{
-        background-color: hsla(206, 30%, 65%,15%) ;
-        border-bottom-color: hsl(206, 30%, 65%);
-         }
-    .preface .fragment{
-        background-color: hsla(206, 30%, 65%,15%) ;
-        border-bottom-color: hsl(206, 30%, 65%);
-         }
-    .conclusions .fragment{
-        background-color: hsla(206, 30%, 65%,15%) ;
-        border-bottom-color: hsl(206, 30%, 65%);
-         }
+.title .fragment{
+    background-color: hsl(70, 30%, 95%);
+    border-bottom-color: hsl(70, 30%, 65%);
+}
+.section .fragment{
+    background-color: hsl(91, 30%, 95%);
+    border-bottom-color: hsl(91, 30%, 65%) ;
+}
+.article .fragment{
+    background-color: hsl(109, 30%, 95%);
+    border-bottom-color: hsl(109, 30%, 65%);
+}
+.list .fragment{
+    background-color: hsl(159, 30%, 95%);
+    border-bottom-color: hsl(159, 30%, 65%);
+}
+.preamble .fragment{
+    background-color: hsl(206, 30%, 95%);
+    border-bottom-color: hsl(206, 30%, 65%);
+}
+.preface .fragment{
+    background-color: hsl(206, 30%, 95%);
+    border-bottom-color: hsl(206, 30%, 65%);
+}
+.conclusions .fragment{
+    background-color: hsl(206, 30%, 95%) ;
+    border-bottom-color: hsl(206, 30%, 65%);
+}
