@@ -198,18 +198,17 @@ Ext.define('LIME.Server', {
     // given package name.
     // We must detect whether we're in a build environment or a dev one.
     getResourceFile: function (file, packageName, success, failure) {
-        var possiblePaths = [
-            'packages/' + packageName + '/resources/' + file, // Dev mode
-            'resources/' + packageName + '/' + file // Build mode
-        ];
-        possiblePaths.forEach(function (path) {
-            Ext.Ajax.request({
-                url: path,
-                success: function (response) {
-                    success(path, response.responseText);
-                },
-                failure: failure
-            });     
-        });
+        var possiblePaths = [{
+            name: 'dev',
+            url: 'packages/' + packageName + '/resources/' + file, // Dev mode
+        },{
+            name: 'build',
+            url: 'resources/' + packageName + '/' + file // Build mode
+        }];
+
+        this.filterUrls(possiblePaths, true, function(possiblePaths) {
+            if ( possiblePaths.length )
+                success(possiblePaths[0].url, possiblePaths[0].content);
+        }, failure, this);
     }
 });
