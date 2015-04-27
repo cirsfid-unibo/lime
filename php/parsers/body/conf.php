@@ -54,7 +54,7 @@ $rules = Array(
     "section" => "/({{sectionList}})\s*({{number}}\s*[º°\.]*)/",
     "chapter" => "/({{chapterList}})\s*({{number}})/",
     "article" => "/({{articleList}})\s*({{number}}\s*[º°\.]*({{latino}})?)/",
-    "numitem" => "\b\(?([A-Za-z]+|\d+|{{roman}})\)|\b(\d+\s*\.)",
+    "numitem" => "\b([A-Za-z]+|\d+|{{roman}})\)|\b(\d+\s*\.)",
     "item" => "/(?<![\.\w] ){{numitem}} +{{bodyitem}}/u",
     "bodyitem" => "[\p{L}\p{N}\p{P}\p{S} ]+[\.;]?",
     
