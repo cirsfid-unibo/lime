@@ -7,10 +7,20 @@ var Preview = {
 function start (xml) {
     $('.document').empty();
     cloneDoc(xml);
+    addLinkHandlers();
     // Todo: test
     setTimeout(addPages, 500);
     setInterval(renderLineNumbers, 2000);
     setSize('A4');
+}
+
+function addLinkHandlers () {
+    $('.document .ref').click(function () {
+        console.info('Opening', this.dataset.href);
+        if (this.dataset.href) {
+            window.open('http://akresolver.cs.unibo.it/akn' + this.dataset.href);
+        }
+    });
 }
 
 function cloneDoc (xml) {   

@@ -173,6 +173,7 @@ body, html { padding: 0; margin: 0; width: 100%; }
         margin: 0 5px;
     }
 
+    .title { .mainPart(60, 'title'); }
     .chapter { .mainPart(70, 'chapter'); }
     .section { .mainPart(90, 'section'); }
     .clause { .mainPart(110, 'clause'); }
@@ -259,23 +260,24 @@ body, html { padding: 0; margin: 0; width: 100%; }
     }
 
     .ref {
-        .inlineNew('\f0c1', hsl(206, 80%, 50%))
+        .inlineNew('\f0c1', hsl(206, 80%, 50%));
+        cursor: pointer;
     }
 
     .organization {
-        .inlineNew('\f19c', hsl(206, 80%, 50%))
+        .inlineNew('\f19c', hsl(206, 80%, 50%));
     }
 
     .location {
-        .inlineNew('\f041', hsl(206, 80%, 50%))
+        .inlineNew('\f041', hsl(206, 80%, 50%));
     }
 
     .date {
-        .inlineNew('\f073', hsl(206, 80%, 50%))
+        .inlineNew('\f073', hsl(206, 80%, 50%));
     }
 
     .person {
-        .inlineNew('\f007', hsl(206, 80%, 50%))
+        .inlineNew('\f007', hsl(206, 80%, 50%));
     }
 }
 
