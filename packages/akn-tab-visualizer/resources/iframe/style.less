@@ -123,6 +123,41 @@ body, html { padding: 0; margin: 0; width: 100%; }
     }
 }
 
+
+.inlineNew (@icon, @color) {
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
+    .fragment {
+        text-decoration: underline;
+
+        display: inline;
+        padding-left: 0;
+        background-color: lighten(@color, 47%);
+
+        border-color: lighten(@color, 20%);
+        border-radius: 5px;
+        margin: 0 3px;
+        border-bottom: 2px solid @color;
+
+        &:before {
+            box-shadow: 2px 1px 3px -2px #333333;
+            background-color: @color;
+            display: inline-block;
+            content: @icon;
+
+            font: 1em 'FontAwesome';
+            line-height: 20px;
+            border-radius: 5px;
+            border-radius: 0 5px 0 5px;
+            color: white;
+
+            padding: 0 5px 0 5px;
+            margin-right: 5px;
+        }
+    }
+}
+
 .aknVisualizer {
     .formula {
         // .inline(206, 'formula');
@@ -142,6 +177,7 @@ body, html { padding: 0; margin: 0; width: 100%; }
     .section { .mainPart(90, 'section'); }
     .clause { .mainPart(110, 'clause'); }
     .subsection { .mainPart(130, 'subsection'); }
+    .article { .mainPart(110, 'article'); }
 
     .clause>.content>.num {
         position: relative;
@@ -223,39 +259,23 @@ body, html { padding: 0; margin: 0; width: 100%; }
     }
 
     .ref {
-        text-decoration: none;
-        border-radius: 5px;
-        display: inline-block;
-        .fragment {
-            text-decoration: underline;
+        .inlineNew('\f0c1', hsl(206, 80%, 50%))
+    }
 
-            display: inline;
-            padding-left: 0;
-            background-color: hsl(206, 80%, 97%);
+    .organization {
+        .inlineNew('\f19c', hsl(206, 80%, 50%))
+    }
 
-            border-color: hsl(206, 80%, 70%);
-            border-radius: 5px;
-            margin: 0 3px;
-            border-bottom: 2px solid hsl(206, 80%, 50%);
+    .location {
+        .inlineNew('\f041', hsl(206, 80%, 50%))
+    }
 
-            &:before {
-                box-shadow: 2px 1px 3px -2px #333333;
-                background-color: hsl(206, 80%, 50%);
-                display: inline-block;
-                content: '\f0c1';
+    .date {
+        .inlineNew('\f073', hsl(206, 80%, 50%))
+    }
 
-                font: 1em 'FontAwesome';
-                line-height: 20px;
-                border-radius: 5px;
-                border-radius: 0 5px 0 5px;
-                color: white;
-
-                padding: 0 5px 0 5px;
-                margin-right: 5px;
-            }
-
-        }
-
+    .person {
+        .inlineNew('\f007', hsl(206, 80%, 50%))
     }
 }
 
