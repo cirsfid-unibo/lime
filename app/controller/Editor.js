@@ -262,9 +262,9 @@ Ext.define('LIME.controller.Editor', {
 		return range;
 	},
 
-	showDocumentUri: function(docId) {
+	showDocumentUri: function() {
 	    var editorContainer = this.getMainEditor().up(), 
-	    	title, main = this.getMain(),
+	    	main = this.getMain(),
 	        uri = this.getDocumentUri();
 
         uri = (!uri) ? Locale.getString("newDocument") : uri.replace(/%3A/g, ':');
@@ -1384,6 +1384,8 @@ Ext.define('LIME.controller.Editor', {
                 }
 			},
 
+            // When clicking a link in the URI toolbar, show the open document
+            // dialog with the given path. 
 			'mainEditorUri' : {
                 update : function() {
                     var me = this;

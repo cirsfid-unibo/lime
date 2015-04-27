@@ -48,40 +48,43 @@
  * This view implements a URI viewer of the document.
  */
 Ext.define('LIME.view.main.editor.Uri', {
-    extend : 'Ext.Panel',
-    // set the alias
-    alias : 'widget.mainEditorUri',
-    frame : true,
+    extend: 'Ext.Panel',
+    alias: 'widget.mainEditorUri',
+
+    frame: true,
     layout: 'fit',
     padding: "0px 0px 5px 0px",
-    linkTemplate: '<a path="{id}" class="uriSelector" style="" href="javascript:;">{text}</a>',
-    style : {
-        borderRadius : "0px",
-        margin : "0px",
-        border : '0px'
+    style: {
+        borderRadius: "0px",
+        margin: "0px",
+        border: '0px'
     },
 
-    setUri : function(uri) {
-        var me = this, parties, uriHtml = "", partiesLength, 
+    linkTemplate: '<a path="{id}" class="uriSelector" style="" href="javascript:;">{text}</a>',
+
+    setUri: function(uri) {
+        var me = this, 
             linkTpl = new Ext.Template(me.linkTemplate),
+            html = "", 
             partialUri = "";
+        var parts = uri.split("/");
+
+        if (parts.length < 2) {
+            html = uri;
+        } else {
+            Ext.each(parts, function(text, index) {
+                partialUri+= text+"/";
+                html += (index != parts.length - 1) ? 
+                        linkTpl.apply({id: partialUri, text: text})+"/" :
+                        text;  
+            });
+        }
+
+        // Update html
         me.update("");
         me.removeAll(true);
-        parties = uri.split("/");
-        partiesLength = parties.length;
-        if (partiesLength < 2) {
-            me.applyHtml(uri);
-        } else {
-            Ext.each(parties, function(text, index) {
-                partialUri+= text+"/";
-                uriHtml += (index != partiesLength - 1) ? linkTpl.apply({id: partialUri, text: text})+"/" : text;  
-            });
-            me.applyHtml(uriHtml);
-        }
-    },
-    
-    applyHtml: function(html) {
-        var me = this;
-        me.update(html,false,function(){me.fireEvent("update");});
+        me.update(html, false, function() {
+            me.fireEvent("update");
+        });
     }
 });
