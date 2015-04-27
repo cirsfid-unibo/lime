@@ -45,31 +45,21 @@
  */
 
 
-Ext.define('LIME.ux.xmlValidation.ValidationResultWindow', {
-    extend : 'Ext.window.Window',
+Ext.require([
+    'DefaultValidation.controller.XmlValidation'
+]);
 
-    alias : 'widget.validationResult',
+Ext.define('AknTabVisualizer.Application', {
+    override: 'LIME.Application',
 
-    width : 400,
-    height: 200,
+    requires: [
+        'DefaultValidation.view.ValidationResultWindow'
+    ],
 
-    layout:'card',
-
-    activeItem: 0,
-
-    bbar: [{
-        text: 'Go to elemenet',
-        id: 'goToElement'
-    },'->', {
-        text: '&laquo; Previous',
-        id: 'card-prev'
-    },{
-        text: 'Next &raquo;',
-        id: 'card-next'
-    }],
-
-    initComponent : function() {
-        this.title = new Ext.Template("Validation Result ({nr})").apply({nr: this.items.length});
-        return this.callParent(arguments);
+    initControllers : function() {
+        this.controllers.push('DefaultValidation.controller.XmlValidation');
+        
+        Locale.getPackageStrings('default-validation');
+        this.callParent();
     }
 });

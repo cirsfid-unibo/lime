@@ -1,6 +1,7 @@
 {
     "name": "LIME",
     "requires": [
+        "default-validation",
         "akn-tab-visualizer"
     ],
     "framework": "ext",
@@ -9,48 +10,21 @@
             "bootstrap": true,
             "path": "bootstrap.css"
         },
-        {
-            "path": "lib/codemirror/codemirror.css"
-        },
-        {
-            "path": "resources/stylesheets/extjs4.editor.css"
-        },
-        {
-            "path": "resources/stylesheets/extjs4.viewport.css"
-        }
+        { "path": "lib/codemirror/codemirror.css" },
+        { "path": "resources/stylesheets/extjs4.editor.css" },
+        { "path": "resources/stylesheets/extjs4.viewport.css" }
     ],
     "js": [
-        {
-            "path":"${ext.dir}/build/ext-all-debug.js"
-        },
-        {
-            "bundle": true,
-            "path": "app.js"
-        },
-        {
-            "path": "lib/tinymce4/tinymce.min.js"
-        },
-        {
-            "path": "lib/codemirror/codemirror.min.js"
-        },
-        {
-            "path": "lib/vkbeautify/vkbeautify.js"
-        },
-        {
-            "path": "lib/plupload/js/plupload.js"
-        },
-        {
-            "path": "lib/plupload/js/plupload.html4.js"
-        },
-        {
-            "path": "lib/plupload/js/plupload.html5.js"
-        },
-        {
-            "path": "lib/plupload/js/plupload.flash.js"
-        },
-        {
-            "path": "lib/plupload/js/plupload.silverlight.js"
-        }
+        { "path":"${ext.dir}/build/ext-all-debug.js" },
+        { "bundle": true, "path": "app.js" },
+        { "path": "lib/tinymce4/tinymce.min.js" },
+        { "path": "lib/codemirror/codemirror.min.js" },
+        { "path": "lib/vkbeautify/vkbeautify.js" },
+        { "path": "lib/plupload/js/plupload.js" },
+        { "path": "lib/plupload/js/plupload.html4.js" },
+        { "path": "lib/plupload/js/plupload.html5.js" },
+        { "path": "lib/plupload/js/plupload.flash.js" },
+        { "path": "lib/plupload/js/plupload.silverlight.js" }
     ],
     "resources": [
         "lib",

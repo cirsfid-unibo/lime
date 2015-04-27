@@ -44,10 +44,13 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('LIME.controller.XmlValidationController', {
+Ext.define('DefaultValidation.controller.XmlValidation', {
     extend : 'Ext.app.Controller',
 
-    views: ["LIME.view.Main", "LIME.ux.xmlValidation.ValidationResultWindow"],
+    views: [
+        "LIME.view.Main",
+        "DefaultValidation.view.ValidationResultWindow"
+    ],
 
     refs : [{
         ref : 'main',
@@ -67,7 +70,7 @@ Ext.define('LIME.controller.XmlValidationController', {
     }],
 
     config : {
-        pluginName : "xmlValidation",
+        pluginName : "default-validation",
         errorsMappingFile: "errorsMapping.json"
     },
 
@@ -442,14 +445,10 @@ Ext.define('LIME.controller.XmlValidationController', {
     },
 
     downloadErrorsMapping: function() {
-        var me = this, 
-            url = Config.getPluginUrl(me.getPluginName());
-
-        Ext.Ajax.request({
-            url : url.relative+me.getErrorsMappingFile(),
-            success : function(response, opts) {
-                me.errorsMapping = Ext.decode(response.responseText, true);
-            }
+        var me = this; 
+        Server.getResourceFile('errorsMapping.json', this.getPluginName(), function (path, data) {
+            me.errorsMapping = Ext.decode(data, true);
+            console.info(data)
         });
     },
     
