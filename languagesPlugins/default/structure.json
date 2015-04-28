@@ -1,6 +1,5 @@
 {
     "plugins": [
-        "xmlDiff",
         "xmlJNdiff",
         "importDocument",
         "exportDocument",

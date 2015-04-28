@@ -44,84 +44,15 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('LIME.ux.xmlDiff.DiffTab', {
-    extend : 'Ext.panel.Panel',
-    alias : 'widget.diffTab',
-    requires : ['Ext.ux.Iframe'],
-
-    cls : 'editorTab diffTab',
-
-    notEditMode : true,
-
-    config : {
-        pluginName : "xmlDiff"
-    },
-
-    width : '100%',
-    padding : 0,
-    margin : 0,
-    border : 0,
-    layout : {
-        type : 'vbox',
-        padding : '0',
-        align : 'stretch'
-    },
-
-
-    iframeSource: '',
-
-    // Set the url of the currently active iframe.
-    setIframeSource: function (url, callback) {
-        this.iframeSource = url;
-        var iframe = this.down('*[cls=diffContainer]').getActiveTab().getPlugin('iframe');
-        // TODO: fix this
-        setTimeout(function () {
-            iframe.setRawSrc(url, callback);
-        }, 1000);
-    },
-
-    // Set the iframe as loading.
-    setLoading: function () {
-        var iframe = this.down('*[cls=diffContainer]').getActiveTab().getPlugin('iframe');
-        iframe.setLoading();
-    },
+Ext.define('DefaultDiff.view.ConsolidatingDiffMainTab', {
+    extend : 'DefaultDiff.view.DiffTab',
+    alias : 'widget.consolidatingDiffMainTab',
+    config : { pluginName : "default-diff" },
 
     initComponent : function() {
         var me = this;
-
-        me.items = [{
-            xtype: "doubleDocSelector",
-            editButtonLabel: me.editButtonLabel
-        }, {
-            xtype : "tabpanel",
-            cls : 'diffContainer',
-            flex : 1,
-            border : 0,
-            items : [{
-                title : Locale.getString("textTabTitle", me.getPluginName()),
-                format : 'text',
-                plugins : [{
-                    ptype : 'iframe',
-                    pluginId : 'iframe'
-                }]
-            }, {
-                title : Locale.getString("xmlTabTitle", me.getPluginName()),
-                format : 'xml',
-                plugins : [{
-                    ptype : 'iframe',
-                    pluginId : 'iframe'
-                }]
-            }],
-            listeners : {
-                tabchange: function () {
-                    var cmp = this.up('diffTab');
-                    if (cmp.iframeSource)
-                        cmp.fireEvent('diffTypeChanged', cmp);
-                }
-            }
-        }];
-
-        // me.down("button[cls='editButton']").setValue('Hello')
+        me.editButtonLabel = Locale.getString("consolidatingEditButtonTitle", me.getPluginName());
+        me.title = Locale.getString("consolidatingTabTitle", me.getPluginName());
         me.callParent(arguments);
     }
 });

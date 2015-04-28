@@ -184,7 +184,7 @@ Ext.define('LIME.controller.CustomizationManager', {
         }
         if(me.syncButton) {
             if (me.syncButton.syncEnabled)
-                me.getController('DualEditorSynchronizer').disable();
+                me.getController('DefaultDiff.controller.DualEditorSynchronizer').disable();
             me.syncButton.up().remove(me.syncButton);
         }
         language.beforeTranslate(function(xml) {
@@ -242,11 +242,11 @@ Ext.define('LIME.controller.CustomizationManager', {
                         if (this.syncEnabled) {
                             this.syncEnabled = false;
                             this.setText('Enable Synchronization');
-                            me.getController('DualEditorSynchronizer').disable();
+                            me.getController('DefaultDiff.controller.DualEditorSynchronizer').disable();
                         } else {
                             this.syncEnabled = true;
                             this.setText('Disable Synchronization');
-                            me.getController('DualEditorSynchronizer').enable();
+                            me.getController('DefaultDiff.controller.DualEditorSynchronizer').enable();
                         }
                     }
                 }
@@ -264,7 +264,6 @@ Ext.define('LIME.controller.CustomizationManager', {
             editorController = me.getController("Editor"),
             language = me.getController("Language"),
             xmlDiff = dualConfig.diffTab,
-            xmlDiffController = me.getController("XmlDiffController"),
             secondEditor;
 
         //me.getAppViewport().setLoading(true);

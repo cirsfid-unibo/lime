@@ -2,6 +2,7 @@
     "name": "LIME",
     "requires": [
         "default-validation",
+        "default-diff",
         "akn-tab-xml-preview",
         "akn-tab-visualizer"
     ],

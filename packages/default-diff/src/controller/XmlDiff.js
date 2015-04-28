@@ -44,12 +44,12 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('LIME.controller.XmlDiffController', {
+Ext.define('DefaultDiff.controller.XmlDiff', {
     extend: 'Ext.app.Controller',
     
     views: [
-      "LIME.ux.xmlDiff.AmendingDiffMainTab",
-      "LIME.ux.xmlDiff.ConsolidatingDiffMainTab"
+        'DefaultDiff.view.AmendingDiffMainTab',
+        'DefaultDiff.view.ConsolidatingDiffMainTab'
     ],
 
     refs: [
@@ -66,7 +66,6 @@ Ext.define('LIME.controller.XmlDiffController', {
     ],
 
     config: {
-        pluginName : "xmlDiff",
         diffXmlServiceUrl : "php/diff/index.php",
         diffServiceUrl : "php/AKNDiff/index.php",
         initDiffPage: "php/AKNDiff/data/empty.html"
@@ -191,7 +190,7 @@ Ext.define('LIME.controller.XmlDiffController', {
         }
         if(me.syncButton) {
             if (me.syncButton.syncEnabled)
-                me.getController('DualEditorSynchronizer').disable();
+                me.getController('DefaultDiff.controller.DualEditorSynchronizer').disable();
             me.syncButton.up().remove(me.syncButton);
         }
 
@@ -249,11 +248,11 @@ Ext.define('LIME.controller.XmlDiffController', {
                         if (this.syncEnabled) {
                             this.syncEnabled = false;
                             this.setText('Enable Synchronization');
-                            me.getController('DualEditorSynchronizer').disable();
+                            me.getController('DefaultDiff.controller.DualEditorSynchronizer').disable();
                         } else {
                             this.syncEnabled = true;
                             this.setText('Disable Synchronization');
-                            me.getController('DualEditorSynchronizer').enable();
+                            me.getController('DefaultDiff.controller.DualEditorSynchronizer').enable();
                         }
                     }
                 }
@@ -419,7 +418,7 @@ Ext.define('LIME.controller.XmlDiffController', {
             },
             'consolidatingDiffMainTab doubleDocSelector': {
                 edit: me.enableEditModeScenarioB
-            },
+            }
         });
     }
 });

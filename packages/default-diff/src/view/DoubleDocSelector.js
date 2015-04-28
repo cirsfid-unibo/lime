@@ -45,11 +45,11 @@
  */
 
 // Widget for selecting two docs (For Diff like stuff)
-Ext.define('LIME.ux.xmlDiff.DoubleDocSelector', {
+Ext.define('DefaultDiff.view.DoubleDocSelector', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.doubleDocSelector',
 
-    config : { pluginName : 'xmlDiff' },
+    config : { pluginName : 'default-diff' },
 
     // Properties id (string), url (string), new (boolean)
     firstDoc : {},
@@ -114,7 +114,7 @@ Ext.define('LIME.ux.xmlDiff.DoubleDocSelector', {
                 layout: 'hbox',
                 items: [{
                     xtype: 'textfield',
-                    fieldLabel: Locale.getString('firstDocumentLabel', 'xmlDiff'),
+                    fieldLabel: Locale.getString('firstDocumentLabel', this.getPluginName()),
                     readOnly: true,
                     labelWidth: 80,
                     flex: 1
@@ -129,7 +129,7 @@ Ext.define('LIME.ux.xmlDiff.DoubleDocSelector', {
         }, {
             xtype: 'button',
             cls: 'resetButton',
-            text: Locale.getString('resetDocument', 'xmlDiff'),
+            text: Locale.getString('resetDocument', this.getPluginName()),
             handler: function () {
                 this.up('doubleDocSelector').clearSelectedDocuments();
             } 
@@ -151,7 +151,7 @@ Ext.define('LIME.ux.xmlDiff.DoubleDocSelector', {
                 layout: 'hbox',
                 items: [{
                     xtype: 'textfield',
-                    fieldLabel: Locale.getString('secondDocumentLabel', 'xmlDiff'),
+                    fieldLabel: Locale.getString('secondDocumentLabel', this.getPluginName()),
                     readOnly: true,
                     labelWidth: 80,
                     flex: 1
