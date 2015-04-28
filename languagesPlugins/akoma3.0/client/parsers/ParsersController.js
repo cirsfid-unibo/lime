@@ -1766,7 +1766,6 @@ Ext.define('LIME.controller.ParsersController', {
 
             if ( ranges.length ) {
                 Ext.each(ranges, function(range) {
-                    DomUtils.range.normalize(range);
                     if(!me.canPassNode(range.startContainer.firstChild, button.id, [DomUtils.tempParsingClass])){
                         return;
                     }
