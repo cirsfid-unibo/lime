@@ -548,16 +548,22 @@ Ext.define('LIME.DomUtils', {
     // Find string inside node, string can be text (findText
     // will be used) or html (findHtml will be used).
     // Return list of ranges.
-    find : function (string, node) {
-        if (string.match(DomUtils.tagRegex))
-            return DomUtils.findHtml(string, node);
-        else
-            return DomUtils.findText(string, node);
+    find: function (string, node) {
+        try {
+            if (string.match(DomUtils.tagRegex))
+                return DomUtils.findHtml(string, node);
+            else
+                return DomUtils.findText(string, node);
+        } catch (e) {
+            console.warn('Bug in range functions: find(string, node)', string, node);
+            console.warn(e);
+            return [];
+        }
     },
     // Search inside node (HTML Node) for the given html string.
     // Return a list of matches (Range objects).
     // Note: This works only for simple tags like <br> and markers.
-    findHtml : function (html, node) {
+    findHtml: function (html, node) {
         return this.findTextIgnoringHtml(html, node).filter(function (range) {
             var content = DomUtils.range.getHtml(range);
             return content.indexOf(html) != -1;
@@ -568,7 +574,7 @@ Ext.define('LIME.DomUtils', {
     // ignoring all html tags.
     // Return a list of matches (Range objects).
     // Note: This works only for simple tags like <br> and markers.
-    findTextIgnoringHtml : function (html, node) {
+    findTextIgnoringHtml: function (html, node) {
         var text = DomUtils.stripHtmlTags(html);
         return DomUtils.findText(text, node);
     },
@@ -576,7 +582,7 @@ Ext.define('LIME.DomUtils', {
     // Search inside node (HTML Node) for the text string, ignoring
     // the html tags.
     // Return a list of matches (Range objects).
-    findText : function (text, node) {
+    findText: function (text, node) {
         // Find matches in plain string
         var matches = [];
         var pos = -1;
@@ -714,7 +720,7 @@ Ext.define('LIME.DomUtils', {
         },
 
         // Get the HTML string inside range.
-        getHtml : function (range) {
+        getHtml: function (range) {
             var output = '';
             DomUtils.range.traverse(range, {
                 onText: function (node) {
