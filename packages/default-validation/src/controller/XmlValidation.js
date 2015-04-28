@@ -448,7 +448,6 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
         var me = this; 
         Server.getResourceFile('errorsMapping.json', this.getPluginName(), function (path, data) {
             me.errorsMapping = Ext.decode(data, true);
-            console.info(data)
         });
     },
     

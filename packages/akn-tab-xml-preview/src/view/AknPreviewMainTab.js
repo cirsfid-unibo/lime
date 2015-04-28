@@ -44,63 +44,46 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('LIME.controller.AknPreviewController', {
-    extend : 'Ext.app.Controller',
+/**
+ * Pdf viewer tab, this tab uses two plugins one for converting content
+ * to pdf and the other to show the pdf in the tab
+ */
+Ext.define('AknTabXmlPreview.view.AknPreviewMainTab', {
+    extend : 'Ext.panel.Panel',
     
-    views: ["LIME.ux.aknPreview.AknPreviewMainTab"],
-
-    refs : [{
-        selector : 'appViewport',
-        ref : 'appViewport'
-    }, {
-        selector: 'aknPreviewMainTab',
-        ref: 'xml'
-    }],
-
     config : {
         pluginName : "aknPreview"
     },
     
-    doTranslate: function() {
-        if(this.getXml()) {
-            var me = this,
-                activeTab = this.getXml().up("main").getActiveTab();
-            if (activeTab == this.getXml()) {
-                me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
-                    me.updateContent(xml);
-                }, this.getXml());    
-            }
-        }
-    },
+    extend : 'Ext.Panel',
+    // set the alias
+    alias : 'widget.aknPreviewMainTab',
+
+    // set the layout type
+    layout : 'fit',
+
+    cls : 'editorTab',
     
-    /**
-     * Actually update the related view with the given content
-     * @param {String} content
-     * @private
-     */
-    updateContent : function(content) {
-        if (this.getXml() && content != this.content) {
-            this.getXml().down('codemirror').setValue(content);
-            this.content = content;
-        }
-    },
+    notEditMode: true,
+
+    width : '100%',
+    padding : 0,
+    margin : 0,
+    border : 0,
+
+    items : [{
+        xtype : 'codemirror',
+        grow : true,
+        mode : 'text/html',
+        showModes : false,
+        showAutoIndent : false,
+        showLineNumbers : true,
+        readOnly : true,
+        anchor : '100%'
+    }],
     
-    onRemoveController: function() {
-        var me = this;
-        me.application.removeListener(Statics.eventsNames.afterLoad, me.doTranslate, me);
-    },
-    
-    onInitPlugin: function() {
-        var me = this;
-        me.application.on(Statics.eventsNames.afterLoad, me.doTranslate, me);
-    },
-    
-    init : function() {
-        var me = this;
-        this.control({
-            'aknPreviewMainTab' : {
-                activate : me.doTranslate
-            }
-        });
+    initComponent: function(){
+        this.title = new Ext.Template(Locale.strings.mainPreview).apply({'language': Language.name});
+        this.callParent(arguments);
     }
 });

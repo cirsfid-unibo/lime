@@ -2,6 +2,7 @@
     "name": "LIME",
     "requires": [
         "default-validation",
+        "akn-tab-xml-preview",
         "akn-tab-visualizer"
     ],
     "framework": "ext",

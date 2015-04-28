@@ -200,8 +200,8 @@ Ext.define('LIME.Server', {
     getResourceFile: function (file, packageName, success, failure) {
         var possiblePaths = [{
             name: 'dev',
-            url: 'packages/' + packageName + '/resources/' + file, // Dev mode
-        },{
+            url: 'packages/' + packageName + '/resources/' + file // Dev mode
+        }, {
             name: 'build',
             url: 'resources/' + packageName + '/' + file // Build mode
         }];
