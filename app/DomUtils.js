@@ -584,22 +584,26 @@ Ext.define('LIME.DomUtils', {
             matches.unshift(pos);
 
         var textNodes = DomUtils.getTextNodes(node);
-        // return the splitted text node after the given offset
+        // return the splitted text nodes before and after the given offset
         var indexToTextNode = function (index) {
             var pos = 0;
             for (var i = 0; i < textNodes.length; i++) {
                 var node = textNodes[i];
                 if (index - pos < node.length)
-                    return node.splitText(index - pos);
+                    return {
+                        left: node,
+                        right: node.splitText(index - pos)
+                    }
                 pos += node.length;
             }
+            return { left: node };
         }
 
         // Map plain string indexes to range objects
         return matches.map(function (index) {
             var range = node.ownerDocument.createRange();
-            range.setEndBefore(indexToTextNode(index + text.length));
-            range.setStartBefore(indexToTextNode(index));
+            range.setEndAfter(indexToTextNode(index + text.length).left);
+            range.setStartBefore(indexToTextNode(index).right);
             DomUtils.range.shrinkToTextNodes(range);
             DomUtils.range.enlargeToClosingTags(range);
             return range;
@@ -683,18 +687,18 @@ Ext.define('LIME.DomUtils', {
                         node = node.firstChild;
                         continue;
                     }
-                    else onTagClosed();
+                    else onTagClosed(node);
                 }
 
-                while (node && !node.nextSibling) {
+                if (node == lastNode) break;
+                while (!node.nextSibling) {
                     if (node == range.commonAncestorContainer)
                         return console.log('warning: commonAncestorContainer found');
                     if (node == lastNode) break;
                     node = node.parentNode;
                     onTagClosed(node);
                 }
-                if (node == lastNode) break;
-                else node = (node) ? node.nextSibling : node;
+                node = node.nextSibling;
             }
         },
 
@@ -723,14 +727,19 @@ Ext.define('LIME.DomUtils', {
                         output += ' "'  + attrs[i].name  +
                                   '"="' + attrs[i].value + '"';
                     }
+                    // Check if node is an auto-closed tag
+                    if (!node.firstChild) output += '/';
                     output += '>';
                 },
                 onTagClosed: function (node) {
+                    // If it was an auto-closed tag, don't close it again
+                    if (!node.firstChild) return; 
                     output += '</' + node.tagName.toLowerCase() + '>';
                 }
             });
             return output;
         },
+
         // Update range by splitting range nodes considering the range offsets
         splitRangeNodes : function(range) {
             if ( range.startContainer.nodeType == DomUtils.nodeType.TEXT ) {
