@@ -586,7 +586,7 @@ Ext.define('LIME.DomUtils', {
         // Find matches in plain string
         var matches = [];
         var pos = -1;
-        while ((pos = node.textContent.indexOf(text, pos+1)) > 0)
+        while ((pos = node.textContent.indexOf(text, pos+1)) >= 0)
             matches.unshift(pos);
 
         var textNodes = DomUtils.getTextNodes(node);
@@ -696,7 +696,6 @@ Ext.define('LIME.DomUtils', {
                     else onTagClosed(node);
                 }
 
-                if (node == lastNode) break;
                 while (!node.nextSibling) {
                     if (node == range.commonAncestorContainer)
                         return console.log('warning: commonAncestorContainer found');
@@ -704,6 +703,7 @@ Ext.define('LIME.DomUtils', {
                     node = node.parentNode;
                     onTagClosed(node);
                 }
+                if (node == lastNode) break;
                 node = node.nextSibling;
             }
         },
