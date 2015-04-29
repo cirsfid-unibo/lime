@@ -385,7 +385,7 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
         var codemirrorCmp = tab.down('codemirror');
 
         if ( codemirrorCmp.getValue().trim() ) {
-            codemirrorCmp.goToLine(errorData.line+2, true);
+            codemirrorCmp.goToLine(errorData.line, true);
         }
     },
 
@@ -424,11 +424,15 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
         }
 
         //TODO: manage multiple occorences
-        var range = DomUtils.findTextIgnoringHtml(row.trim(), editorBody).filter(function(range) {
-                        return me.queryIncludingNode(range.startContainer, '.'+name) ? true : false;
-                    })[0];
-
-        return (range) ? me.queryIncludingNode(range.startContainer, '.'+name) : null;
+        try {
+            range = DomUtils.findTextIgnoringHtml(row.trim(), editorBody).filter(function(range) {
+                            return me.queryIncludingNode(range.startContainer, '.'+name) ? true : false;
+                        })[0];
+            return range;
+        } catch (e) {
+            console.warn(e);
+            return null;
+        }
     },
 
     queryIncludingNode: function(node, query) {

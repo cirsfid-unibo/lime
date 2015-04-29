@@ -576,6 +576,7 @@ Ext.define('LIME.DomUtils', {
     // Note: This works only for simple tags like <br> and markers.
     findTextIgnoringHtml: function (html, node) {
         var text = DomUtils.stripHtmlTags(html);
+        if (!text) throw Error ('findTextIgnoringHtml: empty string given', html);
         return DomUtils.findText(text, node);
     },
 
@@ -583,6 +584,7 @@ Ext.define('LIME.DomUtils', {
     // the html tags.
     // Return a list of matches (Range objects).
     findText: function (text, node) {
+        if (!text) throw Error ('findText: empty string given');
         // Find matches in plain string
         var matches = [];
         var pos = -1;

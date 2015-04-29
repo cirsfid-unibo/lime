@@ -71,15 +71,12 @@ class Proxies_Services_XmlValidation implements Proxies_Services_Interface {
 		// creates the URL of the curl with the address and the parameters
 
 		$dom = new DOMDocument();
-		/* Trick to get the right line numbers by validator
-		 * save the xml in pritty formatting and load it again in the dom
-		 * */
+
 		try {
-			$prittyXml = $this -> xmlpp($this -> _source);
-			if ($dom -> loadXML($prittyXml)) {
+			if ($dom -> loadXML($this -> _source)) {
 				if ($internalSchemaPath) {
 					if (!$dom -> schemaValidate($internalSchemaPath)) {
-						$result = $this -> libxmlGetErrors($prittyXml);
+						$result = $this -> libxmlGetErrors($this -> _source);
 					}
 					$result["started"] = true;
 				} else {
