@@ -73,27 +73,62 @@ function transform (input, output) {
 // Add some computations to set its css to start relative to the page instead of
 // the parent element.
 // Set the data-page attribute of each fragment with the relative page.
+// Move every page break exactly PAGE_SIZE pixels after the last one, 
+// thus making pages seam of the same height.
 function addPages () {
-    var PAGE_SIZE = 840;
+    var PAGE_SIZE = 842,
+        PAGE_START = 25 + 25;
+        PAGE_BREAK_HEIGHT = 50,
+        PAGE_BREAK_MARGIN = 50;
     console.log('addPages', $(Preview.dom).height());
 
-    var pagePos = Preview.dom.querySelector('.akomaNtoso').getBoundingClientRect().left;
+    var pagePos = Preview.dom.querySelector('.akomaNtoso').getBoundingClientRect();
     var page = 0;
+    console.info('pagePos.top', pagePos.top);
+
+    // Detect fragments before which we should insert a page break
+    var breakingFragments = [];
     getAllFragments().sort(startingOrder).forEach(function (fragment) {
-        if (fragment.start > (page+1) * PAGE_SIZE) {
+        var expectedBreak = pagePos.top 
+            + (page+1) * PAGE_SIZE
+            - (page+1) * PAGE_BREAK_HEIGHT
+            - (page > 0 ? page : 0) * PAGE_BREAK_HEIGHT;
+        if (fragment.start > expectedBreak) {
             page++;
-            // console.log('Adding page at', fragment.start, fragment.node);
-            var node = fragment.node;
-            while (node == node.parentNode.firstChild) {
-                node = node.parentNode;
-            }
-            var eop = $('<span class="pageBreak"><span class="inner"/></span>')
-            eop.insertBefore($(node));
-            var pos = eop[0].getBoundingClientRect().left;
-            eop.css('left', (pagePos - pos)+'px');
+            breakingFragments.push(fragment);
         }
         fragment.node.dataset.page = page;
     });
+
+    // Insert pageBreaks
+    breakingFragments.forEach(highlight);
+    breakingFragments.forEach(function (fragment) {
+        // console.log('Adding page at', fragment.start, fragment.node);
+        var node = fragment.node;
+        while (node == node.parentNode.firstChild) {
+            node = node.parentNode;
+        }
+        var eop = $('<span class="pageBreak"><span class="inner"/></span>')
+        eop.insertBefore($(node));
+        var pos = eop[0].getBoundingClientRect();
+
+        eop.css('left', (pagePos.left - pos.left)+'px');
+    });
+
+    // Adjust pageBreak top css
+    var breaks = Preview.dom.querySelectorAll('.pageBreak');
+    for (var page = 0; page < breaks.length; page++) {
+        var el = breaks[page];
+        var pos = el.getBoundingClientRect();
+        
+        var adjustment = pos.top - pagePos.top 
+            - (page * PAGE_BREAK_HEIGHT)
+            // - (page * PAGE_BREAK_MARGIN)
+            // - ((page+1) * PAGE_BREAK_MARGIN)
+            - ((page+1) * PAGE_SIZE);
+        console.info(page, pos.top, adjustment);
+        $(el).css('top', (-adjustment)+'px');
+    }
 }
 
 function renderLineNumbers () {
