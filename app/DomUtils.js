@@ -630,8 +630,12 @@ Ext.define('LIME.DomUtils', {
             var nodes = DomUtils.range.getTextNodes(range).filter(function (node) {
                 return node.textContent.length > 0;
             });
-            range.setStartBefore(nodes[0]);
-            range.setEndAfter(nodes[nodes.length - 1]);
+            if (nodes.length) {
+                range.setStartBefore(nodes[0]);
+                range.setEndAfter(nodes[nodes.length - 1]);
+            } else {
+                range.collapse();
+            }
         },
 
         // Normalize range by enlarging it to include starting/closing tags around it.
@@ -674,39 +678,33 @@ Ext.define('LIME.DomUtils', {
         //   onTagClosed: function(node) {}   
         // }
         traverse: function (range, callbacks) {
-            var firstNode = range.startContainer.nodeType ==  DomUtils.nodeType.TEXT ?
-                            range.startContainer : 
-                            range.startContainer.childNodes[range.startOffset],
-                lastNode = range.endContainer.nodeType ==  DomUtils.nodeType.TEXT ?
-                           range.endContainer :
-                           range.endContainer.childNodes[range.endOffset - 1];
-
-            var onText = callbacks.onText || function () {};
-            var onTagOpened = callbacks.onTagOpened || function () {};
-            var onTagClosed = callbacks.onTagClosed || function () {};
-
-            var node = firstNode;
-            while (node) {
-                if (node.nodeType == DomUtils.nodeType.TEXT)
+            console.info('traverse', range);
+            var onText = callbacks.onText || function () {},
+                onTagOpened = callbacks.onTagOpened || function () {},
+                onTagClosed = callbacks.onTagClosed || function () {}
+            
+            DomUtils.range.splitRangeNodes(range);
+            var container = range.startContainer,
+                offset = range.startOffset;
+            while (container != range.endContainer || offset != range.endOffset) {
+                var node = container.childNodes[offset];
+                if (!node) {
+                    if (container == range.commonAncestorContainer)
+                        return console.warn('warning: commonAncestorContainer found');
+                    onTagClosed(container);
+                    offset = 1 + Array.prototype.indexOf.call( // NodeLists.. <3
+                        container.parentNode.childNodes, container);
+                    container = container.parentNode;
+                }
+                else if (node.nodeType == DomUtils.nodeType.TEXT) {
                     onText(node);
-                if (node.nodeType == DomUtils.nodeType.ELEMENT) {
+                    offset++;
+                }
+                else if (node.nodeType == DomUtils.nodeType.ELEMENT) {
                     onTagOpened(node);
-                    if (node.firstChild) {
-                        node = node.firstChild;
-                        continue;
-                    }
-                    else onTagClosed(node);
+                    container = node;
+                    offset = 0;
                 }
-
-                while (!node.nextSibling) {
-                    if (node == range.commonAncestorContainer)
-                        return console.log('warning: commonAncestorContainer found');
-                    if (node == lastNode) break;
-                    node = node.parentNode;
-                    onTagClosed(node);
-                }
-                if (node == lastNode) break;
-                node = node.nextSibling;
             }
         },
 
@@ -750,10 +748,10 @@ Ext.define('LIME.DomUtils', {
 
         // Update range by splitting range nodes considering the range offsets
         splitRangeNodes : function(range) {
-            if ( range.startContainer.nodeType == DomUtils.nodeType.TEXT ) {
+            if (range.startContainer.nodeType == DomUtils.nodeType.TEXT) {
                 range.setStartBefore(range.startContainer.splitText(range.startOffset));
             }
-            if ( range.endContainer.nodeType == DomUtils.nodeType.TEXT ) {
+            if (range.endContainer.nodeType == DomUtils.nodeType.TEXT) {
                 range.setEndBefore(range.endContainer.splitText(range.endOffset));
             }
             return range;
