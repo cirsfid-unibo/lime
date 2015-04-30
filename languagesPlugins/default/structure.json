@@ -3,7 +3,6 @@
         "xmlJNdiff",
         "importDocument",
         "exportDocument",
-        "pdfPreview",
-        "openNirDocPdfDocument"
+        "pdfPreview"
     ]
 }

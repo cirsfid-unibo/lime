@@ -48,7 +48,7 @@
 // NIR file: ask user if he wants to convert it to AKN.
 // Doc file: automatically import
 // Pdf file: ???
-Ext.define('LIME.controller.CustomOpenButtonController', {
+Ext.define('DefaultAutoimportOpen.controller.CustomOpenButton', {
     extend: 'Ext.app.Controller',
     
     refs: [
@@ -132,16 +132,18 @@ Ext.define('LIME.controller.CustomOpenButtonController', {
         console.log('onNirSelected', path);
         var me = this; 
         this.confirmAknTranslation(function () {
-            var nir2akn = Config.getPluginUrl('openNirDocPdfDocument').relative + '/NirToAkn.xsl';
-            Server.applyXslt(content, nir2akn, function (akn) {
-                console.log('akn', akn);
-                var akn2html = 'languagesPlugins/akoma3.0/AknToXhtml.xsl';
-                Server.applyXslt(akn, akn2html, function (html) {
-                    console.log('html', html);
-                    // Load the resulting Htmltoso document
-                    me.application.fireEvent(Statics.eventsNames.loadDocument, {
-                        docText: html,
-                        docMarkingLanguage: 'akoma3.0',
+
+            Server.getResourceFile('/NirToAkn.xsl', 'default-autoimport-open', function (nir2akn) {
+                Server.applyXslt(content, nir2akn, function (akn) {
+                    console.log('akn', akn);
+                    var akn2html = 'languagesPlugins/akoma3.0/AknToXhtml.xsl';
+                    Server.applyXslt(akn, akn2html, function (html) {
+                        console.log('html', html);
+                        // Load the resulting Htmltoso document
+                        me.application.fireEvent(Statics.eventsNames.loadDocument, {
+                            docText: html,
+                            docMarkingLanguage: 'akoma3.0',
+                        });
                     });
                 });
             });
@@ -150,8 +152,8 @@ Ext.define('LIME.controller.CustomOpenButtonController', {
 
     confirmAknTranslation: function (cb) {
         Ext.Msg.show({
-            title: Locale.getString('confirmAknTranslationTitle', 'openNirDocPdfDocument'), 
-            msg: Locale.getString('confirmAknTranslationQuestion', 'openNirDocPdfDocument'),
+            title: Locale.getString('confirmAknTranslationTitle', 'default-autoimport-open'), 
+            msg: Locale.getString('confirmAknTranslationQuestion', 'default-autoimport-open'),
             buttons: Ext.Msg.YESNOCANCEL,
             fn: function(btn) {
                 if (btn == 'yes'){

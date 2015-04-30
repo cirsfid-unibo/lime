@@ -49,7 +49,7 @@ Ext.require([
     'DefaultValidation.controller.XmlValidation'
 ]);
 
-Ext.define('AknTabVisualizer.Application', {
+Ext.define('DefaultValidation.Application', {
     override: 'LIME.Application',
 
     requires: [
