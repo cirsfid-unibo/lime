@@ -75,11 +75,13 @@ function transform (input, output) {
 // Set the data-page attribute of each fragment with the relative page.
 // Move every page break exactly PAGE_SIZE pixels after the last one, 
 // thus making pages seam of the same height.
+// Force document height to be a multiple of pages.
 function addPages () {
     var PAGE_SIZE = 842,
         PAGE_START = 25 + 25;
         PAGE_BREAK_HEIGHT = 50,
-        PAGE_BREAK_MARGIN = 50;
+        PAGE_BREAK_MARGIN_TOP = 50,
+        PAGE_BREAK_MARGIN_BOTTOM = 100;
     console.log('addPages', $(Preview.dom).height());
 
     var pagePos = Preview.dom.querySelector('.akomaNtoso').getBoundingClientRect();
@@ -88,20 +90,21 @@ function addPages () {
 
     // Detect fragments before which we should insert a page break
     var breakingFragments = [];
-    getAllFragments().sort(startingOrder).forEach(function (fragment) {
+    getAllFragments().forEach(function (fragment) {
         var expectedBreak = pagePos.top 
-            + (page+1) * PAGE_SIZE
-            - (page+1) * PAGE_BREAK_HEIGHT
-            - (page > 0 ? page : 0) * PAGE_BREAK_HEIGHT;
+            + (page+1) * (PAGE_SIZE - PAGE_BREAK_MARGIN_BOTTOM)
+            - (page) * (PAGE_BREAK_MARGIN_TOP);
         if (fragment.start > expectedBreak) {
             page++;
             breakingFragments.push(fragment);
         }
         fragment.node.dataset.page = page;
     });
+    // Make sure the whole document height is a multiple of PAGE_SIZE
+    var totalSize = page * (PAGE_SIZE + PAGE_BREAK_HEIGHT) + PAGE_SIZE;
+    $(Preview.dom.querySelector('.akomaNtoso')).css('height', totalSize+'px');
 
     // Insert pageBreaks
-    breakingFragments.forEach(highlight);
     breakingFragments.forEach(function (fragment) {
         // console.log('Adding page at', fragment.start, fragment.node);
         var node = fragment.node;
