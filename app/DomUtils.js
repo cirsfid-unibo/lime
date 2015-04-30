@@ -634,7 +634,7 @@ Ext.define('LIME.DomUtils', {
                 range.setStartBefore(nodes[0]);
                 range.setEndAfter(nodes[nodes.length - 1]);
             } else {
-                range.collapse();
+                range.collapse(true);
             }
         },
 
@@ -678,10 +678,9 @@ Ext.define('LIME.DomUtils', {
         //   onTagClosed: function(node) {}   
         // }
         traverse: function (range, callbacks) {
-            console.info('traverse', range);
             var onText = callbacks.onText || function () {},
                 onTagOpened = callbacks.onTagOpened || function () {},
-                onTagClosed = callbacks.onTagClosed || function () {}
+                onTagClosed = callbacks.onTagClosed || function () {};
             
             DomUtils.range.splitRangeNodes(range);
             var container = range.startContainer,
