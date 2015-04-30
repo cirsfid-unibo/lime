@@ -92,8 +92,8 @@ function addPages () {
     var breakingFragments = [];
     getAllFragments().forEach(function (fragment) {
         var expectedBreak = pagePos.top 
-            + (page+1) * (PAGE_SIZE - PAGE_BREAK_MARGIN_BOTTOM)
-            - (page) * (PAGE_BREAK_MARGIN_TOP);
+            + (page+1) * (PAGE_SIZE - PAGE_BREAK_MARGIN_TOP)
+            - (page) * (PAGE_BREAK_MARGIN_BOTTOM);
         if (fragment.start > expectedBreak) {
             page++;
             breakingFragments.push(fragment);
@@ -105,6 +105,7 @@ function addPages () {
     $(Preview.dom.querySelector('.akomaNtoso')).css('height', totalSize+'px');
 
     // Insert pageBreaks
+    // breakingFragments.forEach(highlight)
     breakingFragments.forEach(function (fragment) {
         // console.log('Adding page at', fragment.start, fragment.node);
         var node = fragment.node;
