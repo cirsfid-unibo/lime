@@ -48,12 +48,8 @@
  * Pdf viewer tab, this tab uses two plugins one for converting content
  * to pdf and the other to show the pdf in the tab
  */
-Ext.define('LIME.ux.nirPreview.NirPreviewMainTab', {
+Ext.define('DefaultNir.view.NirPreviewMainTab', {
     extend : 'Ext.panel.Panel',
-    
-    config : {
-        pluginName : "nirPreview"
-    },
     
     extend : 'Ext.Panel',
     // set the alias

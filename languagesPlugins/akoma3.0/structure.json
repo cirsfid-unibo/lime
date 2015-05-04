@@ -131,7 +131,7 @@
 	],
 
 	"customViews": ["MarkingMenu"],
-	"plugins": ["nirPreview",
+	"plugins": [
 				"consolidation",
 				"parsers", 
 				"documentCollection",

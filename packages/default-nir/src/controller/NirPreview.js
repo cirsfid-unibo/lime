@@ -46,10 +46,10 @@
 
 // Plugin to display and export a NIR conversion
 // of the AkomaNtoso document.
-Ext.define('LIME.controller.NirPreviewController', {
+Ext.define('DefaultNir.controller.NirPreview', {
     extend : 'Ext.app.Controller',
     
-    views: ["LIME.ux.nirPreview.NirPreviewMainTab"],
+    views: ["DefaultNir.view.NirPreviewMainTab"],
 
     refs : [{
         selector : 'appViewport',
@@ -64,10 +64,6 @@ Ext.define('LIME.controller.NirPreviewController', {
         ref : 'downloadManager',
         selector : 'downloadManager'
     }],
-
-    config : {
-        pluginName : "nirPreview"
-    },
 
 
     init: function() {
@@ -89,6 +85,7 @@ Ext.define('LIME.controller.NirPreviewController', {
         if (activeTab != xml) return;
 
         me.translateToNir(function (nirXml) {
+        console.log(5)
             if (me.getXml()) {
                 me.getXml().down('codemirror').setValue(nirXml);
             }
@@ -97,15 +94,20 @@ Ext.define('LIME.controller.NirPreviewController', {
 
     // Call cb with the NIR conversion of the current document.
     translateToNir: function (cb) {
-        var me = this,
-            meUrl = Config.getPluginUrl(me.getPluginName());
+        var me = this;
 
         // HTMLToso to AkomaNtoso
+        console.log(1)
         me.application.fireEvent(Statics.eventsNames.translateRequest, function (aknXml) {
-            // AkomaNtoso to NIR
-            aknXml = me.forceLatestVersion(aknXml);
-            Server.applyXslt(aknXml, meUrl.relative+'AknToNir.xsl', cb, function () {
-                Ext.Msg.alert('Nir conversion failed');
+        console.log(2)
+            Server.getResourceFile('AknToNir.xsl', 'default-nir', function (xsltPath) {
+        console.log(3)
+                // AkomaNtoso to NIR
+                aknXml = me.forceLatestVersion(aknXml);
+                Server.applyXslt(aknXml, xsltPath, cb, function () {
+        console.log(4)
+                    Ext.Msg.alert('Nir conversion failed');
+                });
             });
         }, me.getXml());
     },
