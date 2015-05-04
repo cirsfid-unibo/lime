@@ -33,17 +33,20 @@ function cloneDoc (xml) {
 // Transform the input XML DOM in HTML and copy it to output. 
 // Split text nodes in fragments.
 function transform (input, output) {
-    // Don't split in fragments inside the following tags
-    var noSplitTags = ['num', 'heading', 'subheading'];
  
     switch (input.nodeType) {
     case 3: // Text
         var text = input.wholeText.trim();
         if(text) {
-            var el = document.createElement('span');
-            el.className = 'fragment';
-            el.appendChild(document.createTextNode(text));
-            output.appendChild(el);
+            // Split text elements, making it possible to calculate
+            // line numbers and page breaks with more precision.
+            text.split(' ').forEach(function (txt, i) {
+                if (i) txt = ' ' + txt;
+                var el = document.createElement('span');
+                el.className = 'fragment';
+                el.appendChild(document.createTextNode(txt));
+                output.appendChild(el);
+            });
         }
         break;
  
@@ -139,13 +142,15 @@ function renderLineNumbers () {
     if (!isRenderingNeeded()) return;
     $('#lineNumbers').empty();
 
+    console.info('renderLineNumbers')
     getAllFragments()
         .filter(getAfterFormulaFilter())
         .sort(startingOrder)
         .filter(getOverlappingLinesFilter())
-        // .forEach(highlight);
+        // .forEach(highlight)
         .reduce(groupByPage, [])
         .forEach(function (fragments) {
+            // fragments.forEach(highlight);
             fragments.reduce(displayLineNumbers, 0);
         });
 }
@@ -163,7 +168,9 @@ function getAllFragments () {
             node: this,
             start: top,
             end: top + height,
-            lines: countLines(this),
+            // Disabled (fragments are never multi-line now)
+            // lines: countLines(this),
+            lines: 1,
             page: this.dataset.page
         }
     }).toArray();
@@ -219,6 +226,7 @@ function displayLineNumbers (currentLine, fragment) {
     var step = $(fragment.node).height() / fragment.lines;
     for (var line = currentLine + 1; line <= currentLine + fragment.lines; line++) {
         if ((line % N) == 0) {
+            // highlight(fragment);
             var el = $('<div>' + line + '</div>');
             $('#lineNumbers').append(el);
 
@@ -231,13 +239,14 @@ function displayLineNumbers (currentLine, fragment) {
     return currentLine + fragment.lines;
 }
 
-function highlight (fragment) {
+function highlight (fragment, i) {
+    console.info(i, fragment.start, fragment.end, fragment.node);
     $(fragment.node).css('background-color', '#afa');
 }
 
 function setSize (size) {
     Preview.dom.dataset.size = size;
-    setTimeout(renderLineNumbers, 0);
+    setTimeout(renderLineNumbers, 500);
 }
 
 window.Preview = Preview;

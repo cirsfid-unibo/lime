@@ -25,13 +25,7 @@ body, html { padding: 0; margin: 0; width: 100%; }
 }
 
 .fragment {
-    display: inline-block;
-    border-bottom: 1px solid black;
-    border-radius: 5px;
-    padding: 0px 5px;
-    margin-right: 1px;
     position: relative;
-    left: 7px;
 }
 
 .document {
@@ -95,9 +89,6 @@ body, html { padding: 0; margin: 0; width: 100%; }
     }
     &[data-size='full'] .akomaNtoso {
         background-color: white;
-        // span.pageBreak {
-        //     display: none;
-        // }
     }
 }
 
@@ -128,34 +119,33 @@ body, html { padding: 0; margin: 0; width: 100%; }
     text-decoration: none;
     border-radius: 5px;
     display: inline-block;
-    .fragment {
-        text-decoration: underline;
 
-        display: inline;
-        padding-left: 0;
-        background-color: lighten(@color, 47%);
+    text-decoration: underline;
 
-        border-color: lighten(@color, 20%);
-        border-radius: 5px;
-        margin: 0 3px;
-        border-bottom: 2px solid @color;
+    display: inline;
+    padding-left: 0;
+    background-color: lighten(@color, 47%);
 
-        &:before {
-            box-shadow: 2px 1px 3px -2px #333333;
-            background-color: @color;
-            display: inline-block;
-            content: @icon;
+    border-color: lighten(@color, 20%);
+    border-radius: 5px;
+    margin: 0 3px;
+    border-bottom: 2px solid @color;
 
-            font: 1em 'FontAwesome';
-            line-height: 20px;
-            border-radius: 5px;
-            border-radius: 0 5px 0 5px;
-            color: white;
+    &:before {
+        box-shadow: 2px 1px 3px -2px #333333;
+        background-color: @color;
+        display: inline-block;
+        content: @icon;
 
-            padding: 0 5px 0 5px;
-            margin-right: 5px;
-        }
+        font: 1em 'FontAwesome';
+        line-height: 20px;
+        border-radius: 0 5px 0 5px;
+        color: white;
+
+        padding: 0 5px 0 5px;
+        margin-right: 5px;
     }
+
 }
 
 .aknVisualizer {
@@ -230,7 +220,7 @@ body, html { padding: 0; margin: 0; width: 100%; }
     .formula {
         margin-top: 30px;
         padding-left: 15px;
-        *:first-letter {
+        &:first-letter {
             font-size: 2em;
             position: relative;
             display: inline-block;
@@ -241,8 +231,6 @@ body, html { padding: 0; margin: 0; width: 100%; }
     }
 
     .quotedStructure {
-        // border-right: 1px solid black;
-        // border-top: 1px solid black;
         margin: 5px 0;
         padding: 15px;
         box-shadow: 3px 3px 15px black;
@@ -279,34 +267,4 @@ body, html { padding: 0; margin: 0; width: 100%; }
     .person {
         .inlineNew('\f007', hsl(206, 80%, 50%));
     }
-}
-
-
-.title .fragment{
-    background-color: hsl(70, 30%, 95%);
-    border-bottom-color: hsl(70, 30%, 65%);
-}
-.section .fragment{
-    background-color: hsl(91, 30%, 95%);
-    border-bottom-color: hsl(91, 30%, 65%) ;
-}
-.article .fragment{
-    background-color: hsl(109, 30%, 95%);
-    border-bottom-color: hsl(109, 30%, 65%);
-}
-.list .fragment{
-    background-color: hsl(159, 30%, 95%);
-    border-bottom-color: hsl(159, 30%, 65%);
-}
-.preamble .fragment{
-    background-color: hsl(206, 30%, 95%);
-    border-bottom-color: hsl(206, 30%, 65%);
-}
-.preface .fragment{
-    background-color: hsl(206, 30%, 95%);
-    border-bottom-color: hsl(206, 30%, 65%);
-}
-.conclusions .fragment{
-    background-color: hsl(206, 30%, 95%) ;
-    border-bottom-color: hsl(206, 30%, 65%);
 }
