@@ -77,7 +77,7 @@ class Proxies_Services_FilterUrls implements Proxies_Services_Interface {
 				if ($this -> _includeContent) {
 					$fileContent = file_get_contents($internalPath);
 					$jsonContent = json_decode($fileContent, true);
-					$value["content"] = $jsonContent;	
+					$value["content"] = ($jsonContent) ? $jsonContent : $fileContent;
 				}
 				$output[] = $value;
 			}
