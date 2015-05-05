@@ -133,7 +133,7 @@ function addPages () {
             // - (page * PAGE_BREAK_MARGIN)
             // - ((page+1) * PAGE_BREAK_MARGIN)
             - ((page+1) * PAGE_SIZE);
-        console.info(page, pos.top, adjustment);
+        // console.info(page, pos.top, adjustment);
         $(el).css('top', (-adjustment)+'px');
     }
 }

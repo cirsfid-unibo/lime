@@ -76,8 +76,16 @@ Ext.define('AknTabVisualizer.controller.MainTab', {
     loadDocument: function () {
         var me = this,
             id = DocProperties.documentInfo.docId;
+        if (!id) {
+            console.warn('AknTabVisualizer.controller.MainTab loadDocument():',
+                         'DocProperties.documentInfo.docId is null', 
+                         DocProperties.documentInfo.docId);
+            setTimeout(me.loadDocument, 500);
+            return;
+        }
+
         Server.getDocument(id, function (xml) {
             me.Preview.start(xml);
-        })
+        });
     }
 });
