@@ -1273,7 +1273,7 @@ Ext.define('LIME.controller.Editor', {
         me.removeVisualSelectionObjects();
         var oldRange = editor.selection.getRng();
         if ( oldRange.toString() ) {
-            me.lastSelectionRange = DomUtils.range.splitRangeNodes(oldRange.cloneRange());
+            me.lastSelectionRange = DomUtils.range.normalization.splitRangeNodes(oldRange.cloneRange());
             if ( editor.target.Env.ie ) {
                 Ext.each(DomUtils.range.getTextNodes(me.lastSelectionRange), function(node) {
                     Ext.fly(node).wrap({

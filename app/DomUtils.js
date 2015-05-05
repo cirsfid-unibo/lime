@@ -612,8 +612,8 @@ Ext.define('LIME.DomUtils', {
             var range = node.ownerDocument.createRange();
             range.setEndAfter(indexToTextNode(index + text.length).left);
             range.setStartBefore(indexToTextNode(index).right);
-            DomUtils.range.shrinkToTextNodes(range);
-            DomUtils.range.enlargeToClosingTags(range);
+            DomUtils.range.normalization.shrinkToTextNodes(range);
+            DomUtils.range.normalization.enlargeToClosingTags(range);
             return range;
         });
     },
@@ -621,55 +621,84 @@ Ext.define('LIME.DomUtils', {
     range: {
         // Wrapper function to call all normalization functions
         normalize: function(range) {
-            DomUtils.range.shrinkToTextNodes(range);
-            DomUtils.range.enlargeToClosingTags(range);
+            DomUtils.range.normalization.shrinkToTextNodes(range);
+            DomUtils.range.normalization.enlargeToClosingTags(range);
         },
-        // Normalize range by making it start before the first non-empty text-node
-        // and end after the last non-empty text-node.
-        shrinkToTextNodes: function (range) {
-            var nodes = DomUtils.range.getTextNodes(range).filter(function (node) {
-                return node.textContent.length > 0;
-            });
-            if (nodes.length) {
-                range.setStartBefore(nodes[0]);
-                range.setEndAfter(nodes[nodes.length - 1]);
-            } else {
-                range.collapse(true);
+
+        normalization: {
+            // Normalize range by making it start before the first non-empty text-node
+            // and end after the last non-empty text-node.
+            shrinkToTextNodes: function (range) {
+                var nodes = DomUtils.range.getTextNodes(range).filter(function (node) {
+                    return node.textContent.length > 0;
+                });
+                if (nodes.length) {
+                    range.setStartBefore(nodes[0]);
+                    range.setEndAfter(nodes[nodes.length - 1]);
+                } else {
+                    range.collapse(true);
+                }
+            },
+
+            // Normalize range by enlarging it to include starting/closing tags around it.
+            // This should make it easier to wrap it in new tags with surroundContents. 
+            enlargeToClosingTags: function (range) {
+                // Include starting tag
+                function normalizeStart () {
+                    if (range.startContainer == range.commonAncestorContainer)
+                        return;
+
+                    var contentBefore = '';
+                    for (var i = 0; i < range.startOffset; i++)
+                        contentBefore += range.startContainer.childNodes[i].textContent;
+                    if (!contentBefore) {
+                        range.setStartBefore(range.startContainer);
+                        normalizeStart();
+                    }
+                };
+                // Include ending tag
+                function normalizeEnd () {
+                    if (range.endContainer == range.commonAncestorContainer)
+                        return;
+
+                    var contentAfter = '';
+                    for (var i = range.endOffset; i < range.endContainer.childNodes.length; i++)
+                        contentAfter += range.endContainer.childNodes[i].textContent;
+                    if (!contentAfter) {
+                        range.setEndAfter(range.endContainer);
+                        normalizeEnd();
+                    }
+                };
+                normalizeStart();
+                normalizeEnd();
+            },
+
+            // Update range by splitting range nodes considering the range offsets
+            splitRangeNodes: function(range) {
+                if (range.startContainer.nodeType == DomUtils.nodeType.TEXT) {
+                    range.setStartBefore(range.startContainer.splitText(range.startOffset));
+                }
+                if (range.endContainer.nodeType == DomUtils.nodeType.TEXT) {
+                    range.setEndBefore(range.endContainer.splitText(range.endOffset));
+                }
+                return range;
+            },
+
+            // Update range by moving its start and end out of the fake LIME editor
+            // dom elements 
+            getOutOfFakeEditorElements: function (range) {
+                function isInFakeElement (el) {
+                    if (el.nodeType == DomUtils.nodeType.TEXT)
+                        el = el.parentNode;
+                    return el.dataset['mceType'] == 'bookmark';
+                }
+                while (isInFakeElement(range.startContainer))
+                    range.setStartBefore(range.startContainer);
+                while (isInFakeElement(range.endContainer))
+                    range.setEndAfter(range.endContainer);
             }
         },
 
-        // Normalize range by enlarging it to include starting/closing tags around it.
-        // This should make it easier to wrap it in new tags with surroundContents. 
-        enlargeToClosingTags: function (range) {
-            // Include starting tag
-            function normalizeStart () {
-                if (range.startContainer == range.commonAncestorContainer)
-                    return;
-
-                var contentBefore = '';
-                for (var i = 0; i < range.startOffset; i++)
-                    contentBefore += range.startContainer.childNodes[i].textContent;
-                if (!contentBefore) {
-                    range.setStartBefore(range.startContainer);
-                    normalizeStart();
-                }
-            };
-            // Include ending tag
-            function normalizeEnd () {
-                if (range.endContainer == range.commonAncestorContainer)
-                    return;
-
-                var contentAfter = '';
-                for (var i = range.endOffset; i < range.endContainer.childNodes.length; i++)
-                    contentAfter += range.endContainer.childNodes[i].textContent;
-                if (!contentAfter) {
-                    range.setEndAfter(range.endContainer);
-                    normalizeEnd();
-                }
-            };
-            normalizeStart();
-            normalizeEnd();
-        },
 
         // Traverse range in DFS order and call callbacks.
         // {
@@ -682,7 +711,7 @@ Ext.define('LIME.DomUtils', {
                 onTagOpened = callbacks.onTagOpened || function () {},
                 onTagClosed = callbacks.onTagClosed || function () {};
             
-            DomUtils.range.splitRangeNodes(range);
+            DomUtils.range.normalization.splitRangeNodes(range);
             var container = range.startContainer,
                 offset = range.startOffset;
             while (container != range.endContainer || offset != range.endOffset) {
@@ -743,17 +772,6 @@ Ext.define('LIME.DomUtils', {
                 }
             });
             return output;
-        },
-
-        // Update range by splitting range nodes considering the range offsets
-        splitRangeNodes : function(range) {
-            if (range.startContainer.nodeType == DomUtils.nodeType.TEXT) {
-                range.setStartBefore(range.startContainer.splitText(range.startOffset));
-            }
-            if (range.endContainer.nodeType == DomUtils.nodeType.TEXT) {
-                range.setEndBefore(range.endContainer.splitText(range.endOffset));
-            }
-            return range;
         }
     },
 

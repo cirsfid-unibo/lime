@@ -216,6 +216,7 @@ Ext.define('LIME.controller.Marker', {
 
         var wrapper = selectionRange.startContainer.ownerDocument.createElement(element);
         DomUtils.range.normalize(selectionRange);
+        DomUtils.range.normalization.getOutOfFakeEditorElements(selectionRange);
         selectionRange.surroundContents(wrapper);
 
         if ( element == 'div' ) {
@@ -606,7 +607,7 @@ Ext.define('LIME.controller.Marker', {
      * This function adds breaking elements before and/or after the node so that text can be inserted
      * @param {HTMLElement} node 
      */
-    addBreakingElements : function(node){
+    addBreakingElements: function(node){
         //var breakingElementString = "<p class=\""+DomUtils.breakingElementClass+"\"></p>";
         var breakingElementString = DomUtils.getBreakingElementHtml();
         var flyNode = Ext.fly(node);
@@ -614,14 +615,22 @@ Ext.define('LIME.controller.Marker', {
         Ext.DomHelper.insertHtml('afterBegin',node, breakingElementString);
         Ext.DomHelper.insertHtml('beforeEnd',node, breakingElementString);
 
+        function needsBreaking (node) {
+            if (node.nodeName.toLowerCase() == 'br') return false;
+            if (node.nodeType != DomUtils.nodeType.ELEMENT) return false;
+            if (Ext.fly(node).hasCls(DomUtils.breakingElementClass)) return false;
+
+            return true;
+        }
+
+        node.parentNode.normalize();
+
         // Add a breaking element also above the marked element but only if there isn't another breaking element
-        if (!node.previousSibling || node.previousSibling.nodeName.toLowerCase() != 'br' && 
-                                    node.previousSibling.nodeType == DomUtils.nodeType.ELEMENT &&
-                                !Ext.fly(node.previousSibling).hasCls(DomUtils.breakingElementClass)) {
+        if (!node.previousSibling || needsBreaking(node.previousSibling)) {
             Ext.DomHelper.insertHtml('beforeBegin',node, breakingElementString);
         }    
 
-        if ( !node.nextSibling || (node.nextSibling.nodeName.toLowerCase() != 'br' && node.nextSibling.nodeType == DomUtils.nodeType.ELEMENT && !Ext.fly(node.nextSibling).hasCls(DomUtils.breakingElementClass)) ) {
+        if (!node.nextSibling || needsBreaking(node.nextSibling)) {
             Ext.DomHelper.insertHtml('afterEnd',node, breakingElementString);
         }
     },
