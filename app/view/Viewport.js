@@ -60,7 +60,7 @@ Ext.define('LIME.view.Viewport', {
         'LIME.view.ContextMenu',
         'LIME.view.DownloadManager',
         'LIME.view.ProgressWindow',
-        'LIME.view.modal.Login',
+        'LIME.view.Login',
         'LIME.view.generic.SimplePagingToolbar'
      ],
 
@@ -143,5 +143,17 @@ Ext.define('LIME.view.Viewport', {
 
     setVisibleEditorToolbar: function(visible) {
         this.down('main').down('toolbar').setVisible(visible);
+    },
+
+    // Show editor items
+    showEditor: function() {
+        this.removeAll(true);
+        this.add(Ext.Array.merge(this.editorItems, this.commonItems));
+    },
+
+    // Show login items
+    showLogin: function() {
+        this.removeAll(true);
+        this.add(Ext.Array.merge(this.loginItems, this.commonItems));
     }
 });

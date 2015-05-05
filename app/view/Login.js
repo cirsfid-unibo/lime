@@ -48,20 +48,14 @@
  * This view is used as an interface to allow the user to login.
  */
 
-Ext.define('LIME.view.modal.Login', {
+Ext.define('LIME.view.Login', {
 
-    extend : 'Ext.window.Window',
+    extend : 'Ext.panel.Panel',
 
     // set the alias
     alias : 'widget.login',
 
     layout : 'auto',
-
-    closable : false,
-
-    draggable : false,
-
-    resizable : false,
 
     border : false,
 

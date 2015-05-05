@@ -65,7 +65,6 @@ Ext.define('LIME.Application', {
 		'Outliner', 
 		'Language', 
 		'ProgressWindow',
-		'PreferencesManager',
 		'Notification',
 		'ContextMenu',
 		'ContextInfoManager',

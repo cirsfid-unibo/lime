@@ -75,6 +75,7 @@ Ext.require([
 	'LIME.DocProperties',
     'LIME.DomUtils',
     'LIME.Server',
+    'LIME.User',
 	'LIME.Interpreters'
 ]);
 

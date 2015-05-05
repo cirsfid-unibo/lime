@@ -47,404 +47,169 @@
 /**
  * This controller manages login and registration processes.
  */
-
-
 Ext.define('LIME.controller.LoginManager', {
-	extend : 'Ext.app.Controller',
-	// set the references for this controller
-	views : ['modal.Login', 'modal.Registration', 'maintoolbar.UserButton'],
-	
-	refs : [{
-		selector : 'viewport',
-		ref : 'viewport'
-	},{
-        selector : 'login',
-        ref : 'login'
-    },{
-        selector : 'userButton',
-        ref : 'userButton'
+    extend: 'Ext.app.Controller',
+
+    // set the references for this controller
+    views: [
+        'Login',
+        'modal.Registration',
+        'maintoolbar.UserButton'
+    ],
+    
+    refs: [{
+        ref : 'viewport',
+        selector : 'viewport'
+    }, {
+        ref : 'login',
+        selector : 'login'
+    }, {
+        ref : 'userButton',
+        selector : 'userButton'
+    }, {
+        ref : 'registrationWindow',
+        selector : 'registration'
     }],
     
-    /**
-     * All the information saved when the user logs in.
-     * @type {Array} 
-     */
-    userInfo : ['username', 'password', 'userCollection', 'editorLanguage'],
-	
-	/**
-	 * This function starts the Editor 
-	 * TODO: move
-	 */
-	startEditor: function() {
-	   var viewport = this.getViewport();
-	   this.cleanViewport();
-	   this.addViewportItems(viewport.editorItems);
-	},
-	
-	/**
-	 * This function shows the login view
-	 */
-	showLogin: function() {
-	   var viewport = this.getViewport();
-	   this.cleanViewport();
-	   this.addViewportItems(viewport.loginItems);
-	},
-	
-	/**
-	 * Empty the viewport so that new components
-	 * can be added without conflicts.
-	 * @private 
-	 */
-	cleanViewport: function() {
-	   var viewport = this.getViewport();
-	   viewport.removeAll(true);
-	},
-	
-	/**
-	 * Helps rendering the editor by adding all the
-	 * editor's components to the viewport.
-	 * @private 
-	 */
-	addViewportItems: function(items) {
-	    var viewport = this.getViewport();
-	    items = Ext.Array.merge(items, viewport.commonItems);
-        viewport.add(items);
-	},
-	
-	/**
-	 * Return true if all the user's data is loaded in
-	 * the local storage. False otherwise
-	 * @return {Boolean} True or False 
-	 */
-	isLoggedIn : function(){
-	    for (var i = 0; i < this.userInfo.length; i++){
-	        if (!localStorage.getItem(this.userInfo[i])){
-	            return false;
-	        }
-	        return true;
-	    }
-	},
-	
-	/**
-	 * Set the user's info in the local storage
-	 * Data that can be set:
-	 *     - username
-	 *     - password
-	 *     - userCollection (for the DB)
-	 *     - editorLanguage (language used for the editor, not the document)
-	 * 
-	 * @param {Object} userData The user's data
-	 */
-	setUserInfo : function(userData){
-	    if (userData){
-    	    localStorage.setItem('username', userData.username);
-            localStorage.setItem('password', userData.password);
-            localStorage.setItem('userCollection', userData.userCollection);
-            localStorage.setItem('editorLanguage', userData.editorLanguage);
-        } else {
-            throw "Either username or password or userCollection were not specified";
-        }
-	},
-	
-	/**
-	 * If user is logged in returns all user's info
-	 * from the localStorage
-	 * @returns {Object}  
-	 */
-	getUserInfo: function() {
-	    var result = {};
-	    if (this.isLoggedIn()) {
-	        for (var i = 0, length = this.userInfo.length; i < length; i++){
-	            result[this.userInfo[i]] = localStorage.getItem(this.userInfo[i]);
-            }
-            return result;
-	    }
-	    
-	    return null;
-	},
-	
-	
-	prepareLogin: function() {
-	    var me = this, loginView = this.getLogin(),
-            data = loginView.getData(),  requestUrl,
-            preferencesManager = this.getController('PreferencesManager');
-       
-        // DEBUG used when Exist is down (fake login)
-        /*
-        loginManager.setUserInfo("demo@prova.com", "demo", "/path/to/collection");
-        loginView.hide();
-        loginManager.startEditor();
-        return;
-        */
-
-        me.login(data.username, data.password, function(loginData) {
-            var userData = {
-                username: data.username,
-                password: data.password,
-                userCollection: loginData.userCollection,
-                editorLanguage: Locale.strings.languageCode
-            };
-
-            // Store user's info locally
-            me.setUserInfo(userData);
-
-            // Retrieve user's preferences from the DB (load them in the editor in the callback)
-            preferencesManager.getUserPreferences(function(args) {
-                Ext.defer(function(args) {
-                    preferencesManager.loadUserPreferences(args);
-                    // Dinamically load the files store when the user has already logged in
-                    loginView.hide();
-                    me.startEditor();
-                }, 0, preferencesManager, [args]);
-            });
-        }, function(loginData) {
-            var errorCode, errorMsg = {title: Locale.strings.error, content:  Locale.strings.serverFailure};
-            if (Ext.isObject(loginData)) {
-                errorCode = loginData.msg;
-                switch (errorCode) {
-                    case 'ERR_0' :
-                        errorMsg = {
-                            title: Locale.strings.authErrors.LOGIN_FAILED_TITLE,
-                            content:  Locale.strings.authErrors.ERR_0
-                        };
-                        break;
-                }
-            } else {
-                Ext.Msg.alert(Locale.strings.error, Locale.strings.serverFailure);
-            }
-
-            if (!loginView.isVisible()) {
-                loginView.show();
-            }
-            loginView.loginFailed(); 
-            Ext.Msg.alert(errorMsg.title, errorMsg.content);
-        });
-	},
-	
-	prepareRegister: function(cmp) {
-	    // cmp is the registration button
-        var form = cmp.up('form').getForm(),
-            modal = cmp.up('window'),
-            me = this,
-            preferencesManager = this.getController('PreferencesManager');
-        
-        if (form.isValid()){
-            values = form.getValues();
-            if (modal.checkPasswords()){
-                // Give a waiting feedback to the user
-                modal.setLoading(true);
-                
-                me.register(values.email, values.password, values.name, function(data) {
-                    Ext.Msg.alert(Locale.strings.registrationOk, Locale.strings.registrationOkMessage);
-                    modal.setLoading(false);
-                    modal.close();
-                    // Create the user'spreferences
-                    preferencesManager.setUserPreferences({
-                        username : values.email,
-                        userFullName : values.name,
-                        password : values.password,
-                        editorLanguage : Locale.strings.languageCode
-                    }, true); 
-                }, function(data) {
-                    var errorCode;
-
-                    if (Ext.isObject(data)) {
-                        errorCode = data.msg;
-                        // Handle different type of server-side errors
-                        switch (errorCode) {
-                            case 'ERR_1' :
-                                Ext.Msg.alert(Locale.strings.authErrors.REGISTRATION_FAILED_TITLE, Locale.strings.authErrors.ERR_1);
-                                break;
-
-                            case 'ERR_2' :
-                                Ext.Msg.alert(Locale.strings.authErrors.REGISTRATION_FAILED_TITLE, Locale.strings.authErrors.ERR_2);
-                                break;
-
-                            default :
-                                Ext.Msg.alert(Locale.strings.authErrors.REGISTRATION_FAILED_TITLE, 'Undefined error');
-                        }
-                    } else {
-                        Ext.Msg.alert(Locale.strings.authErrors.REGISTRATION_FAILED_TITLE, ' server-side failure');
-                    }
-                    modal.setLoading(false); 
-                    modal.registrationFailed();
-                });
-            }
-            
-        } else {
-            modal.registrationFailed();
-        }
-	},
-	/**
-     * Start the login procedure calling the related web service.
-     * If the login is successful it loads the editor
-     * otherwise it shows some message. 
-     */
-    login: function(username, password, success, failure) {
-        var me = this, requestUrl;
-        
-        if(!Ext.isString(username) || !Ext.isString(password) 
-           || Ext.isEmpty(username.trim()) || Ext.isEmpty(password.trim())) {
-            Ext.callback(failure, me);
-            return;            
-        }
-        
-        requestUrl = Utilities.getAjaxUrl({
-               'requestedService' : Statics.services.userManager,
-               'requestedAction' : 'Login',
-               'userName' :  username,
-               'password':  password
-        });
-        
-
-        Ext.Ajax.request({
-            url : requestUrl,
-            success : function(response, opts) {
-                var jsonData = Ext.decode(response.responseText, true);
-                if (!jsonData) {
-                    Ext.callback(failure, me, [response.responseText]);
-                } else if (jsonData.success == 'true') {
-                    Ext.callback(success, me, [jsonData]);
-                } else { // login data was wrong
-                    Ext.callback(failure, me, [jsonData]);
-                }
-            },
-            failure : function(response, opts) {
-                if (!response || !response.status) {
-                    response = response || {};
-                    response.status = 'request timed-out';
-                }
-                Ext.callback(failure, me, [response.status]);
-            }
-        }); 
-
-    },
     
-	/**
-	 * Starts the registration procedure calling the related web service.
-	 * If the registration is successful the user is created and can now login.
-	 * Otherwise a message is shown to the user. 
-	 */
-    
-    register : function(email, password, name, success, failure) {
-        var me = this, requestUrl;
-        
-        if(!Ext.isString(email) || !Ext.isString(password) || !Ext.isString(name) 
-           || Ext.isEmpty(email.trim()) || Ext.isEmpty(password.trim()) || Ext.isEmpty(name.trim())) {
-            Ext.callback(failure, me);
-            return;            
-        }
-        
-        requestUrl = Utilities.getAjaxUrl({
-            'requestedService' : Statics.services.userManager,
-            'requestedAction' : 'Create_User',
-            'userName' : email,
-            'password' : password,
-            'userFullName' : name
-        });
-
-        Ext.Ajax.request({
-            url : requestUrl,
-            success : function(response, opts) {
-                var jsonData = Ext.decode(response.responseText, true);
-                if (!jsonData) {
-                    Ext.callback(failure, me, [response.responseText]);
-                } else if (jsonData.success == 'true') {
-                    Ext.callback(success, me, [jsonData]);
-                } else {
-                    Ext.callback(failure, me, [jsonData]);
-                }
-            },
-            failure : function(response, opts) {
-                Ext.callback(failure, me, [response.status]);
-            }
-        });
-    },
-
-	/**
-     * Perform a logout cleaning whatever is needed from the
-     * localStorage.
-     * Refresh the page to force the user to login again. 
-     */
-    logout : function(){
-         // Only remove user credentials
-         localStorage.removeItem('username');
-         localStorage.removeItem('password');
-         localStorage.removeItem('userCollection');
-         localStorage.removeItem('documentContent');
-         localStorage.removeItem('documentId');
-         
-         // Refresh the page
-         window.location.reload();
-    },
-    
-	/**
-	 * Show a form where the user can add his 
-	 * registration details (e.g. username, password, email).
-	 * Once the user submits the registration a call to a
-	 * web service is performed.
-	 */
-	showRegistration: function() {
-        var registrationView = Ext.widget('registration').show();
-	},
-	
-	init : function() {
-        var loginManager = this;
+    init : function() {
+        var me = this;
+        User.loadFromLocalStorage();
         this.control({
             'viewport': {
                 render: function(cmp) {
-                    this.showLogin();
+                    cmp.showLogin();
                 }
             },
             'login': {
                 added: function(cmp) {
-                    var loginView = this.getLogin(),
-                        user = localStorage.getItem('username'),
-                        password = localStorage.getItem('password');
-                    if (user && password) {
-                        loginView.setData({username: user, password: password});  
-                        this.prepareLogin();
+                    if (User.password) {
+                        me.getLogin().setData({
+                            username: User.username,
+                            password: User.password
+                        });  
+                        me.login();
                     } else {
-                        cmp.show();    
+                        cmp.show();
                     }
                 }
             },
             'login button': {
                 click: function(cmp) {
-                    this.prepareLogin();
+                    me.login();
                 }
             },
             'box[cls=registration]': {
                 render: function(cmp) {
-                    cmp.getEl().addListener("click", this.showRegistration);         
+                    cmp.getEl().addListener("click", me.showRegistration);         
                 }
             },
             
             'login checkbox': {
-                change: function(cmp, value) {
-                    var loginView = this.getLogin();
-                    if (value) {
+                change: function(cmp, useDemoUser) {
+                    var loginView = me.getLogin();
+                    if (useDemoUser)
                         loginView.setData({username: 'demo@lime.com', password: 'demo'});
-                    } else {
+                    else
                         loginView.resetData();
-                    }
                 }
             },
 
             'registration button' : {
-                click : this.prepareRegister
+                click : me.register
             },
             
             'userButton': {
                 beforerender: function(cmp) {
-                    var userdata = this.getController("PreferencesManager").getUserPreferences(),
-                        name, tpl;
-                    if (userdata && userdata.fullName) {
-                        tpl = new Ext.Template(cmp.tpl); 
-                        cmp.setText(tpl.apply({name: userdata.fullName}));
+                    var fullName = User.preferences.fullName;
+                    if (fullName) {
+                        var tpl = new Ext.Template(cmp.tpl); 
+                        cmp.setText(tpl.apply({
+                            name: fullName
+                        }));
                     }
-                }          
+                }
             }
         });
+    },
+    
+    // Fake login (used for debug purposes when Exist is down)
+    fakeLogin: function () {
+        User.username = 'demo@prova.com';
+        User.password = 'demo';
+        User.preferences.documentsPath = '/path/to/collection';
+
+        this.getLogin().hide();
+        this.getViewport().showEditor();
+    },
+
+    // Try logging in, getting user data/preferences.
+    // If successful, switch to editor. 
+    login: function () {
+        var me = this,
+            loginView = this.getLogin(),
+            data = loginView.getData();
+
+        Server.login(data.username, data.password, function(response) {
+            var user = JSON.parse(response.responseText);
+            for (var key in user) User[key] = user[key];
+            User.saveToLocalStorage();
+            loginView.hide();
+            me.getViewport().showEditor();
+        }, function(error) {
+            console.log(error);
+            loginView.loginFailed(); 
+            Ext.Msg.alert(Locale.strings.authErrors.LOGIN_FAILED_TITLE, 
+                          Locale.strings.authErrors.ERR_0);
+        });
+    },
+    
+    // Register a new user.
+    register: function () {
+        var registrationWindow = this.getRegistrationWindow(),
+            form = registrationWindow.down('form').getForm(),
+            me = this;
+        
+        if (!form.isValid())
+            return registrationWindow.registrationFailed();
+        if (!registrationWindow.checkPasswords()) return;
+        
+        // Give feedback to the user
+        registrationWindow.setLoading(true);
+
+        var values = form.getValues();
+        User.username = values.email,
+        User.password = values.password,
+        User.preferences = {
+            fullName: values.name,
+            editorLanguage: Locale.strings.languageCode,
+            views: []
+        };
+        
+        Server.register(user, function() {
+            Ext.Msg.alert(Locale.strings.registrationOk, Locale.strings.registrationOkMessage);
+            registrationWindow.setLoading(false);
+            registrationWindow.close();
+            for (var key in user) User[key] = user[key];
+        }, function(error) {
+            Ext.Msg.alert(Locale.strings.authErrors.REGISTRATION_FAILED_TITLE, Locale.strings.authErrors.ERR_1);
+            console.log(error);
+            modal.setLoading(false); 
+            modal.registrationFailed();
+        });
+    },
+    
+
+    // Logout and clean the localStorage.
+    // Refresh the page to force the user to login again.      
+    logout: function () {
+        User.clearLocalStorage();
+        window.location.reload();
+    },
+    
+    // Show a form where the user can add his 
+    // registration details (e.g. username, password, email).
+    showRegistration: function () {
+        Ext.widget('registration').show();
     }
 }); 

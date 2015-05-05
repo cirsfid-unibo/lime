@@ -49,31 +49,81 @@ Ext.define('LIME.Server', {
     singleton: true,
     alternateClassName: 'Server',
 
-    // Get document content.
-    getDocument: function (path, success, failure) {
-        // Todo: use loginManager
-        var username = localStorage.getItem('username'),
-            password = localStorage.getItem('password');
+    nodeServer: 'http://localhost:9006',
 
-        var requestUrl = Utilities.getAjaxUrl({
-            'requestedService': Statics.services.getFileContent,
-            'requestedFile': path,
-            'userName': username,
-            'userPassword': password,
-            'transformFile': "",
-            'format': 'xml'
-        });
+    // ====================
+    // ====== NODE ========
+    // ====================
 
+    // Try logging in.
+    // Calls success with user object
+    login: function(username, password, success, failure) {
         Ext.Ajax.request({
-            url: requestUrl,
-            success: function(response, opts) {
-                success(response.responseText);
+            method: 'GET',
+            url: this.nodeServer + '/Users/' + encodeURI(username),
+            headers: {
+                Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password)
             },
-            failure: failure || function(error) {
-                Ext.log('Getting document failed' + error);
-            }
+            success: success,
+            failure : failure
         });
     },
+
+    // Register user.
+    register: function(user, success, failure) {
+        Ext.Ajax.request({
+            method: 'POST',
+            url: this.nodeServer + '/Users',
+            jsonData: user,
+            success: success,
+            failure : failure
+        });
+    },
+
+    // Update user.
+    saveUser: function(user, success, failure) {
+        var username = user.username,
+            password = user.password;
+        Ext.Ajax.request({
+            method: 'PUT',
+            url: this.nodeServer + '/Users/' + encodeURI(username),
+            headers: {
+                Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password)
+            },
+            jsonData: user,
+            success: success,
+            failure : failure
+        });
+    },
+
+    // Get file content
+    getDocument: function(username, password, path, success, failure) {
+        var username = User.username,
+            password = User.password;
+
+        Ext.Ajax.request({
+            method: 'GET',
+            url: this.nodeServer + '/Documents' + path,
+            headers: {
+                Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password)
+            },
+            success: function(response) {
+                success(response.responseText);
+            },
+            failure : failure
+        });
+    },
+
+    // Get file metadata
+    getFileMetadata: function(username, password, path, success, failure) {
+        var i = path.lastIndexOf('/');
+        var newPath = path.substring(0, i+1) + '.metadata.' + path.substring(i+1);
+        this.getFile(username, password, newPath, success, failure)
+    },
+
+    // ====================
+    // ====== PHP =========
+    // ====================
 
     // Transform XML in content with the given xslt path
     applyXslt: function (content, xslt, success, failure, extraConfig) {
