@@ -87,7 +87,7 @@ function addPages () {
         PAGE_BREAK_MARGIN_BOTTOM = 100;
     console.log('addPages', $(Preview.dom).height());
 
-    var pagePos = Preview.dom.querySelector('.akomaNtoso').getBoundingClientRect();
+    var pagePos = $(Preview.dom.querySelector('.akomaNtoso')).offset();
     var page = 0;
     console.info('pagePos.top', pagePos.top);
 
@@ -117,7 +117,7 @@ function addPages () {
         }
         var eop = $('<span class="pageBreak"><span class="inner"/></span>')
         eop.insertBefore($(node));
-        var pos = eop[0].getBoundingClientRect();
+        var pos = eop.offset();
 
         eop.css('left', (pagePos.left - pos.left)+'px');
     });
@@ -126,7 +126,7 @@ function addPages () {
     var breaks = Preview.dom.querySelectorAll('.pageBreak');
     for (var page = 0; page < breaks.length; page++) {
         var el = breaks[page];
-        var pos = el.getBoundingClientRect();
+        var pos = $(el).offset();
         
         var adjustment = pos.top - pagePos.top 
             - (page * PAGE_BREAK_HEIGHT)
