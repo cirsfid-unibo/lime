@@ -1,0 +1,11 @@
+{
+    "newDocumentTemplate": [{
+        "name": "preface",
+        "startingLevel": "0",
+        "numberOfLevels": "0"
+    }, {
+        "name": "body",
+        "startingLevel": "2",
+        "numberOfLevels": "2"
+    }]
+}

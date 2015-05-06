@@ -282,7 +282,45 @@ Ext.define('LIME.store.LanguagesPlugin', {
             /* Start the requests from the first file */
             me.fireEvent('makeRequest0', 0, reqUrls);
         }, me);
-    }, 
+    },
+
+    // Get the new empty document template for the current configuration.
+    // This implementation is obviously buggy and incomplete: we'll miss
+    // span.breaking elements, everything will be a div, etc. 
+    buildEmptyDocumentTemplate: function () {
+        var dataObjects = this.getConfigData();
+        var template = '';
+
+        function getPattern (name) {
+            return dataObjects.markupMenu[name].pattern;
+        }
+        function addTag (tag, cb) {
+            template += '<div class="breaking"/>';
+            template += '<div class="' + getPattern(tag) + ' ' + tag + '">';
+            if (cb) cb();
+            template += '</div>';
+            template += '<div class="breaking"/>';
+        }
+
+        template += '<div>'; // This will be filled with document root class
+        dataObjects.markupMenuRules.newDocumentTemplate.forEach(function (obj) {
+            var name = obj.name,
+                start = parseInt(obj.startingLevel),
+                end = parseInt(obj.numberOfLevels) + start;
+
+            addTag(obj.name, function () {
+                var queue = dataObjects.markupMenuRules.elements[obj.name].children.slice(start, end);
+                function recAdd () {
+                    if (queue.length > 0)
+                        addTag(queue.shift(), recAdd);
+                }
+                if (queue.length > 0)
+                    recAdd();
+            });
+        });
+        template += '</div>';
+        return template;
+    },
     
     /**
      * This function returns the already retrieved data in a raw format.
