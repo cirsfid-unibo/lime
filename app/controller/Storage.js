@@ -257,70 +257,130 @@ Ext.define('LIME.controller.Storage', {
 
     },
     
+    // requestDoc: function(filePath, config, openWindow, openNoEffectCallback) {
+    //     config = config || {};
+    //     var me = this, app = this.application, 
+    //         prefManager = this.getController('PreferencesManager');
+
+    //     var transformAndLoadDocument = function(text, transformFile, markingLang) {
+    //         Server.applyXslt(text, transformFile, function(content) {
+    //             var documentId = filePath,
+    //                 idParts = filePath.split('/');
+
+    //             // Avoid overwriting examples, TODO: warn the user that the example will not be overwritten (use save as)
+    //             // The 4th part of the id represents the first-level collection in the user's directory
+    //             if (idParts[4] && idParts[4].indexOf('examples') != -1) {
+    //                 documentId = '';
+    //             }
+                
+    //             config = Ext.Object.merge(config, {
+    //                 docText : content,
+    //                 docId : documentId,
+    //                 originalDocId: filePath,
+    //                 docMarkingLanguage : markingLang
+    //             });
+
+    //             if(Ext.isFunction(openNoEffectCallback)) {
+    //                 Ext.callback(openNoEffectCallback, this, [config]);
+    //                 app.fireEvent(Statics.eventsNames.progressEnd);
+    //             } else {
+    //                 // If the service is called with empty name the file will be saved in a temporary location
+    //                 app.fireEvent(Statics.eventsNames.loadDocument, config);
+
+    //                 // Set the last opened document into the user's preferences
+    //                 prefManager.setUserPreferences({
+    //                     lastOpened : documentId
+    //                 });
+    //             }
+    //         }, Ext.emptyFn, {
+    //             output: 'html', 
+    //             markingLanguage: markingLang,
+    //             includeFiles: Config.getLocaleXslPath(markingLang, config.docLocale)});
+    //     };
+        
+    //     Server.getDocument(filePath, function(responseText) {
+    //         var markingLang = me.detectMarkingLang(responseText) || config.docMarkingLanguage || Config.languages[0].name,
+    //             transformFile = (markingLang) ? Config.getLanguageTransformationFile("languageToLIME", markingLang) : "";
+
+    //         if (transformFile) {
+    //             transformAndLoadDocument(responseText, transformFile, markingLang);
+    //         } else {
+    //             Config.setLanguage(markingLang, function() {
+    //                 transformFile = Config.getLanguageTransformationFile("languageToLIME", markingLang);
+    //                 transformAndLoadDocument(responseText, transformFile, markingLang);
+    //             });
+    //         }
+
+    //         //Close the Open Document window
+    //         if (openWindow) {
+    //             openWindow.close();
+    //         }
+
+    //         }, function(response, opts) {
+    //         app.fireEvent(Statics.eventsNames.progressEnd);
+    //         Ext.Msg.alert('server-side failure with status code ' + response.status);
+    //     });
+    // },
+
     requestDoc: function(filePath, config, openWindow, openNoEffectCallback) {
         config = config || {};
-        var me = this, app = this.application, 
-            prefManager = this.getController('PreferencesManager');
+        var me = this,
+            transformFile = (config.docMarkingLanguage) ? Config.getLanguageTransformationFile("languageToLIME", config.docMarkingLanguage) : "",
+            user = localStorage.getItem('username'),
+            pwd = localStorage.getItem('password');
 
-        var transformAndLoadDocument = function(text, transformFile, markingLang) {
-            Server.applyXslt(text, transformFile, function(content) {
-                var documentId = filePath,
-                    idParts = filePath.split('/');
+        var processResult = function (content) {
+            var documentId = filePath,
+                idParts = filePath.split('/');
 
-                // Avoid overwriting examples, TODO: warn the user that the example will not be overwritten (use save as)
-                // The 4th part of the id represents the first-level collection in the user's directory
-                if (idParts[4] && idParts[4].indexOf('examples') != -1) {
-                    documentId = '';
-                }
-                
-                config = Ext.Object.merge(config, {
-                    docText : content,
-                    docId : documentId,
-                    originalDocId: filePath,
-                    docMarkingLanguage : markingLang
-                });
+            // Avoid overwriting examples, TODO: warn the user that the example will not be overwritten (use save as)
+            // The 4th part of the id represents the first-level collection in the user's directory
+            if (idParts[4] && idParts[4].indexOf('examples') != -1) {
+                documentId = '';
+            }
+            // Todo: convert to XML and run this code.
+            // if (response.responseXML && !config.docMarkingLanguage) {
+            //     config.docMarkingLanguage =  response.responseXML.documentElement.getAttribute(DocProperties.markingLanguageAttribute);
+            // }
 
-                if(Ext.isFunction(openNoEffectCallback)) {
-                    Ext.callback(openNoEffectCallback, this, [config]);
-                    app.fireEvent(Statics.eventsNames.progressEnd);
-                } else {
-                    // If the service is called with empty name the file will be saved in a temporary location
-                    app.fireEvent(Statics.eventsNames.loadDocument, config);
+            config = Ext.Object.merge(config, {
+                docText : content,
+                docId : documentId,
+                originalDocId: filePath
+            });
 
-                    // Set the last opened document into the user's preferences
-                    prefManager.setUserPreferences({
-                        lastOpened : documentId
-                    });
-                }
-            }, Ext.emptyFn, {
-                output: 'html', 
-                markingLanguage: markingLang,
-                includeFiles: Config.getLocaleXslPath(markingLang, config.docLocale)});
-        };
-        
-        Server.getDocument(filePath, function(responseText) {
-            var markingLang = me.detectMarkingLang(responseText) || config.docMarkingLanguage || Config.languages[0].name,
-                transformFile = (markingLang) ? Config.getLanguageTransformationFile("languageToLIME", markingLang) : "";
-
-            if (transformFile) {
-                transformAndLoadDocument(responseText, transformFile, markingLang);
+            if(Ext.isFunction(openNoEffectCallback)) {
+                Ext.callback(openNoEffectCallback, me, [config]);
+                me.application.fireEvent(Statics.eventsNames.progressEnd);
             } else {
-                Config.setLanguage(markingLang, function() {
-                    transformFile = Config.getLanguageTransformationFile("languageToLIME", markingLang);
-                    transformAndLoadDocument(responseText, transformFile, markingLang);
-                });
+                // If the service is called with empty name the file will be saved in a temporary location
+                me.application.fireEvent(Statics.eventsNames.loadDocument, config);
+
+                // Set the last opened document into the user's preferences
+                me.getController('LoginManager').setUserPreference('lastOpened', documentId);
             }
 
             //Close the Open Document window
             if (openWindow) {
                 openWindow.close();
             }
+        };
 
-            }, function(response, opts) {
-            app.fireEvent(Statics.eventsNames.progressEnd);
+        Server.getFile(user, pwd, filePath, function (content) {
+            if (transformFile) {
+                Server.applyXslt(content, transformFile, processResult, function (response) {
+                    Ext.log('Error opening file, ', response);
+                });
+            } else {
+                processResult(content);
+            }
+        }, function (response) {
+            Ext.log('Error getting file, ', response);
+            me.application.fireEvent(Statics.eventsNames.progressEnd);
             Ext.Msg.alert('server-side failure with status code ' + response.status);
         });
     },
+
 
     detectMarkingLang: function(xmlString) {
         var name ;

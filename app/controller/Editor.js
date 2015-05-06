@@ -1024,11 +1024,10 @@ Ext.define('LIME.controller.Editor', {
 	 */
 	tinyInit : function() {
         var me = this;
-		userPreferences = me.getController('PreferencesManager').getUserPreferences();
 
 		/* Load exemple document if there is no saved document */
 
-		if (!userPreferences.lastOpened) {
+		if (!User.preferences.lastOpened) {
 			/*Config.setLanguage(Config.languages[0].name, function() {
 	            me.application.fireEvent(Statics.eventsNames.languageLoaded, {});
             });*/
@@ -1128,11 +1127,10 @@ Ext.define('LIME.controller.Editor', {
     restoreSession : function() {
         var callback, app = this.application, config;
         var me = this,
-            userPreferences = me.getController('PreferencesManager').getUserPreferences(),
             storage = me.getController('Storage');
 
-         if (userPreferences.lastOpened) {
-             storage.openDocument(userPreferences.lastOpened);
+         if (User.preferences.lastOpened) {
+             storage.openDocument(User.preferences.lastOpened);
          }
     },
 

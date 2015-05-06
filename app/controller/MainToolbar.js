@@ -163,18 +163,15 @@ Ext.define('LIME.controller.MainToolbar', {
 	 */
 	selectLanguage: function(item) {
         var langCode = item.record.get("code"),
-            preferencesManager = this.getController('PreferencesManager');
-            
+            loginManager = this.getController('LoginManager');
+
         var callback = function(prefs){
             // Change the language
             Utilities.changeLanguage(langCode);
-        };    
-            
+        };
+
         // Set the new language in the user's preferences
-        preferencesManager.setUserPreferences({
-            defaultLanguage : langCode
-        }, false, callback);
-        
+        loginManager.setUserPreferences('defaultLanguage', langCode, callback);
 	},
 	
 	
@@ -184,18 +181,16 @@ Ext.define('LIME.controller.MainToolbar', {
      */
 	selectLocale: function(item) {
         var selectedLocale = item.record.get("locale");
-        var preferencesManager = this.getController('PreferencesManager');
+        var loginManager = this.getController('LoginManager');
         var params = Ext.urlDecode(window.location.search);
         params.locale = selectedLocale;
         // Redirect
         var callback = function(){
             window.location.search = Ext.Object.toQueryString(params);
         };
-        
+
         // Set the new language in the user's preferences
-        preferencesManager.setUserPreferences({
-            defaultLocale : selectedLocale
-        }, false, callback);
+        loginManager.setUserPreference('defaultLocale', selectedLocale, callback);
     },
     
     /**
@@ -218,9 +213,9 @@ Ext.define('LIME.controller.MainToolbar', {
      setAllowedViews : function() {
         var mainMenu = this.getWindowMenuButton(),
             viewsMenu = mainMenu.menu.down("*[id=showViews]"),
-            configData = this.getStore('LanguagesPlugin').getConfigData(),
-            preferencesManager = this.getController('PreferencesManager'),
-            openViews = preferencesManager.userPreferences.views,
+            configData = LanguageConfigLoader.getConfig(),
+            loginManager = this.getController('LoginManager'),
+            openViews = loginManager.user.preferences.views,
             menu =  {
                 xtype : 'menu',
                 plain : true,
@@ -230,7 +225,7 @@ Ext.define('LIME.controller.MainToolbar', {
             var views = configData.viewConfigs.allowedViews,
                 icon;
             Ext.each(views, function(view) {
-                /* View can be defined in client plugin, try to instantiate it to be sure 
+                /* View can be defined in client plugin, try to instantiate it to be sure
                  * if there aren't errors in the creation process.
                  * The text of menu item will be the title of the widget in order to obtain
                  * a localized text for the menu button.
@@ -249,15 +244,15 @@ Ext.define('LIME.controller.MainToolbar', {
                 }
             });
             viewsMenu.setMenu(menu);
-        }   
+        } 
     },
     
     onLanguageLoaded: function() {
-        var me = this, main = me.getMain(), 
+        var me = this, main = me.getMain(),
             customViews = Config.getLanguageConfig().customViews,
-            preferencesManager = me.getController('PreferencesManager'),
-            openViews = preferencesManager.userPreferences.views; // Get the open views from the preferences
-            
+            loginManager = me.getController('LoginManager'),
+            openViews = loginManager.user.preferences.views; // Get the open views from the preferences
+
         me.setAllowedViews();
 
         // Open the tabs by their xtype
@@ -302,17 +297,11 @@ Ext.define('LIME.controller.MainToolbar', {
     },
     
     removeMainTabFromPreferences: function(xtype) {
-        var preferencesManager = this.getController('PreferencesManager');
+        var loginManager = this.getController('LoginManager'),
+            openViews = loginManager.user.preferences.views,
+            result = openViews.filter(function (el) { return el != xtype; });
 
-        preferencesManager.setUserPreferences({
-            views : preferencesManager.userPreferences.views.filter(function(el) {
-                if (el == xtype) {
-                    return false;
-                } else {
-                    return true;
-                }
-            }) 
-        });
+        loginManager.setUserPreference('views', result);
     },
 
 	init : function() {
@@ -397,35 +386,32 @@ Ext.define('LIME.controller.MainToolbar', {
 				
 			},
 			
-			'logoutButton': {
-			     click: function() {
-			         var loginManager = this.getController('LoginManager');
-			             confirm = Ext.Msg.confirm(Locale.strings.warning, Locale.strings.logoutWarning,
-			             function(buttonId){
-			                 if (buttonId == 'yes'){
-			                    // If the user confirmed perform a logout
-    			                loginManager.logout();
-                             }
-			             });
-			     }  
-			},
-            
-            '[cls~=editorTab]' : {
+            'logoutButton': {
+                click: function() {
+                    var loginManager = this.getController('LoginManager');
+                        confirm = Ext.Msg.confirm(Locale.strings.warning, Locale.strings.logoutWarning,
+                        function(buttonId){
+                            if (buttonId == 'yes'){
+                               // If the user confirmed perform a logout
+                               loginManager.logout();
+                            }
+                        });
+                }
+            },
+
+            '[cls=editorTab]' : {
                 added : function(cmp){
-                    var preferencesManager = this.getController('PreferencesManager'),
-                        menu = this.getWindowMenuButton(),
-                        openViews = preferencesManager.userPreferences.views,
+                    var menu = this.getWindowMenuButton(),
+                        openViews = loginManager.user.preferences.views,
                         xtype = cmp.getXType(),
                         menuItem = menu.menu.down('*[openElement='+cmp.xtype+']');
                         if (menuItem) {
-                        	// Just set the icon (it will be rendered later)
-                        	menuItem.icon = menu.checkedIcon;
+                            // Just set the icon (it will be rendered later)
+                            menuItem.icon = menu.checkedIcon;
                         }
                         // If the view is not in the preferences add it
                         if (openViews && openViews.indexOf(xtype) == -1){
-                            preferencesManager.setUserPreferences({
-                                views : openViews.concat([xtype])
-                            });
+                            loginManager.setUserPreference('views', openViews.concat([xtype]));
                         }
                 },
                 
