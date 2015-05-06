@@ -3,7 +3,6 @@
     "requires": [
         "default-validation",
         "default-diff",
-        "default-nir",
         "default-autoimport-open",
         "akn-tab-xml-preview",
         "akn-tab-visualizer"
