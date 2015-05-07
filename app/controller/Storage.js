@@ -233,8 +233,8 @@ Ext.define('LIME.controller.Storage', {
         // get the url for the request
         var params = {
             'requestedFile' : filePath,
-            'userName' : localStorage.getItem('username'),
-            'userPassword' : localStorage.getItem('password')
+            'userName' : User.username,
+            'userPassword' : User.password
         }, requestMetaUrl = Utilities.getAjaxUrl(Ext.Object.merge(params, {
             'requestedService' : Statics.services.getFileMetadata
         }));
@@ -326,8 +326,8 @@ Ext.define('LIME.controller.Storage', {
         config = config || {};
         var me = this,
             transformFile = (config.docMarkingLanguage) ? Config.getLanguageTransformationFile("languageToLIME", config.docMarkingLanguage) : "",
-            user = localStorage.getItem('username'),
-            pwd = localStorage.getItem('password');
+            user = User.username,
+            pwd = User.password;
 
         var processResult = function (content) {
             var documentId = filePath,
@@ -357,7 +357,7 @@ Ext.define('LIME.controller.Storage', {
                 me.application.fireEvent(Statics.eventsNames.loadDocument, config);
 
                 // Set the last opened document into the user's preferences
-                me.getController('LoginManager').setUserPreference('lastOpened', documentId);
+                User.setPreference('lastOpened', documentId);
             }
 
             //Close the Open Document window
@@ -647,9 +647,8 @@ Ext.define('LIME.controller.Storage', {
      */
     saveDocumentText: function(text, config) {
         var me = this,
-            userInfo = this.getController('LoginManager').getUserInfo(),
             params = {
-                userName : userInfo.username,
+                userName : User.username,
                 fileContent : text,
                 metadata: config.metaString
             };

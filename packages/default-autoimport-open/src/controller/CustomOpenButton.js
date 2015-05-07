@@ -87,9 +87,6 @@ Ext.define('DefaultAutoimportOpen.controller.CustomOpenButton', {
                 else if(extension == 'doc')
                     me.onDocSelected(path);
                 else if (extension == 'xml') {
-                    // Todo: use loginManager
-                    var username = localStorage.getItem('username'),
-                        password = localStorage.getItem('password');
                     Server.getDocument(path, function (content) {
                         if(content.indexOf('http://www.normeinrete.it/nir/') != -1)
                             me.onNirSelected(path, content);

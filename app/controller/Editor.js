@@ -280,11 +280,7 @@ Ext.define('LIME.controller.Editor', {
     },
 
     getDocumentPath: function() {
-        var docId = DocProperties.documentInfo.docId,
-            userData = this.getController('LoginManager').getUserInfo();
-
-        docId = (docId.indexOf(userData.userCollection) == 0) ? docId.substring(userData.userCollection.length) : docId;
-        return docId;
+        return DocProperties.documentInfo.docId;
     },
 
     setEditorHeader: function(value) {

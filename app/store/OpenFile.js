@@ -44,54 +44,68 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+// Custom reader
+Ext.define('LIME.reader.OpenFileReader', {
+    extend: 'Ext.data.reader.Json',
+
+    getResponseData: function(response) {
+        var data = this.callParent([response]);
+        console.log(response);
+        console.log('getResponseData', data);
+        // fields: ['path', 'id', 'text', 'cls', 'leaf', 'name', 'relPath', 'originalName']
+        return data.map(function (item) {
+            return {
+                path: item,
+                id: item,
+                text: item,
+                cls: item,
+                leaf: item,
+                name: item,
+                relPath: item,
+                originalName: item
+            };
+        });
+    }
+});
+
 /**
  * This store is used by Open File window for ajax requests to the web service.
  */
 Ext.define('LIME.store.OpenFile', {
-    extend : 'Ext.data.Store',
+    extend: 'Ext.data.Store',
 
-    model : 'LIME.model.OpenFile',
+    model: 'LIME.model.OpenFile',
 
-    proxy : {
-        // load using HTTP
-        type : 'ajax',
-        extraParams : {
-            isXml : true
-        },
-        // the return will be XML, so lets set up a reader
-        reader : {
-            type : 'xml',
-            record : 'node',
-            idProperty : 'id',
-            totalRecords : 'ajax-response'
-        }
+    proxy: {
+        type: 'ajax',
+        reader: new LIME.reader.OpenFileReader
     },
 
-    listeners : {
-        beforeload : function(store, operation, eOpts) {
-            // We can't specify a static url because we are not sure when the store will be loaded
-            if (localStorage.getItem('userCollection')) {
-                this.getProxy().url = Utilities.getAjaxUrl({
-                    'requestedService' : Statics.services.listFiles,
-                    'collection' : localStorage.getItem('userCollection'),
-                    'userName' : localStorage.getItem('username'),
-                    'password' : localStorage.getItem('password'),
-                    'node' : store.requestNode
-                });
-            } else {
-                return false;
-            }
+    listeners: {
+        beforeload: function(store, operation, eOpts) {
+            var path = store.requestNode == 'root' ?
+                       User.preferences.folders[0]:
+                       store.requestNode;
+            console.log(path);
+
+            var proxy = this.getProxy();
+            proxy.url = Server.nodeServer + '/Documents' + path;
+            proxy.headers = {
+                Authorization: 'Basic ' + Ext.util.Base64.encode(User.username + ':' + User.password)
+            };
         },
 
-        load : function(store, records, successful, eOpts) {
-            var countries = Ext.getStore("Nationalities");
-            Ext.each(records, function(record) {
-                var nameRecord = countries.findRecord("alpha-2", record.data.text, 0, false, false, true);
-                record.data.name = (nameRecord) ? nameRecord.get("name") : record.data.text;
-                if (record.data.name != record.data.text) {
-                    record.data.originalName = record.data.text;
-                }
-            }, this);
-        }
+        // load: function(store, records, successful, eOpts) {
+        //     var countries = Ext.getStore("Nationalities");
+        //     Ext.each(records, function(record) {
+        //         var nameRecord = countries.findRecord("alpha-2", record.data.text, 0, false, false, true);
+        //         record.data.name = (nameRecord) ? nameRecord.get("name"): record.data.text;
+        //         if (record.data.name != record.data.text) {
+        //             record.data.originalName = record.data.text;
+        //         }
+        //     }, this);
+        // }
     }
 });
+
+

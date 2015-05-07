@@ -97,7 +97,7 @@ Ext.define('LIME.Server', {
     },
 
     // Get file content
-    getDocument: function(username, password, path, success, failure) {
+    getDocument: function(path, success, failure) {
         var username = User.username,
             password = User.password;
 
