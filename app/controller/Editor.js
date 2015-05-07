@@ -716,7 +716,13 @@ Ext.define('LIME.controller.Editor', {
         }
 		app.fireEvent(Statics.eventsNames.languageLoaded, data);
         app.fireEvent(Statics.eventsNames.progressUpdate, Locale.strings.progressBar.loadingDocument);
+
+        // If the document loaded is empty, use the template
+        // following the complicated rules in our json configuration files.
+        if (config.docText == '<div> &nbsp; </div>')
+            config.docText = this.getStore('LanguagesPlugin').buildEmptyDocumentTemplate();
         this.loadDocument(config.docText, config.docId);
+
         app.fireEvent(Statics.eventsNames.progressEnd);
         config.docDom = this.getDom();
         app.fireEvent(Statics.eventsNames.afterLoad, config);
