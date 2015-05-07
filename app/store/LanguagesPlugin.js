@@ -291,32 +291,19 @@ Ext.define('LIME.store.LanguagesPlugin', {
         var dataObjects = this.getConfigData();
         var template = '';
 
-        function getPattern (name) {
-            return dataObjects.markupMenu[name].pattern;
-        }
-        function addTag (tag, cb) {
-            template += '<div ' + DomUtils.elementIdAttribute + '="' + tag + '" '+
-                                  'class="' + getPattern(tag) + ' ' + tag + '">';
-            if (cb) cb();
-            template += '</div>';
+        function addTag (el) {
+            var name = el.name,
+                button = DocProperties.getFirstButtonByName(el.name)
+                pattern = button.pattern.pattern,
+                tag = button.pattern.wrapperElement.match(/\w+/)[0];
+            template += '<' + tag + ' ' + DomUtils.elementIdAttribute + '="' + name + '" '+
+                                         'class="' + pattern + ' ' + name + '">&nbsp;';
+            (el.children || []).forEach(addTag);
+            template += '</' + tag + '>';
         }
 
         template += '<div>'; // This will be filled with document root class
-        dataObjects.markupMenuRules.newDocumentTemplate.forEach(function (obj) {
-            var name = obj.name,
-                start = parseInt(obj.startingLevel),
-                end = parseInt(obj.numberOfLevels) + start;
-
-            addTag(obj.name, function () {
-                var queue = dataObjects.markupMenuRules.elements[obj.name].children.slice(start, end);
-                function recAdd () {
-                    if (queue.length > 0)
-                        addTag(queue.shift(), recAdd);
-                }
-                if (queue.length > 0)
-                    recAdd();
-            });
-        });
+        dataObjects.markupMenuRules.newDocumentTemplate.forEach(addTag);
         template += '</div>';
         return template;
     },

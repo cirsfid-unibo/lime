@@ -1,11 +1,20 @@
 {
     "newDocumentTemplate": [{
-        "name": "preface",
-        "startingLevel": "0",
-        "numberOfLevels": "0"
+        "name": "preface"
+    }, {
+        "name": "preamble", 
+        "children": [{ "name": "p" }]
     }, {
         "name": "body",
-        "startingLevel": "2",
-        "numberOfLevels": "2"
+        "children": [
+            {
+                "name": "section",
+                "children": [
+                    { "name": "num" },
+                    { "name": "p" }
+                ]
+            }
+        ]
     }]
 }
+
