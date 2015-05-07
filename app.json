@@ -3,10 +3,10 @@
     "requires": [
         "default-validation",
         "default-diff",
-        "default-nir",
         "default-autoimport-open",
         "akn-tab-xml-preview",
-        "akn-tab-visualizer"
+        "akn-tab-visualizer",
+        "extra-toggleslide"
     ],
     "framework": "ext",
     "css": [

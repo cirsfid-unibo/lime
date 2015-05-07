@@ -141,9 +141,10 @@ Ext.define('LIME.controller.Outliner', {
 
         if (markedObj) {
             button = markedObj.button;
+            console
             var wrapperClass = button.pattern.wrapperClass,
                 newIcon = '<div class="'+this.iconBaseCls+' ' + wrapperClass + '"></div>',
-                text = newIcon + button.name;
+                text = newIcon + button.shortLabel;
 
             var info = DomUtils.getNodeExtraInfo(node, "hcontainer");
             if (info) {

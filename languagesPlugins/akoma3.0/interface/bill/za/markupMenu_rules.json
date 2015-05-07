@@ -1,0 +1,20 @@
+{
+    "newDocumentTemplate": [{
+        "name": "preface"
+    }, {
+        "name": "preamble", 
+        "children": [{ "name": "p" }]
+    }, {
+        "name": "body",
+        "children": [
+            {
+                "name": "section",
+                "children": [
+                    { "name": "num" },
+                    { "name": "p" }
+                ]
+            }
+        ]
+    }]
+}
+

@@ -90,7 +90,7 @@ Ext.define('LIME.controller.Editor', {
 	},{
         ref : 'codemirror',
         selector : 'codemirror'
-    }],
+    }, { ref:'uriPathSwitcher', selector: '[itemId=uriPathSwitcher]' }],
 
 	constructor : function(){
 		/**
@@ -262,15 +262,13 @@ Ext.define('LIME.controller.Editor', {
 		return range;
 	},
 
-	showDocumentUri: function() {
-	    var editorContainer = this.getMainEditor().up(), 
-	    	main = this.getMain(),
-	        uri = this.getDocumentUri();
+    showDocumentIdentifier: function() {
+        var showUri = this.getUriPathSwitcher().state,
+            valueToShow = (showUri) ? this.getDocumentUri() : this.getDocumentPath();
 
-        uri = (!uri) ? Locale.getString("newDocument") : uri.replace(/%3A/g, ':');
-	    editorContainer.tab.setTooltip(uri);
-	    main.down("mainEditorUri").setUri(uri);
-	},
+        valueToShow = (valueToShow && valueToShow.replace(/%3A/g, ':')) || Locale.getString("newDocument");
+        this.setEditorHeader(valueToShow);
+    },
 
     getDocumentUri: function() {
         var metadata = this.getDocumentMetadata();
@@ -279,6 +277,19 @@ Ext.define('LIME.controller.Editor', {
         if ( frbrThis ) {
             return frbrThis.getAttribute('value');
         }
+    },
+
+    getDocumentPath: function() {
+        var docId = DocProperties.documentInfo.docId,
+            userData = this.getController('LoginManager').getUserInfo();
+
+        docId = (docId.indexOf(userData.userCollection) == 0) ? docId.substring(userData.userCollection.length) : docId;
+        return docId;
+    },
+
+    setEditorHeader: function(value) {
+        this.getMainEditor().up().tab.setTooltip(value);
+        this.getMain().down("mainEditorUri").setUri(value);
     },
 
 	/**
@@ -705,12 +716,18 @@ Ext.define('LIME.controller.Editor', {
         }
 		app.fireEvent(Statics.eventsNames.languageLoaded, data);
         app.fireEvent(Statics.eventsNames.progressUpdate, Locale.strings.progressBar.loadingDocument);
+
+        // If the document loaded is empty, use the template
+        // following the complicated rules in our json configuration files.
+        if (config.docText == '<div> &nbsp; </div>')
+            config.docText = this.getStore('LanguagesPlugin').buildEmptyDocumentTemplate();
         this.loadDocument(config.docText, config.docId);
+
         app.fireEvent(Statics.eventsNames.progressEnd);
         config.docDom = this.getDom();
         app.fireEvent(Statics.eventsNames.afterLoad, config);
         this.setPath(this.getBody());
-        this.showDocumentUri(config.docId);
+        this.showDocumentIdentifier(config.docId);
     },
 
     addStyles: function(urls, editor) {
@@ -1320,7 +1337,7 @@ Ext.define('LIME.controller.Editor', {
     },
 
     afterSave: function(config) {
-        this.showDocumentUri();
+        this.showDocumentIdentifier();
         // Save as the last opened
         if (config.saveData && config.saveData.path) {
             // Set the current file's id
@@ -1549,7 +1566,10 @@ Ext.define('LIME.controller.Editor', {
                     var editor2 = Ext.fly(this.getEditor(this.getSecondEditor()).getBody());
                     editor2.addCls('secondEditor');
 				}
-			}
+			},
+            '[itemId=uriPathSwitcher]' : {
+                change: me.showDocumentIdentifier.bind(me)
+            }
 		});
 	}
 });

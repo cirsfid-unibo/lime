@@ -282,7 +282,31 @@ Ext.define('LIME.store.LanguagesPlugin', {
             /* Start the requests from the first file */
             me.fireEvent('makeRequest0', 0, reqUrls);
         }, me);
-    }, 
+    },
+
+    // Get the new empty document template for the current configuration.
+    // This implementation is obviously buggy and incomplete: 
+    // everything will be a div, etc. 
+    buildEmptyDocumentTemplate: function () {
+        var dataObjects = this.getConfigData();
+        var template = '';
+
+        function addTag (el) {
+            var name = el.name,
+                button = DocProperties.getFirstButtonByName(el.name)
+                pattern = button.pattern.pattern,
+                tag = button.pattern.wrapperElement.match(/\w+/)[0];
+            template += '<' + tag + ' ' + DomUtils.elementIdAttribute + '="' + name + '" '+
+                                         'class="' + pattern + ' ' + name + '">&nbsp;';
+            (el.children || []).forEach(addTag);
+            template += '</' + tag + '>';
+        }
+
+        template += '<div>'; // This will be filled with document root class
+        dataObjects.markupMenuRules.newDocumentTemplate.forEach(addTag);
+        template += '</div>';
+        return template;
+    },
     
     /**
      * This function returns the already retrieved data in a raw format.

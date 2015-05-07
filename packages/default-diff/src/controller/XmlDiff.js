@@ -88,8 +88,8 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
 
             if(newDoc) {
                 var firstDocIsNewer = (newDoc.getAttribute("url") == selector.firstDoc.url);
-                selector.firstDoc.new = firstDocIsNewer;
-                selector.secondDoc.new = !firstDocIsNewer;
+                selector.firstDoc['new'] = firstDocIsNewer;
+                selector.secondDoc['new'] = !firstDocIsNewer;
             }
         });
     },
@@ -126,8 +126,8 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
     
     enableEditMode: function(cmp) {
         if(cmp.firstDoc.id && cmp.secondDoc.id) {
-            var newer = cmp.firstDoc.new ? cmp.firstDoc : cmp.secondDoc,
-                older = cmp.firstDoc.new ? cmp.secondDoc : cmp.firstDoc;
+            var newer = cmp.firstDoc['new'] ? cmp.firstDoc : cmp.secondDoc,
+                older = cmp.firstDoc['new'] ? cmp.secondDoc : cmp.firstDoc;
             this.application.fireEvent(Statics.eventsNames.enableDualEditorMode, {
                 diffTab: cmp.up('diffTab'),
                 editableDoc: newer.id,
@@ -138,8 +138,8 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
 
     enableEditModeScenarioB: function(cmp) {
         if(cmp.firstDoc.id && cmp.secondDoc.id) {
-            var newer = cmp.firstDoc.new ? cmp.firstDoc : cmp.secondDoc,
-                older = cmp.firstDoc.new ? cmp.secondDoc : cmp.firstDoc;
+            var newer = cmp.firstDoc['new'] ? cmp.firstDoc : cmp.secondDoc,
+                older = cmp.firstDoc['new'] ? cmp.secondDoc : cmp.firstDoc;
             this.enableDualEditorMode(cmp.up('diffTab'), {
                 editableDoc: newer.id,
                 notEditableDoc: older.id

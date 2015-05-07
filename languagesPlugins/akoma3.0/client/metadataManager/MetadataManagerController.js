@@ -53,7 +53,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
         selector : 'appViewport',
         ref : 'appViewport'
     }, {
-        selector : 'main toolbar',
+        selector : 'main tabbar',
         ref : 'mainToolbar'
     }, {
     	selector: 'metaManagerPanel',
@@ -73,8 +73,9 @@ Ext.define('LIME.controller.MetadataManagerController', {
     addMetadataButton : function() {
         var me = this, toolbar = me.getMainToolbar();
         if (!toolbar.down("[cls='" + me.getBtnCls() + "']")) {
-        	toolbar.add("->");
+        	toolbar.add({xtype: 'tbfill'});
             toolbar.add({
+                xtype: 'button',
                 cls : me.getBtnCls(),
                 margin : "0 10 0 0",
                 text : Locale.getString("title", me.getPluginName()),
@@ -581,7 +582,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
                 }
     	    }
     	}
-        editor.showDocumentUri();
+        editor.showDocumentIdentifier();
     },
 
     init : function() {
@@ -608,7 +609,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
                 	});
                 	me.addRecord(grid, records);
                 }
-            },
+            }
         });
     }
 });

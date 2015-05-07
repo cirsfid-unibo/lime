@@ -2,6 +2,8 @@
 	"rootElements": ["coverPage", "preface", "preamble", "body", "mainBody", "amendmentBody", "debateBody", "fragmentBody", "collectionBody", "conclusions", "attachments", "components"],
 	"commonElements": ["commonElement", "hierarchicalStructure",  "genericElement", "externalFragment", "commonsInline",  "contentInline", "commonReference", "commonJudgement", "commonReport", "argument", "header", "declarationOfVote",  "writtenStatements", "speech", "speechGroup", "remark", "rollCall", "resolutions", "questions",  "pointOfOrder", "proceduralMotions", "personalStatements", "petitions", "party", "ministerialStatements", "judge", "change", "narrative", "nationalInterest", "neutralCitation", "papers", "opinion", "oralStatements", "scene", "noticesOfMotion", "foreign", "address", "administrationOfOath"],
 
+	"newDocumentTemplate": [],
+
 	"defaults": {
 		"leaveExpanded": false,
 		"sameLevelExpand": false,

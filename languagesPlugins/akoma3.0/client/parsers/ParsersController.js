@@ -699,20 +699,10 @@ Ext.define('LIME.controller.ParsersController', {
     },
 
     parseAuthorityElements: function(data, node, button) {
-        var me = this, signatures = data.response, app = me.application, 
-            editor = me.getController("Editor"), sigButton = DocProperties.getChildConfigByName(button, "signature"),
-            roleNodes = [], personNodes = [], sigNodes = [];
-        config = {
-            app : app,
-            editor : editor,
-            markButton : sigButton,
-            marker: {
-                silent : true
-            }
-        };
-
-        if ( !Ext.isArray(signatures) ) return;
-
+        var me = this, signatures = data.response, 
+        sigButton = DocProperties.getChildConfigByName(button, "signature"),
+            roleNodes = [], personNodes = [];
+        
         signatures = signatures.filter(function(obj, index, arr) {
             var itemLikeMe = arr.filter(function(item) {
                 return ((item.value == obj.value) 
@@ -722,65 +712,89 @@ Ext.define('LIME.controller.ParsersController', {
             return arr.indexOf(itemLikeMe) === index;
         });
 
+        var findAndWrap = function(str, node, btn) {
+            var range = DomUtils.find(str.replace(/(\s+)(\/>)/gi, '$2'), node)[0],
+                wrapper;
+            if ( range ) {
+                if(!me.canPassNode(range.startContainer.firstChild, btn.id, [DomUtils.tempParsingClass])){
+                    return;
+                }
+                wrapper = me.wrapRange(range, 'span');
+            }
+            return wrapper;
+        };
+
+        var markRole = function(item, node) {
+            var wrapper = null;
+            var roleButton = DocProperties.getChildConfigByName(sigButton, "role");
+            if(!Ext.isEmpty(item.authority)) {
+                var wrapper = findAndWrap(item.authority, node, roleButton);
+                if(wrapper && !Ext.fly(wrapper).parent('.organization')) {
+                    roleNodes.push(wrapper);
+                    me.requestMarkup(roleButton, {
+                        silent : true,
+                        noEvent : true,
+                        nodes : [wrapper]
+                    });
+                } else if ( wrapper ) {
+                    wrapper.removeAttribute('class');
+                } 
+            }
+            return wrapper;
+        };
+
+        var markPerson = function(item, node) {
+            var wrapper = null;
+            var personButton = DocProperties.getChildConfigByName(sigButton, "person");
+            if(!Ext.isEmpty(item.signature)) {
+                var wrapper = findAndWrap(item.signature, node, personButton);
+                if(wrapper) {
+                    wrapper.setAttribute('data-name', item.name);
+                    wrapper.setAttribute('data-surname', item.surname);
+                    personNodes.push(wrapper);
+                    me.requestMarkup(personButton, {
+                        silent : true,
+                        noEvent : true,
+                        nodes : [wrapper]
+                    });
+                } else if ( wrapper ) {
+                    wrapper.removeAttribute('class');
+                } 
+            }
+            return wrapper;
+        };
+
         if (signatures.length) {
             Ext.each(signatures, function(item) {
-                var roleNode = null, personNode = null, signature;
-                var wrap = false;
-                if(!Ext.isEmpty(item.authority)) {
-                    roleNode = me.detectRole(item.authority, node, Ext.clone(config));
-                    if(roleNode && !Ext.fly(roleNode).parent('.organization')) {
-                        roleNodes.push(roleNode);
-                        wrap = true;
-                    } else if ( roleNode ) {
-                        roleNode.removeAttribute('class');
-                    } 
-                }
-                if(!Ext.isEmpty(item.signature)) {
-                    personNode = me.detectPerson(item.signature, node, Ext.clone(config));
-                    if(personNode && roleNode && !Ext.fly(roleNode).parent('.organization')) {
-                        personNode.setAttribute('data-name', item.name);
-                        personNode.setAttribute('data-surname', item.surname);
-                        personNodes.push(personNode);
-                        wrap = true;
-                    } else if ( personNode ) {
-                        personNode.removeAttribute('class');
-                    } 
-                }
-
-                signature = (wrap) ? me.wrapSignature(roleNode, personNode) : null;
-                if(signature) {
-                    sigNodes.push(signature);
+                var wrapper = findAndWrap(item.value, node, sigButton);
+                if (wrapper) {
+                    me.requestMarkup(sigButton, {
+                        silent : true,
+                        noEvent : true,
+                        nodes : [wrapper]
+                    });
+                    markRole(item, wrapper);
+                    markPerson(item, wrapper);
                 }
             }, me);
-            
-            if (sigNodes.length) {
-                me.requestMarkup(sigButton, {
-                    silent : true,
-                    noEvent : true,
-                    nodes : sigNodes
-                });
-            }
-            if (roleNodes.length) {
-                var roleButton = DocProperties.getChildConfigByName(sigButton, "role");
-                me.requestMarkup(roleButton, {
-                    silent : true,
-                    noEvent : true,
-                    nodes : roleNodes
-                });
-            }
-            if (personNodes.length) {
-                var personButton = DocProperties.getChildConfigByName(sigButton, "person");
-                me.requestMarkup(personButton, {
-                    silent : true,
-                    noEvent : true,
-                    nodes : personNodes
-                });
-            }
+
             Ext.defer(function() {
                 me.addRoleMetadata(roleNodes);
                 me.addPersonMetadata(personNodes);
             }, 100);
         }
+    },
+
+    wrapRange: function(range, tag) {
+        var wrapper = range.startContainer.ownerDocument.createElement(tag);
+        wrapper.setAttribute("class", DomUtils.tempParsingClass);
+        try {
+            range.surroundContents(wrapper);
+        } catch(e) {
+            wrapper = null;
+            Ext.log({level: "error"}, e);
+        }
+        return wrapper;
     },
 
     addMetaItem: function(parent, config) {
@@ -1754,6 +1768,10 @@ Ext.define('LIME.controller.ParsersController', {
                     && ( obj.start >= item.start && obj.end <= item.end ));
             });
             return !itemsLikeMe.length;
+        });
+
+        data.sort(function compare(a,b) {
+            return b.ref.length - a.ref.length;
         });
 
         Ext.each(data, function(obj) {

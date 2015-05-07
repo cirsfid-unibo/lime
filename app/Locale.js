@@ -70,7 +70,6 @@ Ext.define('LIME.Locale', {
     getPackageStrings: function(packageName) {
         Server.getResourceFile('strings.json', packageName, function (path, data) {
             Locale.setPluginStrings(packageName, data);
-            console.info('Loaded', packageName, 'from', path, data);
         });
     },
     

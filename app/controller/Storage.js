@@ -552,22 +552,29 @@ Ext.define('LIME.controller.Storage', {
     },
     
     prepareSaveDocument: function(cmp) {
-        var relatedWindow = cmp.up('window'),
-            listViews = relatedWindow.query('grid'),
-            values = {}, frbrValues = {}, separator = "@", separatorPos, versionDate, versionLang,
-            selectedItem = relatedWindow.activeList.getSelectionModel().getSelection()[0],
-            regVersion = RegExp("(/([a-z]{3}))@");
+        var relatedWindow = cmp.up('window'), values = {},
+            selectedItem = relatedWindow.activeList.getSelectionModel().getSelection()[0];
         
-        Ext.each(listViews, function(view, index) {
-            var selectedItem = view.getSelectionModel().getSelection()[0],
-                selectedData;
+        Ext.each(relatedWindow.query('grid'), function(view, index) {
+            var selectedItem = view.getSelectionModel().getSelection()[0];
             if (selectedItem) {
-                selectedData = selectedItem.getData();
+                var selectedData = selectedItem.getData();
                 values[this.storageColumns[index].fieldName] = (selectedData.originalName) ? selectedData.originalName : selectedData.name;
             }
         }, this);
         
-        separatorPos = values.version.indexOf(separator);
+        this.updateDocProperties(values);
+
+        this.saveDocument({
+            view : relatedWindow,
+            path :  selectedItem.getData().path
+        });
+    },
+
+    updateDocProperties: function(values) {
+        var frbrValues = {}, separator = "@", versionDate, versionLang;
+
+        var separatorPos = values.version.indexOf(separator);
         if (separatorPos != -1) {
             versionDate = values.version.substring(separatorPos+1);
             versionLang = values.version.substring(0, separatorPos);
@@ -593,27 +600,21 @@ Ext.define('LIME.controller.Storage', {
             folder: values.folder
         });
         DocProperties.setFrbr(frbrValues);
-
-        this.saveDocument({
-            view : relatedWindow,
-            path :  selectedItem.getData().path
-        });
     },
 
     saveDocument: function(config) {
         var me = this, metadataDom,
-            frbr = DocProperties.frbr,
-            languageController = this.getController('Language');
+            frbr = DocProperties.frbr;
         
         config.path = config.path || DocProperties.documentInfo.docId || Ext.emptyString;
 
         if (!config || !config.autosave) {
-            partialUrl = config.path.substring(1);
+            var partialUrl = config.path.substring(1);
             partialUrl = partialUrl.substring(partialUrl.indexOf('/'));
-            metadataDom = languageController.buildMetadata(frbr, true, partialUrl);
+            metadataDom = me.buildMetadata(partialUrl);
         } else {
             // TODO: don't call this every autosave
-            metadataDom = languageController.buildInternalMetadata(true);
+            metadataDom = me.buildInternalMetadata(true);
         }
 
         // Before saving
@@ -631,6 +632,14 @@ Ext.define('LIME.controller.Storage', {
            xml = xml.replace('<?xml version="1.0" encoding="UTF-8"?>', '');
            me.saveDocumentText(xml, config);
         }, {complete: true});
+    },
+
+    buildMetadata: function(uri) {
+        return this.getController('Language').buildMetadata(DocProperties.frbr, true, uri);
+    },
+
+    buildInternalMetadata: function() {
+        return this.getController('Language').buildInternalMetadata.apply(this, arguments);
     },
 
     /**
@@ -693,7 +702,7 @@ Ext.define('LIME.controller.Storage', {
             if (Ext.isFunction(columnDescriptor.getValue)) {
                 value = columnDescriptor.getValue(uri, meta);
             }
-            value = value || Ext.emptyString.toString();
+            value = value || columnDescriptor.defaultValue || Ext.emptyString.toString();
             this.columnValues.push(value);
         }
     },

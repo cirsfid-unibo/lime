@@ -220,7 +220,7 @@
 		"pattern": "inline"
 	},
 	"p": {
-		"pattern": "inline"
+		"pattern": "block"
 	},
 	"paragraph": {
 		"pattern": "hcontainer"

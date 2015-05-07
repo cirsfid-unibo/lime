@@ -277,6 +277,7 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
         var name = this.findElementName(config), html = '',
             editorNode = (name) ? this.findEditorNode(name, config) : false,
             errorListTpl = new Ext.Template("<h4>{caption}</h4><ul>{errors}</ul>");
+
             //DocProperties.getFirstButtonByName('quotedText').shortLabel
         if ( this.errorsMapping && this.errorsMapping[config.code] ) {
             var errorConfig = this.errorsMapping[config.code],
@@ -451,13 +452,12 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
     downloadErrorsMapping: function() {
         var me = this; 
         Server.getResourceFile('errorsMapping.json', this.getPluginName(), function (path, data) {
-            me.errorsMapping = Ext.decode(data, true);
+            me.errorsMapping = data;
         });
     },
     
     init : function() {
         var me = this;
-        __VAL = me;
         //Listening progress events
         this.application.on(Statics.eventsNames.afterLoad, this.onDocumentLoaded, this);
         
