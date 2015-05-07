@@ -162,8 +162,7 @@ Ext.define('LIME.controller.MainToolbar', {
 	 * @param {Ext.menu.Menu} item, the clicked menu item
 	 */
 	selectLanguage: function(item) {
-        var langCode = item.record.get("code"),
-            loginManager = this.getController('LoginManager');
+        var langCode = item.record.get("code");
 
         var callback = function(prefs){
             // Change the language
@@ -171,7 +170,7 @@ Ext.define('LIME.controller.MainToolbar', {
         };
 
         // Set the new language in the user's preferences
-        loginManager.setUserPreferences('defaultLanguage', langCode, callback);
+        User.setPreference('defaultLanguage', langCode, callback);
 	},
 	
 	
@@ -181,7 +180,6 @@ Ext.define('LIME.controller.MainToolbar', {
      */
 	selectLocale: function(item) {
         var selectedLocale = item.record.get("locale");
-        var loginManager = this.getController('LoginManager');
         var params = Ext.urlDecode(window.location.search);
         params.locale = selectedLocale;
         // Redirect
@@ -190,7 +188,7 @@ Ext.define('LIME.controller.MainToolbar', {
         };
 
         // Set the new language in the user's preferences
-        loginManager.setUserPreference('defaultLocale', selectedLocale, callback);
+        User.setPreference('defaultLocale', selectedLocale, callback);
     },
     
     /**
@@ -213,9 +211,8 @@ Ext.define('LIME.controller.MainToolbar', {
      setAllowedViews : function() {
         var mainMenu = this.getWindowMenuButton(),
             viewsMenu = mainMenu.menu.down("*[id=showViews]"),
-            configData = LanguageConfigLoader.getConfig(),
-            loginManager = this.getController('LoginManager'),
-            openViews = loginManager.user.preferences.views,
+            configData = this.getStore('LanguagesPlugin').getConfigData(),
+            openViews = User.preferences.views,
             menu =  {
                 xtype : 'menu',
                 plain : true,
@@ -250,8 +247,7 @@ Ext.define('LIME.controller.MainToolbar', {
     onLanguageLoaded: function() {
         var me = this, main = me.getMain(),
             customViews = Config.getLanguageConfig().customViews,
-            loginManager = me.getController('LoginManager'),
-            openViews = loginManager.user.preferences.views; // Get the open views from the preferences
+            openViews = User.preferences.views; // Get the open views from the preferences
 
         me.setAllowedViews();
 
@@ -297,11 +293,10 @@ Ext.define('LIME.controller.MainToolbar', {
     },
     
     removeMainTabFromPreferences: function(xtype) {
-        var loginManager = this.getController('LoginManager'),
-            openViews = loginManager.user.preferences.views,
+        var openViews = User.preferences.views,
             result = openViews.filter(function (el) { return el != xtype; });
 
-        loginManager.setUserPreference('views', result);
+        User.setPreference('views', result);
     },
 
 	init : function() {
@@ -402,7 +397,7 @@ Ext.define('LIME.controller.MainToolbar', {
             '[cls=editorTab]' : {
                 added : function(cmp){
                     var menu = this.getWindowMenuButton(),
-                        openViews = loginManager.user.preferences.views,
+                        openViews = User.preferences.views,
                         xtype = cmp.getXType(),
                         menuItem = menu.menu.down('*[openElement='+cmp.xtype+']');
                         if (menuItem) {
@@ -411,7 +406,7 @@ Ext.define('LIME.controller.MainToolbar', {
                         }
                         // If the view is not in the preferences add it
                         if (openViews && openViews.indexOf(xtype) == -1){
-                            loginManager.setUserPreference('views', openViews.concat([xtype]));
+                            User.setPreference('views', openViews.concat([xtype]));
                         }
                 },
                 

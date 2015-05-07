@@ -151,8 +151,7 @@ Ext.define('LIME.controller.LoginManager', {
             data = loginView.getData();
 
         Server.login(data.username, data.password, function(response) {
-            var user = JSON.parse(response.responseText);
-            for (var key in user) User[key] = user[key];
+            User.load(JSON.parse(response.responseText));
             User.saveToLocalStorage();
             loginView.hide();
             me.getViewport().showEditor();

@@ -67,8 +67,18 @@ Ext.define('LIME.User', {
         if (user) {
             console.log('loading from local storage');
             var user = JSON.parse(user);
-            for (var key in user) this[key] = user[key];
+            this.load(user);
        }
+    },
+
+    load: function (user) {
+        console.info('Loading user', user);
+        if (user.username)
+            this.username = user.username;
+        if (user.password)
+            this.password = user.password;
+        for (var key in user.preferences) 
+            this.preferences[key] = user.preferences[key];
     },
 
     // Save user to local storage
