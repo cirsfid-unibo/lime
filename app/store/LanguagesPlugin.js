@@ -285,8 +285,8 @@ Ext.define('LIME.store.LanguagesPlugin', {
     },
 
     // Get the new empty document template for the current configuration.
-    // This implementation is obviously buggy and incomplete: we'll miss
-    // span.breaking elements, everything will be a div, etc. 
+    // This implementation is obviously buggy and incomplete: 
+    // everything will be a div, etc. 
     buildEmptyDocumentTemplate: function () {
         var dataObjects = this.getConfigData();
         var template = '';
@@ -295,11 +295,10 @@ Ext.define('LIME.store.LanguagesPlugin', {
             return dataObjects.markupMenu[name].pattern;
         }
         function addTag (tag, cb) {
-            template += '<div class="breaking"/>';
-            template += '<div class="' + getPattern(tag) + ' ' + tag + '">';
+            template += '<div ' + DomUtils.elementIdAttribute + '="' + tag + '" '+
+                                  'class="' + getPattern(tag) + ' ' + tag + '">';
             if (cb) cb();
             template += '</div>';
-            template += '<div class="breaking"/>';
         }
 
         template += '<div>'; // This will be filled with document root class
