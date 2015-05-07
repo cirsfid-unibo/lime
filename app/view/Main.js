@@ -54,6 +54,7 @@ Ext.define('LIME.view.Main', {
     //id : 'editorTab',
     requires : ['Ext.ux.TabCloseMenuImproved',
     			'Ext.ux.form.field.TinyMCE',
+                'Extra.ux.toggleslide.view.ToggleSlide',
     			'LIME.view.main.Editor',
     			'LIME.view.ContextMenu',
     			'LIME.view.main.editor.Path',
@@ -75,6 +76,14 @@ Ext.define('LIME.view.Main', {
         items : [{
             xtype : 'mainEditorUri'
         }]
+    }, "->", {
+        xtype: 'toggleslide',
+        itemId: 'uriPathSwitcher',
+        onText: 'uri',
+        offText: 'path',
+        booleanMode: false,
+        state: true,
+        margin:'0 10 0 0'
     }],
 
     initComponent : function() {
