@@ -111,7 +111,7 @@ Ext.define('LIME.User', {
 
     // Shortcut to editing user and saving.
     setPreference: function (key, value, cb) {
-        this.user.preferences[key] = value;
-        this.saveUser(cb);
+        this.preferences[key] = value;
+        this.save(cb);
     }
 });

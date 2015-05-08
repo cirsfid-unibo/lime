@@ -89,6 +89,7 @@ Ext.define('LIME.store.OpenFile', {
             console.log(path);
 
             var proxy = this.getProxy();
+            // proxy.url = Server.nodeServer + '/Documents' + path + '/';
             proxy.url = Server.nodeServer + '/Documents' + path;
             proxy.headers = {
                 Authorization: 'Basic ' + Ext.util.Base64.encode(User.username + ':' + User.password)

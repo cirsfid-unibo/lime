@@ -216,171 +216,55 @@ Ext.define('LIME.controller.Storage', {
     /**
      * Request and load the document by using proper methods of the Editor controller.
      */
-    openDocument : function(filePath, openWindow, openNoEffectCallback) {
+    openDocument: function(filePath, openWindow, openNoEffectCallback) {
         var me = this, 
-            app = this.application, 
-            LanguageController = this.getController('Language'),
             noOpeningEffects = Ext.isFunction(openNoEffectCallback);
         
-        // prevents to open a folder
-        if ( filePath.indexOf('.') == -1 ) return;
-
         this.application.fireEvent(Statics.eventsNames.progressStart, null, {
             value : 0.1,
             text : Locale.strings.progressBar.openingDocument
         });
 
-        // get the url for the request
-        var params = {
-            'requestedFile' : filePath,
-            'userName' : User.username,
-            'userPassword' : User.password
-        }, requestMetaUrl = Utilities.getAjaxUrl(Ext.Object.merge(params, {
-            'requestedService' : Statics.services.getFileMetadata
-        }));
+        if(!noOpeningEffects) {
+            DocProperties.clearMetadata(this.application);    
+        }
 
-        Ext.Ajax.request({
-            url : requestMetaUrl,
-            async : false,
-            success : function(response, opts) {
-                var config = LanguageController.parseMetadata(response.responseXML, response.responseText, noOpeningEffects);
-                if(!noOpeningEffects) {
-                    DocProperties.clearMetadata(app);    
+        Server.getDocument(filePath, function (content) {
+            // console.info('got document', content);
+            // Detect the right XSLT for HTMLToso conversion
+            var lang = me.detectMarkingLang(content);
+            var xslt = Config.getLanguageTransformationFile("languageToLIME", lang);
+            console.info('Apro il doc', lang, xslt);
+            Server.applyXslt(content, xslt, function (content) {
+                config = {
+                    docText : content,
+                    docId : filePath,
+                    originalDocId: filePath
+                };
+
+                if(Ext.isFunction(openNoEffectCallback)) {
+                    Ext.callback(openNoEffectCallback, me, [config]);
+                } else {
+                    me.application.fireEvent(Statics.eventsNames.loadDocument, config);
+                    User.setPreference('lastOpened', filePath);
                 }
-                me.requestDoc(filePath, config, openWindow, openNoEffectCallback);
-            },
-            failure : function(response, opts) {
-                Ext.Msg.alert('server-side failure with status code ' + response.status);
-                me.requestDoc(filePath, null, openWindow);
-            }
-        });
 
-    },
-    
-    // requestDoc: function(filePath, config, openWindow, openNoEffectCallback) {
-    //     config = config || {};
-    //     var me = this, app = this.application, 
-    //         prefManager = this.getController('PreferencesManager');
-
-    //     var transformAndLoadDocument = function(text, transformFile, markingLang) {
-    //         Server.applyXslt(text, transformFile, function(content) {
-    //             var documentId = filePath,
-    //                 idParts = filePath.split('/');
-
-    //             // Avoid overwriting examples, TODO: warn the user that the example will not be overwritten (use save as)
-    //             // The 4th part of the id represents the first-level collection in the user's directory
-    //             if (idParts[4] && idParts[4].indexOf('examples') != -1) {
-    //                 documentId = '';
-    //             }
-                
-    //             config = Ext.Object.merge(config, {
-    //                 docText : content,
-    //                 docId : documentId,
-    //                 originalDocId: filePath,
-    //                 docMarkingLanguage : markingLang
-    //             });
-
-    //             if(Ext.isFunction(openNoEffectCallback)) {
-    //                 Ext.callback(openNoEffectCallback, this, [config]);
-    //                 app.fireEvent(Statics.eventsNames.progressEnd);
-    //             } else {
-    //                 // If the service is called with empty name the file will be saved in a temporary location
-    //                 app.fireEvent(Statics.eventsNames.loadDocument, config);
-
-    //                 // Set the last opened document into the user's preferences
-    //                 prefManager.setUserPreferences({
-    //                     lastOpened : documentId
-    //                 });
-    //             }
-    //         }, Ext.emptyFn, {
-    //             output: 'html', 
-    //             markingLanguage: markingLang,
-    //             includeFiles: Config.getLocaleXslPath(markingLang, config.docLocale)});
-    //     };
-        
-    //     Server.getDocument(filePath, function(responseText) {
-    //         var markingLang = me.detectMarkingLang(responseText) || config.docMarkingLanguage || Config.languages[0].name,
-    //             transformFile = (markingLang) ? Config.getLanguageTransformationFile("languageToLIME", markingLang) : "";
-
-    //         if (transformFile) {
-    //             transformAndLoadDocument(responseText, transformFile, markingLang);
-    //         } else {
-    //             Config.setLanguage(markingLang, function() {
-    //                 transformFile = Config.getLanguageTransformationFile("languageToLIME", markingLang);
-    //                 transformAndLoadDocument(responseText, transformFile, markingLang);
-    //             });
-    //         }
-
-    //         //Close the Open Document window
-    //         if (openWindow) {
-    //             openWindow.close();
-    //         }
-
-    //         }, function(response, opts) {
-    //         app.fireEvent(Statics.eventsNames.progressEnd);
-    //         Ext.Msg.alert('server-side failure with status code ' + response.status);
-    //     });
-    // },
-
-    requestDoc: function(filePath, config, openWindow, openNoEffectCallback) {
-        config = config || {};
-        var me = this,
-            transformFile = (config.docMarkingLanguage) ? Config.getLanguageTransformationFile("languageToLIME", config.docMarkingLanguage) : "",
-            user = User.username,
-            pwd = User.password;
-
-        var processResult = function (content) {
-            var documentId = filePath,
-                idParts = filePath.split('/');
-
-            // Avoid overwriting examples, TODO: warn the user that the example will not be overwritten (use save as)
-            // The 4th part of the id represents the first-level collection in the user's directory
-            if (idParts[4] && idParts[4].indexOf('examples') != -1) {
-                documentId = '';
-            }
-            // Todo: convert to XML and run this code.
-            // if (response.responseXML && !config.docMarkingLanguage) {
-            //     config.docMarkingLanguage =  response.responseXML.documentElement.getAttribute(DocProperties.markingLanguageAttribute);
-            // }
-
-            config = Ext.Object.merge(config, {
-                docText : content,
-                docId : documentId,
-                originalDocId: filePath
-            });
-
-            if(Ext.isFunction(openNoEffectCallback)) {
-                Ext.callback(openNoEffectCallback, me, [config]);
+                // Close the Open Document window
+                // Todo: add callback
+                if (openWindow) {
+                    openWindow.close();
+                }
                 me.application.fireEvent(Statics.eventsNames.progressEnd);
-            } else {
-                // If the service is called with empty name the file will be saved in a temporary location
-                me.application.fireEvent(Statics.eventsNames.loadDocument, config);
 
-                // Set the last opened document into the user's preferences
-                User.setPreference('lastOpened', documentId);
-            }
-
-            //Close the Open Document window
-            if (openWindow) {
-                openWindow.close();
-            }
-        };
-
-        Server.getFile(user, pwd, filePath, function (content) {
-            if (transformFile) {
-                Server.applyXslt(content, transformFile, processResult, function (response) {
-                    Ext.log('Error opening file, ', response);
-                });
-            } else {
-                processResult(content);
-            }
-        }, function (response) {
-            Ext.log('Error getting file, ', response);
+            }, function (error) {
+                console.warn('Error translating file', filePath, xslt, error);
+                me.application.fireEvent(Statics.eventsNames.progressEnd);
+            });
+        }, function (error) {
+            console.warn('Error downloading file', filePath, error);
             me.application.fireEvent(Statics.eventsNames.progressEnd);
-            Ext.Msg.alert('server-side failure with status code ' + response.status);
         });
     },
-
 
     detectMarkingLang: function(xmlString) {
         var name ;
@@ -896,14 +780,14 @@ Ext.define('LIME.controller.Storage', {
                             me.saveListViewOnStoreLoad(loadedStore, cmp);    
                         }
                     }, this);
-                    if (cmp.filter) {
-                        var notExamples = new Ext.util.Filter({
-                            filterFn: function(item) {
-                                return (item.data.text.indexOf("examples") == -1);
-                            }
-                        });
-                        store.addFilter(notExamples);
-                    }
+                    // if (cmp.filter) {
+                    //     var notExamples = new Ext.util.Filter({
+                    //         filterFn: function(item) {
+                    //             return (item.data.text.indexOf("examples") == -1);
+                    //         }
+                    //     });
+                    //     store.addFilter(notExamples);
+                    // }
                     column = cmp.columns[0];
                     if (columnConfig && columnConfig.editor) {
                         column.editor = columnConfig.editor;

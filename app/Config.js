@@ -52,6 +52,7 @@ Ext.define('LIME.Config', {
     singleton : true,
     alternateClassName : 'Config',
     uxPath : 'LIME.ux',
+    requires : ['Server'],
 
     extensionScripts : ['LoadPlugin', 'Language', 'SavePlugin', 'TranslatePlugin'],
 
@@ -153,6 +154,7 @@ Ext.define('LIME.Config', {
                    if(data) {
                        data.name = lang;
                        this.pluginStructure[lang] = data;
+                       this.generateTransformationUrls(data);
                    } else {
                        Ext.log({level: "error"}, "Language ("+lang+") structure decode error! ");
                    }
@@ -161,8 +163,36 @@ Ext.define('LIME.Config', {
         }, this);
     },
 
+    // Add the trasformationUrls object to the language configuration
+    generateTransformationUrls: function (langConf) {
+        var me = this;
+        var urls = [];
+        if(langConf.transformationFiles) {
+            langConf.transformationUrls = {};
+            Ext.Object.each(langConf.transformationFiles, function(name, value) {
+                var url = me.getLanguagePath(langConf.name)+value;
+                if(name == "languageToLIME" || name == "LIMEtoLanguage") {
+                    urls.push({
+                        url: url,
+                        name: name
+                    });
+                    langConf.transformationUrls[name] = url;
+                }
+            });
+
+            if(!Ext.isEmpty(urls)) {
+                Server.filterUrls(urls, false, function(newUrls) {
+                    langConf.transformationUrls = {};
+                    Ext.each(newUrls, function(obj) {
+                        langConf.transformationUrls[obj.name] = obj.url;
+                    });
+                }, false, me);
+            }
+        }
+    },
+
     loadLanguage : function(callback) {
-        var me = this, counter, urls = [],
+        var me = this, counter,
             callingCallback = function() {
                 if(!--counter) {
                     var newCallback = function() {
@@ -196,30 +226,6 @@ Ext.define('LIME.Config', {
         Ext.each(scriptToLoad, function(script) {
             me.loadScript(this.getPluginLibsPath() + '/' + script + '.js', callingCallback, callingCallback);
         }, this);
-
-        if(langConf.transformationFiles) {
-            langConf.transformationUrls = {};
-            Ext.Object.each(langConf.transformationFiles, function(name, value) {
-                if(name == "languageToLIME" || name == "LIMEtoLanguage") {
-                    urls.push({
-                        url: me.getLanguagePath()+value,
-                        name: name
-                    });
-                    langConf.transformationUrls[name] = me.getLanguagePath()+value;
-                }
-            });
-
-            if(!Ext.isEmpty(urls)) {
-                Server.filterUrls(urls, false, function(newUrls) {
-                    langConf.transformationUrls = {};
-                    Ext.each(newUrls, function(obj) {
-                        langConf.transformationUrls[obj.name] = obj.url;
-                    });
-                }, false, me);    
-            }
-        } 
-        
-
     },
     
     loadScript: function(url, success, error) {

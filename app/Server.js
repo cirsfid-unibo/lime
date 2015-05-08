@@ -48,6 +48,7 @@
 Ext.define('LIME.Server', {
     singleton: true,
     alternateClassName: 'Server',
+    requires: ['Statics', 'Utilities'],
 
     nodeServer: 'http://localhost:9006',
 
@@ -114,12 +115,6 @@ Ext.define('LIME.Server', {
         });
     },
 
-    // Get file metadata
-    getFileMetadata: function(username, password, path, success, failure) {
-        var i = path.lastIndexOf('/');
-        var newPath = path.substring(0, i+1) + '.metadata.' + path.substring(i+1);
-        this.getFile(username, password, newPath, success, failure)
-    },
 
     // ====================
     // ====== PHP =========

@@ -285,44 +285,44 @@ Ext.define('LIME.controller.Language', {
      * Store metadata in an object by parsing the
      * given XML DOM.
      */
-    parseMetadata : function(xmlDom, xmlString, noSideEffects) {
-        var metaObject = {}, extDom;
-        try {
-            extDom = Ext.fly(xmlDom);
-        } catch(e) { //Ext.Element sometimes fails with IE browsers.
-            var parser = new DOMParser();
-            var doc = parser.parseFromString(xmlString, "application/xml");
-            extDom = Ext.fly(doc);
-        }  
-         var internalMetadata = extDom.down('*[class=internalMetadata]'), 
-             docLang, docLocale, docType, nationality, frbrDom;
-            if (internalMetadata) {
-                docLang = internalMetadata.down('*[class=docLang]');
-                docLocale = internalMetadata.down('*[class=docLocale]'); 
-                docType = internalMetadata.down('*[class=docType]');
-                docMarkingLanguage = internalMetadata.down('*[class=docMarkingLanguage]');
-                if (docLang && docLang.dom.firstChild && docLang.dom.firstChild.nodeValue) {
-                    metaObject.docLang = docLang.dom.firstChild.nodeValue;
-                }
-                if (docLocale && docLocale.dom.firstChild && docLocale.dom.firstChild.nodeValue) {
-                    metaObject.docLocale = docLocale.dom.firstChild.nodeValue;
-                }
-                if (docType && docType.dom.firstChild && docType.dom.firstChild.nodeValue) {
-                    metaObject.docType = docType.dom.firstChild.nodeValue;
-                }
-                if (docMarkingLanguage && docMarkingLanguage.dom.firstChild && docMarkingLanguage.dom.firstChild.nodeValue) {
-                    metaObject.docMarkingLanguage = docMarkingLanguage.dom.firstChild.nodeValue;
-                }
-            }
+    // parseMetadata : function(xmlDom, xmlString, noSideEffects) {
+    //     var metaObject = {}, extDom;
+    //     try {
+    //         extDom = Ext.fly(xmlDom);
+    //     } catch(e) { //Ext.Element sometimes fails with IE browsers.
+    //         var parser = new DOMParser();
+    //         var doc = parser.parseFromString(xmlString, "application/xml");
+    //         extDom = Ext.fly(doc);
+    //     }  
+    //      var internalMetadata = extDom.down('*[class=internalMetadata]'), 
+    //          docLang, docLocale, docType, nationality, frbrDom;
+    //         if (internalMetadata) {
+    //             docLang = internalMetadata.down('*[class=docLang]');
+    //             docLocale = internalMetadata.down('*[class=docLocale]'); 
+    //             docType = internalMetadata.down('*[class=docType]');
+    //             docMarkingLanguage = internalMetadata.down('*[class=docMarkingLanguage]');
+    //             if (docLang && docLang.dom.firstChild && docLang.dom.firstChild.nodeValue) {
+    //                 metaObject.docLang = docLang.dom.firstChild.nodeValue;
+    //             }
+    //             if (docLocale && docLocale.dom.firstChild && docLocale.dom.firstChild.nodeValue) {
+    //                 metaObject.docLocale = docLocale.dom.firstChild.nodeValue;
+    //             }
+    //             if (docType && docType.dom.firstChild && docType.dom.firstChild.nodeValue) {
+    //                 metaObject.docType = docType.dom.firstChild.nodeValue;
+    //             }
+    //             if (docMarkingLanguage && docMarkingLanguage.dom.firstChild && docMarkingLanguage.dom.firstChild.nodeValue) {
+    //                 metaObject.docMarkingLanguage = docMarkingLanguage.dom.firstChild.nodeValue;
+    //             }
+    //         }
             
-            frbrDom = extDom.down("*[class=frbr]", true);
-            if (frbrDom) {
-                metaObject.frbrObj = this.parseFrbrMetadata(frbrDom, noSideEffects);
-                metaObject.frbrDom = frbrDom;
-                metaObject.nationality =  DocProperties.frbr.work.nationality;
-            }
-        return metaObject;
-    },
+    //         frbrDom = extDom.down("*[class=frbr]", true);
+    //         if (frbrDom) {
+    //             metaObject.frbrObj = this.parseFrbrMetadata(frbrDom, noSideEffects);
+    //             metaObject.frbrDom = frbrDom;
+    //             metaObject.nationality =  DocProperties.frbr.work.nationality;
+    //         }
+    //     return metaObject;
+    // },
     /**
      * This function builds and set an id attribute starting from the given element.
      * The build process is based on the hierarchy of the elements.
@@ -529,7 +529,9 @@ Ext.define('LIME.controller.Language', {
             parser = new DOMParser(), doc, docCounters = {}, openedDocumentsData = [];
         // Checking that before load will be called just one time per document
         if (beforeLoad && !newParams.beforeLoaded) {
+            console.info('beforeLoad')
             if ( !noSideEffects ) {
+                console.warn('setting them')
                 DocProperties.docsMeta = {};
                 DocProperties.frbrDom = null;
             }
