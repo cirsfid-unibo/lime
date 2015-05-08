@@ -502,6 +502,7 @@ Ext.define('LIME.controller.Language', {
      * @param {Object} scope The scope of the callback function
      * TODO Move somewhere else (not related to the language)
      */
+     // Step 2
     saveDocument : function(docUrl, params, callback, scope) {
         var params = Ext.Object.merge(params, {
             requestedService : Statics.services.saveAs,

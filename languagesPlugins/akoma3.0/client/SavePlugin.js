@@ -58,12 +58,6 @@ Ext.define('LIME.ux.akoma3.SavePlugin', {
     },
 
     afterSave : function(params, app){
-        var editorDom = params.editorDom,
-            metadataDom = params.metadataDom;
-            
-        // Remove the metadata from the editor's content
-        if (metadataDom && metadataDom.parentNode)
-            metadataDom.parentNode.removeChild(metadataDom);
     },
     
     constructor: function (config) {

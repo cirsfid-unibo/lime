@@ -237,8 +237,9 @@ Ext.define('LIME.controller.Storage', {
             console.info('Apro il doc', lang, xslt);
             Server.applyXslt(content, xslt, function (content) {
                 config = {
-                    docText : content,
-                    docId : filePath,
+                    docText: content,
+                    docId: filePath,
+                    docMarkingLanguage: lang,
                     originalDocId: filePath
                 };
 
@@ -486,6 +487,10 @@ Ext.define('LIME.controller.Storage', {
         DocProperties.setFrbr(frbrValues);
     },
 
+    // Step 0
+    // silent, autosave
+    // view, path
+    // Autosave: se id e' vuoto, salva in default location
     saveDocument: function(config) {
         var me = this, metadataDom,
             frbr = DocProperties.frbr;
@@ -495,25 +500,19 @@ Ext.define('LIME.controller.Storage', {
         if (!config || !config.autosave) {
             var partialUrl = config.path.substring(1);
             partialUrl = partialUrl.substring(partialUrl.indexOf('/'));
-            metadataDom = me.buildMetadata(partialUrl);
         } else {
-            // TODO: don't call this every autosave
-            metadataDom = me.buildInternalMetadata(true);
+
         }
 
         // Before saving
         me.application.fireEvent(Statics.eventsNames.beforeSave, {
             editorDom: me.getController('Editor').getDom(),
-            metadataDom: metadataDom,
             documentInfo: DocProperties.documentInfo
         });
 
-        config.metaString = DomUtils.serializeToString(metadataDom) || Ext.emptyString;
-        config.metadataDom = metadataDom;
         config.docName = (frbr.manifestation) ? frbr.manifestation.docName : "";
 
         me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
-           xml = xml.replace('<?xml version="1.0" encoding="UTF-8"?>', '');
            me.saveDocumentText(xml, config);
         }, {complete: true});
     },
@@ -529,12 +528,12 @@ Ext.define('LIME.controller.Storage', {
     /**
      * This is a wrapper for Language.saveDocument function
      */
+    // Step 1
     saveDocumentText: function(text, config) {
         var me = this,
             params = {
                 userName : User.username,
-                fileContent : text,
-                metadata: config.metaString
+                fileContent : text
             };
 
         if ( !Ext.isEmpty(config.path) && Ext.isString(config.path) ) {
@@ -543,6 +542,8 @@ Ext.define('LIME.controller.Storage', {
 
         // Saving phase
         me.application.fireEvent(Statics.eventsNames.saveDocument, config.path, params, function(response, path) {
+            // Step 3
+
             var responseText = response.responseText;
             if(responseText[responseText.length-1] == "1") {
                 responseText = responseText.substring(0, (responseText.length-1));
@@ -565,7 +566,6 @@ Ext.define('LIME.controller.Storage', {
             // After saving
             me.application.fireEvent(Statics.eventsNames.afterSave, {
                 editorDom: me.getController('Editor').getDom(),
-                metadataDom: config.metadataDom,
                 documentInfo: DocProperties.documentInfo,
                 saveData: Ext.decode(responseText, true)
             });
