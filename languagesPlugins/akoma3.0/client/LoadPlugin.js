@@ -145,10 +145,9 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
             expUri, expUriTpl, manUri, manUriTpl;
 
         if(params.metaDom) {
-           workUriTpl = new Ext.Template('/{docLocale}/{docType}/{date}/{number}');
+           workUriTpl = new Ext.Template(Language.getUriPrefix()+'/{docLocale}/{docType}/{date}');
            workUri = workUriTpl.apply(Ext.merge(params, {
-                date: date,
-                number: ""
+                date: date
            }));
            expUriTpl = new Ext.Template('{workUri}/{lang}@');
            expUri = expUriTpl.apply({

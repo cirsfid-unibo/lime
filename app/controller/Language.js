@@ -236,7 +236,7 @@ Ext.define('LIME.controller.Language', {
                 expressionUri : '(\.xml)'
             };
         
-        docUri = docUri.replace(/:/g, '%3A');
+        docUri = Language.getUriPrefix()+docUri.replace(/:/g, '%3A');
 
         // Build the main structure
         container.setAttribute('class', Statics.metadata.containerClass);

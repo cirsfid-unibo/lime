@@ -471,5 +471,10 @@ Ext.define('LIME.Utilities', {
     filterUrls: function(reqUrls, content, success, failure, scope) {
         console.warn('Utilities.filterUrls is deprecated, use Server.filterUrls');
         return Server.filterUrls(reqUrls, content, success, failure, scope);
+    },
+
+    isValidDate: function(date) {
+        date = (Ext.isDate(date)) ? date : new Date(date);
+        return !isNaN(date.getTime());
     }
 });

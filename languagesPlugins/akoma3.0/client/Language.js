@@ -57,6 +57,7 @@ Ext.define('LIME.ux.akoma3.Language', {
     config : {
         elementIdAttribute: "eId",
         attributePrefix: "akn_",
+        uriPrefix: '/akn',
         metadataStructure : {},
         abbreviations : {
             alinea : "al",
