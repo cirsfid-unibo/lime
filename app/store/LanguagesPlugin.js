@@ -293,14 +293,14 @@ Ext.define('LIME.store.LanguagesPlugin', {
 
         function addTag (el) {
             var name = el.name,
-                button = DocProperties.getFirstButtonByName(el.name)
+                button = DocProperties.getFirstButtonByName(el.name),
                 pattern = button.pattern.pattern,
                 tag = button.pattern.wrapperElement.match(/\w+/)[0],
                 content = el.content || '&nbsp;';
-            template += '<' + tag + ' ' + DomUtils.elementIdAttribute + '="' + name + '" '+
+            template += '\n<' + tag + ' ' + DomUtils.elementIdAttribute + '="' + name + '" '+
                                          'class="' + pattern + ' ' + name + '">' + content;
             (el.children || []).forEach(addTag);
-            template += '</' + tag + '>';
+            template += '\n</' + tag + '>';
         }
 
         template += '<div>'; // This will be filled with document root class
