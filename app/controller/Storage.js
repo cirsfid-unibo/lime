@@ -495,19 +495,12 @@ Ext.define('LIME.controller.Storage', {
     // Step 0
     // silent, autosave
     // view, path
-    // Autosave: se id e' vuoto, salva in default location
+    // Autosave: if path is empty, save to default location
     saveDocument: function(config) {
         var me = this, metadataDom,
             frbr = DocProperties.frbr;
         
         config.path = config.path || DocProperties.documentInfo.docId || Ext.emptyString;
-
-        if (!config || !config.autosave) {
-            var partialUrl = config.path.substring(1);
-            partialUrl = partialUrl.substring(partialUrl.indexOf('/'));
-        } else {
-
-        }
 
         // Before saving
         me.application.fireEvent(Statics.eventsNames.beforeSave, {

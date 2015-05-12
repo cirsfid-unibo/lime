@@ -48,21 +48,20 @@
 Ext.define('LIME.reader.OpenFileReader', {
     extend: 'Ext.data.reader.Json',
 
-    getResponseData: function(response) {
-        var data = this.callParent([response]);
-        console.log(response);
-        console.log('getResponseData', data);
+    getData: function (data) {
         // fields: ['path', 'id', 'text', 'cls', 'leaf', 'name', 'relPath', 'originalName']
-        return data.map(function (item) {
+        return data.map(function (path) {
+            var isFolder = !!path.match(/\/$/);
+            var name = isFolder ? path.match(/([^\/]+)\/$/)[1] : path.match(/([^\/]+)$/);
             return {
-                path: item,
-                id: item,
-                text: item,
-                cls: item,
-                leaf: item,
-                name: item,
-                relPath: item,
-                originalName: item
+                path: path,
+                id: path,
+                text: name,
+                cls: path,
+                leaf: !isFolder,
+                name: name,
+                relPath: path,
+                originalName: path
             };
         });
     }
@@ -83,29 +82,27 @@ Ext.define('LIME.store.OpenFile', {
 
     listeners: {
         beforeload: function(store, operation, eOpts) {
-            var path = store.requestNode == 'root' ?
-                       User.preferences.folders[0]:
-                       store.requestNode;
-            console.log(path);
-
-            var proxy = this.getProxy();
-            // proxy.url = Server.nodeServer + '/Documents' + path + '/';
-            proxy.url = Server.nodeServer + '/Documents' + path;
-            proxy.headers = {
-                Authorization: 'Basic ' + Ext.util.Base64.encode(User.username + ':' + User.password)
-            };
+            if (store.requestNode == 'root') {
+                this.loadRawData(User.preferences.folders)
+                return false;
+            } else {
+                var path = store.requestNode;
+                var proxy = this.getProxy();
+                proxy.url = Server.nodeServer + '/Documents' + path;
+                proxy.headers = {
+                    Authorization: 'Basic ' + Ext.util.Base64.encode(User.username + ':' + User.password)
+                };
+            }
         },
 
-        // load: function(store, records, successful, eOpts) {
-        //     var countries = Ext.getStore("Nationalities");
-        //     Ext.each(records, function(record) {
-        //         var nameRecord = countries.findRecord("alpha-2", record.data.text, 0, false, false, true);
-        //         record.data.name = (nameRecord) ? nameRecord.get("name"): record.data.text;
-        //         if (record.data.name != record.data.text) {
-        //             record.data.originalName = record.data.text;
-        //         }
-        //     }, this);
-        // }
+        load: function(store, records, successful, eOpts) {
+            console.warn('load', this.proxy.type);
+        }
+    },
+
+    init: function () {
+        console.info('init', arguments);
+        this.callParent(arguments);
     }
 });
 
