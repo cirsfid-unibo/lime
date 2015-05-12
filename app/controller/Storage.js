@@ -455,9 +455,24 @@ Ext.define('LIME.controller.Storage', {
         
         this.updateDocProperties(values);
 
-        this.saveDocument({
-            view : relatedWindow,
-            path :  selectedItem.getData().path
+        if (selectedItem.getData().id) {
+            DocProperties.documentInfo.docId = selectedItem.getData().id;
+            User.setPreference('lastOpened', DocProperties.documentInfo.docId);
+        } else {
+            console.warn('selectedItem.getData().id is null');
+        }
+
+        this.saveDocument(function () {
+            relatedWindow.close();
+            var docName = "";
+            try { docName = DocProperties.frbr.manifestation.docName; } catch (e) {};
+            Ext.Msg.alert({
+                title: Locale.strings.saveAs,
+                msg:  new Ext.Template(Locale.strings.savedToTpl).apply({
+                    docName : docName,
+                    docUrl : selectedItem.getData().path.replace(docName, '')
+                })
+            });
         });
     },
 
@@ -492,15 +507,11 @@ Ext.define('LIME.controller.Storage', {
         DocProperties.setFrbr(frbrValues);
     },
 
-    // Step 0
-    // silent, autosave
-    // view, path
-    // Autosave: if path is empty, save to default location
-    saveDocument: function(config) {
-        var me = this, metadataDom,
-            frbr = DocProperties.frbr;
-        
-        config.path = config.path || DocProperties.documentInfo.docId || Ext.emptyString;
+    // Save the currenly opened document and call callback on success.
+    // Fire beforeSave and afterSave events.
+    saveDocument: function(callback) {
+        var me = this;
+        var path = DocProperties.documentInfo.docId;
 
         // Before saving
         me.application.fireEvent(Statics.eventsNames.beforeSave, {
@@ -508,68 +519,22 @@ Ext.define('LIME.controller.Storage', {
             documentInfo: DocProperties.documentInfo
         });
 
-        config.docName = (frbr.manifestation) ? frbr.manifestation.docName : "";
-
         me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
-           me.saveDocumentText(xml, config);
+            Server.saveDocument(path, xml, function () {
+                if (callback) callback ();
+
+                // After saving
+                me.application.fireEvent(Statics.eventsNames.afterSave, {
+                    editorDom: me.getController('Editor').getDom(),
+                    documentInfo: DocProperties.documentInfo,
+                    saveData: true
+                    // saveData: Ext.decode(responseText, true)
+                });
+            });
         }, {complete: true});
     },
 
-    buildMetadata: function(uri) {
-        return this.getController('Language').buildMetadata(DocProperties.frbr, true, uri);
-    },
 
-    buildInternalMetadata: function() {
-        return this.getController('Language').buildInternalMetadata.apply(this, arguments);
-    },
-
-    /**
-     * This is a wrapper for Language.saveDocument function
-     */
-    // Step 1
-    saveDocumentText: function(text, config) {
-        var me = this,
-            params = {
-                userName : User.username,
-                fileContent : text
-            };
-
-        if ( !Ext.isEmpty(config.path) && Ext.isString(config.path) ) {
-            config.path = config.path.replace(/:/g, '%3A');    
-        }
-
-        // Saving phase
-        me.application.fireEvent(Statics.eventsNames.saveDocument, config.path, params, function(response, path) {
-            // Step 3
-
-            var responseText = response.responseText;
-            if(responseText[responseText.length-1] == "1") {
-                responseText = responseText.substring(0, (responseText.length-1));
-            }
-            // If it's an autosave don't show anything
-            if (!config || !config.autosave) {
-               if ( config && config.view ) {
-                   config.view.close();
-               }
-
-               Ext.Msg.alert({
-                    title : Locale.strings.saveAs,
-                    msg :  new Ext.Template(Locale.strings.savedToTpl).apply({
-                        docName : config.docName,
-                        docUrl : config.path.replace(config.docName, '')
-                    })
-                });
-            }
-
-            // After saving
-            me.application.fireEvent(Statics.eventsNames.afterSave, {
-                editorDom: me.getController('Editor').getDom(),
-                documentInfo: DocProperties.documentInfo,
-                saveData: Ext.decode(responseText, true)
-            });
-        });
-    },
-    
     fillInFields: function(cmp) {
         var columnDescriptor, value;
         this.columnValues = [];
@@ -718,6 +683,9 @@ Ext.define('LIME.controller.Storage', {
         var me = this;
         me.application.on(Statics.eventsNames.selectDocument, this.selectDocument, this);
         me.application.on(Statics.eventsNames.openDocument, this.openDocumentByUri, this);
+        me.application.on(Statics.eventsNames.saveDocument, function () {
+            console.info('Statics.eventsNames.saveDocument', argumets);
+        }, this);
         // set up the control
         this.control({
 

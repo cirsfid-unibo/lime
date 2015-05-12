@@ -177,7 +177,7 @@ Ext.define('LIME.controller.CustomizationManager', {
             newExplorer, language = me.getController("Language"),
             editorController = me.getController("Editor");
 
-        me.getController('Storage').saveDocument({silent: true,autosave: true});
+        me.getController('Storage').saveDocument();
 
         if(me.finishEditBtn) {
             me.finishEditBtn.up().remove(me.finishEditBtn);

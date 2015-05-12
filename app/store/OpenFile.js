@@ -48,11 +48,21 @@
 Ext.define('LIME.reader.OpenFileReader', {
     extend: 'Ext.data.reader.Json',
 
+    getResponseData: function (response) {
+        var data = [];
+        try {
+            var data = JSON.parse(response.responseText);
+        } catch (e) {
+            console.warn(e);
+        }
+        return data;
+    },
+
     getData: function (data) {
         // fields: ['path', 'id', 'text', 'cls', 'leaf', 'name', 'relPath', 'originalName']
         return data.map(function (path) {
-            var isFolder = !!path.match(/\/$/);
-            var name = isFolder ? path.match(/([^\/]+)\/$/)[1] : path.match(/([^\/]+)$/);
+            var isFolder = !path.match(/\.[\w]+$/);
+            var name = isFolder ? path.match(/([^\/]+)\/?$/)[1] : path.match(/([^\/]+)$/)[0];
             return {
                 path: path,
                 id: path,
@@ -87,22 +97,14 @@ Ext.define('LIME.store.OpenFile', {
                 return false;
             } else {
                 var path = store.requestNode;
+                if (path[path.length -1] != '/') path += '/';
                 var proxy = this.getProxy();
                 proxy.url = Server.nodeServer + '/Documents' + path;
                 proxy.headers = {
                     Authorization: 'Basic ' + Ext.util.Base64.encode(User.username + ':' + User.password)
                 };
             }
-        },
-
-        load: function(store, records, successful, eOpts) {
-            console.warn('load', this.proxy.type);
         }
-    },
-
-    init: function () {
-        console.info('init', arguments);
-        this.callParent(arguments);
     }
 });
 

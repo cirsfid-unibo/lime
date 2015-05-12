@@ -493,34 +493,7 @@ Ext.define('LIME.controller.Language', {
         };
     },
 
-    /**
-     * Execute the custom request needed to save the document.
-     * @param {Object} values A set of key-value pairs that contain some information about the document
-     * @param {Object} params Parameters of the HTTP request
-     * @param {Function} callback A callback function to be executed if/when the request is successful
-     * It gets two parameters: the request's response object and the uri of the saved document
-     * @param {Object} scope The scope of the callback function
-     * TODO Move somewhere else (not related to the language)
-     */
-     // Step 2
-    saveDocument : function(docUrl, params, callback, scope) {
-        var params = Ext.Object.merge(params, {
-            requestedService : Statics.services.saveAs,
-            file : docUrl
-        });
 
-        Ext.Ajax.request({
-            url : Utilities.getAjaxUrl(),
-            params : params,
-            scope : this,
-            success : function(response) {
-                if (Ext.isFunction(callback)) {
-                    // Use Ext.callback to keep the scope
-                    Ext.callback(callback, scope, [response, docUrl]);
-                }
-            }
-        });
-    },
     
     beforeLoad: function(params, callback, noSideEffects) {
         var me = this, app = this.application, beforeLoad = LoadPlugin.beforeLoad,
@@ -530,9 +503,7 @@ Ext.define('LIME.controller.Language', {
             parser = new DOMParser(), doc, docCounters = {}, openedDocumentsData = [];
         // Checking that before load will be called just one time per document
         if (beforeLoad && !newParams.beforeLoaded) {
-            console.info('beforeLoad')
             if ( !noSideEffects ) {
-                console.warn('setting them')
                 DocProperties.docsMeta = {};
                 DocProperties.frbrDom = null;
             }
@@ -616,7 +587,6 @@ Ext.define('LIME.controller.Language', {
         //this.application.on(Statics.eventsNames.documentLoaded, this.beforeTranslate, this);
         this.application.on(Statics.eventsNames.afterLoad, this.afterLoad, this);
         this.application.on(Statics.eventsNames.beforeLoad, this.beforeLoad, this);
-        this.application.on(Statics.eventsNames.saveDocument, this.saveDocument, this);
         this.application.on(Statics.eventsNames.beforeSave, this.beforeSave, this);
         this.application.on(Statics.eventsNames.afterSave, this.afterSave, this);
 

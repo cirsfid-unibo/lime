@@ -88,7 +88,6 @@ Ext.define('LIME.User', {
 
     // Save user to local storage
     saveToLocalStorage: function () {
-        console.log('saving to local storage');
         localStorage.setItem('user', JSON.stringify(this.getJsonSerialization()));
     },
 

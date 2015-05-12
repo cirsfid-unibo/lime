@@ -1024,10 +1024,7 @@ Ext.define('LIME.controller.Editor', {
 			return;
         console.info('Saving...')
 		this.changed = false;
-		this.getController('Storage').saveDocument({
-		    silent: true,
-		    autosave: true
-		});
+		this.getController('Storage').saveDocument();
 	},
 
 	/**

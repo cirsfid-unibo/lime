@@ -58,7 +58,7 @@ Ext.define('LIME.Server', {
 
     // Try logging in.
     // Calls success with user object
-    login: function(username, password, success, failure) {
+    login: function (username, password, success, failure) {
         Ext.Ajax.request({
             method: 'GET',
             url: this.nodeServer + '/Users/' + encodeURI(username),
@@ -66,23 +66,23 @@ Ext.define('LIME.Server', {
                 Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password)
             },
             success: success,
-            failure : failure
+            failure: failure
         });
     },
 
     // Register user.
-    register: function(user, success, failure) {
+    register: function (user, success, failure) {
         Ext.Ajax.request({
             method: 'POST',
             url: this.nodeServer + '/Users',
             jsonData: user,
             success: success,
-            failure : failure
+            failure: failure
         });
     },
 
     // Update user.
-    saveUser: function(user, success, failure) {
+    saveUser: function (user, success, failure) {
         var username = user.username,
             password = user.password;
         Ext.Ajax.request({
@@ -93,12 +93,12 @@ Ext.define('LIME.Server', {
             },
             jsonData: user,
             success: success,
-            failure : failure
+            failure: failure
         });
     },
 
     // Get file content
-    getDocument: function(path, success, failure) {
+    getDocument: function (path, success, failure) {
         var username = User.username,
             password = User.password;
 
@@ -108,10 +108,31 @@ Ext.define('LIME.Server', {
             headers: {
                 Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password)
             },
-            success: function(response) {
+            success: function (response) {
                 success(response.responseText);
             },
-            failure : failure
+            failure: failure
+        });
+    },
+
+    saveDocument: function (path, content, success, failure) {
+        var username = User.username,
+            password = User.password;
+
+        Ext.Ajax.request({
+            method: 'PUT',
+            rawData: content,
+            url: this.nodeServer + '/Documents' + path,
+            headers: {
+                Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password)
+            },
+            success: function (response) {
+                console.info('Saved', path);
+                success(response.responseText);
+            },
+            failure: function (error) {
+                console.warn('Saving document failed:', error);
+            }
         });
     },
 
@@ -132,10 +153,10 @@ Ext.define('LIME.Server', {
                 output: '',
                 markingLanguage: ''
             }, extraConfig),
-            success: function(response) {
+            success: function (response) {
                 success(response.responseText);
             },
-            failure: failure || function(error) {
+            failure: failure || function (error) {
                 Ext.log('XSLT conversion failed', xslt, error);
             }
         });
@@ -150,7 +171,7 @@ Ext.define('LIME.Server', {
                 requestedService: Statics.services.fileToHtml,
                 fileExistPath: path
             },
-            success: function(response) {
+            success: function (response) {
                 try {
                     var res = JSON.parse(response.responseText);
                     console.log(res)
@@ -163,7 +184,7 @@ Ext.define('LIME.Server', {
                     else Ext.log('Html conversion failed', path);
                 }
             },
-            failure: failure || function(error) {
+            failure: failure || function (error) {
                 Ext.log('Html conversion failed', path, error);
             }
         });
@@ -209,7 +230,7 @@ Ext.define('LIME.Server', {
     // - content: auto-read response ... 
     // Check (Server-side) which file exist and return them (If 'content' param is set to true)
     // Example reqUrls: [{"name":"patterns","url":"config/Patterns.json"},
-    filterUrls: function(reqUrls, content, success, failure, scope) {
+    filterUrls: function (reqUrls, content, success, failure, scope) {
         var params = {
             requestedService: Statics.services.filterUrls,
             urls: Ext.encode(reqUrls)
@@ -223,16 +244,16 @@ Ext.define('LIME.Server', {
             method: 'POST',
             params: params,
             scope: this,
-            success: function(result, request) {
+            success: function (result, request) {
                 var newUrls  = Ext.decode(result.responseText, true);
-                if (Ext.isFunction(success) && newUrls) {
+                if (Ext.isFunction (success) && newUrls) {
                     Ext.bind(success, scope)(newUrls);
-                } else if(Ext.isFunction(failure)) {
+                } else if(Ext.isFunction (failure)) {
                     Ext.bind(failure, scope)(reqUrls);
                 }
             },
-            failure: function() {
-                if (Ext.isFunction(failure)) {
+            failure: function () {
+                if (Ext.isFunction (failure)) {
                     Ext.bind(failure, scope)(reqUrls);
                 }
             }
@@ -251,7 +272,7 @@ Ext.define('LIME.Server', {
             url: 'resources/' + packageName + '/' + file // Build mode
         }];
 
-        this.filterUrls(possiblePaths, true, function(possiblePaths) {
+        this.filterUrls(possiblePaths, true, function (possiblePaths) {
             if ( possiblePaths.length )
                 success(possiblePaths[0].url, possiblePaths[0].content);
         }, failure, this);
