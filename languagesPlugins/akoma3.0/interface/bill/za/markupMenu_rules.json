@@ -1,11 +1,46 @@
 {
     "newDocumentTemplate": [{
         "name": "preface",
-        "startingLevel": "0",
-        "numberOfLevels": "0"
+        "children": [
+            {
+                "name": "p", 
+                "children": [{ "name": "docType", "content": "BILL" }] 
+            },
+            { "name": "longTitle", "content": "Insert title here" }
+        ]
+    }, {
+        "name": "preamble", 
+        "children": [
+            { 
+                "name": "formula", 
+                "children": [{ "name": "p", "content": "Insert enacting formula here" }]
+            }
+        ]
     }, {
         "name": "body",
-        "startingLevel": "2",
-        "numberOfLevels": "2"
+        "children": [
+            {
+                "name": "section",
+                "children": [
+                    { "name": "num", "content": "1." },
+                    {
+                        "name": "list",
+                        "children": [
+                            {
+                                "name": "point",
+                                "children": [
+                                    { "name": "num", "content": "(a)" },
+                                    { "name": "p" }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }, {
+        "name": "conclusions",
+        "children": [{ "name": "p" }]
     }]
 }
+

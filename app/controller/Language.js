@@ -480,7 +480,7 @@ Ext.define('LIME.controller.Language', {
     
     getLanguagePrefix: function() {
         var languageConfig = this.getStore("LanguagesPlugin").getConfigData();
-        return languageConfig.markupMenuRules.defaults.attributePrefix;       
+        return languageConfig.markupMenuRules.defaults.attributePrefix;
     },
     
     nodeGetLanguageAttribute: function(node, attribute) {
