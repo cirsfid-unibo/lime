@@ -295,9 +295,10 @@ Ext.define('LIME.store.LanguagesPlugin', {
             var name = el.name,
                 button = DocProperties.getFirstButtonByName(el.name)
                 pattern = button.pattern.pattern,
-                tag = button.pattern.wrapperElement.match(/\w+/)[0];
+                tag = button.pattern.wrapperElement.match(/\w+/)[0],
+                content = el.content || '&nbsp;';
             template += '<' + tag + ' ' + DomUtils.elementIdAttribute + '="' + name + '" '+
-                                         'class="' + pattern + ' ' + name + '">&nbsp;';
+                                         'class="' + pattern + ' ' + name + '">' + content;
             (el.children || []).forEach(addTag);
             template += '</' + tag + '>';
         }

@@ -1,6 +1,7 @@
 {
     "newDocumentTemplate": [{
-        "name": "preface"
+        "name": "preface",
+        "children": [{ "name": "p" }]
     }, {
         "name": "preamble", 
         "children": [{ "name": "p" }]
@@ -10,11 +11,25 @@
             {
                 "name": "section",
                 "children": [
-                    { "name": "num" },
-                    { "name": "p" }
+                    { "name": "num", "content": "1." },
+                    {
+                        "name": "list",
+                        "children": [
+                            {
+                                "name": "point",
+                                "children": [
+                                    { "name": "num", "content": "(a)" },
+                                    { "name": "p" }
+                                ]
+                            }
+                        ]
+                    }
                 ]
             }
         ]
+    }, {
+        "name": "conclusions",
+        "children": [{ "name": "p" }]
     }]
 }
 
