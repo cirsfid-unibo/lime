@@ -99,9 +99,13 @@ Ext.define('LIME.controller.Storage', {
         fieldName: "docProponent",
         getValue: function(uri) {
             var docUri = (uri) ? uri.split("/") : [],
-                value = (docUri.length && isNaN(new Date(docUri[3]).getYear())) ? docUri[3] : false;
+                value = (docUri.length && !Utilities.isValidDate(docUri[4])) ? docUri[4] : false;
 
-            value = (value) ? value : Ext.emptyString.toString();
+            var docTypes = Config.getDocTypesByLang(Config.getLanguage()).map(function(obj) {
+                return obj.name;
+            });
+
+            value = (value && (docTypes.indexOf(value) == -1)) ? value : Ext.emptyString.toString();
             return value;
         }
     }, {
@@ -133,8 +137,8 @@ Ext.define('LIME.controller.Storage', {
         getValue: function(uri) {
             var docUri = (uri) ? uri.split("/") : [],
                 value = (docUri.length) ? docUri[(docUri.length-3)] : false;
-            value = (value) ? value : Ext.emptyString.toString();
-            return value;
+            value = (value && !Utilities.isValidDate(value)) ? value : Ext.emptyString.toString();
+            return value || this.fieldName;
         }
     },{
         text: Locale.strings.versionLabel,
@@ -384,6 +388,7 @@ Ext.define('LIME.controller.Storage', {
             relatedWindow.activeList = nextList;
         }
         if(!relatedWindow.avoidTitleUpdate) {
+            relatedWindow.currentPath = data.path;
             this.updateTitle(relatedWindow, data.path);
         }
     },
@@ -438,10 +443,10 @@ Ext.define('LIME.controller.Storage', {
     
     prepareSaveDocument: function(cmp) {
         var relatedWindow = cmp.up('window'), values = {},
-            selectedItem = relatedWindow.activeList.getSelectionModel().getSelection()[0];
+            selectedItem = relatedWindow.activeList.getSelected();
         
         Ext.each(relatedWindow.query('grid'), function(view, index) {
-            var selectedItem = view.getSelectionModel().getSelection()[0];
+            var selectedItem = view.getSelected();
             if (selectedItem) {
                 var selectedData = selectedItem.getData();
                 values[this.storageColumns[index].fieldName] = (selectedData.originalName) ? selectedData.originalName : selectedData.name;
@@ -594,12 +599,12 @@ Ext.define('LIME.controller.Storage', {
         var record, me = this, store = cmp.getStore(),
             plugin = cmp.getPlugin('cellediting'),
             newRecordId = "new", prevList = cmp.previousNode('grid'),
-            prevListSelected, path = "";
+            prevListSelected, path = '';
             
         plugin.newFieldRecordId = newRecordId; 
         
         if (prevList) {
-            prevListSelected = prevList.getSelectionModel().getSelection()[0];
+            prevListSelected = prevList.getSelected();
             if (prevListSelected) {
                 path+=prevListSelected.get("path");
             }
@@ -608,11 +613,10 @@ Ext.define('LIME.controller.Storage', {
             "id": newRecordId,
             "leaf": (cmp.indexInParent==(me.storageColumns.length-1)) ? "1" : "",
             "name": name || "",
-            "path": path,
+            "path": path || cmp.up('window').currentPath,
             "cls": newRecordId
          }], true);
          record = store.getById(newRecordId);
-
          if (!editMode) {
              cmp.fireEvent("recordChanged", cmp, record, true);
              // Since loadData doesn't fire a load event, call the saveListViewOnStoreLoad
@@ -757,6 +761,7 @@ Ext.define('LIME.controller.Storage', {
                                me.fileListViewClick(cmp, record, false, false, false, false, onStoreLoad);
                            }
                        };
+
                    if(relatedWindow && relatedWindow.pathToOpen) {
                        path = relatedWindow.pathToOpen || "";
                         me.loadOpenFileListData(listViews[0], false, function(store, cmp) {

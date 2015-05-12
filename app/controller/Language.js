@@ -236,7 +236,7 @@ Ext.define('LIME.controller.Language', {
                 expressionUri : '(\.xml)'
             };
         
-        docUri = docUri.replace(/:/g, '%3A');
+        docUri = Language.getUriPrefix()+docUri.replace(/:/g, '%3A');
 
         // Build the main structure
         container.setAttribute('class', Statics.metadata.containerClass);
@@ -480,7 +480,7 @@ Ext.define('LIME.controller.Language', {
     
     getLanguagePrefix: function() {
         var languageConfig = this.getStore("LanguagesPlugin").getConfigData();
-        return languageConfig.markupMenuRules.defaults.attributePrefix;       
+        return languageConfig.markupMenuRules.defaults.attributePrefix;
     },
     
     nodeGetLanguageAttribute: function(node, attribute) {

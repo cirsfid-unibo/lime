@@ -703,6 +703,8 @@ Ext.define('LIME.controller.ParsersController', {
         sigButton = DocProperties.getChildConfigByName(button, "signature"),
             roleNodes = [], personNodes = [];
         
+        if( !Ext.isArray(signatures) ) return;
+
         signatures = signatures.filter(function(obj, index, arr) {
             var itemLikeMe = arr.filter(function(item) {
                 return ((item.value == obj.value) 
