@@ -498,10 +498,10 @@ Ext.define('LIME.controller.Storage', {
     
     prepareSaveDocument: function(cmp) {
         var relatedWindow = cmp.up('window'), values = {},
-            selectedItem = relatedWindow.activeList.getSelectionModel().getSelection()[0];
+            selectedItem = relatedWindow.activeList.getSelected();
         
         Ext.each(relatedWindow.query('grid'), function(view, index) {
-            var selectedItem = view.getSelectionModel().getSelection()[0];
+            var selectedItem = view.getSelected();
             if (selectedItem) {
                 var selectedData = selectedItem.getData();
                 values[this.storageColumns[index].fieldName] = (selectedData.originalName) ? selectedData.originalName : selectedData.name;
@@ -517,7 +517,6 @@ Ext.define('LIME.controller.Storage', {
     },
 
     updateDocProperties: function(values) {
-        console.log(values);
         var frbrValues = {}, separator = "@", versionDate, versionLang;
 
         var separatorPos = values.version.indexOf(separator);
@@ -662,7 +661,7 @@ Ext.define('LIME.controller.Storage', {
         plugin.newFieldRecordId = newRecordId; 
         
         if (prevList) {
-            prevListSelected = prevList.getSelectionModel().getSelection()[0];
+            prevListSelected = prevList.getSelected();
             if (prevListSelected) {
                 path+=prevListSelected.get("path");
             }
@@ -675,7 +674,6 @@ Ext.define('LIME.controller.Storage', {
             "cls": newRecordId
          }], true);
          record = store.getById(newRecordId);
-
          if (!editMode) {
              cmp.fireEvent("recordChanged", cmp, record, true);
              // Since loadData doesn't fire a load event, call the saveListViewOnStoreLoad

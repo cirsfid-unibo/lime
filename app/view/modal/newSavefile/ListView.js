@@ -102,5 +102,12 @@ Ext.define('LIME.view.modal.newSavefile.ListView', {
 
     buildStore : function(me) {
         return Ext.create('LIME.store.OpenFile');
+    },
+
+    getSelected: function() {
+        var record = this.getSelectionModel().getSelection()[0],
+            position = this.getSelectionModel().getPosition();
+
+        return record || position.record;
     }
 }); 
