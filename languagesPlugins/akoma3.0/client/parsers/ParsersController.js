@@ -1608,6 +1608,7 @@ Ext.define('LIME.controller.ParsersController', {
                             return true;
                         });
                     } else {
+
                         string = quote.quoted.string;
                         try {
                             structureToMark = Ext.Array.push(structureToMark, me.smartFindQuote(body, string, function(node) {
@@ -2586,9 +2587,23 @@ Ext.define('LIME.controller.ParsersController', {
                 me.callParser("quote", content, function(result) {
                 var jsonData = Ext.decode(result.responseText, true);
                     if (jsonData) {
-                        me.parseQuotes(jsonData.response);
+                        var data = jsonData.response.slice(0, 50);
+                        var clusterNum = 5;
+                        var times = Math.floor(data.length/clusterNum);
+                        var done = 0;
+                        var goNext = function() {
+                            var start = done*clusterNum;
+                            var end = (times-done) ? start+clusterNum : false;
+                            me.parseQuotes(data.slice(start, end));
+                            done++;
+                            if ( end ) {
+                                setTimeout(goNext, 50);
+                            } else {
+                                callStrParser();
+                            }
+                        };
+                        goNext();
                     }
-                    callStrParser();
                 }, function() {
                     callStrParser();
                 });
