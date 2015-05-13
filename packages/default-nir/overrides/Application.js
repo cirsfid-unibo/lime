@@ -46,7 +46,8 @@
 
 
 Ext.require([
-    'DefaultNir.controller.NirPreview'
+    'DefaultNir.controller.NirPreview',
+    'DefaultNir.NirUtils'
 ]);
 
 Ext.define('DefaultNir.Application', {

@@ -103,13 +103,19 @@ class Proxies_Services_FileToHtml implements Proxies_Services_Interface
             if ($fileType === $this->xmlMime) {
             	$doc = new DOMDocument();
 				if ($doc->load($this->_filePath)) {
-					$result = aknToHtml($doc, $this->_transformFile, FALSE, TRUE);
-					$output['markinglanguage'] = $result["markinglanguage"];
-					$resultXml = $result["xml"];
+					if ( $this->_transformFile ) {
+						$result = aknToHtml($doc, $this->_transformFile, FALSE, TRUE);
+						$output['markinglanguage'] = $result["markinglanguage"];
+						$resultXml = $result["xml"];
+					} else {
+						$resultXml = ""; 
+					}
+
 					if ($resultXml) {
 						$output['success'] = true;
 						$output['marked'] = true;
-						$output['html'] = $resultXml;	
+						$output['html'] = $resultXml;
+						$output['xml'] = file_get_contents($this->_filePath);	
 					} else {
 						$output['success'] = false;	
 						$output['html'] = "Unable to transform XML file";

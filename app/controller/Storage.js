@@ -303,7 +303,7 @@ Ext.define('LIME.controller.Storage', {
         };
         
         Server.getDocument(filePath, function(responseText) {
-            var markingLang = me.detectMarkingLang(responseText) || config.docMarkingLanguage || Config.languages[0].name,
+            var markingLang = Utilities.detectMarkingLang(responseText) || config.docMarkingLanguage || Config.languages[0].name,
                 transformFile = (markingLang) ? Config.getLanguageTransformationFile("languageToLIME", markingLang) : "";
 
             if (transformFile) {
@@ -326,17 +326,6 @@ Ext.define('LIME.controller.Storage', {
         });
     },
 
-    detectMarkingLang: function(xmlString) {
-        var name ;
-        for(var i = 0; i < Config.languages.length; i++) {
-            name = Config.languages[i].name;
-            var config = Config.getLanguageConfig(name);
-            if ( config && config.schemaRegex && xmlString.match(config.schemaRegex) ) {
-                return name;
-            }
-        }
-    },
-    
     loadOpenFileListData: function(cmp, path, callback) {
         var store = cmp.getStore();
         if (store && (cmp.path || path)) {

@@ -6,7 +6,9 @@
         "default-autoimport-open",
         "akn-tab-xml-preview",
         "akn-tab-visualizer",
-        "extra-toggleslide"
+        "extra-toggleslide",
+        "default-import",
+        "default-nir"
     ],
     "framework": "ext",
     "css": [

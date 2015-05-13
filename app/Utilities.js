@@ -476,5 +476,16 @@ Ext.define('LIME.Utilities', {
     isValidDate: function(date) {
         date = (Ext.isDate(date)) ? date : new Date(date);
         return !isNaN(date.getTime());
+    },
+    
+    detectMarkingLang: function(xmlString) {
+        var name ;
+        for(var i = 0; i < Config.languages.length; i++) {
+            name = Config.languages[i].name;
+            var config = Config.getLanguageConfig(name);
+            if ( config && config.schemaRegex && xmlString.match(config.schemaRegex) ) {
+                return name;
+            }
+        }
     }
 });

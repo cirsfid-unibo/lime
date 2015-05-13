@@ -116,6 +116,7 @@ Ext.define('LIME.view.modal.Uploader', {
            
            items = [{
                xtype: 'uploadbutton',
+               id: 'uploadbutton',
                text: buttonSubmitLabel,
                height : 50,
                margin : '10px 0 10px 0',

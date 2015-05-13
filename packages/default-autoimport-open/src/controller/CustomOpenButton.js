@@ -91,7 +91,9 @@ Ext.define('DefaultAutoimportOpen.controller.CustomOpenButton', {
                     var username = localStorage.getItem('username'),
                         password = localStorage.getItem('password');
                     Server.getDocument(path, function (content) {
-                        if(content.indexOf('http://www.normeinrete.it/nir/') != -1)
+                        console.log(content);
+
+                        if(NirUtils.isNirContent(content))
                             me.onNirSelected(path, content);
                         else {
                             console.log('expecting akn');
@@ -131,35 +133,14 @@ Ext.define('DefaultAutoimportOpen.controller.CustomOpenButton', {
     onNirSelected: function (path, content) {
         console.log('onNirSelected', path);
         var me = this; 
-        this.confirmAknTranslation(function () {
-
-            Server.getResourceFile('/NirToAkn.xsl', 'default-autoimport-open', function (nir2akn) {
-                Server.applyXslt(content, nir2akn, function (akn) {
-                    console.log('akn', akn);
-                    var akn2html = 'languagesPlugins/akoma3.0/AknToXhtml.xsl';
-                    Server.applyXslt(akn, akn2html, function (html) {
-                        console.log('html', html);
-                        // Load the resulting Htmltoso document
-                        me.application.fireEvent(Statics.eventsNames.loadDocument, {
-                            docText: html,
-                            docMarkingLanguage: 'akoma3.0',
-                        });
-                    });
+        NirUtils.confirmAknTranslation(function () {
+            NirUtils.nirToHtml(content, function(html) {
+            // Load the resulting Htmltoso document
+                me.application.fireEvent(Statics.eventsNames.loadDocument, {
+                    docText: html,
+                    docMarkingLanguage: 'akoma3.0'
                 });
             });
-        });
-    },
-
-    confirmAknTranslation: function (cb) {
-        Ext.Msg.show({
-            title: Locale.getString('confirmAknTranslationTitle', 'default-autoimport-open'), 
-            msg: Locale.getString('confirmAknTranslationQuestion', 'default-autoimport-open'),
-            buttons: Ext.Msg.YESNOCANCEL,
-            fn: function(btn) {
-                if (btn == 'yes'){
-                    cb();
-                }
-            }
         });
     },
 
