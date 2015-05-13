@@ -48,8 +48,8 @@
  
 $rules = Array(
     "titleList" => Array("Titolo","TITOLO"),
-    "chapterList" => Array("Capo","Capitolo"),
-    "articleList" => Array("Art\.","Art","Articolo")
+    "chapterList" => Array("Capo","Capitolo","CAPO"),
+    "articleList" => Array("A(r|R)(t|T)\.?","Articolo")
 );
 
 ?>
