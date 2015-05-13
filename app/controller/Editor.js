@@ -1022,7 +1022,6 @@ Ext.define('LIME.controller.Editor', {
 		/* Check if there has been a change */ /* TODO: pensare a una soluzione più intelligente */
 		if (!userRequested && !this.changed || this.parserWorking)
 			return;
-        console.info('Saving...')
 		this.changed = false;
 		this.getController('Storage').saveDocument();
 	},

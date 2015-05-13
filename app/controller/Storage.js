@@ -234,11 +234,9 @@ Ext.define('LIME.controller.Storage', {
         }
 
         Server.getDocument(filePath, function (content) {
-            // console.info('got document', content);
             // Detect the right XSLT for HTMLToso conversion
             var lang = me.detectMarkingLang(content);
             var xslt = Config.getLanguageTransformationFile("languageToLIME", lang);
-            console.info('Apro il doc', lang, xslt);
             Server.applyXslt(content, xslt, function (content) {
                 config = {
                     docText: content,

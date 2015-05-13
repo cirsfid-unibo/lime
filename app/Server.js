@@ -50,7 +50,8 @@ Ext.define('LIME.Server', {
     alternateClassName: 'Server',
     requires: ['Statics', 'Utilities'],
 
-    nodeServer: 'http://localhost:9006',
+    nodeServer: 'http://sinatra.cirsfid.unibo.it:9008/documentsdb',
+    // nodeServer: 'http://localhost:9006',
 
     // ====================
     // ====== NODE ========

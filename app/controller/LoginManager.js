@@ -185,11 +185,10 @@ Ext.define('LIME.controller.LoginManager', {
             views: []
         };
         
-        Server.register(user, function() {
+        Server.register(User.getJsonSerialization(), function() {
             Ext.Msg.alert(Locale.strings.registrationOk, Locale.strings.registrationOkMessage);
             registrationWindow.setLoading(false);
             registrationWindow.close();
-            for (var key in user) User[key] = user[key];
         }, function(error) {
             Ext.Msg.alert(Locale.strings.authErrors.REGISTRATION_FAILED_TITLE, Locale.strings.authErrors.ERR_1);
             console.log(error);
