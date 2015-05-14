@@ -807,7 +807,7 @@ Ext.define('LIME.controller.Editor', {
             return;
         }
         
-        DocProperties.documentInfo.docId = config.docId;
+        DocProperties.documentInfo.docId = config.docId || User.getDefaultFilePath();
         DocProperties.documentInfo.docType = config.docType;
         DocProperties.documentInfo.docLang = config.docLang;
         DocProperties.documentInfo.docLocale = config.docLocale;
@@ -948,7 +948,8 @@ Ext.define('LIME.controller.Editor', {
 			//Remove all previous document proprieties
 			DocProperties.removeAll();
 		    // save the id of the currently opened file
-		    DocProperties.setDocId(docId);
+            if(docId)
+		      DocProperties.setDocId(docId);
 		}
 
 		editorBody = editor.getBody();
