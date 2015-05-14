@@ -49,6 +49,8 @@ Ext.define('LIME.Server', {
     singleton: true,
     alternateClassName: 'Server',
 
+    resources: {},
+
     // Get document content.
     getDocument: function (path, success, failure) {
         // Todo: use loginManager
@@ -198,6 +200,13 @@ Ext.define('LIME.Server', {
     // given package name.
     // We must detect whether we're in a build environment or a dev one.
     getResourceFile: function (file, packageName, success, failure) {
+        this.resources[packageName] = this.resources[packageName] || {};
+        var cacheResources = this.resources[packageName];
+        if ( cacheResources[file] ) {
+            success(cacheResources[file].url, cacheResources[file].content);
+            return;
+        }
+
         var possiblePaths = [{
             name: 'dev',
             url: 'packages/' + packageName + '/resources/' + file // Dev mode
@@ -207,8 +216,13 @@ Ext.define('LIME.Server', {
         }];
 
         this.filterUrls(possiblePaths, true, function(possiblePaths) {
-            if ( possiblePaths.length )
+            if ( possiblePaths.length ) {
                 success(possiblePaths[0].url, possiblePaths[0].content);
+                this.resources[packageName][file] = {
+                    url: possiblePaths[0].url,
+                    content: possiblePaths[0].content
+                };
+            }
         }, failure, this);
     }
 });
