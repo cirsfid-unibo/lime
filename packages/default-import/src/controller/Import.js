@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- *
- * Authors:
+ * 
+ * Authors: 
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- *
+ * 
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- *
+ * 
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- *
+ * 
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- *
+ * 
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani,
+ * Computer Science and Engineering) and its authors (Monica Palmirani, 
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -44,11 +44,11 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('LIME.controller.ImportController', {
+Ext.define('DefaultImport.controller.Import', {
     extend : 'Ext.app.Controller',
-
+    
     config : {
-        pluginName : "importDocument"
+        pluginName : "default-import"
     },
 
     initMenu : function() {
@@ -79,20 +79,29 @@ Ext.define('LIME.controller.ImportController', {
     },
     
     uploadFinished: function(content, request) {
-        var app = this.application, docMLang, docLang;
-        if(request.response && request.response[DocProperties.markingLanguageAttribute]) {
-            docMLang = request.response[DocProperties.markingLanguageAttribute]; 
+        var params = this.getParams(request.response);
+        this.loadDocument(content, params.docMLang, params.docLang);
+    },
+
+    getParams: function(response) {
+        var params = {};
+        if(response && response[DocProperties.markingLanguageAttribute]) {
+            params.docMLang = response[DocProperties.markingLanguageAttribute]; 
         }
-        if(request.response && request.response[DocProperties.languageAttribute]) {
-            docLang = request.response[DocProperties.languageAttribute] || "";
+        if(response && response[DocProperties.languageAttribute]) {
+            params.docLang = response[DocProperties.languageAttribute] || "";
         }
 
+        return params;
+    },
+
+    loadDocument: function(content, docMarkingLanguage, docLang) {
         content = content.replace(/(<br\/>(<br\/>)?(\s*))+/g, '$1');
 
         // Upload the editor's content
-        app.fireEvent(Statics.eventsNames.loadDocument, {
+        this.application.fireEvent(Statics.eventsNames.loadDocument, {
                         docText: content, 
-                        docMarkingLanguage: docMLang,
+                        docMarkingLanguage: docMarkingLanguage,
                         docLang: docLang
         });
     },
@@ -100,7 +109,7 @@ Ext.define('LIME.controller.ImportController', {
     importDocument : function() {
         // Create a window with a form where the user can select a file
         var me = this, 
-            transformFile = Config.getLanguageTransformationFile("languageToLIME", Config.getLanguage()),
+            transformFile = me.getTransformationFile(),
             uploaderView = Ext.widget('uploader', {
                 buttonSelectLabel : Locale.getString("selectDocument", me.getPluginName()),
                 buttonSubmitLabel : Locale.getString("importDocument", me.getPluginName()),
@@ -110,20 +119,27 @@ Ext.define('LIME.controller.ImportController', {
                 callbackScope: me,
                 uploadUrl : Utilities.getAjaxUrl(),
                 uploadParams : {
-                    requestedService: Statics.services.fileToHtml,
+                    requestedService: me.getImportServiceName(),
                     transformFile: (transformFile) ? transformFile : ""
                 }
             });
         uploaderView.show();
     },
-    
-    onInitPlugin : function() {
-        var me = this;
-        me.initMenu();
+
+    getTransformationFile: function() {
+        return Config.getLanguageTransformationFile("languageToLIME", Config.getLanguage());
+    },
+
+    getImportServiceName: function() {
+        return Statics.services.fileToHtml;
     },
 
     init : function() {
         var me = this;
+
+        Locale.getPackageStrings('default-import', function() {
+            me.initMenu();
+        });
 
         this.control({
             'menu [name=importDocument]' : {

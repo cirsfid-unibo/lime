@@ -235,7 +235,7 @@ Ext.define('LIME.controller.Storage', {
 
         Server.getDocument(filePath, function (content) {
             // Detect the right XSLT for HTMLToso conversion
-            var lang = me.detectMarkingLang(content);
+            var lang = Utilities.detectMarkingLang(content);
             var xslt = Config.getLanguageTransformationFile("languageToLIME", lang);
             Server.applyXslt(content, xslt, function (content) {
                 config = {
@@ -269,17 +269,6 @@ Ext.define('LIME.controller.Storage', {
         });
     },
 
-    detectMarkingLang: function(xmlString) {
-        var name ;
-        for(var i = 0; i < Config.languages.length; i++) {
-            name = Config.languages[i].name;
-            var config = Config.getLanguageConfig(name);
-            if ( config && config.schemaRegex && xmlString.match(config.schemaRegex) ) {
-                return name;
-            }
-        }
-    },
-    
     loadOpenFileListData: function(cmp, path, callback) {
         var store = cmp.getStore();
         if (store && (cmp.path || path)) {

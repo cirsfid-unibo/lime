@@ -177,7 +177,7 @@ Ext.define('LIME.ux.akoma3.Language', {
             elNum = (numVal && numVal.length) ? numVal[numVal.length-1] : false;
             var romanNumer = (elNum) ? elNum.match(romanChecker) : false;
             elNum = (elNum && (!romanNumer || !romanNumer[0].length ) ) ? elNum.toLowerCase() : elNum;
-            elNum = elNum.replace(/\s/g,'');
+            elNum = elNum && elNum.replace(/\s/g,'');
         }
 
         if ( !elNum ) {

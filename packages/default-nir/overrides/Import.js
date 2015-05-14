@@ -44,73 +44,23 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('LIME.Locale', {
-    singleton : true,
-    alternateClassName : 'Locale',
+Ext.define('DefaultNir.controller.Import', {
+    override: 'DefaultImport.controller.Import',
 
-	config: {
-		lang : 'en',
-		defaultLang: 'en'
-	},
-	
-	strings: {},
-	pStrings: {},
+    uploadFinished: function(content, request) {
+        var me = this,
+            params = me.getParams(request.response);
 
-    constructor: function() {
-		this.detectLanguage();
-        this.initConfig();
-		this.loadLanguage();
-    },
-    
-    setPluginStrings: function(name, strings) {
-        this.pStrings[name] = strings;
-    },
-
-    // Load strings from the strings.json file in the given package.
-    getPackageStrings: function(packageName, callback) {
-        Server.getResourceFile('strings.json', packageName, function (path, data) {
-            Locale.setPluginStrings(packageName, data);
-            Ext.callback(callback);
-        });
-    },
-    
-    getString: function(name, scope) {
-        if (scope && this.pStrings[scope]) {
-            if(this.pStrings[scope][this.getLang()])
-                return this.pStrings[scope][this.getLang()][name] || name;
-                
-            if(this.pStrings[scope][this.getDefaultLang()])
-                return this.pStrings[scope][this.getDefaultLang()][name] || name;
+        if( request.response.xml && NirUtils.isNirContent(request.response.xml) ) {
+            NirUtils.confirmAknTranslation(function () {
+                NirUtils.nirToHtml(request.response.xml, function(html) {
+                    me.loadDocument(html, params.docMLang, params.docLang);
+                });
+            }, function() {
+                me.application.fireEvent(Statics.eventsNames.progressEnd);
+            });
+        } else {
+            me.loadDocument(content, params.docMLang, params.docLang);
         }
-        return this.strings[name];
-    },
-    
-    detectLanguage : function() {
-        var lang = Ext.urlDecode(window.location.search.substring(0)).lang;
-        if (!(lang == null || lang == undefined || Ext.isEmpty(lang))) {
-            this.initConfig({lang : lang.toLowerCase()});
-        }
-    },
-    
-    loadLanguage: function() {
-        var langUrl = 'config/locale/lang-'+this.config.lang+'.json';
-        var extLangUrl = 'config/locale/ext/ext-lang-'+this.config.lang+'.js';
-        Ext.Ajax.request({
-            url : langUrl,
-            async: false,
-            scope: this,
-            success : function(response, opts) {
-                try {
-                    this.strings = Ext.decode(response.responseText);
-                } catch(e) {
-                    alert("Fatal error on loading localization files");
-                }
-            },
-            failure : function(response, opts) {
-                alert("Fatal error on loading localization files");
-            }
-        });
-        
-        Ext.Loader.loadScript({url : extLangUrl});
     }
 });

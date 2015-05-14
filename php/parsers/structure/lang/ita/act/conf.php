@@ -50,8 +50,8 @@ $rules = Array(
 	"roman" => "(M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3}))",
     "number" => "\d+|{{roman}}+",
 	"titleList" => Array("Titolo", "TITOLO"),
-    "chapterList" => Array("Capo","Capitolo"),
-    "articleList" => Array("Art\.","Articolo"),
+    "chapterList" => Array("Capo","Capitolo","cAPO"),
+    "articleList" => Array("Art\.?","Articolo","ART\.?"),
     
 	"preambleInitList" => Array(
 							   "La\s+Camera\s+dei\s+deputati\s+ed\s+il\s+Senato\s+della\s+Repubblica\s+hanno\s+approvato;\s+IL\s+PRESIDENTE\s+DELLA\s+REPUBBLICA",
@@ -60,9 +60,9 @@ $rules = Array(
 							   "Attesto che"),
     
 	"preambleEndList" => Array (
-								"\s*E\s*m\s*a\s*n\s*a\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|la +seguente +legge|il +seguente +decreto(-| +)legge):?",
-								"EMANA\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|la +seguente +legge|il +seguente +decreto(-| +)legge):?",
-								"(P|p)romulga\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|la +seguente +legge|il +seguente +decreto(-| +)legge):?",
+								"\s*E\s*m\s*a\s*n\s*a\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|(L|l)a +seguente +(L|l)egge|(i|I)l +seguente +decreto(-| +)legge):?",
+								"EMANA\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|(l|L) +seguente +(L|l)egge|(i|I)l +seguente +decreto(-| +)legge):?",
+								"(P|p)(romulga|ROMULGA)\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|(l|L)a +seguente +(L|l)egge|LA +SEGUENTE +LEGGE|(i|I)l +seguente +decreto(-| +)legge):?",
 								"Attesto che",
 								"Decreta:?"
 								),
