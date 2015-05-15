@@ -60,7 +60,9 @@ Ext.define('LIME.reader.OpenFileReader', {
 
     getData: function (data) {
         // fields: ['path', 'id', 'text', 'cls', 'leaf', 'name', 'relPath', 'originalName']
-        return data.map(function (path) {
+        return data
+        .filter(function (path) { return path != User.getDefaultFilePath(); })
+        .map(function (path) {
             var isFolder = !path.match(/\.[\w]+$/);
             var name = isFolder ? path.match(/([^\/]+)\/?$/)[1] : path.match(/([^\/]+)$/)[0];
             return {

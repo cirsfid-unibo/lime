@@ -110,7 +110,14 @@ Ext.define('LIME.User', {
 
     // Shortcut to editing user and saving.
     setPreference: function (key, value, cb) {
-        this.preferences[key] = value;
-        this.save(cb);
+        if (this.preferences[key] != value) {
+            this.preferences[key] = value;
+            this.save(cb);
+        } else if (cb) cb();
+    },
+
+    // Get default file path for new documents.
+    getDefaultFilePath: function () {
+        return User.preferences.folders[0] + '.untitled.xml';
     }
 });

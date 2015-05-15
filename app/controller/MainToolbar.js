@@ -130,8 +130,7 @@ Ext.define('LIME.controller.MainToolbar', {
 	   var app = this.application,
 	       documentId = DocProperties.currentEditorFile.id,
 	       config = {
-	           docText: '<div> &nbsp; </div>',
-	           docId: ''
+	           docText: '<div> &nbsp; </div>'
 	       };
 	   // If a document's id is not specified it means the document is saved
 	   // in a temporary file on the server, we have to make the user save it with save as

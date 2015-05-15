@@ -90,7 +90,7 @@ Ext.define('DefaultAutoimportOpen.controller.CustomOpenButton', {
                     Server.getDocument(path, function (content) {
                         console.log(content);
 
-                        if(NirUtils.isNirContent(content))
+                        if(NirUtils && NirUtils.isNirContent(content))
                             me.onNirSelected(path, content);
                         else {
                             console.log('expecting akn');

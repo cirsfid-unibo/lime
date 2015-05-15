@@ -499,6 +499,7 @@ Ext.define('LIME.controller.Storage', {
     saveDocument: function(callback) {
         var me = this;
         var path = DocProperties.documentInfo.docId;
+        User.setPreference('lastOpened', path);
 
         // Before saving
         me.application.fireEvent(Statics.eventsNames.beforeSave, {
