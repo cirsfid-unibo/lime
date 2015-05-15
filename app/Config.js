@@ -355,6 +355,7 @@ Ext.define('LIME.Config', {
     },
     
     getLanguageTransformationFile: function(name, lang) {
+        lang = lang || (this.language == "default" && Config.languages[0].name);
         var files =  this.getLanguageTransformationFiles(lang);
         return (files && files[name]) ? files[name] : null;
     },

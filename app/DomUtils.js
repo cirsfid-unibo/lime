@@ -1088,6 +1088,13 @@ Ext.define('LIME.DomUtils', {
         }
         return null;
     },
+
+    wrapNode: function(node, tag) {
+        var wrapper = node.ownerDocument.createElement(tag);
+        node.parentNode.insertBefore(wrapper, node);
+        wrapper.appendChild(node);
+        return wrapper;
+    },
     
     unwrapNode: function(node) {
         var iterNode;
