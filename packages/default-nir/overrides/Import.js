@@ -52,12 +52,8 @@ Ext.define('DefaultNir.controller.Import', {
             params = me.getParams(request.response);
 
         if( request.response.xml && NirUtils.isNirContent(request.response.xml) ) {
-            NirUtils.confirmAknTranslation(function () {
-                NirUtils.nirToHtml(request.response.xml, function(html) {
-                    me.loadDocument(html, params.docMLang, params.docLang);
-                });
-            }, function() {
-                me.application.fireEvent(Statics.eventsNames.progressEnd);
+            NirUtils.nirToHtml(request.response.xml, function(html) {
+                me.loadDocument(html, params.docMLang, params.docLang);
             });
         } else {
             me.loadDocument(content, params.docMLang, params.docLang);

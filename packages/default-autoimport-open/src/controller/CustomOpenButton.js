@@ -130,7 +130,7 @@ Ext.define('DefaultAutoimportOpen.controller.CustomOpenButton', {
     onNirSelected: function (path, content) {
         console.log('onNirSelected', path);
         var me = this; 
-        NirUtils.confirmAknTranslation(function () {
+        //NirUtils.confirmAknTranslation(function () {
             NirUtils.nirToHtml(content, function(html) {
             // Load the resulting Htmltoso document
                 me.application.fireEvent(Statics.eventsNames.loadDocument, {
@@ -138,7 +138,7 @@ Ext.define('DefaultAutoimportOpen.controller.CustomOpenButton', {
                     docMarkingLanguage: 'akoma3.0'
                 });
             });
-        });
+        //});
     },
 
     onAknSelected: function (path) {
