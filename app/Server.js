@@ -116,6 +116,26 @@ Ext.define('LIME.Server', {
         });
     },
 
+    // Convert PDF and Doc files to html
+    fileToHtml: function (path, success, failure) {
+        var username = User.username,
+            password = User.password;
+
+        Ext.Ajax.request({
+            method: 'GET',
+            url: this.nodeServer + '/Documents' + path,
+            headers: {
+                Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password),
+                Accept: 'text/html'
+            },
+            success: function (response) {
+                var xslt = 'resources/xslt/CleanConvertedHtml.xsl';
+                Server.applyXslt(response.responseText, xslt, success, failure)
+            },
+            failure: failure
+        });
+    },
+
     saveDocument: function (path, content, success, failure) {
         var username = User.username,
             password = User.password;
@@ -159,34 +179,6 @@ Ext.define('LIME.Server', {
             },
             failure: failure || function (error) {
                 Ext.log('XSLT conversion failed', xslt, error);
-            }
-        });
-    },
-
-    // Convert PDF and Doc files to html
-    fileToHtml: function (path, success, failure) {
-        Ext.Ajax.request({
-            url: Utilities.getAjaxUrl(),
-            method: 'POST',
-            params: {
-                requestedService: Statics.services.fileToHtml,
-                fileExistPath: path
-            },
-            success: function (response) {
-                try {
-                    var res = JSON.parse(response.responseText);
-                    console.log(res)
-                    if (res.html)
-                        success(res.html, res.language);
-                    else throw new Error();
-                } catch (e) {
-                    console.log(e);
-                    if (failure) failure (response);
-                    else Ext.log('Html conversion failed', path);
-                }
-            },
-            failure: failure || function (error) {
-                Ext.log('Html conversion failed', path, error);
             }
         });
     },
