@@ -103,6 +103,8 @@ Ext.define('LIME.controller.Language', {
                     element.parentNode.removeChild(element);
                 }
             });
+
+            editorController.removeVisualSelectionObjects(tmpElement);
             
             Ext.each(focusedElements, function(node) {
                 Ext.fly(node).removeCls(DocProperties.elementFocusedCls);

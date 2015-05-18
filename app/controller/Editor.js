@@ -1258,8 +1258,8 @@ Ext.define('LIME.controller.Editor', {
         }
     },
 
-    removeVisualSelectionObjects: function() {
-        var dom = this.getDom();
+    removeVisualSelectionObjects: function(dom) {
+        dom = dom || this.getDom();
         Ext.each(dom.querySelectorAll(".visibleBookmark"), function(el) {
             el.parentNode.removeChild(el);
         });
