@@ -127,7 +127,7 @@ Ext.define('DefaultImport.controller.Import', {
     },
 
     getTransformationFile: function() {
-        return Config.getLanguageTransformationFile("languageToLIME", Config.getLanguage());
+        return Config.getLanguageTransformationFile("languageToLIME");
     },
 
     getImportServiceName: function() {

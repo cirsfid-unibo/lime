@@ -1284,10 +1284,7 @@ Ext.define('LIME.controller.Editor', {
             me.lastSelectionRange = DomUtils.range.normalization.splitRangeNodes(oldRange.cloneRange());
             if ( editor.target.Env.ie ) {
                 Ext.each(DomUtils.range.getTextNodes(me.lastSelectionRange), function(node) {
-                    Ext.fly(node).wrap({
-                        tag: 'span',
-                        cls: 'visibleSelection'
-                    });
+                    DomUtils.wrapNode(node, 'span').setAttribute('class', 'visibleSelection');
                 });
             }
         } else if (me.lastRange) {
