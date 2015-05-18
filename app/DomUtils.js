@@ -1062,7 +1062,7 @@ Ext.define('LIME.DomUtils', {
     },
     
     isBreakingNode: function(node) {
-        return Ext.fly(node).is('.'+DomUtils.breakingElementClass);
+        return node && node.nodeType == DomUtils.nodeType.ELEMENT && Ext.fly(node).is('.'+DomUtils.breakingElementClass);
     },
     
     isNodeFocused: function(node) {

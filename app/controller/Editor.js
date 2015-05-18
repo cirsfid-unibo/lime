@@ -371,35 +371,35 @@ Ext.define('LIME.controller.Editor', {
 	 * @param {HTMLElement} node The dom node to focus
 	 * @param {Object} actions The actions to perform
 	 */
-	focusNode : function(node, actions, config) {
+    focusNode : function(node, actions, config) {
         var me = this;
-		if (!node)
-			return;
+        if (!node)
+            return;
 
         if ( !Ext.Object.isEmpty(this.defaultActions) ) {
             actions = Ext.merge(actions, this.defaultActions);
         }
         
-		if (actions.select) {
-			this.selectNode(node);
-		}
-		if (actions.scroll) {
-			node.scrollIntoView();
-		}
-		if(actions.highlight){
-			var extNode = Ext.fly(node);
-			extNode.highlight("FFFF00", {duration: 800 });
-		}
-		if (actions.change) {
+        if (actions.scroll) {
+            node.scrollIntoView();
+        }
+        if(actions.highlight){
+            var extNode = Ext.fly(node);
+            extNode.highlight("FFFF00", {duration: 800 });
+        }
+        if (actions.change) {
             this.addUndoLevel();
-			/* Warn of the change */
-			this.changed = true;
-			this.application.fireEvent("editorDomChange", node, "partial", config);
-		}
-		if (actions.click) {
-			this.application.fireEvent('editorDomNodeFocused', node, actions);
-		}
-	},
+            /* Warn of the change */
+            this.changed = true;
+            this.application.fireEvent("editorDomChange", node, "partial", config);
+        }
+        if (actions.click) {
+            this.application.fireEvent('editorDomNodeFocused', node, actions);
+        }
+        if (actions.select) {
+            this.selectNode(node);
+        }
+    },
 
 	/**
 	 * Just select the given node in the editor
@@ -410,9 +410,9 @@ Ext.define('LIME.controller.Editor', {
         // this.getEditor().selection.select(node, content);
 
         // We want to select the span.breaking before and after the given node
-        var range = new Range();
-        range.setStartBefore(node.previousSibling || node);
-        range.setEndAfter(node.nextSibling || node);
+        var range = node.ownerDocument.createRange();
+        range.setStartBefore((DomUtils.isBreakingNode(node.previousSibling) && node.previousSibling) || node);
+        range.setEndAfter((DomUtils.isBreakingNode(node.nextSibling) && node.nextSibling) || node);
         this.getEditor().selection.setRng(range);
         this.lastSelectionRange = range;
 	},
