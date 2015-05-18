@@ -81,13 +81,14 @@ hr[data-mce-selected] {
 	background-color: #A4E2E2;
 }
 
-span.visibleBookmark {
+span.visibleBookmark:before {
 	overflow: initial !important;
 	background-color: rgba(205, 101, 103, 1.0) !important;
     display: inline-block  !important;
-    line-height: 20px  !important;
-    width: 5px  !important;
-    margin: 0 5px !important;
+    line-height: 18px  !important;
+    width: 2px !important;
+    margin: 0 0px !important;
+    content: '\00a0';
 }
 
 span[data-mce-type="bookmark"]:not(.visibleBookmark) {

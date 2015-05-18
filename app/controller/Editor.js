@@ -1291,14 +1291,10 @@ Ext.define('LIME.controller.Editor', {
                 });
             }
         } else if (me.lastRange) {
-            me.setCursorLocation(me.lastRange.startContainer, me.lastRange.startOffset);
-            me.getEditor().selection.setRng(me.lastRange);
-            me.getBookmark();
-            var selection = me.getSelectionObject();
-
-            if(selection.start) {
-                Ext.fly(selection.start).addCls("visibleBookmark");
-            }
+            var document = me.lastRange.startContainer.ownerDocument;
+            var visibleBookmark = document.createElement('span');
+            visibleBookmark.className = 'visibleBookmark';
+            me.lastRange.insertNode(visibleBookmark);
         }
     },
 
