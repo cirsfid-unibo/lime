@@ -84,7 +84,7 @@ Ext.define('LIME.view.main.editor.Path', {
 			var elementId = this.selectorsInitId+counter;
 			var info = DomUtils.getNodeExtraInfo(elements[i].node,"hcontainer");
 			if(info)
-				elementName+=" ("+info+")";
+				elementName+=" "+info+"";
 			if(elements[i].node){	
 				new_html += this.elementLinkTemplate.replace("%el",elementName).replace("%id",elementId);
 			}else{

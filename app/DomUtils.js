@@ -380,8 +380,7 @@ Ext.define('LIME.DomUtils', {
                 }
             }
             if (infoNode) {
-                info = infoNode.getHtml();
-                info = info.replace(/<(?:.|\n)*?>/gm, '');
+                info = infoNode.dom.textContent;
             }
             if (info.length > infoLength) {
                 info = info.substr(0, infoLength) + "...";

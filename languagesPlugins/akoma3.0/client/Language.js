@@ -256,7 +256,7 @@ Ext.define('LIME.ux.akoma3.Language', {
         if (!node) return;
         
         if ( deep === false ) {
-            DomUtils.setNodeInfoAttr(node, 'hcontainer', " ({data})");
+            DomUtils.setNodeInfoAttr(node, 'hcontainer', " {data}");
         } else if ( fly && fly.is('.inline')) {
             me.onNodeChange(fly.parent('.hcontainer', true), false);
         } else {

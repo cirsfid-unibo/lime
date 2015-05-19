@@ -148,7 +148,7 @@ Ext.define('LIME.controller.Outliner', {
 
             var info = DomUtils.getNodeExtraInfo(node, "hcontainer");
             if (info) {
-                text += " (" + info + ")";
+                text += " " + info;
             }
             data = {
                 text: text,
