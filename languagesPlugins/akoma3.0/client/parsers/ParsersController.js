@@ -262,7 +262,8 @@ Ext.define('LIME.controller.ParsersController', {
     },
 
     parseElement: function(node, callback) {
-        var me = this, button = DomUtils.getButtonByElement(node);
+        var me = this, button = DomUtils.getButtonByElement(node),
+            editor = me.getController("Editor"), body = editor.getBody();
         if( button ) {
 
             switch(button.name) {
@@ -274,7 +275,7 @@ Ext.define('LIME.controller.ParsersController', {
                     me.parseInsidePreface(node, button, callback);
                     break;
                 case 'preamble':
-                    me.parseInsidePreamble(node, button, callback);
+                    me.parseInsidePreamble(node, button, callback, body.querySelector('.docType'));
                     break;
                 case 'conclusions':                     
                     me.parseInsideConclusions(node, button, callback);
@@ -1608,7 +1609,6 @@ Ext.define('LIME.controller.ParsersController', {
                             return true;
                         });
                     } else {
-
                         string = quote.quoted.string;
                         try {
                             structureToMark = Ext.Array.push(structureToMark, me.smartFindQuote(body, string, function(node) {
@@ -1623,7 +1623,7 @@ Ext.define('LIME.controller.ParsersController', {
                     }   
                 }
             }, me);
-
+            
             if ( structureToMark.length ) {
                 me.requestMarkup(markButtonStructure, {
                     nodes : structureToMark,
@@ -1636,36 +1636,44 @@ Ext.define('LIME.controller.ParsersController', {
 
     smartFindQuote : function(node, matchStr, filter) {
         if (!node || !matchStr) return;
-        var me = this;
-        var resList = DomUtils.smartFindTextNodes(matchStr, node),
-            nodesToMark = [];
+        var me = this, nodesToMark = [];
 
-        Ext.each(resList, function(res) {
-            if (res[0] && Ext.isFunction(filter)) {
-                if (!filter(res[0].node))
-                    return;
+        var range = DomUtils.find(matchStr.replace(/(\s+)(\/>)/gi, '$2'), node)[0];
+        if (range) {
+            var wrapper = me.wrapRange(range, 'div');
+            if ( wrapper ) {
+                nodesToMark.push(wrapper);
             }
-            var textNodes = [];
-            Ext.each(res, function(obj) {
-                var splittedNodes = me.splitNode(obj.node, obj.str);
-                //console.log(obj.str, splittedNodes);
-                textNodes.push(splittedNodes[0]);
-            });
-            if ( textNodes.length ) {
-                var newWrapper = Ext.DomHelper.createDom({
-                    tag : 'div',
-                    cls : DomUtils.tempParsingClass
+        } else {
+            var resList = DomUtils.smartFindTextNodes(matchStr, node);
+            Ext.each(resList, function(res) {
+                if (res[0] && Ext.isFunction(filter)) {
+                    if (!filter(res[0].node))
+                        return;
+                }
+                var textNodes = [];
+                Ext.each(res, function(obj) {
+                    var splittedNodes = me.splitNode(obj.node, obj.str);
+                    //console.log(obj.str, splittedNodes);
+                    textNodes.push(splittedNodes[0]);
                 });
-                textNodes[0].parentNode.insertBefore(newWrapper, textNodes[0]);
-                var lastNode = textNodes[textNodes.length-1];
-                //console.log(lastNode, textNodes);
-                me.wrapPartNodeSibling(newWrapper, null, function(sibling) {
-                    return (sibling == lastNode);
-                });
+                if ( textNodes.length ) {
+                    var newWrapper = Ext.DomHelper.createDom({
+                        tag : 'div',
+                        cls : DomUtils.tempParsingClass
+                    });
+                    textNodes[0].parentNode.insertBefore(newWrapper, textNodes[0]);
+                    var lastNode = textNodes[textNodes.length-1];
+                    //console.log(lastNode, textNodes);
+                    me.wrapPartNodeSibling(newWrapper, null, function(sibling) {
+                        return (sibling == lastNode);
+                    });
 
-                nodesToMark.push(newWrapper);
-            }
-        }, this);
+                    nodesToMark.push(newWrapper);
+                }
+            }, this);
+        }
+
 
         return nodesToMark;
     },
@@ -1703,20 +1711,15 @@ Ext.define('LIME.controller.ParsersController', {
                 callCallback = function() {
                     if(!--nums) {
                         Ext.callback(callback);
+                    } else {
+                        next(structure.length-nums);
                     }
                 };
 
-            Ext.each(structure, function(name) {
+            var next = function(index) {
+                var name = structure[index];
                 if ((!Ext.isEmpty(data[name]) || prevPartNode) && 
                         !DomUtils.allNodesHaveClass(DomUtils.getSiblingsFromNode(prevPartNode), DomUtils.breakingElementClass)) {
-
-                    /*var resNode = me.wrapStructurePart(name, data[name], prevPartNode);
-                    if (resNode && resNode.textContent.trim().length == 0) {
-                         resNode.parentNode.removeChild(resNode);
-                         resNode = undefined;
-                    } else {
-                         prevPartNode = resNode;
-                    }*/
                     prevPartNode = me.wrapStructurePart(name, data[name], prevPartNode);
 
                     if (prevPartNode) {
@@ -1732,7 +1735,9 @@ Ext.define('LIME.controller.ParsersController', {
                 } else {
                     callCallback();
                 }
-            });
+            };
+
+            next(0);
         } else { // mark all as body
             markButton = DocProperties.getFirstButtonByName('body');
             var editor = me.getController('Editor'),
@@ -2163,24 +2168,45 @@ Ext.define('LIME.controller.ParsersController', {
         return spanElements;
     },
 
-    restoreQuotes: function(node) {
+    restoreQuotes: function(node, callback) {
         var me = this, finalQuotes,
              markButton = DocProperties.getFirstButtonByName('body') || 
                           DocProperties.getFirstButtonByName('mainBody'),
-             markStructureButton = DocProperties.getFirstButtonByName('quotedStructure');
+             markStructureButton = DocProperties.getFirstButtonByName('quotedStructure'),
+             quotedTextLimit = 50;
+        me.application.fireEvent(Statics.eventsNames.progressUpdate);
         Ext.each(me.quotedElements, function(quote, index) {
             var tmpEl  = node.querySelector("[poslist='"+index+"']");
             if(tmpEl) {
                 tmpEl.parentNode.replaceChild(quote, tmpEl);    
             }
         });
-        
+        me.quotedElements = [];
+
         finalQuotes = node.querySelectorAll("[class~=quotedText], [class~=quotedStructure]");
-        
-        Ext.each(finalQuotes, function(quote) {
-            me.callParser("body", Ext.fly(quote).getHtml(), function(result) {
+
+        var total = nums = finalQuotes.length;
+        var callCallback = function() {
+            if(!--nums) {
+                Ext.callback(callback);
+            } else {
+                if ( !(nums % 30)  )
+                    me.application.fireEvent(Statics.eventsNames.progressUpdate);
+                next(total-nums);
+            }
+        };
+
+        var next = function(index) {
+            quote = finalQuotes[index];
+            // Assuming that short quotes are quotedTexts
+            if ( quote.textContent.length < quotedTextLimit ) {
+                callCallback();
+                return;
+            }
+            me.callParser("body", quote.innerHTML, function(result) {
                 var jsonData = Ext.decode(result.responseText, true),
                     nodeToParse = quote, elName = DomUtils.getElementNameByNode(quote);
+
                 if (jsonData) {
                     //TODO: else case
                     if(Ext.Object.getKeys(jsonData.response).length) {
@@ -2203,14 +2229,19 @@ Ext.define('LIME.controller.ParsersController', {
                         } else {
                             try {
                                 me.parseBodyParts(jsonData, nodeToParse, markButton);    
-                            } catch(e) {};    
+                            } catch(e) {};
                         }
                     }
                 }
+                callCallback();
             });
-        });
-        
-        me.quotedElements = [];
+        };
+
+        if ( nums ) {
+            next(0);
+        } else {
+            Ext.callback(callback);
+        }
     },
     
     saveQuotes: function(node) {
@@ -2581,7 +2612,6 @@ Ext.define('LIME.controller.ParsersController', {
             var callQuoteParser = function() {
                 app.fireEvent(Statics.eventsNames.progressUpdate, Locale.getString("quoteParsing", me.getPluginName()));
                 var content = editor.getContent();
-
                 content = content.replace(/<([a-z][a-z0-9]*)[^>]*?(\/?)>/gi, "<$1$2>");
 
                 me.callParser("quote", content, function(result) {
@@ -2589,7 +2619,7 @@ Ext.define('LIME.controller.ParsersController', {
                     if (jsonData) {
                         var data = jsonData.response.slice(0, 50);
                         var clusterNum = 5;
-                        var times = Math.floor(data.length/clusterNum);
+                        var times = Math.ceil(data.length/clusterNum);
                         var done = 0;
                         var goNext = function() {
                             var start = done*clusterNum;
@@ -2597,6 +2627,7 @@ Ext.define('LIME.controller.ParsersController', {
                             me.parseQuotes(data.slice(start, end));
                             done++;
                             if ( end ) {
+                                app.fireEvent(Statics.eventsNames.progressUpdate);
                                 setTimeout(goNext, 50);
                             } else {
                                 callStrParser();
@@ -2617,14 +2648,16 @@ Ext.define('LIME.controller.ParsersController', {
                     var jsonData = Ext.decode(result.responseText, true);
                     if (jsonData) {
                         me.parseStructure(jsonData.response, function() {
-                            me.restoreQuotes(body);
-                            me.addHcontainerHeadings(body);
-                            callReferenceParser();
+                            me.restoreQuotes(body, function() {
+                                me.addHcontainerHeadings(body);
+                                callReferenceParser();
+                            });
                         });
                     }
                 }, function() {
-                    me.restoreQuotes(body);
-                    callReferenceParser();
+                    me.restoreQuotes(body, function() {
+                        callReferenceParser();
+                    });
                 });
             };
             
