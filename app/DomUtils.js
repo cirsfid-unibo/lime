@@ -380,7 +380,11 @@ Ext.define('LIME.DomUtils', {
                 }
             }
             if (infoNode) {
-                info = infoNode.dom.textContent;
+                for(var i = 0; i < infoNode.dom.childNodes.length; i++) {
+                    if(infoNode.dom.childNodes[i].nodeType == this.nodeType.TEXT) {
+                        info+= infoNode.dom.childNodes[i].textContent;
+                    }
+                }
             }
             if (info.length > infoLength) {
                 info = info.substr(0, infoLength) + "...";

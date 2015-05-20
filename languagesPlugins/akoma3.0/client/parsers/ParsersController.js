@@ -1771,15 +1771,15 @@ Ext.define('LIME.controller.ParsersController', {
         }
     },
     
-    parseReference: function(data) {
+    parseReference: function(data, callback) {
         var me = this, editor = me.getController("Editor"), attrs = [],
             body = editor.getBody(), nodesToMark = [], button = DocProperties.getFirstButtonByName('ref');
-
         // Filter the result and remove repeating elements
         data = data.filter(function(obj) {
             var itemsLikeMe = data.filter(function(item) {
                 return ((item != obj) && (item.ref.indexOf(obj.ref) != -1) 
-                    && ( obj.start >= item.start && obj.end <= item.end ));
+                    //&& ( obj.start >= item.start && obj.end <= item.end )
+                    );
             });
             return !itemsLikeMe.length;
         });
@@ -1788,34 +1788,71 @@ Ext.define('LIME.controller.ParsersController', {
             return b.ref.length - a.ref.length;
         });
 
-        Ext.each(data, function(obj) {
-            var matchStr = obj.ref,
-                ranges = DomUtils.findText(matchStr, body),
-                date = obj.date || "",
-                docNum = obj.docnum || "",
-                artnum = obj.num || "",
-                href = "/"+DocProperties.documentInfo.docLocale+"/act/"+date+"/"+docNum+"#"+artnum;
-
-            if ( ranges.length ) {
-                Ext.each(ranges, function(range) {
-                    if(!me.canPassNode(range.startContainer.firstChild, button.id, [DomUtils.tempParsingClass])){
-                        return;
-                    }
-
-                    var span = range.startContainer.ownerDocument.createElement("span");
-                    span.setAttribute("class", DomUtils.tempParsingClass);
-                    try {
-                        range.surroundContents(span);
-                        attrs.push({ name: 'href', value: href });
-                        nodesToMark.push(span);
-                    } catch(e) {
-                        Ext.log({level: "error"}, e);
-                    }
-                });
+        var total = nums = data.length;
+        var callCallback = function() {
+            if (--nums) {
+                if ( !(nums % 100) ) {
+                    me.application.fireEvent(Statics.eventsNames.progressUpdate, Locale.getString("referenceParser", me.getPluginName())+' '+Math.ceil(nums/100));
+                }
+                if ( !(nums % 20) ) {
+                    setTimeout(next, 100);
+                } else {
+                    next();
+                }
+            } else {
+                if ( nodesToMark.length ) {
+                    me.requestMarkup(button, {silent:true, noEvent : true, nodes:nodesToMark, attributes: attrs});
+                }
+                Ext.callback(callback);
             }
-        }, this);
-        if ( nodesToMark.length ) {
-            me.requestMarkup(button, {silent:true, noEvent : true, nodes:nodesToMark, attributes: attrs});
+        };
+
+        var next = function(index) {
+            index = index || total-nums;
+            var obj = data[index];
+            var matchStr = obj.ref;
+
+            try {
+                var ranges = DomUtils.findText(matchStr, body);
+                var date = obj.date || "",
+                    docNum = obj.docnum || "",
+                    artnum = obj.num || "",
+                    href = "/"+DocProperties.documentInfo.docLocale+"/act/"+date+"/"+docNum+"#"+artnum;
+
+                if ( ranges.length ) {
+                    Ext.each(ranges, function(range) {
+                        if(!me.canPassNode(range.startContainer.firstChild, button.id, [DomUtils.tempParsingClass])){
+                            return;
+                        }
+
+                        var span = range.startContainer.ownerDocument.createElement("span");
+                        span.setAttribute("class", DomUtils.tempParsingClass);
+                        try {
+                            range.surroundContents(span);
+                            attrs.push({ name: 'href', value: href });
+                            nodesToMark.push(span);
+                        } catch(e) {
+                            Ext.log({level: "error"}, e);
+                        }
+                    });
+                }
+            } catch(e) {
+                console.warn('Error finding reference '+ matchStr);
+                console.warn(e);
+            }
+
+            callCallback();
+        };
+
+        setTimeout(function() {
+            nums = 1;
+            callCallback();
+        }, 10000);
+
+        if ( nums ) {
+            next(0);
+        } else {
+            Ext.callback(callback);
         }
     },
 
@@ -2566,9 +2603,10 @@ Ext.define('LIME.controller.ParsersController', {
         me.callParser("reference", content, function(result) {
             var jsonData = Ext.decode(result.responseText, true);
             if (jsonData) {
-                me.parseReference(jsonData.response);
+                me.parseReference(jsonData.response, callback);
+            } else {
+                Ext.callback(callback);
             }
-            Ext.callback(callback);
         }, callback);
     },
 
