@@ -93,6 +93,8 @@ Ext.define('LIME.controller.WidgetManager', {
                     text: Locale.getString("saveDocumentButtonLabel"),
                     handler: function() {
                         me.saveWidgetData(this.up("markedElementWidget"), this);
+                        me.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
+                                    false, me.tabGroupName);
                     }    
                 }]
             });
