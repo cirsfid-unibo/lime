@@ -183,6 +183,7 @@ Ext.define('LIME.controller.Outliner', {
     },
 
     createTreeDataNew : function(root, desiredDepth) {
+
         desiredDepth = (desiredDepth !== undefined) ? desiredDepth : -1;
         var data = [], parents = [],
             nodes = root.querySelectorAll('['+DomUtils.elementIdAttribute+']'),
@@ -232,6 +233,7 @@ Ext.define('LIME.controller.Outliner', {
      * @param {String} [config] What kind of change has to be made
      */
     buildTree : function(node, config) {
+
         var me = this,
             tree = Ext.getStore('Outliner'),
             treeView = this.getOutliner(),
@@ -280,6 +282,9 @@ Ext.define('LIME.controller.Outliner', {
                 if (!Ext.isArray(data)) {
                     data = [data];
                 }
+            Ext.suspendLayouts();
+
+
                 Ext.each(data, function(dataNode, index) {
                     var storedNode = root.findChild('cls', dataNode.cls, true);
                     if (!storedNode) {
@@ -328,13 +333,13 @@ Ext.define('LIME.controller.Outliner', {
     // init the app
     init : function() {
         // Register for events
-        this.application.on({
-            editorDomChange : this.beforeBuildTree,
-            editorDomNodeFocused : this.beforeExpandItem,
-            scope : this
-        });
-        this.application.on(Statics.eventsNames.changedEditorMode, this.onChangeEditorMode, this);
-        this.application.on(Statics.eventsNames.markingMenuLoaded, this.loadCss, this);
+        // this.application.on({
+        //     editorDomChange : this.beforeBuildTree,
+        //     editorDomNodeFocused : this.beforeExpandItem,
+        //     scope : this
+        // });
+        // this.application.on(Statics.eventsNames.changedEditorMode, this.onChangeEditorMode, this);
+        // this.application.on(Statics.eventsNames.markingMenuLoaded, this.loadCss, this);
 
         // set up the control
         this.control({
