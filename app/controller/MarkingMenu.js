@@ -629,15 +629,15 @@ Ext.define('LIME.controller.MarkingMenu', {
 		var me = this, app = me.application;
 
         // Set the event listeners
-        // app.on(Statics.eventsNames.editorDomNodeFocused, function(node, config) {
-        //     if ( !config || !config.noExpandButtons ) {
-        //         try {
-        //             this.expandButtons(node);
-        //         } catch(e) {
-        //             Ext.log({level: "error"}, 'MarkingMenu expandButtons: '+e);
-        //         }
-        //     }
-        // }, this);
+        app.on(Statics.eventsNames.editorDomNodeFocused, function(node, config) {
+            if ( !config || !config.noExpandButtons ) {
+                try {
+                    this.expandButtons(node);
+                } catch(e) {
+                    Ext.log({level: "error"}, 'MarkingMenu expandButtons: '+e);
+                }
+            }
+        }, this);
         app.on(Statics.eventsNames.languageLoaded, this.addMarkingMenu, this);
         app.on(Statics.eventsNames.disableEditing, this.disableMarkingMenu, this);
         app.on(Statics.eventsNames.enableEditing, this.enableMarkingMenu, this);
@@ -645,9 +645,9 @@ Ext.define('LIME.controller.MarkingMenu', {
         app.on(Statics.eventsNames.addMarkingGroup, this.addMarkingGroup, this);
         app.on(Statics.eventsNames.addMarkingButton, this.addMarkingButton, this);
         app.on(Statics.eventsNames.setCustomMarkingHandler, this.setCustomMarkingHandler, this);
-        // app.on(Statics.eventsNames.unfocusedNodes, function() {
-        //     this.expandButtons();
-        // }, this);
+        app.on(Statics.eventsNames.unfocusedNodes, function() {
+            this.expandButtons();
+        }, this);
 
 		this.control({
             '#treeStructure, #treeCommons': {

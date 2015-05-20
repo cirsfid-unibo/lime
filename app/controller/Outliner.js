@@ -333,13 +333,13 @@ Ext.define('LIME.controller.Outliner', {
     // init the app
     init : function() {
         // Register for events
-        // this.application.on({
-        //     editorDomChange : this.beforeBuildTree,
-        //     editorDomNodeFocused : this.beforeExpandItem,
-        //     scope : this
-        // });
-        // this.application.on(Statics.eventsNames.changedEditorMode, this.onChangeEditorMode, this);
-        // this.application.on(Statics.eventsNames.markingMenuLoaded, this.loadCss, this);
+        this.application.on({
+            editorDomChange : this.beforeBuildTree,
+            editorDomNodeFocused : this.beforeExpandItem,
+            scope : this
+        });
+        this.application.on(Statics.eventsNames.changedEditorMode, this.onChangeEditorMode, this);
+        this.application.on(Statics.eventsNames.markingMenuLoaded, this.loadCss, this);
 
         // set up the control
         this.control({
