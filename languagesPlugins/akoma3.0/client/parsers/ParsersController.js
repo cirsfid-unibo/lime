@@ -134,6 +134,7 @@ Ext.define('LIME.controller.ParsersController', {
 
     onDocumentLoaded : function(docConfig) {
         var me = this;
+        me.parserActivated = false;
         me.addParserMenuItem();
     },
 
@@ -144,7 +145,13 @@ Ext.define('LIME.controller.ParsersController', {
             tooltip : Locale.getString("parseDocumentTooltip", me.getPluginName()),
             icon : 'resources/images/icons/lightbulb.png',
             name : 'parseDocument',
-            handler : Ext.bind(me.activateParsers, me)
+            handler : function() {
+                if ( !me.parserActivated ) {
+                    me.activateParsers();
+                } else {
+                    Ext.MessageBox.alert(Locale.getString("markedAlready", me.getPluginName()), Locale.getString("documentAllMarked", me.getPluginName()));
+                }
+            }
         };
         me.application.fireEvent("addMenuItem", me, {
             menu : "editMenuButton"
@@ -2595,6 +2602,7 @@ Ext.define('LIME.controller.ParsersController', {
                 app.fireEvent(Statics.eventsNames.progressUpdate, Locale.getString("postParsing", me.getPluginName()));
                 Ext.defer(function() {
                     editor.parserWorking = false;
+                    me.parserActivated = true;
                     Ext.defer(function() {
                         app.fireEvent('nodeChangedExternally', editor.getBody(), {
                             change : true,

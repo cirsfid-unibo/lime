@@ -63,12 +63,12 @@
                 show: function() {
                     var genTocBtn = this.getGenerateTocButton();
 
-                    if ( Ext.isEmpty(DocProperties.getMarkedElementsByName(this.getBodyName())) ) {
+                    if ( Ext.isEmpty(DocProperties.getMarkedElementsByName(Language.getBodyName())) ) {
                         genTocBtn.disable();
-                        genTocBtn.setTooltip(Locale.getString("noPreambleFound", this.getPluginName()))
+                        genTocBtn.setTooltip(Locale.getString("noPreambleFound", this.getPluginName()));
                     } else {
                         genTocBtn.enable();
-                        genTocBtn.setTooltip(Locale.getString("generateToc", this.getPluginName()))
+                        genTocBtn.setTooltip(Locale.getString("generateToc", this.getPluginName()));
                     }
                 }
             }
@@ -89,24 +89,6 @@
             name : 'generateTocButton',
             handler : Ext.bind(this.generateToc, this)
         });
-    },
-
-    getBodyName: function() {
-        var docType = DocProperties.getDocType(),
-            bodyName = '';
-
-        switch(docType) {
-            case 'documentCollection':
-                bodyName = 'collectionBody';
-                break;
-            case 'doc':
-                bodyName = 'mainBody';
-                break;
-            default:
-                bodyName = 'body';
-        }
-
-        return bodyName;
     },
 
     generateToc: function() {

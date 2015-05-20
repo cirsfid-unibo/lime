@@ -265,6 +265,24 @@ Ext.define('LIME.ux.akoma3.Language', {
             });
         }
     },
+
+    getBodyName: function() {
+        var docType = DocProperties.getDocType(),
+            bodyName = '';
+
+        switch(docType) {
+            case 'documentCollection':
+                bodyName = 'collectionBody';
+                break;
+            case 'doc':
+                bodyName = 'mainBody';
+                break;
+            default:
+                bodyName = 'body';
+        }
+
+        return bodyName;
+    },
     
     constructor: function (config) {
         this.initConfig({});

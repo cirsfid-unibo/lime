@@ -6,7 +6,9 @@
 		"postParsing": "Post parsing",
 		"quoteParsing": "Parsing quotes",
 		"structureParser": "Parsing structure",
-		"referenceParser": "Parsing references"
+		"referenceParser": "Parsing references",
+        "markedAlready": "Document is marked",
+        "documentAllMarked": "I marked what I was able to recognize automatically"
 	},
 	"it": {
 		"parseDocumentText": "Markup automatico",
@@ -15,7 +17,9 @@
 		"postParsing": "Rifinimento",
 		"quoteParsing": "Riconoscimento delle menzioni",
 		"structureParser": "Riconoscimento della struttura",
-		"referenceParser": "Riconoscimento dei riferimenti"
+		"referenceParser": "Riconoscimento dei riferimenti",
+        "markedAlready": "Documento marcato",
+        "documentAllMarked": "Ho già marcato quello che sono riuscito a riconoscere automaticamente"
 	},
 	"es": {
 		"parseDocumentText": "Marcado Autimático",
@@ -24,7 +28,9 @@
 		"postParsing": "Refinamiento",
 		"quoteParsing": "Reconocimiento de las citas",
 		"structureParser": "Reconocimiento de la estructura",
-		"referenceParser": "Reconocimiento de referencias"
+		"referenceParser": "Reconocimiento de referencias",
+        "markedAlready": "Document is marked",
+        "documentAllMarked": "I marked what I was able to recognize automatically"
 	},
 	"ro": {
 		"parseDocumentText": "Parser",
@@ -33,7 +39,9 @@
 		"postParsing": "Post parsing",
 		"quoteParsing": "Parsing quotes",
 		"structureParser": "Parsing structure",
-		"referenceParser": "Parsing references"
+		"referenceParser": "Parsing references",
+        "markedAlready": "Document is marked",
+        "documentAllMarked": "I marked what I was able to recognize automatically"
 	},
 	"ru": {
 		"parseDocumentText": "Парсер",
@@ -42,6 +50,8 @@
 		"postParsing": "Post parsing",
 		"quoteParsing": "Parsing quotes",
 		"structureParser": "Parsing structure",
-		"referenceParser": "Parsing references"
+		"referenceParser": "Parsing references",
+        "markedAlready": "Document is marked",
+        "documentAllMarked": "I marked what I was able to recognize automatically"
 	}
 }
