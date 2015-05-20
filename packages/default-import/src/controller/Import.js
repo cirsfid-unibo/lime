@@ -96,7 +96,7 @@ Ext.define('DefaultImport.controller.Import', {
     },
 
     loadDocument: function(content, docMarkingLanguage, docLang) {
-        content = content.replace(/(<br\/>(<br\/>)?(\s*))+/g, '$1');
+        content = DomUtils.normalizeBr(content);
 
         // Upload the editor's content
         this.application.fireEvent(Statics.eventsNames.loadDocument, {

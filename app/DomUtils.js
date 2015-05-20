@@ -1172,6 +1172,18 @@ Ext.define('LIME.DomUtils', {
     nodeHasTagName: function(node, tag) {
         return node && node.tagName && node.tagName.toLowerCase() === tag.toLowerCase();
     },
+
+    convertNbsp: function(str) {
+        return str.replace(/&nbsp;/g, '@nbsp@');
+    },
+
+    riconvertNbsp: function(str) {
+        return str.replace(/@nbsp@/g, ' ');
+    },
+
+    normalizeBr: function(str) {
+        return str.replace(/(<br\/>(<br\/>)?(\s*))+/g, '$1');
+    },
     
     constructor: function() {
         this.setBreakingElementHtml("<span class=\""+this.breakingElementClass+"\">&nbsp;</span>");

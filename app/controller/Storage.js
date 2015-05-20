@@ -185,6 +185,10 @@ Ext.define('LIME.controller.Storage', {
         // check if the user actually selected a document
         if (openFileWindow.selectedFile) {
             if (Ext.isFunction(openFileWindow.onOpen)) {
+                me.application.fireEvent(Statics.eventsNames.progressStart, null, {
+                    value : 0.1,
+                    text : Locale.strings.progressBar.openingDocument
+                });
                 openFileWindow.onOpen(openFileWindow.selectedFile.data);
                 openFileWindow.close();
             } else {

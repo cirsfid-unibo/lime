@@ -130,7 +130,10 @@ Ext.define('LIME.Server', {
             },
             success: function (response) {
                 var xslt = 'resources/xslt/CleanConvertedHtml.xsl';
-                Server.applyXslt(response.responseText, xslt, success, failure)
+                Server.applyXslt(DomUtils.convertNbsp(response.responseText), xslt, function(html, lang) {
+                    html = DomUtils.normalizeBr(DomUtils.riconvertNbsp(html));
+                    success(html, lang);
+                }, failure)
             },
             failure: failure
         });
