@@ -120,5 +120,8 @@
 	"number": "Numero",
 	"closeTabText": "Chiudi scheda",
 	"closeOthersTabsText": "Chiudi le altre schede",
-	"closeAllTabsText": "Chiudi tutte le schede"
+	"closeAllTabsText": "Chiudi tutte le schede",
+    "unmark": "Cancella marcatura",
+    "unmarkElement": "questo elemento",
+    "unmarkElementChildren": "questo elemento e dei suoi figli"
 }

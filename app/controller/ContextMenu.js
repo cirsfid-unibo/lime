@@ -59,31 +59,35 @@ Ext.define('LIME.controller.ContextMenu', {
         ref : 'contextMenuItems',
         selector : 'menuitem[cls=editor]'
     }],
-    
-    menuItems:  [{
-        text : 'Unmark',
-        separator : true,
-        icon : 'resources/images/icons/delete.png',
-        menu : {
-            // TODO localize the text
-            items : [{
-                id : "unmarkThis",
-                text : 'Unmark this element'
-            }, {
-                id : "unmarkAll",
-                text : 'Unmark this element and its children'
-            }]
-        }
-    }],
-    
+
     beforeShowFns: [],
+
+    getMenuItems: function() {
+        this.menuItems = this.menuItems || [{
+            text : Locale.getString('unmark'),
+            separator : true,
+            icon : 'resources/images/icons/delete.png',
+            menu : {
+                // TODO localize the text
+                items : [{
+                    id : "unmarkThis",
+                    text : Locale.getString('unmarkElement')
+                }, {
+                    id : "unmarkAll",
+                    text : Locale.getString('unmarkElementChildren')
+                }]
+            }
+        }];
+
+        return this.menuItems;
+    },
     
     showContextMenu: function(coordinates) {
         var me = this, menu = this.getContextMenu(),
             editor = me.getController("Editor"),
             selectedNode = editor.getSelectedNode();
         menu.removeAll();
-        Ext.each(me.menuItems, function(item) {
+        Ext.each(me.getMenuItems(), function(item) {
             menu.add(item);
         });
         

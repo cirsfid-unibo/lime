@@ -118,5 +118,8 @@
 	"number": "Numar",
 	"closeTabText": "Închide fila",
 	"closeOthersTabsText": "Închide celelalte file",
-	"closeAllTabsText": "Închide toate filele"
+	"closeAllTabsText": "Închide toate filele",
+    "unmark": "Unmark",
+    "unmarkElement": "Unmark this element",
+    "unmarkElementChildren": "Unmark this element and its children"
 }

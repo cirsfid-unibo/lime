@@ -127,5 +127,8 @@
 	"number": "Number",
 	"closeTabText": "Close Tab",
 	"closeOthersTabsText": "Close Other Tabs",
-	"closeAllTabsText": "Close All Tabs"
+	"closeAllTabsText": "Close All Tabs",
+    "unmark": "Unmark",
+    "unmarkElement": "Unmark this element",
+    "unmarkElementChildren": "Unmark this element and its children"
 }

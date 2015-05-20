@@ -120,5 +120,8 @@
 	"number": "Numero",
 	"closeTabText": "Cerrar pestaña",
 	"closeOthersTabsText": "Cerrar las demás pestañas",
-	"closeAllTabsText": "Cierra todas las pestañas"
+	"closeAllTabsText": "Cierra todas las pestañas",
+    "unmark": "Unmark",
+    "unmarkElement": "Unmark this element",
+    "unmarkElementChildren": "Unmark this element and its children"
 }
