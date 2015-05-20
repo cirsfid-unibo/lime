@@ -3,6 +3,10 @@
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
  <xsl:output omit-xml-declaration="yes"/>
  <xsl:strip-space elements="*"/>
+
+  <xsl:template match="text()">
+    <xsl:value-of select="translate(., ' ', ' ')"/>
+  </xsl:template>
   
   <xsl:template match="/">
   <div>
