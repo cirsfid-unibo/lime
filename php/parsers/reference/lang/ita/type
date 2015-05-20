@@ -4,6 +4,7 @@ accordo +procedimentale +interministeriale
 decreto +legislativo +luogotenenziale
 accordo +collettivo +nazionale
 regio +decreto +legislativo
+codice +di +procedura +penale
 regolamento +modificativo
 decreto +luogotenenziale
 comunicato +di +rettifica
@@ -32,8 +33,9 @@ regio +decreto
 provvedimento
 decreto(-| )+legge
 comunicazione
+codice +civile
 disposizione
-costituzione
+[Cc]ostituzione
 testo +unico
 risoluzione
 regolamento
@@ -56,5 +58,4 @@ accordo
 statuto
 parere
 intesa
-codice
 legge

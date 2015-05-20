@@ -47,11 +47,14 @@
  
 $rules = Array(
 
-	"references" => Array("ref_1","ref_2","ref_2b",
+	"references" => Array("ref_1","ref_2","ref_2b","ref_2c",
 						  "ref_3","ref_4","ref_4b","ref_5"),
+
 	"ref_1" => "/({{partition}}[\s\d\w,)-]+\s*)?{{type}}\s+{{date}}\s*(,\s*n\.\s*{{docnum}}+)/",
 	"ref_2" => "/{{partition}} +{{num}} +(della|del|dello|dell(’|')) *{{type}} +del +{{date}}/",
-	"ref_2b" => "/{{partition}} +{{num}} +della +legge/",
+	"ref_2b" => "/{{partition}} +{{num}} +(della|del|dello|dell(’|')) +{{type}}/",
+	"ref_2c" => "/{{partition}} +{{num}}/",
+
 	"ref_3" => "/O +del +{{date}}/",
 	"ref_4" => "/direttiva +\d+\/\d+\/CE/",
 	"ref_4b" => "/procedimento +[C\-\d]+\/\d+/",
@@ -59,7 +62,7 @@ $rules = Array(
 	
 	"docnum" => "\d+\.?\d*",
 	"date" => "[\w\d\s\.°﻿]+\d{4}",
-	"num" => "[aebistrqun\d\-\–\, ]+",
+	"num" => "[\d\-\–\, ]+(bis|ter|quater|quinquies)?",
 	
 	"partition" => Array("articolo",
 						 "articoli",
