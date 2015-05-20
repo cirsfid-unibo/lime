@@ -59,6 +59,13 @@ Ext.define('LIME.ux.akoma3.TranslatePlugin', {
                 node.setAttribute(Language.attributePrefix+'class', align[1]);
             }
         });
+        var nameAttr = Language.getAttributePrefix()+'name';
+        Ext.each(dom.querySelectorAll('.formula'), function(node) {
+            if (  !node.getAttribute(nameAttr)  ) {
+                var type = Config.getLanguageConfig().formulaName || "" ;
+                node.setAttribute(nameAttr, type);
+            }
+        });
         return params;
     },
 

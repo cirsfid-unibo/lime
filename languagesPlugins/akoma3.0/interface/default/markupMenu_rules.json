@@ -135,20 +135,6 @@
 			}
 		},
 
-		"formula": {
-			"askFor": {
-				"type1": {
-					"label": "Type",
-					"type": "text",
-					"insert": {
-						"attribute": {
-							"name": "type"
-						}
-					}
-				}
-			}
-		},
-
 		"list": {
 			"children": ["intro", "num", "heading", "subheading", "point", "wrap", "p", "wrapUp"]
 		},

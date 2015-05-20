@@ -602,7 +602,6 @@ Ext.define('LIME.controller.ParsersController', {
                 if(!Ext.isEmpty(item.enactingFormula)) {
                     var mNode = me.textNodeToTag(node, item.enactingFormula, 'div');
                     if ( mNode ) {
-                        mNode.setAttribute(Language.getAttributePrefix()+'name', 'enactingFormula');
                         nodes.push(mNode);
                     }
                 }

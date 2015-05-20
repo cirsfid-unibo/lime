@@ -1,5 +1,6 @@
 {
     "schemaRegex": "xmlns=\"(http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD\\d+)\"",
+    "formulaName": "formulaIniziale",
 	"docTypes": [
 		{
 			"name": "bill",

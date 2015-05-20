@@ -62,6 +62,22 @@
 		"validationFatalErrors": "Errori fatali",
 		"validationErrors": "Errori",
 		"validationWarnings": "Avvertimenti",
-		"validateResultErrors": "Trovati {nr} errori"
+		"validateResultErrors": "Trovati {nr} errori",
+        "previous": "&laquo; Precedente",
+        "next": "Successivo &raquo;",
+        "element": "Elemento {name}",
+        "moreInfo": "Più informazioni",
+        "technicalInfo": "Dettagli tecnici",
+        "moreInfoTpl" : "{message} - {lineString} a ({line}:{column}) - {code}",
+        "tipsToResolveError": "Suggerimenti per correggere questo errore (prova uno dei seguenti)",
+        "unexpectedElement": "non è previsto in {parentName}",
+        "unexpectedQuoted": "deve essere all'interno di un elemento di modifica",
+        "addActiveModification": "Aggiungere una modifica attorno all'elemento",
+        "unmarkQuoted": "Smarca '{name}' se non cita una parte di un documento, ma è una semplice citazione",
+        "elementOnly": "non può contenere direttamente testo",
+        "elementNotMarked": "non è completamente o parzialmente marcato",
+        "markInsideElement": "marca gli elementi mancanti all'interno di questo elemento",
+        "runAutomaticMarkup": "prova a lanciare 'Markup automatico'",
+        "removeText": "eliminare il testo da questo elemento"
 	}
 }

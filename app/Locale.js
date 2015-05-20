@@ -50,7 +50,7 @@ Ext.define('LIME.Locale', {
 
 	config: {
 		lang : 'it',
-		defaultLang: 'it'
+		defaultLang: 'en'
 	},
 	
 	strings: {},
