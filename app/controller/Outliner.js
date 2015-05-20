@@ -282,8 +282,6 @@ Ext.define('LIME.controller.Outliner', {
                 if (!Ext.isArray(data)) {
                     data = [data];
                 }
-            Ext.suspendLayouts();
-
 
                 Ext.each(data, function(dataNode, index) {
                     var storedNode = root.findChild('cls', dataNode.cls, true);
