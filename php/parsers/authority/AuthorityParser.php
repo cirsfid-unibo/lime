@@ -94,8 +94,8 @@ class AuthorityParser {
 								$entry["sStart"] = $offset;
 								$entry["sEnd"] = $offset + strlen($match);
 								$entry["signature"] = $match;
-								$entry["name"] = trim(trim($result["name"][$i][0], '.'));
-								$entry["surname"] = trim(trim($result["surname"][$i][0], '.'));
+								$entry["name"] = (array_key_exists("name", $result)) ? trim(trim($result["name"][$i][0], '.')) : "";
+								$entry["surname"] = (array_key_exists("surname", $result)) ? trim(trim($result["surname"][$i][0], '.')) : "";
 							}
 						}
 						
@@ -106,8 +106,8 @@ class AuthorityParser {
 								$entry["sStart"] = $offset;
 								$entry["sEnd"] = $offset + strlen($match);
 								$entry["signature"] = $match;
-								$entry["name"] = trim(trim($result["n"][$i][0], '.'));
-								$entry["surname"] = trim(trim($result["s"][$i][0], '.'));
+								$entry["name"] = (array_key_exists("n", $result)) ? trim(trim($result["n"][$i][0], '.')) : "";
+								$entry["surname"] = (array_key_exists("s", $result)) ? trim(trim($result["s"][$i][0], '.')) : "";
 							}
 						}
 

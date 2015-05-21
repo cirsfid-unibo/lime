@@ -64,20 +64,20 @@ class MetaParser {
         $this->lang = $lang;
         $this->docType = $docType;
         $this->content = $content;
+        $this->body = Array();
+        $this->nr = 0;
     }
 
     public function parseDocument() {
         $return = array();
-
         $dateRes = $this->parseDate();
         $structureRes = $this->parseStructure();
-        $bodyRes = $this->parseBody();
         $quoteRes = $this->parseQuote();
         $referenceRes = $this->parseReference();
         $docRes = $this->parseDocNum();
         $docTypeRes = $this->parseDocType();
-		$authorityRes = $this->parseAuthority();
-		$locationRes = $this->parseLocation();
+        $authorityRes = $this->parseAuthority();
+        $locationRes = $this->parseLocation();
         $enactingFormula = $this->parseEnactingFormula();
 
         //print_r($structureRes);
@@ -91,8 +91,10 @@ class MetaParser {
         $this->handleParserStructureResult($structureRes, $return);
         $this->handleParserDateResult($dateRes, $return);
 
+        $bodyRes = $this->parseBody($return);
+        
         $this->handleParserBodyResult($bodyRes, $return);
-
+        
         $return = $this->normalizeOffsets($return);
         return json_encode($return);
     }
@@ -102,9 +104,18 @@ class MetaParser {
         return $parser->parse($this->content);
     }
 
-    public function parseBody() {
+    public function parseBody(&$completeResult) {
+        $this->body = end($this->getElementsByName("body", $completeResult));
         $parser = new BodyParser($this->lang, $this->docType);
-        return $parser->parse($this->content);
+        $result = Array();
+
+        if ( count($this->body) ) {
+            $content = substr($this->content, $this->body["start"], $this->body["end"]);
+            $result = $parser->parse($content);
+            //print_r($result);
+        }
+
+        return $result;
     }
 
     public function parseQuote() {
@@ -295,7 +306,7 @@ class MetaParser {
                     if(!empty($lastElement["string"])) {
                         $newElement["start"] = $lastElement["end"];
                     }
-                    if($key == (count($result["response"]["structure"])-1)) {
+                    if( ($key == (count($result["response"]["structure"])-1)) || !$newElement["end"] ) {
                         $newElement["end"] = strlen($this->content);
                     }
                 }
@@ -308,14 +319,16 @@ class MetaParser {
     }
 
     private function handleParserBodyResult($result, &$completeResult) {
-        foreach ($result["response"] as $elementName => $elements) {
-            $this->rawHandleBodyResult($elementName, $elements, $completeResult);
+        if ( array_key_exists("response", $result) ) {
+            foreach ($result["response"] as $elementName => $elements) {
+                $this->rawHandleBodyResult($elementName, $elements, $completeResult, $this->body["start"]);
+            }
         }
     }
 
     private function handleParserContainsBodyResult($element, &$completeResult) {
         foreach ($element["contains"] as $elementName => $elements) {
-            $this->rawHandleBodyResult($elementName, $elements, $completeResult, $element["start"]);
+            $this->rawHandleBodyResult($elementName, $elements, $completeResult, $this->body["start"]+$element["start"]);
         }
     }
 
@@ -362,15 +375,18 @@ class MetaParser {
                 $completeResult[] = $newElement;    
             }
         }
+        
         foreach ($elements as $element) {
             $this->handleParserContainsBodyResult($element, $completeResult);
         }
     }
 
     private function getElementWithSameParent($element, $parent, $completeResult) {
-        $elements = array_filter($completeResult, function($res) use ($element, $parent, $completeResult)  {
+        $desc = $this->getElementDescs($parent, $completeResult);
+        $elements = array_filter($desc, function($res) use ($element, $parent, $completeResult)  {
             return ($res != $element && $res["name"] == $element["name"]);
         });
+
         $siblings = Array();
         foreach ($elements as $el) {
             $parentNext = $this->getElementParent($el, $completeResult);
@@ -393,6 +409,20 @@ class MetaParser {
         });
 
         return (!empty($parents)) ? $parents[0] : NULL; 
+    }
+
+    private function getElementDescs($element, $completeResult) {
+        $descs = array_filter($completeResult, function($res) use ($element)  {
+            return ($res != $element && $res["start"] >= $element["start"] && $res["end"] <= $element["end"]);
+        });
+        usort($descs , function($a, $b) use ($element) {
+            if ($a == $b) {
+                return 0;
+            }
+            return ($a["end"] < $b["end"]) ? -1 : 1;
+        });
+
+        return $descs; 
     }
 
     private function getElementsByName($name, $completeResult) {
