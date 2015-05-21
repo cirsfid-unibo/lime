@@ -44,34 +44,32 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/**
+ * This is the interface Language Selection Box.
+ */
+Ext.define('LIME.view.maintoolbar.LanguageSelectionBox', {
 
-/*
-    This file is generated and updated by Sencha Cmd. You can edit this file as
-    needed for your application, but these edits will have to be merged by
-    Sencha Cmd when upgrading.
-*/
+    // extends the viewport
+    extend: 'Ext.form.field.ComboBox',
 
-Ext.syncRequire(['LIME.Application']);
+    // set the alias
+    alias: 'widget.languageSelectionBox',
 
-Ext.require([
-    'Ext.ux.window.Notification',
-    'Ext.ux.form.field.TinyMCE',
-    'Ext.ux.form.field.TinyMCEWindowManager',
-    'Ext.ux.form.field.CodeMirror',
-    'Ext.ux.layout.component.field.CodeMirror'
-]);
+    // set the store containing the languages
+    store: 'Languages',
 
-Ext.application({
-    name: 'LIME',
+    // display the name of the language
+    displayField: 'language',
 
-    extend: 'LIME.Application',
+    // set the query mode
+    queryMode: 'local',
+
+    // hide the label
+    hideLabel: true,
     
-    launch : function() {
-        // First call the parent launch method
-        this.callParent();
-        
-        // Remove the loading icon
-        var loadingDiv = document.querySelector("#loading");
-        loadingDiv.parentNode.removeChild(loadingDiv);
+    initComponent: function(){
+        this.emptyText = Locale.strings.languageSelectionBoxEmptyText;
+        this.callParent(arguments);
     }
-});
+
+}); 

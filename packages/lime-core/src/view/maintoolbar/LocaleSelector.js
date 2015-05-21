@@ -44,34 +44,26 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/**
+ * This is the interface Language Selection Box.
+ */
+Ext.define('LIME.view.maintoolbar.LocaleSelector', {
+    extend: 'Ext.menu.Item',
+    alias: 'widget.localeSelector',
 
-/*
-    This file is generated and updated by Sencha Cmd. You can edit this file as
-    needed for your application, but these edits will have to be merged by
-    Sencha Cmd when upgrading.
-*/
+    // set the store containing the languages
+    store: 'Locales',
 
-Ext.syncRequire(['LIME.Application']);
+    // display the name of the language
+    displayField: 'name',
 
-Ext.require([
-    'Ext.ux.window.Notification',
-    'Ext.ux.form.field.TinyMCE',
-    'Ext.ux.form.field.TinyMCEWindowManager',
-    'Ext.ux.form.field.CodeMirror',
-    'Ext.ux.layout.component.field.CodeMirror'
-]);
-
-Ext.application({
-    name: 'LIME',
-
-    extend: 'LIME.Application',
+    // set the query mode
+    queryMode: 'local',
     
-    launch : function() {
-        // First call the parent launch method
-        this.callParent();
-        
-        // Remove the loading icon
-        var loadingDiv = document.querySelector("#loading");
-        loadingDiv.parentNode.removeChild(loadingDiv);
+    initComponent: function(){
+        this.text = Locale.strings.localeEmptyText;
+        this.callParent(arguments);
     }
-});
+    
+    //tpl: '<tpl for="."><div class="x-boundlist-item loc-selector-{status}">{name}</div></tpl>'
+}); 
