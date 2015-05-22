@@ -335,13 +335,22 @@ class MetaParser {
     private function rawHandleBodyResult($elementName, $elements, &$completeResult, $startOffset = 0) {
         $nums = Array();
         foreach ($elements as $element) {
-            $string = (array_key_exists("numitem", $element)) ? rtrim($element["numitem"]) : rtrim($element["value"]);
+            $string = (array_key_exists("numitem", $element)) ? rtrim($element["numitem"]) : rtrim($element["num"]["value"]);
+            $start = (array_key_exists("numitem", $element)) ? $element["start"] : $element["num"]["start"];
 
             $newElement = Array("name"=> "num",
                                       "string" => $string,
-                                      "start" => $startOffset+$element["start"],
-                                      "end" => $startOffset+$element["start"]+strlen($string));
+                                      "start" => $startOffset+$start,
+                                      "end" => $startOffset+$start+strlen($string));
             $nums[] = $newElement;
+            if (array_key_exists("heading", $element)) {
+                $string = $element["heading"]["value"];
+                $newElementHeading = Array("name"=> "heading",
+                                      "string" => $string,
+                                      "start" => $startOffset+$element["heading"]["start"],
+                                      "end" => $startOffset+$element["heading"]["start"]+strlen($string));
+                //$completeResult[] = $newElementHeading;
+            }
             $completeResult[] = $newElement;
         }
         foreach ($nums as $key => $num) {
