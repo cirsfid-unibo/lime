@@ -1459,7 +1459,9 @@ Ext.define('LIME.controller.ParsersController', {
 
         Ext.each(parts, function(element) {
             if(!element.value.trim()) return; 
-            var textNodesObj = DomUtils.smartFindTextNodes(element.value, node),
+            var numVal = (element.num && element.num.value) || element.value;
+            var headingVal = (element.heading && element.heading.value);
+            var textNodesObj = DomUtils.smartFindTextNodes(numVal, node),
                 parent, partNode;
             if ( !textNodesObj.length ) return;
 
@@ -1471,13 +1473,21 @@ Ext.define('LIME.controller.ParsersController', {
             var newWrapper = me.wrapPartNode(partNode, node);
             element.wrapper = newWrapper;
             nodesToMark.push(newWrapper);
-            numsToMark = Ext.Array.push(numsToMark, me.newTextNodeToSpans(textNodesObj[0], element.value));
+            numsToMark = Ext.Array.push(numsToMark, me.newTextNodeToSpans(textNodesObj[0], numVal));
+
+            if ( headingVal ) {
+                var text = DomUtils.smartFindTextNodes(headingVal, node);
+                if ( text.length ) {
+                    headingsToMark = Ext.Array.push(headingsToMark, me.newTextNodeToSpans(text[0], headingVal));
+                }
+            }
+
         }, this);
         Ext.each(nodesToMark, function(node) {
             me.wrapPartNodeSibling(node, function(sibling) {
                 var elButton = DomUtils.getButtonByElement(sibling);
                 /* If sibling is marked with the same button or it is temp element then stop the loop */
-                if ((elButton && (elButton.id === markButton.id)) || DomUtils.nodeHasClass(sibling, DomUtils.tempParsingClass)) {
+                if ((elButton && (elButton.id === markButton.id)) || (headingsToMark.indexOf(sibling) == -1 && DomUtils.nodeHasClass(sibling, DomUtils.tempParsingClass)) ) {
                     return true;
                 }
                 return false;
@@ -1488,6 +1498,13 @@ Ext.define('LIME.controller.ParsersController', {
                 silent : true,
                 noEvent : true,
                 nodes : numsToMark
+            });
+        }
+        if (headingsToMark.length > 0) {
+            me.requestMarkup(headingButton, {
+                silent : true,
+                noEvent : true,
+                nodes : headingsToMark
             });
         }
         if (nodesToMark.length > 0) {
