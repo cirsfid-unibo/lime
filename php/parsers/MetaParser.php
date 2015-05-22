@@ -326,9 +326,9 @@ class MetaParser {
         }
     }
 
-    private function handleParserContainsBodyResult($element, &$completeResult) {
+    private function handleParserContainsBodyResult($element, &$completeResult, $startOffset) {
         foreach ($element["contains"] as $elementName => $elements) {
-            $this->rawHandleBodyResult($elementName, $elements, $completeResult, $this->body["start"]+$element["start"]);
+            $this->rawHandleBodyResult($elementName, $elements, $completeResult, $startOffset+$element["start"]);
         }
     }
 
@@ -377,7 +377,7 @@ class MetaParser {
         }
         
         foreach ($elements as $element) {
-            $this->handleParserContainsBodyResult($element, $completeResult);
+            $this->handleParserContainsBodyResult($element, $completeResult, $startOffset);
         }
     }
 
