@@ -57,7 +57,8 @@ $rules = Array(
 							   "La\s+Camera\s+dei\s+deputati\s+ed\s+il\s+Senato\s+della\s+Repubblica\s+hanno\s+approvato;\s+IL\s+PRESIDENTE\s+DELLA\s+REPUBBLICA",
 							   "IL\s+PRESIDENTE\s+DELLA\s+REPUBBLICA",	
 							   //"Il\s+Presidente\s+della\s+Repubblica\s*",						   
-							   "Attesto che"),
+							   "Attesto che",
+							   "Il [Cc]onsiglio regionale ha approvato\.?"),
     
 	"preambleEndList" => Array (
 								"\s*E\s*m\s*a\s*n\s*a\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|(L|l)a +seguente +(L|l)egge|(i|I)l +seguente +decreto(-| +)legge):?",
