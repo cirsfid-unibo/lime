@@ -50,7 +50,7 @@ $rules = Array(
 	"roman" => "(M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3}))",
     "number" => "\d+|{{roman}}+",
 	"titleList" => Array("Titolo", "TITOLO"),
-    "chapterList" => Array("Capo","Capitolo","cAPO"),
+    "chapterList" => Array("Capo","Capitolo","CAPO"),
     "articleList" => Array("Art\.?","Articolo","ART\.?"),
     
 	"preambleInitList" => Array(
@@ -68,7 +68,8 @@ $rules = Array(
 								),
 			   
     "conclusionsInitList" => Array("Il\s+presente\s+decreto,",
-								   "La\s+presente\s+legge,")
+								   "La\s+presente\s+legge,",
+								   "La +presente +legge +regionale +sarà +pubblicata +nel +Bollettino +Ufficiale +della +Regione.")
 
 );
 ?>
