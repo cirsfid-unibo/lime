@@ -72,26 +72,16 @@ Ext.define('LIME.controller.Language', {
      * @param {Function} [callback] Function to call after translating
      */
     translateContent : function(params, callback, view, frbrDom) {
-        var languageController = this, 
+        var me = this, 
             editorController = this.getController("Editor"),
             tmpElement = params.docDom,
             unusedElements = tmpElement.querySelectorAll(DomUtils.getTempClassesQuery()), 
             markedElements = tmpElement.querySelectorAll("*[" + DomUtils.elementIdAttribute + "]"),
             focusedElements  = tmpElement.querySelectorAll("."+DocProperties.elementFocusedCls),
-            langPrefix = languageController.getLanguagePrefix(),
+            langPrefix = me.getLanguagePrefix(),
             counters = {}, aknIdMapping = {};
 
-        frbrDom = frbrDom || DocProperties.frbrDom;
-
-        if (frbrDom) {
-            var root = tmpElement.querySelector("*["+DocProperties.docIdAttribute+"]") 
-                        || tmpElement.querySelector(".document");
-            var metaDom = Ext.clone(frbrDom);
-            metaDom.setAttribute("class", "meta");
-            if (root && !root.querySelector("*[class*=meta]")) {
-                root.insertBefore(metaDom, root.firstChild);    
-            }
-        }
+        me.appendMetadata(tmpElement, frbrDom);
         
         // TODO: decide if this part is general for all languages or specific
         try {
@@ -120,7 +110,7 @@ Ext.define('LIME.controller.Language', {
                     wrappingElements = Interpreters.wrappingRulesHandlerOnTranslate(element, button);
 
                 //Set a language unique Id
-                newId = languageController.setLanguageMarkingId(element, counters, tmpElement);
+                newId = me.setLanguageMarkingId(element, counters, tmpElement);
                 var status = element.getAttribute(langPrefix +'status');
                 var wId = element.getAttribute(langPrefix +'wId');
 
@@ -139,7 +129,7 @@ Ext.define('LIME.controller.Language', {
 
                 // Add ids also to wrapping elements
                 Ext.each(wrappingElements, function (el) {
-                    var id = languageController.setLanguageMarkingId(el, counters, tmpElement);                    
+                    var id = me.setLanguageMarkingId(el, counters, tmpElement);                    
                 });
             }, this);
         } catch(e) {
@@ -159,7 +149,7 @@ Ext.define('LIME.controller.Language', {
                 var xmlPretty = vkbeautify.xml(response.responseText);
                 
                 if (Ext.isFunction(callback)) {
-                    callback.call(languageController, xmlPretty, aknIdMapping);
+                    callback.call(me, xmlPretty, aknIdMapping);
                 }
                 if (view && Ext.isFunction(view.setLoading)) {
                     view.setLoading(false);
@@ -174,6 +164,21 @@ Ext.define('LIME.controller.Language', {
         });
     },
     
+    appendMetadata: function(node, meta) {
+        meta = meta || DocProperties.frbrDom;
+
+        if (meta) {
+            var root = node.querySelector("*["+DocProperties.docIdAttribute+"]") 
+                        || node.querySelector(".document");
+            var metaDom = Ext.clone(meta);
+            metaDom.setAttribute("class", "meta");
+            if (root && !root.querySelector("*[class*=meta]")) {
+                root.insertBefore(metaDom, root.firstChild);    
+            }
+            return metaDom;
+        }
+    },
+
     beforeTranslate: function(callback, config, view, cmp, frbrDom) {
        var languageController = this, editorController = this.getController("Editor"),
             beforeTranslate = TranslatePlugin.beforeTranslate,

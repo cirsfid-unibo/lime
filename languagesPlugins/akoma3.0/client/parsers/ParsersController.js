@@ -1125,6 +1125,9 @@ Ext.define('LIME.controller.ParsersController', {
                         }
                         return true;
                     });
+                    Ext.each(docNumNodes, function(node) {
+                        node.setAttribute('data-num', item.numVal);
+                    });
                 }
             }, me);
         }
@@ -1444,9 +1447,10 @@ Ext.define('LIME.controller.ParsersController', {
 
     wrapBodyParts : function(partName, parts, node, button) {
         var me = this, app = me.application, 
-            markButton, numButton, nodesToMark = [], numsToMark = [], 
+            markButton, numButton, nodesToMark = [], numsToMark = [], headingsToMark = [],
             markButton = DocProperties.getChildConfigByName(button, partName) || DocProperties.getFirstButtonByName(partName), 
-            numButton = DocProperties.getChildConfigByName(markButton,"num");
+            numButton = DocProperties.getChildConfigByName(markButton,"num"),
+            headingButton = DocProperties.getChildConfigByName(markButton,"heading");
 
         if( partName == "item" ) {
             me.wrapBlockList(partName, parts, node, button);
@@ -1467,7 +1471,6 @@ Ext.define('LIME.controller.ParsersController', {
             var newWrapper = me.wrapPartNode(partNode, node);
             element.wrapper = newWrapper;
             nodesToMark.push(newWrapper);
-
             numsToMark = Ext.Array.push(numsToMark, me.newTextNodeToSpans(textNodesObj[0], element.value));
         }, this);
         Ext.each(nodesToMark, function(node) {
