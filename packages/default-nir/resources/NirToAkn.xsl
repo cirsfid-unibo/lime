@@ -10,21 +10,45 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:nir="http://www.normeinrete.it/nir/2.2/"
     xmlns:dsp="http://www.normeinrete.it/nir/disposizioni/2.2/"
-    xmlns:akn="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD13"
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:h="http://www.w3.org/HTML/1998/html4"
     xmlns:cirsfid="http://www.cirsfid.unibo.it/norma/proprietario/"
-    exclude-result-prefixes="xsl nir dsp xlink h akn">
+    exclude-result-prefixes="xsl nir dsp xlink h">
     <xsl:output indent="yes"/>
     <xsl:strip-space elements="*"/>
-    <xsl:namespace-alias stylesheet-prefix="akn" result-prefix="#default"/>
 
-    <!-- Parametri dello script -->
+    <!-- - - - - - - - - - - - - -->
+    <!-- Parametri dello script  -->
+    <!-- - - - - - - - - - - - - -->
     <xsl:param name="today"/>
-    <xsl:variable name="sorgente" select="'supremaCorteDiCassazione'"/>
-    <xsl:variable name="nomeSorgente" select="'Suprema Corte Di Cassazione'"/>
 
-    <!-- Variabili usate in tutto lo script -->
+    <!-- - - - - - - - - - - - - - - - - - - -->
+    <!-- Variabili usate in tutto lo script  -->
+    <!-- - - - - - - - - - - - - - - - - - - -->
+
+    <!-- Identifica la sorgente del documento --> 
+    <!-- Questa euristica non e' completamente corretta: sarebbe meglio avere un parametro allo script -->
+    <xsl:variable name="sorgente">
+        <xsl:choose>
+            <xsl:when test="contains(//nir:urn/@valore, 'urn:nir:regione.piemonte:')">
+                <xsl:value-of select="'consiglioRegionalePiemonte'"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="'supremaCorteDiCassazione'"/>
+            </xsl:otherwise>
+        </xsl:choose>        
+    </xsl:variable>
+    <xsl:variable name="nomeSorgente">
+        <xsl:choose>
+            <xsl:when test="contains(//nir:urn/@valore, 'urn:nir:regione.piemonte:')">
+                <xsl:value-of select="'Consiglio Regionale Piemonte'"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="'Suprema Corte Di Cassazione'"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:variable>
+
     <!-- Parsing URN -->
     <xsl:variable name="urn_documento" select="substring-after(//nir:urn/@valore, 'urn:nir:')"/>
     <xsl:variable name="urn_emanante" select="substring-before($urn_documento, ':')"/>
@@ -38,15 +62,19 @@
     <xsl:variable name="uri_expression" select="concat($uri_work, '/ita@', $urn_date)"/>
     <xsl:variable name="uri_manifestation" select="concat($uri_expression, '/main.xml')"/>
 
+    <!-- - - - - - - -->
+    <!--- Traduzione -->
+    <!-- - - - - - - -->
+
     <!-- Radice -->
     <xsl:template match="/">
         <xsl:apply-templates select="node()"/>
     </xsl:template>
 
     <xsl:template match="nir:NIR">
-        <akn:akomaNtoso>
+        <akomaNtoso>
             <xsl:apply-templates/>
-        </akn:akomaNtoso>
+        </akomaNtoso>
     </xsl:template>
 
     <!-- Tipi documento -->
@@ -55,42 +83,48 @@
                          nir:RegioDecreto | nir:Dpr | nir:Dpcm | nir:LeggeRegionale |
                          nir:AttoDiAuthority | nir:DecretoMinisterialeNN |
                          nir:DprNN | nir:DpcmNN">
-        <akn:act>
-            <xsl:if test="//nir:mTipodoc">
-                <xsl:attribute name="name">
-                    <!-- TODO: Normalizza -->
-                    <!-- TODO: Forse conviene fare un controllo su un dizionario -->
-                    <xsl:value-of select="//nir:mTipodoc/@valore" />
-                </xsl:attribute>
-            </xsl:if>
+        <act>
+            <xsl:call-template name="insertRootName"/>
             <xsl:apply-templates/>
             <xsl:call-template name="generaConclusioni" />
-        </akn:act>
+        </act>
     </xsl:template>
 
+
     <xsl:template match="nir:DocumentoNIR | nir:Comunicato">
-        <akn:doc>
-            <xsl:if test="//nir:mTipodoc">
-                <xsl:attribute name="name">
+        <doc>
+            <xsl:call-template name="insertRootName"/>
+            <xsl:apply-templates/>
+            <xsl:call-template name="generaConclusioni" />
+        </doc>
+    </xsl:template>
+
+    <!-- Insert @name attribute taking it from //nir:mTipodoc or //nir:NIR/* -->
+    <xsl:template name="insertRootName">
+        <xsl:attribute name="name">
+            <xsl:choose>
+                <xsl:when test="//nir:mTipodoc/@valore">
                     <!-- TODO: Normalizza -->
                     <!-- TODO: Forse conviene fare un controllo su un dizionario -->
                     <xsl:value-of select="//nir:mTipodoc/@valore" />
-                </xsl:attribute>
-            </xsl:if>
-            <xsl:apply-templates/>
-            <xsl:call-template name="generaConclusioni" />
-        </akn:doc>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="name(//nir:NIR/*)" />
+                </xsl:otherwise>
+            </xsl:choose>
+
+        </xsl:attribute>
     </xsl:template>
 
     <xsl:template match="nir:DocArticolato | nir:SemiArticolato">
-        <akn:doc>
+        <doc>
             <xsl:text>TODO: DocArticolato/SemiArticolato</xsl:text>
-        </akn:doc>
+        </doc>
     </xsl:template>
 
     <!-- Meta -->
     <xsl:template match="nir:meta">
-        <akn:meta>
+        <meta>
             <xsl:call-template name="generaIdentification"/>                   <!-- Identification -->
             <xsl:apply-templates select="nir:descrittori/nir:pubblicazione"/>  <!-- Publication -->
             <xsl:apply-templates select="nir:descrittori/nir:materie"/>        <!-- Classification -->
@@ -100,12 +134,14 @@
             <!-- TemporalData -->
             <xsl:call-template name="generaReferences"/>                       <!-- References -->
             <xsl:apply-templates select="nir:redazionale"/>                    <!-- Notes -->
-            <xsl:apply-templates select="nir:inquadramento |                       
+            <xsl:apply-templates select="//nir:meta/*[namespace-uri()!='http://www.normeinrete.it/nir/2.2/']|
+                                         //nir:meta/nir:descrittori/*[namespace-uri()!='http://www.normeinrete.it/nir/2.2/']|
+                                         nir:inquadramento |                       
                                          nir:lavoripreparatori | 
                                          nir:altro | 
                                          nir:proprietario"/>                   <!-- Proprietary -->
             <!-- Presentation -->
-        </akn:meta>
+        </meta>
     </xsl:template>
 
     <xsl:template match="nir:inlinemeta">
@@ -113,98 +149,103 @@
     </xsl:template>
     
     <xsl:template name="generaIdentification">
-        <akn:identification source="#{$sorgente}">
-            <akn:FRBRWork>
-                <akn:FRBRthis value="{$uri_work}/main"/>
-                <akn:FRBRuri value="{$uri_work}"/>
+        <identification source="#{$sorgente}">
+            <FRBRWork>
+                <FRBRthis value="{$uri_work}/main"/>
+                <FRBRuri value="{$uri_work}"/>
 
-                <!-- Aggiungi alias se presenti -->
+                <!-- Alias a URN NIR -->
+                <xsl:if test="//nir:urn/@valore">
+                    <FRBRalias value="{//nir:urn/@valore}" name="urn:nir"/>
+                </xsl:if>
+                <!-- Aggiungi gli altri alias se presenti -->
                 <xsl:for-each select="//nir:descrittori/nir:alias">
                     <!-- TODO: elimina name="nir" una volta che avremo la conversione -->
-                    <akn:FRBRalias name="nir">
+                    <FRBRalias name="nir">
                         <xsl:attribute name="value">
                             <xsl:call-template name="convertiURN">
                                 <xsl:with-param name="urn" select="@valore"/>
                             </xsl:call-template>
                         </xsl:attribute>
-                    </akn:FRBRalias>
+                    </FRBRalias>
                 </xsl:for-each>
 
                 <!-- Indica la data -->
-                <akn:FRBRdate name="Enactment" date="{$urn_date}"/>
+                <FRBRdate name="Enactment" date="{$urn_date}"/>
 
                 <!-- Autore -->
-                <akn:FRBRauthor href="#emanante" as="#author"/>
+                <FRBRauthor href="#emanante" as="#author"/>
 
                 <!-- Nazione -->
-                <akn:FRBRcountry value="it"/>
+                <FRBRcountry value="it"/>
 
                 <!-- Indica tipo documento -->
                 <xsl:if test="//nir:mTipodoc">
-                    <akn:FRBRname value="{//nir:mTipodoc/@valore}"/>
+                    <FRBRname value="{//nir:mTipodoc/@valore}"/>
                 </xsl:if>
 
                 <!-- Indica se e' normativa -->
                 <xsl:if test="//nir:infodoc/@normativa = 'si'">
-                    <akn:FRBRprescriptive value="true"/>
+                    <FRBRprescriptive value="true"/>
                 </xsl:if>
                 <xsl:if test="//nir:infodoc/@normativa = 'no'">
-                    <akn:FRBRprescriptive value="false"/>
+                    <FRBRprescriptive value="false"/>
                 </xsl:if>
+
 
                 <!-- Numero del documento -->
                 <xsl:if test="//nir:mNumdoc">
-                    <akn:FRBRnumber value="{//nir:mNumdoc/@valore}"/>
+                    <FRBRnumber value="{//nir:mNumdoc/@valore}"/>
                 </xsl:if>
-            </akn:FRBRWork>
+            </FRBRWork>
 
-            <akn:FRBRExpression>
-                <akn:FRBRthis value="{$uri_expression}/main"/>
-                <akn:FRBRuri value="{$uri_expression}"/>
+            <FRBRExpression>
+                <FRBRthis value="{$uri_expression}/main"/>
+                <FRBRuri value="{$uri_expression}"/>
                 <xsl:if test="$urn_expression_date">
-                    <akn:FRBRdate date="{$urn_expression_date}" name=""/>
+                    <FRBRdate date="{$urn_expression_date}" name=""/>
                 </xsl:if>
                 <xsl:if test="not($urn_expression_date)">
-                    <akn:FRBRdate date="{$urn_date}" name=""/>
+                    <FRBRdate date="{$urn_date}" name=""/>
                 </xsl:if>
-                <akn:FRBRauthor href="#emanante" as="#author"/>
-                <akn:FRBRlanguage language="it"/>
-            </akn:FRBRExpression>
+                <FRBRauthor href="#emanante" as="#author"/>
+                <FRBRlanguage language="it"/>
+            </FRBRExpression>
 
-            <akn:FRBRManifestation>
-                <akn:FRBRthis value="{$uri_manifestation}"/>
-                <akn:FRBRuri value="{$uri_manifestation}"/>
+            <FRBRManifestation>
+                <FRBRthis value="{$uri_manifestation}"/>
+                <FRBRuri value="{$uri_manifestation}"/>
 
                 <!-- Redazione -->
-                <akn:FRBRdate name="XMLConversion" date="{$today}"/>
+                <FRBRdate name="XMLConversion" date="{$today}"/>
                 <!-- <xsl:if test="//nir:redazione[@contributo='redazione']">
-                    <akn:FRBRdate name="XMLConversion" date="substring-before(current-date(), '+')">
+                    <FRBRdate name="XMLConversion" date="substring-before(current-date(), '+')">
                         <xsl:attribute name="date">
                             <xsl:call-template name="convertiData">
                                 <xsl:with-param name="date"
                                     select="//nir:redazione[@contributo='redazione']/@norm"/>
                             </xsl:call-template>
                         </xsl:attribute>
-                    </akn:FRBRdate>
-                    <akn:FRBRauthor href="#redazione" as="#editor"/>
+                    </FRBRdate>
+                    <FRBRauthor href="#redazione" as="#editor"/>
                 </xsl:if> -->
-                <akn:FRBRauthor href="#cirsfid"/>
+                <FRBRauthor href="#cirsfid"/>
 
                 <xsl:if test="//nir:redazione[@contributo='editor']">
-                    <akn:preservation>
+                    <preservation>
                         <cirsfid:software value="{//nir:redazione[@contributo='editor']/@nome}"/>
                         <cirsfid:affiliation value="{//nir:redazione[@contributo='editor']/@url}"/>
-                    </akn:preservation>
+                    </preservation>
                 </xsl:if>
-            </akn:FRBRManifestation>
-        </akn:identification>
+            </FRBRManifestation>
+        </identification>
     </xsl:template>
 
     <xsl:template name="generaLifecycle">
         <!-- Nella convertire del lifecycle gli id vengono mantenuti -->
-        <akn:lifecycle source="#{$sorgente}">
+        <lifecycle source="#{$sorgente}">
             <xsl:for-each select="//nir:ciclodivita/nir:eventi/nir:evento">
-                <akn:eventRef eId="{@id}" source="{@fonte}">
+                <eventRef eId="{@id}" source="{@fonte}">
                     <xsl:attribute name="date">
                         <xsl:call-template name="convertiData">
                             <xsl:with-param name="date" select="@data"/>
@@ -217,64 +258,64 @@
                     <xsl:if test="@tipo = 'modifica'">
                         <xsl:attribute name="type"><xsl:text>amendment</xsl:text></xsl:attribute>
                     </xsl:if>
-                </akn:eventRef>
+                </eventRef>
             </xsl:for-each>
 
             <!-- Nel caso manchi nir:ciclodivita, inseriamo noi l'evento crazione -->
             <xsl:if test="not(//nir:ciclodivita/nir:eventi/nir:evento/@tipo='originale')">
-                <akn:eventRef eId="genEvnt" source="#genRef" type="generation">
+                <eventRef eId="genEvnt" source="#genRef" type="generation">
                     <xsl:attribute name="date">
                         <xsl:call-template name="convertiData">
                             <xsl:with-param name="date" select="//nir:entratainvigore/@norm"/>
                         </xsl:call-template>
                     </xsl:attribute>
-                </akn:eventRef>
+                </eventRef>
             </xsl:if>
-        </akn:lifecycle>
+        </lifecycle>
     </xsl:template>
 
     <xsl:template name="generaReferences">
-        <akn:references source="#{$sorgente}">
+        <references source="#{$sorgente}">
             <!-- Reference a documento originale -->
             <xsl:for-each select="//nir:ciclodivita//nir:originale">
-                <akn:original eId="{@id}" showAs="">
+                <original eId="{@id}" showAs="">
                     <xsl:attribute name="href">
                         <xsl:call-template name="convertiURN">
                             <xsl:with-param name="urn" select="@xlink:href"/>
                         </xsl:call-template>
                     </xsl:attribute>
-                </akn:original>
+                </original>
             </xsl:for-each>
 
             <!-- Nel caso manchi nir:ciclodivita, inseriamo noi l'evento crazione -->
             <xsl:if test="not(//nir:ciclodivita//nir:originale)">
-                <akn:original eId="genRef" showAs="" href="{$uri_work}"/>
+                <original eId="genRef" showAs="" href="{$uri_work}"/>
             </xsl:if>
 
             <!-- Reference a modifiche attive -->
             <xsl:for-each select="//nir:ciclodivita//nir:attiva">
-                <akn:activeRef eId="{@id}" showAs="">
+                <activeRef eId="{@id}" showAs="">
                     <xsl:attribute name="href">
                         <xsl:call-template name="convertiURN">
                             <xsl:with-param name="urn" select="@xlink:href"/>
                         </xsl:call-template>
                     </xsl:attribute>
-                </akn:activeRef>
+                </activeRef>
             </xsl:for-each>
 
             <!-- Reference a modifiche passive -->
             <xsl:for-each select="//nir:ciclodivita//nir:passiva">
-                <akn:passiveRef eId="{@id}" showAs="">
+                <passiveRef eId="{@id}" showAs="">
                     <xsl:attribute name="href">
                         <xsl:call-template name="convertiURN">
                             <xsl:with-param name="urn" select="@xlink:href"/>
                         </xsl:call-template>
                     </xsl:attribute>
-                </akn:passiveRef>
+                </passiveRef>
             </xsl:for-each>
 
             <!-- Reference a sorgente documento -->
-            <akn:TLCOrganization eId="{$sorgente}" href="/ontology/organizations/it/{$sorgente}" showAs="{$nomeSorgente}"/>
+            <TLCOrganization eId="{$sorgente}" href="/ontology/organizations/it/{$sorgente}" showAs="{$nomeSorgente}"/>
 
             <!-- Reference all'emanante -->
             <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
@@ -291,83 +332,77 @@
                 translate(substring($amanante, 1, 1), $smallcase, $uppercase),
                 translate(substring($amanante, 2), ' ', '_')
             )"/>
-            <akn:TLCOrganization eId="emanante" href="/ontology/organizations/it/{$idEmanante}" showAs="{$amanante}"/>
+            <TLCOrganization eId="emanante" href="/ontology/organizations/it/{$idEmanante}" showAs="{$amanante}"/>
 
             <!-- Redazione -->
             <xsl:if test="//nir:redazione[@contributo='redazione']">
-                <akn:TLCOrganization eId="redazione" href="{//nir:redazione[@contributo='redazione']/@url}" 
+                <TLCOrganization eId="redazione" href="{//nir:redazione[@contributo='redazione']/@url}" 
                     showAs="{//nir:redazione[@contributo='redazione']/@nome}"/>
             </xsl:if>
 
             <!-- Allegati -->
             <xsl:for-each select="//nir:haallegato">
-                <akn:hasAttachment href="{@xlink:href}" showAs=""/>
+                <hasAttachment href="{@xlink:href}" showAs=""/>
             </xsl:for-each>
             <xsl:for-each select="//nir:allegatodi">
-                <akn:attachmentOf href="{@xlink:href}" showAs=""/>
+                <attachmentOf href="{@xlink:href}" showAs=""/>
             </xsl:for-each>
 
             <!-- Giurisprudenza -->
             <xsl:for-each select="//nir:giurisprudenza">
-                <akn:jurisprudence href="{@xlink:href}" showAs=""/>
+                <jurisprudence href="{@xlink:href}" showAs=""/>
             </xsl:for-each>
 
             <!-- Firme -->
             <xsl:for-each select="//nir:firma">
                 <xsl:if test="not(@tipo=preceding::nir:firma/@tipo)">
-                    <akn:TLCConcept eId="{@tipo}" href="/ontology/concepts/it/{@tipo}" showAs="{@tipo}"/>
+                    <TLCConcept eId="{@tipo}" href="/ontology/concepts/it/{@tipo}" showAs="{@tipo}"/>
                 </xsl:if>
             </xsl:for-each>
 
             <!-- Cirsfid -->
-            <akn:TLCOrganization eId="cirsfid" href="http://www.cirsfid.unibo.it/" showAs="CIRSFID"/>
+            <TLCOrganization eId="cirsfid" href="http://www.cirsfid.unibo.it/" showAs="CIRSFID"/>
 
             <!-- Riferimenti esterni -->
 
-            <!-- A quanto pare non e' necessario (e c'era un bug nella numerazione)
             <xsl:for-each select="//nir:rif">
                 <xsl:variable name="href" select="@xlink:href"/>
-                <xsl:variable name="n" select="count(./preceding::nir:rif[@xlink:href != $href])+1"/>
+                <xsl:variable name="n" select="count(./preceding::nir:rif)+1"/>
                 <xsl:if test="not(./preceding::nir:rif[@xlink:href = $href])">
-                    <akn:TLCReference eId="rif{$n}" showAs="">
-                        <xsl:attribute name="href">
-                            <xsl:call-template name="convertiURN">
-                                <xsl:with-param name="urn" select="@xlink:href"/>
-                            </xsl:call-template>
-                        </xsl:attribute>
-                    </akn:TLCReference>
+                    <TLCReference eId="rif{$n}" showAs="NIR" name="urn:nir" href="{$href}"/>
                 </xsl:if>
             </xsl:for-each>
 
+            <!-- Todo: aggiusta anche questo..
             <xsl:for-each select="//nir:irif">
                 <xsl:variable name="href" select="@xlink:href"/>
                 <xsl:variable name="start" select="count(./preceding::nir:irif[@xlink:href != $href])+1"/>
                 <xsl:variable name="finoa" select="@finoa"/>
                 <xsl:variable name="end" select="count(./preceding::nir:irif[@finoa != $finoa])+1"/>
                 <xsl:if test="not(./preceding::nir:irif[@xlink:href = $href])">
-                    <akn:TLCReference eId="irif_s{$start}" showAs="">
+                    <TLCReference eId="irif_s{$start}" showAs="">
                         <xsl:attribute name="href">
                             <xsl:call-template name="convertiURN">
                                 <xsl:with-param name="urn" select="@xlink:href"/>
                             </xsl:call-template>
                         </xsl:attribute>
-                    </akn:TLCReference>
+                    </TLCReference>
                 </xsl:if>
                 <xsl:if test="not(./preceding::nir:irif[@finoa = $finoa])">
-                    <akn:TLCReference eId="irif_e{$end}" showAs="">
+                    <TLCReference eId="irif_e{$end}" showAs="">
                         <xsl:attribute name="href">
                             <xsl:call-template name="convertiURN">
                                 <xsl:with-param name="urn" select="@finoa"/>
                             </xsl:call-template>
                         </xsl:attribute>
-                    </akn:TLCReference>
+                    </TLCReference>
                 </xsl:if>
             </xsl:for-each> -->
-        </akn:references>
+        </references>
     </xsl:template>
 
     <xsl:template match="nir:descrittori/nir:pubblicazione">
-        <akn:publication>
+        <publication>
             <xsl:if test="@norm">
                 <xsl:attribute name="date">
                     <xsl:call-template name="convertiData">
@@ -386,20 +421,20 @@
                     <xsl:value-of select="@num"/>
                 </xsl:attribute>
             </xsl:if>
-        </akn:publication>
+        </publication>
     </xsl:template>
 
     <xsl:template match="nir:descrittori/nir:materie">
-        <akn:classification source="#{$sorgente}">
+        <classification source="#{$sorgente}">
             <xsl:for-each select="nir:materia">
-                <akn:keyword dictionary="#tesauroCassazione" showAs="{@valore}" value="{@valore}"/>
+                <keyword dictionary="#tesauroCassazione" showAs="{@valore}" value="{@valore}"/>
             </xsl:for-each>
-        </akn:classification>
+        </classification>
     </xsl:template>
 
     <xsl:template match="nir:inquadramento">
         <xsl:if test="nir:oggetto">
-            <akn:proprietary source="#{$sorgente}">
+            <proprietary source="#{$sorgente}">
                 <cirsfid:oggetto>
                     <xsl:for-each select="nir:oggetto/*">
                         <xsl:element name="cirsfid:{name()}">
@@ -409,10 +444,10 @@
                         </xsl:element>
                     </xsl:for-each>
                 </cirsfid:oggetto>
-            </akn:proprietary>
+            </proprietary>
         </xsl:if>
         <xsl:if test="nir:proponenti">
-            <akn:proprietary source="#{$sorgente}">
+            <proprietary source="#{$sorgente}">
                 <cirsfid:proponenti>
                     <xsl:for-each select="nir:proponenti/*">
                         <xsl:element name="cirsfid:{name()}">
@@ -422,39 +457,42 @@
                         </xsl:element>
                     </xsl:for-each>
                 </cirsfid:proponenti>
-            </akn:proprietary>
+            </proprietary>
         </xsl:if>
     </xsl:template>
 
-    <xsl:template match="nir:lavoripreparatori | nir:altro | nir:proprietario">
-        <akn:proprietary>
+    <xsl:template match="nir:lavoripreparatori |
+                         nir:altro |
+                         nir:proprietario |
+                         nir:meta//*[namespace-uri()!='http://www.normeinrete.it/nir/2.2/']">
+        <proprietary>
             <xsl:attribute name="source">
                 <xsl:value-of select="$sorgente"/>
             </xsl:attribute>
             <xsl:apply-templates select="." mode="copyEverything"/>
-        </akn:proprietary>
+        </proprietary>
     </xsl:template>
 
     <xsl:template match="nir:redazionale">
         <xsl:if test="nir:nota">
-            <akn:notes>
+            <notes>
                 <xsl:attribute name="source">
                     <xsl:value-of select="$sorgente"/>
                 </xsl:attribute>
                 <xsl:for-each select="nir:nota">
-                    <akn:note eId="{@id}">
+                    <note eId="{@id}">
                         <xsl:apply-templates select="*"/>
-                    </akn:note>
+                    </note>
                 </xsl:for-each>
-            </akn:notes>
+            </notes>
         </xsl:if>
         <xsl:if test="nir:altro">
-            <akn:proprietary>
+            <proprietary>
                 <xsl:attribute name="source">
                     <xsl:value-of select="$sorgente"/>
                 </xsl:attribute>
                 <xsl:apply-templates select="nir:altro/node()" mode="copyEverything"/>
-            </akn:proprietary>
+            </proprietary>
         </xsl:if>
     </xsl:template>
 
@@ -465,25 +503,25 @@
     </xsl:template>
 
     <xsl:template name="generaAnalysis">
-        <akn:analysis source="#{$sorgente}">
+        <analysis source="#{$sorgente}">
             <xsl:if test="//nir:modificheattive">
-                <akn:activeModifications>
+                <activeModifications>
                     <!-- Todo: genera id? -->
                     <xsl:apply-templates select="//nir:modificheattive"/>
-                </akn:activeModifications>
+                </activeModifications>
             </xsl:if>
             <xsl:if test="//nir:modifichepassive">
-                <akn:passiveModifications>
+                <passiveModifications>
                     <!-- Todo: genera id? -->
                     <xsl:apply-templates select="//nir:modifichepassive"/>
-                </akn:passiveModifications>
+                </passiveModifications>
             </xsl:if>
             <xsl:apply-templates select="//nir:regole"/>
-        </akn:analysis>
+        </analysis>
     </xsl:template>
 
     <xsl:template match="dsp:norma">
-        <akn:destination>
+        <destination>
             <xsl:choose>
                 <xsl:when test="dsp:subarg/cirsfid:sub">
                     <xsl:attribute name="href">
@@ -510,7 +548,7 @@
                     </xsl:attribute>
                 </xsl:otherwise>
             </xsl:choose>
-        </akn:destination>
+        </destination>
     </xsl:template>
 
     <xsl:template match="dsp:termine      | dsp:condizione    | dsp:posizione   |
@@ -535,281 +573,281 @@
                          dsp:azione       | dsp:pena          |
 
                          nir:regole">
-        <!-- <akn:proprietary>
+        <!-- <proprietary>
             <xsl:apply-templates select="." mode="copyEverything"/>
-        </akn:proprietary> -->
+        </proprietary> -->
     </xsl:template>
 
     <xsl:template match="nir:modificheattive/*/dsp:pos | nir:modifichepassive/*/dsp:pos">
         <xsl:variable name="oId" select="substring-after(@xlink:href, '#')"/>
-        <akn:source>
+        <source>
             <xsl:attribute name="href">#<xsl:apply-templates mode="genera_id" select="//node()[@id = $oId]"/></xsl:attribute>
             <xsl:apply-templates />
-        </akn:source>
+        </source>
     </xsl:template>
 
     <xsl:template match="dsp:abrogazione">
-        <akn:textualMod type="repeal">
+        <textualMod type="repeal">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:textualMod>
+        </textualMod>
     </xsl:template>
 
     <xsl:template match="dsp:sostituzione">
-        <akn:textualMod type="substitution">
+        <textualMod type="substitution">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:textualMod>
+        </textualMod>
     </xsl:template>
 
     <xsl:template match="dsp:integrazione">
-        <akn:textualMod type="insertion">
+        <textualMod type="insertion">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:textualMod>
+        </textualMod>
     </xsl:template>
 
     <xsl:template match="dsp:ricollocazione">
-        <akn:textualMod type="renumbering">
+        <textualMod type="renumbering">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:textualMod>
+        </textualMod>
     </xsl:template>
 
     <xsl:template match="dsp:intautentica">
-        <akn:meaningMod type="authenticInterpretation">
+        <meaningMod type="authenticInterpretation">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:meaningMod>
+        </meaningMod>
     </xsl:template>
 
     <xsl:template match="dsp:variazione">
-        <akn:meaningMod type="variation">
+        <meaningMod type="variation">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:meaningMod>
+        </meaningMod>
     </xsl:template>
 
     <xsl:template match="dsp:modtermini">
-        <akn:meaningMod type="termModification">
+        <meaningMod type="termModification">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:meaningMod>
+        </meaningMod>
     </xsl:template>
 
     <xsl:template match="dsp:vigenza">
-        <akn:forceMod type="entryIntoForce">
+        <forceMod type="entryIntoForce">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:forceMod>
+        </forceMod>
     </xsl:template>
 
     <xsl:template match="dsp:annullamento">
-        <akn:forceMod type="uncostitutionality">
+        <forceMod type="uncostitutionality">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:forceMod>
+        </forceMod>
     </xsl:template>
 
     <xsl:template match="dsp:proroga">
-        <akn:efficacyMod type="prorogationOfEfficacy">
+        <efficacyMod type="prorogationOfEfficacy">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:efficacyMod>
+        </efficacyMod>
     </xsl:template>
 
     <xsl:template match="dsp:reviviscenza">
     </xsl:template>
 
     <xsl:template match="dsp:retroattivita">
-        <akn:efficacyMod type="retroactivity">
+        <efficacyMod type="retroactivity">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:efficacyMod>
+        </efficacyMod>
     </xsl:template>
 
     <xsl:template match="dsp:ultrattivita">
-        <akn:efficacyMod type="extraEfficacy">
+        <efficacyMod type="extraEfficacy">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:efficacyMod>
+        </efficacyMod>
     </xsl:template>
 
     <xsl:template match="dsp:inapplicazione">
-        <akn:efficacyMod type="inapplication">
+        <efficacyMod type="inapplication">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:efficacyMod>
+        </efficacyMod>
     </xsl:template>
 
     <xsl:template match="dsp:deroga">
-        <akn:scopeMod type="exceptionOfScope" incomplete="true">
+        <scopeMod type="exceptionOfScope" incomplete="true">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:scopeMod>
+        </scopeMod>
     </xsl:template>
 
     <xsl:template match="dsp:estensione">
-        <akn:scopeMod type="extensionOfScope">
+        <scopeMod type="extensionOfScope">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:scopeMod>
+        </scopeMod>
     </xsl:template>
 
     <xsl:template match="dsp:estensione">
-        <akn:scopeMod type="extensionOfScope" incomplete="true">
+        <scopeMod type="extensionOfScope" incomplete="true">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:scopeMod>
+        </scopeMod>
     </xsl:template>
 
     <xsl:template match="dsp:recepisce">
-        <akn:legalSystemMod type="application">
+        <legalSystemMod type="application">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:legalSystemMod>
+        </legalSystemMod>
     </xsl:template>
 
     <xsl:template match="dsp:attua">
-        <akn:legalSystemMod type="implementation">
+        <legalSystemMod type="implementation">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:legalSystemMod>
+        </legalSystemMod>
     </xsl:template>
 
     <xsl:template match="dsp:ratifica">
-        <akn:legalSystemMod type="ratification">
+        <legalSystemMod type="ratification">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:legalSystemMod>
+        </legalSystemMod>
     </xsl:template>
 
     <xsl:template match="dsp:attuadelega">
-        <akn:legalSystemMod type="legislativeDelegation">
+        <legalSystemMod type="legislativeDelegation">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:legalSystemMod>
+        </legalSystemMod>
     </xsl:template>
 
     <xsl:template match="dsp:attuadelegifica">
-        <akn:legalSystemMod type="deregulation">
+        <legalSystemMod type="deregulation">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:legalSystemMod>
+        </legalSystemMod>
     </xsl:template>
 
     <xsl:template match="dsp:converte">
-        <akn:legalSystemMod type="conversion">
+        <legalSystemMod type="conversion">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:legalSystemMod>
+        </legalSystemMod>
     </xsl:template>
 
     <xsl:template match="dsp:reitera">
-        <akn:legalSystemMod type="reiteration">
+        <legalSystemMod type="reiteration">
             <xsl:apply-templates select="./dsp:*[not(name() = 'dsp:novella') and not(name() = 'dsp:novellando')]"/>
             <xsl:apply-templates select="dsp:novellando"/>
             <xsl:apply-templates select="dsp:novella"/>
-        </akn:legalSystemMod>
+        </legalSystemMod>
     </xsl:template>
 
     <xsl:template match="dsp:modifica">
     </xsl:template>
 
     <xsl:template match="dsp:decadimento">
-        <akn:legalSystemMod type="expiration">
+        <legalSystemMod type="expiration">
             <xsl:apply-templates />
-        </akn:legalSystemMod>
+        </legalSystemMod>
     </xsl:template>
 
     <xsl:template match="dsp:novella">
         <xsl:variable name="oId" select="substring-after(dsp:pos/@xlink:href, '#')"/>
-        <akn:new>
+        <new>
             <xsl:attribute name="href">
                 <xsl:apply-templates mode="genera_id" select="//node()[@id = $oId]"/>
             </xsl:attribute>
             <xsl:apply-templates />
-        </akn:new>
+        </new>
     </xsl:template>
 
     <xsl:template match="dsp:novellando">
         <xsl:variable name="oId" select="substring-after(dsp:pos/@xlink:href, '#')"/>
-        <akn:old>
+        <old>
             <xsl:attribute name="href">
                 <xsl:apply-templates mode="genera_id" select="//node()[@id = $oId]"/>
             </xsl:attribute>
             <xsl:apply-templates />
-        </akn:old>
+        </old>
     </xsl:template>
 
     <!-- Intestazione -->
     <xsl:template match="nir:intestazione">
-        <akn:preface>
+        <preface>
             <xsl:apply-templates select="." mode="genera_eId"/>
-            <akn:p>
+            <p>
                 <xsl:apply-templates select="node() | @*"/>
-            </akn:p>
-        </akn:preface>
+            </p>
+        </preface>
     </xsl:template>
 
     <xsl:template match="nir:intestazione//nir:tipoDoc">
-        <akn:docType>
+        <docType>
             <xsl:apply-templates/>
-        </akn:docType>
+        </docType>
     </xsl:template>
 
     <xsl:template match="nir:intestazione//nir:numDoc">
-        <akn:docNumber>
+        <docNumber>
             <xsl:apply-templates/>
-        </akn:docNumber>
+        </docNumber>
     </xsl:template>
 
     <xsl:template match="nir:intestazione//nir:titoloDoc">
-        <akn:docTitle>
+        <docTitle>
             <xsl:apply-templates select="." mode="genera_eId"/>
             <xsl:apply-templates/>
             <xsl:if test=". = //nir:titoloDoc[1]">
                 <xsl:for-each select="//nir:avvertenza">
-                    <akn:authorialNote>
+                    <authorialNote>
                         <xsl:apply-templates/>
-                    </akn:authorialNote>
+                    </authorialNote>
                 </xsl:for-each>
             </xsl:if>
-        </akn:docTitle>
+        </docTitle>
     </xsl:template>
 
     <xsl:template match="nir:intestazione//nir:emanante">
-        <akn:docAuthority>
+        <docAuthority>
             <xsl:apply-templates/>
-        </akn:docAuthority>
+        </docAuthority>
     </xsl:template>
 
     <xsl:template match="nir:intestazione//nir:dataDoc">
-        <akn:docDate>
-            <xsl:apply-templates select="*|@*"/>
-        </akn:docDate>
+        <docDate>
+            <xsl:apply-templates select="node()|@*"/>
+        </docDate>
     </xsl:template>
 
     <xsl:template match="nir:intestazione//nir:dataDoc/@norm">
@@ -822,32 +860,32 @@
 
     <!-- Preambolo -->
     <xsl:template match="nir:formulainiziale">
-        <akn:preamble>
+        <preamble>
             <xsl:apply-templates select="." mode="genera_eId"/>
             <xsl:choose>
                 <xsl:when test="nir:preambolo">
-                    <akn:p>
+                    <p>
                         <xsl:apply-templates select="nir:preambolo/preceding-sibling::node()"/>
-                    </akn:p>
+                    </p>
                     <xsl:apply-templates select="nir:preambolo"/>
-                    <akn:p>
+                    <p>
                         <xsl:apply-templates select="nir:preambolo/following-sibling::node()"/>
-                    </akn:p>                    
+                    </p>                    
                 </xsl:when>
                 <xsl:otherwise>
-                    <akn:p>
+                    <p>
                         <xsl:apply-templates />
-                    </akn:p>
+                    </p>
                 </xsl:otherwise>
             </xsl:choose>
-        </akn:preamble>
+        </preamble>
     </xsl:template>
 
     <xsl:template match="nir:preambolo">
-        <akn:container name="preambolo_nir">
+        <container name="preambolo_nir">
             <xsl:apply-templates select="." mode="genera_eId"/>
             <xsl:apply-templates />
-        </akn:container>
+        </container>
     </xsl:template>
 
     <!-- Articolato -->
@@ -855,14 +893,14 @@
         <xsl:choose>
             <xsl:when test="//nir:DocumentoNIR  | //nir:Comunicato |
                             //nir:DocArticolato | //nir:SemiArticolato">
-                <akn:mainBody>
+                <mainBody>
                     <xsl:apply-templates/>
-                </akn:mainBody>
+                </mainBody>
             </xsl:when>
             <xsl:otherwise>
-                <akn:body>
+                <body>
                     <xsl:apply-templates/>
-                </akn:body>
+                </body>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -874,165 +912,167 @@
 
     <xsl:template name="generaConclusioni">
         <xsl:if test="//nir:conclusione | //nir:formulafinale">
-            <akn:conclusions>
+            <conclusions>
                 <xsl:apply-templates select="//nir:conclusione | //nir:formulafinale" mode="conclusioni"/>
-            </akn:conclusions>
+            </conclusions>
         </xsl:if>
     </xsl:template>
     
     <xsl:template match="nir:formulafinale" mode="conclusioni">
-        <akn:container name="formulafinale" eId="comp1-sgn1" class="right">
-            <akn:p>
+        <container name="formulafinale" eId="comp1-sgn1" class="right">
+            <p>
                 <xsl:apply-templates/>
-            </akn:p>
-        </akn:container>
+            </p>
+        </container>
     </xsl:template>
     
     <xsl:template match="nir:conclusione" mode="conclusioni">
-        <akn:p><xsl:apply-templates/></akn:p>
+        <p><xsl:apply-templates/></p>
     </xsl:template>
 
     <!-- Conversione elementi interni e gerarchia -->
     <xsl:template match="nir:decorazione/nir:rango">
-        <akn:decoration>
+        <decoration>
             <xsl:copy-of select="@tipo"/>
-        </akn:decoration>
+        </decoration>
     </xsl:template>
 
     <xsl:template match="nir:libro">
-        <akn:book>
+        <book>
             <xsl:apply-templates select="." mode="genera_eId"/>
             <xsl:apply-templates/>
-        </akn:book>
+        </book>
     </xsl:template>
 
     <xsl:template match="nir:parte">
-        <akn:part>
+        <part>
             <xsl:apply-templates select="." mode="genera_eId"/>
             <xsl:apply-templates/>
-        </akn:part>
+        </part>
     </xsl:template>
 
     <xsl:template match="nir:titolo">
-        <akn:title>
+        <title>
             <xsl:apply-templates select="." mode="genera_eId"/>
             <xsl:apply-templates/>
-        </akn:title>
+        </title>
     </xsl:template>
 
     <xsl:template match="nir:capo">
-        <akn:chapter>
+        <chapter>
             <xsl:apply-templates select="." mode="genera_eId"/>
             <xsl:apply-templates/>
-        </akn:chapter>
+        </chapter>
     </xsl:template>
 
     <xsl:template match="nir:sezione">
-        <akn:section>
+        <section>
             <xsl:apply-templates select="." mode="genera_eId"/>
             <xsl:apply-templates/>
-        </akn:section>
+        </section>
     </xsl:template>
 
     <xsl:template match="nir:paragrafo">
-        <akn:paragraph>
+        <paragraph>
             <xsl:apply-templates select="." mode="genera_eId"/>
             <xsl:apply-templates select="node()"/>
-        </akn:paragraph>
+        </paragraph>
     </xsl:template>
 
     <xsl:template match="nir:articolo">
-        <akn:article>
+        <article>
             <xsl:apply-templates select="." mode="genera_eId"/>
             <xsl:apply-templates select="node()"/>
-        </akn:article>
+        </article>
     </xsl:template>
 
     <xsl:template match="nir:rubrica">
         <!-- Come scelgo se mettere subheading? -->
-        <akn:heading>
+        <heading>
             <xsl:apply-templates select="." mode="genera_eId"/>
             <xsl:apply-templates/>
-        </akn:heading>
+        </heading>
     </xsl:template>
 
     <xsl:template match="nir:num">
-        <akn:num>
-            <xsl:apply-templates/>
-        </akn:num>
+        <xsl:if test=".//node()">
+            <num>
+                <xsl:apply-templates/>
+            </num>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template match="nir:comma">
-        <akn:paragraph>
+        <paragraph>
             <xsl:apply-templates select="." mode="genera_eId"/>
             <xsl:apply-templates select="node()"/>
-        </akn:paragraph>
+        </paragraph>
     </xsl:template>
 
     <xsl:template match="nir:el[name(./preceding-sibling::node()[1]) != 'el'] |
                          nir:en[name(./preceding-sibling::node()[1]) != 'en'] |
                          nir:ep[name(./preceding-sibling::node()[1]) != 'ep']">
-        <akn:list>
+        <list>
             <xsl:variable name="current" select="."/>
             <xsl:for-each select="following-sibling::node()[name() = name($current)]">
-                <akn:point>
+                <point>
                     <xsl:apply-templates select="." mode="genera_eId"/>
                     <xsl:apply-templates select="node()"/>
-                </akn:point>
+                </point>
             </xsl:for-each>
-        </akn:list>
+        </list>
     </xsl:template>
 
     <xsl:template match="nir:el | nir:en | nir:ep">
     </xsl:template>
 
     <xsl:template match="nir:corpo">
-        <akn:content>
+        <content>
             <xsl:apply-templates select="." mode="genera_eId"/>
-            <akn:p>
+            <p>
                 <xsl:apply-templates/>
-            </akn:p>
-        </akn:content>
+            </p>
+        </content>
     </xsl:template>
 
     <xsl:template match="nir:alinea">
-        <akn:intro>
+        <intro>
             <xsl:apply-templates select="." mode="genera_eId"/>
-            <akn:p>
+            <p>
                 <xsl:apply-templates/>
-            </akn:p>
-        </akn:intro>
+            </p>
+        </intro>
     </xsl:template>
 
     <xsl:template match="nir:coda">
-        <akn:wrapUp>
-            <akn:p>
+        <wrapUp>
+            <p>
                 <xsl:apply-templates/>
-            </akn:p>
-        </akn:wrapUp>
+            </p>
+        </wrapUp>
     </xsl:template>
 
     <xsl:template match="nir:dataeluogo">
-        <akn:date>
+        <date>
             <xsl:attribute name="date">
                 <xsl:call-template name="convertiData">
                     <xsl:with-param name="date" select="@norm"/>
                 </xsl:call-template>
             </xsl:attribute>
             <xsl:apply-templates select="node()"/>
-        </akn:date>
+        </date>
     </xsl:template>
 
     <xsl:template match="nir:firma">
-        <akn:signature refersTo="#{@tipo}">
+        <signature refersTo="#{@tipo}">
             <xsl:apply-templates select="node()"/>
-        </akn:signature>
+        </signature>
     </xsl:template>
 
     <xsl:template match="nir:annessi">
-        <akn:attachments>
+        <attachments>
             <xsl:apply-templates/>
-        </akn:attachments>
+        </attachments>
     </xsl:template>
 
     <xsl:template match="nir:elencoAnnessi">
@@ -1041,31 +1081,34 @@
 
     <xsl:template match="nir:annesso">
         <!-- TODO: qui c'e' molto da fare 
-        <akn:attachments>
+        <attachments>
             <xsl:apply-templates/>
-        </akn:attachments>
+        </attachments>
         -->
     </xsl:template>
 
     <xsl:template match="nir:rif">
-        <akn:ref>
+        <xsl:variable name="href" select="@xlink:href"/>
+        <xsl:variable name="firstSimilar" select="//nir:rif[@xlink:href=$href][1]"/>
+        <xsl:variable name="n" select="count($firstSimilar/preceding::nir:rif)+1"/>
+        <ref refersTo="#rif{$n}">
             <xsl:attribute name="href">
                 <xsl:call-template name="convertiURN">
                     <xsl:with-param name="urn" select="@xlink:href"/>
                 </xsl:call-template>
             </xsl:attribute>
             <xsl:apply-templates select="node()"/>
-        </akn:ref>
+        </ref>
     </xsl:template>
 
     <xsl:template match="nir:mrif">
-        <akn:mref>
+        <mref>
             <xsl:apply-templates select="node()"/>
-        </akn:mref>
+        </mref>
     </xsl:template>
 
     <xsl:template match="nir:irif">
-        <akn:rref>
+        <rref>
             <xsl:attribute name="from">
                 <xsl:call-template name="convertiURN">
                     <xsl:with-param name="urn" select="@xlink:href"/>
@@ -1077,25 +1120,25 @@
                 </xsl:call-template>
             </xsl:attribute>
             <xsl:apply-templates/>
-        </akn:rref>
+        </rref>
     </xsl:template>
 
     <xsl:template match="nir:mod">
-        <akn:mod>
+        <mod>
             <xsl:apply-templates select="." mode="genera_eId"/>
             <xsl:apply-templates/>
-        </akn:mod>
+        </mod>
     </xsl:template>
 
     <xsl:template match="nir:mmod">
-        <akn:mmod>
+        <mmod>
             <xsl:apply-templates select="." mode="genera_eId"/>
             <xsl:apply-templates/>
-        </akn:mmod>
+        </mmod>
     </xsl:template>
 
     <xsl:template match="nir:imod">
-        <akn:rmod>
+        <rmod>
             <xsl:apply-templates select="." mode="genera_eId"/>
             <xsl:attribute name="from">
                 <xsl:call-template name="convertiURN">
@@ -1108,22 +1151,22 @@
                 </xsl:call-template>
             </xsl:attribute>
             <xsl:apply-templates/>
-        </akn:rmod>
+        </rmod>
     </xsl:template>
 
     <xsl:template match="nir:virgolette">
         <xsl:choose>
             <xsl:when test="@tipo = 'struttura'">
-                <akn:quotedStructure>
+                <quotedStructure>
                     <xsl:apply-templates select="." mode="genera_eId"/>
                     <xsl:apply-templates select="node()"/>
-                </akn:quotedStructure>
+                </quotedStructure>
             </xsl:when>
             <xsl:otherwise>
-                <akn:quotedText>
+                <quotedText>
                     <xsl:apply-templates select="." mode="genera_eId"/>
                     <xsl:apply-templates select="node()"/>
-                </akn:quotedText>
+                </quotedText>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -1140,114 +1183,114 @@
     </xsl:template>
 
     <xsl:template match="nir:def">
-        <akn:def>
+        <def>
             <xsl:apply-templates/>
-        </akn:def>
+        </def>
     </xsl:template>
 
     <xsl:template match="nir:atto">
-        <akn:proprietary source="#{$sorgente}">
+        <proprietary source="#{$sorgente}">
             <cirsfid:atto>
                 <xsl:apply-templates/>
             </cirsfid:atto>
-        </akn:proprietary>
+        </proprietary>
     </xsl:template>
 
     <xsl:template match="nir:data">
-        <akn:date>
+        <date>
             <xsl:attribute name="date">
                 <xsl:call-template name="convertiData">
                     <xsl:with-param name="date" select="@norm"/>
                 </xsl:call-template>
             </xsl:attribute>
             <xsl:apply-templates/>
-        </akn:date>
+        </date>
     </xsl:template>
 
     <xsl:template match="nir:soggetto">
-        <akn:person>
+        <person>
             <xsl:apply-templates/>
-        </akn:person>
+        </person>
     </xsl:template>
 
     <xsl:template match="nir:ente">
         <!-- Come uso @codice? -->
-        <akn:organization>
+        <organization>
             <xsl:apply-templates/>
-        </akn:organization>
+        </organization>
     </xsl:template>
 
     <xsl:template match="nir:luogo">
         <!-- Come uso @dove? -->
-        <akn:location>
+        <location>
             <xsl:apply-templates/>
-        </akn:location>
+        </location>
     </xsl:template>
 
     <xsl:template match="nir:importo">
-        <akn:quantity>
+        <quantity>
             <xsl:apply-templates/>
-        </akn:quantity>
+        </quantity>
     </xsl:template>
 
     <xsl:template match="nir:ndr">
-        <akn:noteRef href="{@num}">
+        <noteRef href="{@num}">
             <xsl:apply-templates select="node()"/>
-        </akn:noteRef>
+        </noteRef>
     </xsl:template>
 
     <xsl:template match="nir:vuoto">
-        <akn:omissis>
+        <omissis>
             <xsl:apply-templates/>
-        </akn:omissis>
+        </omissis>
     </xsl:template>
 
     <xsl:template match="nir:inlinea">
-        <akn:inline>
+        <inline>
             <xsl:apply-templates/>
-        </akn:inline>
+        </inline>
     </xsl:template>
 
     <xsl:template match="nir:blocco">
-        <akn:block>
+        <block>
             <xsl:apply-templates/>
-        </akn:block>
+        </block>
     </xsl:template>
 
     <xsl:template match="nir:contenitore">
-        <akn:container name="{@nome}">
+        <container name="{@nome}">
             <xsl:apply-templates/>
-        </akn:container>
+        </container>
     </xsl:template>
     
     <xsl:template match="nir:DocumentoNIR/nir:contenitore">
-        <akn:mainBody>
-            <akn:container name="{@nome}">
+        <mainBody>
+            <container name="{@nome}">
                 <xsl:apply-templates/>
-            </akn:container>
-        </akn:mainBody>
+            </container>
+        </mainBody>
     </xsl:template>
 
     <xsl:template match="nir:partizione">
     </xsl:template>
 
     <xsl:template match="nir:lista">
-        <akn:blockList>
+        <blockList>
             <xsl:apply-templates select="." mode="genera_eId"/>
             <xsl:apply-templates/>
-        </akn:blockList>
+        </blockList>
     </xsl:template>
 
     <xsl:template match="nir:gerarchia">
-        <akn:mainBody>
+        <mainBody>
             <xsl:apply-templates/>
-        </akn:mainBody>
+        </mainBody>
     </xsl:template>
 
     <xsl:template match="nir:l1 | nir:l2 | nir:l3 | nir:l4 | nir:l5 | nir:l6 | nir:l7 | nir:l8 | nir:l9">
-        <akn:hcontainer>
+        <hcontainer>
             <xsl:apply-templates/>
-        </akn:hcontainer>
+        </hcontainer>
     </xsl:template>
 
     <xsl:template match="nir:tit">
@@ -1256,23 +1299,23 @@
     <!-- Conversione HTML -->
     <xsl:template match="h:*">
         <!-- Gli elementi HTML restano uguali, cambia solo il namespace -->
-        <xsl:element name="akn:{local-name()}">
+        <xsl:element name="{local-name()}">
             <xsl:apply-templates/>
         </xsl:element>
     </xsl:template>
 
     <xsl:template match="h:br">
-        <akn:eol>
+        <eol>
             <xsl:apply-templates />
-        </akn:eol>
+        </eol>
     </xsl:template>
     
     <xsl:template match="h:p[text() = 'omissis']">
-        <akn:p>
-            <akn:omissis>
+        <p>
+            <omissis>
                 <xsl:apply-templates/>
-            </akn:omissis>
-        </akn:p>
+            </omissis>
+        </p>
     </xsl:template>
 
     <!-- Funzioni ausiliari -->
@@ -1472,3 +1515,5 @@
         </xsl:copy>
     </xsl:template> 
 </xsl:stylesheet>
+
+<!-- TODO: sottoscrizioni/sottoscrivente -->
