@@ -53,7 +53,7 @@ $rules = Array(
     "title" => "/(?P<num>({{titleList}})\s*({{number}}))/",
     "section" => "/(?P<num>({{sectionList}})\s*({{number}}\s*[º°\.]*))/",
     "chapter" => "/(?P<num>({{chapterList}})\s*({{number}}))/",
-    "article" => "/(?P<num>({{articleList}})\s*({{number}}\s*[º°\.]*)({{latino}})?)\s*{{heading}}/",
+    "article" => "/(?P<num>({{articleList}})\s*({{number}}\s*[º°\.]*)({{latino}})?)\s*({{heading}})?/",
 
     "heading" => "\([A-Z].+\)",
 

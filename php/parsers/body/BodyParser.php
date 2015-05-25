@@ -114,8 +114,10 @@ class BodyParser {
 
 					if(array_key_exists("heading",$result)) {
 						foreach($result["heading"] as $index => $match) {
-							$headings[] = $match[0];
-							$headingsOffset[] = $match[1];
+							if ( is_array($match) ) {
+								$headings[] = $match[0];
+								$headingsOffset[] = $match[1];
+							}
 						}
 					}
 					
