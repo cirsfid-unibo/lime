@@ -117,7 +117,7 @@ Ext.define('DefaultNir.controller.NirPreview', {
     // This is a hack which may cause bugs.
     forceLatestVersion: function (aknXml) {
         var regex = /http:\/\/docs\.oasis-open\.org\/legaldocml\/ns\/akn\/3\.0\/CSD../g,
-            targetNamespace = 'http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD11';
+            targetNamespace = 'http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD13';
         return aknXml.replace(regex, targetNamespace);
     },
 
