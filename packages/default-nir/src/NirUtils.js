@@ -109,7 +109,8 @@ Ext.define('DefaultNir.NirUtils', {
 
     isNirContent: function(content) {
         var nirTag = content.match(/<NIR[^>]*>/);
-        return content.indexOf('http://www.normeinrete.it/nir/') != -1 || nirTag !== null ;
+        var nirNamespace = content.match(/<NIR[^>]+xmlns="http:\/\/www.normeinrete.it\/nir\//);
+        return nirNamespace !== null || nirTag !== null ;
     },
 
     getNirNamespace: function(content) {
