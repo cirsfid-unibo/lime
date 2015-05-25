@@ -63,7 +63,9 @@ Ext.define('DefaultNir.NirUtils', {
             break;
             case 'http://www.normeinrete.it/nir/2.0':
             me.nir2ToNir22(content, function(nir) {
+                console.log(nir);
                 me.nir22ToAkn(nir, function(akn) {
+                    console.log(akn);
                     me.aknToHtml(akn, callback);
                 });
             });
@@ -106,7 +108,8 @@ Ext.define('DefaultNir.NirUtils', {
     },
 
     isNirContent: function(content) {
-        return content.indexOf('http://www.normeinrete.it/nir/') != -1;
+        var nirTag = content.match(/<NIR[^>]*>/);
+        return content.indexOf('http://www.normeinrete.it/nir/') != -1 || nirTag !== null ;
     },
 
     getNirNamespace: function(content) {
