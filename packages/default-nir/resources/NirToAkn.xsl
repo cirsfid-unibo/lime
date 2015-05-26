@@ -265,9 +265,14 @@
             <xsl:if test="not(//nir:ciclodivita/nir:eventi/nir:evento/@tipo='originale')">
                 <eventRef eId="genEvnt" source="#genRef" type="generation">
                     <xsl:attribute name="date">
-                        <xsl:call-template name="convertiData">
-                            <xsl:with-param name="date" select="//nir:entratainvigore/@norm"/>
-                        </xsl:call-template>
+                        <xsl:if test="//nir:entratainvigore/@norm">
+                            <xsl:call-template name="convertiData">
+                                    <xsl:with-param name="date" select="//nir:entratainvigore/@norm"/>
+                            </xsl:call-template>
+                        </xsl:if>
+                        <xsl:if test="not(//nir:entratainvigore/@norm)">
+                            <xsl:value-of select="'0001-01-01'"/>
+                        </xsl:if>
                     </xsl:attribute>
                 </eventRef>
             </xsl:if>
@@ -402,7 +407,7 @@
     </xsl:template>
 
     <xsl:template match="nir:descrittori/nir:pubblicazione">
-        <publication>
+        <publication showAs="">
             <xsl:if test="@norm">
                 <xsl:attribute name="date">
                     <xsl:call-template name="convertiData">
@@ -413,9 +418,16 @@
             <xsl:attribute name="name">
                 <xsl:value-of select="@tipo"/>
             </xsl:attribute>
-            <xsl:if test="@tipo='GU'">
-                <xsl:attribute name="showAs">Gazzetta Ufficiale</xsl:attribute>
-            </xsl:if>
+            <xsl:choose>
+                <xsl:when test="@tipo='GU'">
+                    <xsl:attribute name="showAs">Gazzetta Ufficiale</xsl:attribute>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:attribute name="showAs">
+                        <xsl:value-of select="@tipo"/>
+                    </xsl:attribute>
+                </xsl:otherwise>
+            </xsl:choose>
             <xsl:if test="@num">
                 <xsl:attribute name="number">
                     <xsl:value-of select="@num"/>
@@ -1029,9 +1041,7 @@
     <xsl:template match="nir:corpo">
         <content>
             <xsl:apply-templates select="." mode="genera_eId"/>
-            <p>
-                <xsl:apply-templates/>
-            </p>
+            <xsl:apply-templates select="." mode="aggiusta_pattern"/>
         </content>
     </xsl:template>
 
@@ -1070,9 +1080,11 @@
     </xsl:template>
 
     <xsl:template match="nir:annessi">
+        <!-- TODO: qui c'e' molto da fare 
         <attachments>
             <xsl:apply-templates/>
         </attachments>
+        -->
     </xsl:template>
 
     <xsl:template match="nir:elencoAnnessi">
@@ -1159,7 +1171,7 @@
             <xsl:when test="@tipo = 'struttura'">
                 <quotedStructure>
                     <xsl:apply-templates select="." mode="genera_eId"/>
-                    <xsl:apply-templates select="node()"/>
+                    <xsl:apply-templates select="." mode="aggiusta_pattern"/>
                 </quotedStructure>
             </xsl:when>
             <xsl:otherwise>
@@ -1171,7 +1183,7 @@
         </xsl:choose>
     </xsl:template>
 
-    <xsl:template match="nir:virgolette[@tipo = 'struttura']/text()">
+    <xsl:template match="nir:virgolette[@tipo = 'struttura']/text()[string-length(.) &lt; 5]">
         <xsl:if test="position() = 1">
             <xsl:attribute name="startQuote">
                 <xsl:value-of select="."/>
@@ -1246,7 +1258,7 @@
     </xsl:template>
 
     <xsl:template match="nir:inlinea">
-        <inline>
+        <inline name="nir:inlinea">
             <xsl:apply-templates/>
         </inline>
     </xsl:template>
@@ -1309,6 +1321,20 @@
             <xsl:apply-templates />
         </eol>
     </xsl:template>
+
+    <xsl:template match="h:p">
+        <xsl:apply-templates />
+    </xsl:template>
+
+    <xsl:template match="h:tbody">
+        <xsl:apply-templates />
+    </xsl:template>
+
+    <xsl:template match="h:td">
+        <td>
+            <xsl:apply-templates select="." mode="aggiusta_pattern"/>
+        </td>
+    </xsl:template>
     
     <xsl:template match="h:p[text() = 'omissis']">
         <p>
@@ -1319,6 +1345,35 @@
     </xsl:template>
 
     <!-- Funzioni ausiliari -->
+    <xsl:template match="*" mode="aggiusta_pattern">
+        <xsl:for-each select="node()">
+            <xsl:variable name="prev" select="preceding-sibling::node()[1]"/>
+            <xsl:choose>
+                <xsl:when test="self::h:table">
+                    <xsl:apply-templates select="."/>
+                </xsl:when>
+                <xsl:when test="not($prev) or $prev[self::h:table]">
+                    <xsl:variable name="nextBreak" select="following-sibling::h:table[1]"/>
+                    <xsl:variable name="nextBreakPos" select="count($nextBreak/preceding-sibling::node()) + 1"/>
+                    <xsl:variable name="myPos" select="position()"/>
+                    <p>
+                        <!-- <xsl:value-of select=""/> -->
+                        <!-- <xsl:apply-templates select="(.|following-sibling::node())
+                            [not((.|preceding-sibling::node())[.=$nextBreak])]"/> -->
+                        <xsl:if test="$nextBreakPos = 1">
+                            <xsl:apply-templates select="(.|following-sibling::node())"/>
+                        </xsl:if>
+                        <xsl:if test="$nextBreakPos > 1">
+                            <xsl:apply-templates select="(.|following-sibling::node())
+                                [(position() + $myPos -1)&lt;$nextBreakPos]"/>
+                        </xsl:if>
+
+                    </p>
+                </xsl:when>
+            </xsl:choose>
+        </xsl:for-each>
+    </xsl:template>
+
     <xsl:template match="*" mode="genera_eId">
         <xsl:attribute name="eId">
             <xsl:apply-templates select="." mode="genera_id"/>
