@@ -349,7 +349,7 @@ class MetaParser {
                                       "string" => $string,
                                       "start" => $startOffset+$element["heading"]["start"],
                                       "end" => $startOffset+$element["heading"]["start"]+strlen($string));
-                //$completeResult[] = $newElementHeading;
+                $completeResult[] = $newElementHeading;
             }
             $completeResult[] = $newElement;
         }
