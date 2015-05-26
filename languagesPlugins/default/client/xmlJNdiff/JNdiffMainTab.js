@@ -48,7 +48,7 @@ Ext.define('LIME.ux.xmlJNdiff.JNdiffMainTab', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.jnDiffMainTab',
 
-    requires: ['Ext.ux.Iframe'],
+    requires: ['Ext.ux.IFrame'],
 
     cls: 'editorTab diffTab',
     title: 'Advanced Difference Viewer',

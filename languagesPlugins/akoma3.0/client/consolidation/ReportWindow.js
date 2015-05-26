@@ -47,6 +47,8 @@
 Ext.define('LIME.ux.consolidation.ReportWindow', {
     extend: 'Ext.window.Window',
 
+    requires : ['Ext.ux.IFrame'],
+
     listeners: {
         'afterrender': function () {
             var html = this.buildHtml();

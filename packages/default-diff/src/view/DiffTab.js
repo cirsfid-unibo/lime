@@ -47,7 +47,7 @@
 Ext.define('DefaultDiff.view.DiffTab', {
     extend : 'Ext.panel.Panel',
     alias : 'widget.diffTab',
-    // requires : ['Ext.ux.Iframe'],
+    requires : ['Ext.ux.IframePlugin'],
 
     cls : 'editorTab diffTab',
 

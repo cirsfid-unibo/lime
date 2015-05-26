@@ -53,7 +53,7 @@
 Ext.define('LIME.controller.CustomizationManager', {
     extend : 'Ext.app.Controller',
 
-    views : ['DocumentLangSelector', 'LocaleSelector', 'MarkingMenu', 'Ext.ux.Iframe'],
+    views : ['DocumentLangSelector', 'LocaleSelector', 'MarkingMenu', 'Ext.ux.IframePlugin'],
 
     customCallbacks : {},
     

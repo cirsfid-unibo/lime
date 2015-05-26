@@ -51,7 +51,7 @@
 Ext.define('LIME.ux.newPdfPreview.NewPdfPreviewMainTab', {
     extend : 'Ext.panel.Panel',
 
-    requires : ['Ext.ux.Iframe'],
+    requires : ['Ext.ux.IframePlugin'],
 
     config : {
         pluginName : "newPdfPreview"
