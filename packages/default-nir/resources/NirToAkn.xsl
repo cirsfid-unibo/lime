@@ -1045,6 +1045,17 @@
         </content>
     </xsl:template>
 
+    <!-- Workaround per bug in file Piemonte, dove si ha un nir:corpo invece che
+    nir:alinea in alcune liste -->
+    <xsl:template match="nir:corpo[following-sibling::*[1][self::nir:en or self::nir:el or self::nir:ep]]">
+        <intro>
+            <xsl:apply-templates select="." mode="genera_eId"/>
+            <p>
+                <xsl:apply-templates/>
+            </p>
+        </intro>
+    </xsl:template>
+
     <xsl:template match="nir:alinea">
         <intro>
             <xsl:apply-templates select="." mode="genera_eId"/>
@@ -1167,20 +1178,21 @@
     </xsl:template>
 
     <xsl:template match="nir:virgolette">
-        <xsl:choose>
-            <xsl:when test="@tipo = 'struttura'">
+        <!-- Todo: pensa e riabilita quotedText -->
+        <!-- <xsl:choose> -->
+            <!-- <xsl:when test="@tipo = 'struttura'"> -->
                 <quotedStructure>
                     <xsl:apply-templates select="." mode="genera_eId"/>
                     <xsl:apply-templates select="." mode="aggiusta_pattern"/>
                 </quotedStructure>
-            </xsl:when>
-            <xsl:otherwise>
-                <quotedText>
-                    <xsl:apply-templates select="." mode="genera_eId"/>
-                    <xsl:apply-templates select="node()"/>
-                </quotedText>
-            </xsl:otherwise>
-        </xsl:choose>
+            <!-- </xsl:when> -->
+            <!-- <xsl:otherwise> -->
+                <!-- <quotedText> -->
+                    <!-- <xsl:apply-templates select="." mode="genera_eId"/> -->
+                    <!-- <xsl:apply-templates select="node()"/> -->
+                <!-- </quotedText> -->
+            <!-- </xsl:otherwise> -->
+        <!-- </xsl:choose> -->
     </xsl:template>
 
     <xsl:template match="nir:virgolette[@tipo = 'struttura']/text()[string-length(.) &lt; 5]">
@@ -1346,20 +1358,21 @@
 
     <!-- Funzioni ausiliari -->
     <xsl:template match="*" mode="aggiusta_pattern">
+        <xsl:variable name="blocks" select="'|table|en|el|ep|articolo|libro|parte|titolo|capo|sezione|paragrafo|rubrica|'"/>
         <xsl:for-each select="node()">
             <xsl:variable name="prev" select="preceding-sibling::node()[1]"/>
             <xsl:choose>
-                <xsl:when test="self::h:table">
+                <xsl:when test="contains($blocks, concat('|', local-name(), '|'))">
                     <xsl:apply-templates select="."/>
                 </xsl:when>
-                <xsl:when test="not($prev) or $prev[self::h:table]">
-                    <xsl:variable name="nextBreak" select="following-sibling::h:table[1]"/>
+                <xsl:when test="not($prev) or 
+                                $prev[contains($blocks, concat('|', local-name(), '|'))]">
+                    <xsl:variable name="nextBreak" select="following-sibling::node()
+                        [contains($blocks, concat('|', local-name(), '|'))]
+                        [1]"/>
                     <xsl:variable name="nextBreakPos" select="count($nextBreak/preceding-sibling::node()) + 1"/>
                     <xsl:variable name="myPos" select="position()"/>
                     <p>
-                        <!-- <xsl:value-of select=""/> -->
-                        <!-- <xsl:apply-templates select="(.|following-sibling::node())
-                            [not((.|preceding-sibling::node())[.=$nextBreak])]"/> -->
                         <xsl:if test="$nextBreakPos = 1">
                             <xsl:apply-templates select="(.|following-sibling::node())"/>
                         </xsl:if>
@@ -1381,10 +1394,8 @@
     </xsl:template>
 
     <xsl:template match="*" mode="genera_id">
-        <xsl:variable name="current" select="."/>
         <xsl:for-each select="./ancestor-or-self::node()
-            [(name() = 'virgolette' and @tipo = 'struttura') or 
-             (name() = 'virgolette' and @tipo = 'parola') or 
+            [(name() = 'virgolette') or
              (name() = 'articolo') or
              (name() = 'capo') or
              (name() = 'alinea') or
@@ -1407,12 +1418,16 @@
              (name() = 'imod')]">
 
             <xsl:choose>
-                <xsl:when test="name() = 'virgolette' and @tipo = 'struttura'">
+                <xsl:when test="name() = 'virgolette'">
                     <xsl:text>qstr</xsl:text>
                 </xsl:when>
-                <xsl:when test="name() = 'virgolette' and @tipo = 'parola'">
-                    <xsl:text>Qtxt</xsl:text>
-                </xsl:when>
+                <!-- Todo: riabilita quotedText -->
+                <!-- <xsl:when test="name() = 'virgolette' and @tipo = 'struttura'"> -->
+                    <!-- <xsl:text>qstr</xsl:text> -->
+                <!-- </xsl:when> -->
+                <!-- <xsl:when test="name() = 'virgolette' and not(@tipo = 'struttura')"> -->
+                    <!-- <xsl:text>qtext</xsl:text> -->
+                <!-- </xsl:when> -->
                 <xsl:when test="name() = 'articolo'">
                     <xsl:text>art</xsl:text>
                 </xsl:when>
@@ -1477,7 +1492,7 @@
             <xsl:variable name="name" select="name()"/>
             <xsl:value-of select="count(. | ./preceding-sibling::node()[name() = $name])"/>
 
-            <xsl:if test=". != $current">
+            <xsl:if test="position() != last()">
                 <xsl:text>__</xsl:text>
             </xsl:if>
         </xsl:for-each>
