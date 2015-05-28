@@ -18,7 +18,7 @@
     <xsl:strip-space elements="*"/>
     
 
-<FRBRalias value="urn:nir:regione.piemonte:legge:1992-01-14;1" name="urn:nir"/>
+    <FRBRalias value="urn:nir:regione.piemonte:legge:1992-01-14;1" name="urn:nir"/>
     <!-- Variabili -->
     <xsl:variable name="urn">
         <xsl:choose>
