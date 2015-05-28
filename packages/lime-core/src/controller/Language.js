@@ -63,15 +63,32 @@ Ext.define('LIME.controller.Language', {
         selector: 'main' 
     }],
 
+    processTranslateRequest: function(callback, config, cmp, frbrDom) {
+        var me = this, 
+            html = me.getHtmlToTranslate();
+
+        me.translateContent(html, callback);
+    },
+
+    getDocumentHtml: function(callback) {
+        var html = this.getHtmlToTranslate();
+        Ext.callback(callback, this, [html]);
+    },
+
+    getHtmlToTranslate: function(config, cmp, frbrDom) {
+        var newConfig = this.beforeTranslate(config, cmp) || config;
+
+        return this.prepareToTranslate(newConfig, frbrDom);
+    },
+
     /**
      * Call the language translate function.
      * If the ajax request is successful the related view is updated.
      * Note that this function doesn't return anything since it asynchronously
      * changes the content of a view.
      * @param {Object} params
-     * @param {Function} [callback] Function to call after translating
      */
-    translateContent : function(params, callback, view, frbrDom) {
+    prepareToTranslate : function(params, frbrDom) {
         var me = this, 
             editorController = this.getController("Editor"),
             tmpElement = params.docDom,
@@ -79,8 +96,9 @@ Ext.define('LIME.controller.Language', {
             markedElements = tmpElement.querySelectorAll("*[" + DomUtils.elementIdAttribute + "]"),
             focusedElements  = tmpElement.querySelectorAll("."+DocProperties.elementFocusedCls),
             langPrefix = me.getLanguagePrefix(),
-            counters = {}, aknIdMapping = {};
+            counters = {};
 
+        me.aknIdMapping = {};
         me.appendMetadata(tmpElement, frbrDom);
         
         // TODO: decide if this part is general for all languages or specific
@@ -124,7 +142,7 @@ Ext.define('LIME.controller.Language', {
                 });
 
                 if ( newId ) {
-                    aknIdMapping[newId] = intId;
+                    me.aknIdMapping[newId] = intId;
                 }
 
                 // Add ids also to wrapping elements
@@ -133,9 +151,7 @@ Ext.define('LIME.controller.Language', {
                 });
             }, this);
         } catch(e) {
-            if (view && Ext.isFunction(view.setLoading)) {
-                view.setLoading(false);
-            }
+            Ext.log({level: "error"}, 'prepareToTranslate '+ e);
             return;
         }
         
@@ -143,23 +159,22 @@ Ext.define('LIME.controller.Language', {
         
         //temporary trick to remove focus class when removeCls don't work
         tmpHtml = tmpHtml.replace(/(class=\"[^\"]+)(\s+\bfocused\")/g, '$1"').replace(/\bid="[^"]*"/g, "");
-        Language.translateContent(tmpHtml, DocProperties.documentInfo.docMarkingLanguage, {
+        return tmpHtml;
+    },
+
+    translateContent: function(html, callback) {
+        var me = this;
+        Language.translateContent(html, DocProperties.documentInfo.docMarkingLanguage, {
             success : function(response) {
                 // pretty print the code because codemirror is not enough
                 var xmlPretty = vkbeautify.xml(response.responseText);
                 
                 if (Ext.isFunction(callback)) {
-                    callback.call(me, xmlPretty, aknIdMapping);
-                }
-                if (view && Ext.isFunction(view.setLoading)) {
-                    view.setLoading(false);
+                    callback.call(me, xmlPretty, me.aknIdMapping, html);
                 }
             },
             failure : function() {
                 Ext.log({level: "error"}, "Document not translated");
-                if (view && Ext.isFunction(view.setLoading)) {
-                    view.setLoading(false);
-                }
             }
         });
     },
@@ -179,16 +194,13 @@ Ext.define('LIME.controller.Language', {
         }
     },
 
-    beforeTranslate: function(callback, config, view, cmp, frbrDom) {
+    beforeTranslate: function(config, cmp) {
        var languageController = this, editorController = this.getController("Editor"),
             beforeTranslate = TranslatePlugin.beforeTranslate,
         //removing all ext generated ids
         editorContent = editorController.getContent(false, cmp).replace(/id="ext-element-(\d)+"/g, ""), 
         params = {}, newParams, newFn;
 
-        if (view && Ext.isFunction(view.setLoading)) {
-            view.setLoading(true);
-        }
         // creating a div that contains the editor content
         var tmpElement = Ext.DomHelper.createDom({
             tag : 'div',
@@ -202,7 +214,7 @@ Ext.define('LIME.controller.Language', {
                 newParams = params;
             }
         }
-        languageController.translateContent(newParams, callback, view, frbrDom);
+        return newParams;
     },
     
     buildInternalMetadata : function(withContainer){
@@ -589,7 +601,8 @@ Ext.define('LIME.controller.Language', {
 
         // Create bindings between events and callbacks
         // User's custom callbacks
-        this.application.on(Statics.eventsNames.translateRequest, this.beforeTranslate, this);
+        this.application.on(Statics.eventsNames.translateRequest, this.processTranslateRequest, this);
+        this.application.on(Statics.eventsNames.getDocumentHtml, this.getDocumentHtml, this);
         // now before translate on documentLoaded is useless
         //this.application.on(Statics.eventsNames.documentLoaded, this.beforeTranslate, this);
         this.application.on(Statics.eventsNames.afterLoad, this.afterLoad, this);

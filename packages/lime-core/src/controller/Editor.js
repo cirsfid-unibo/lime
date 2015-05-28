@@ -432,7 +432,7 @@ Ext.define('LIME.controller.Editor', {
     /* Add an undo level */
     addUndoLevel: function() {
         try {
-            this.getEditor().undoManager.add();
+            //this.getEditor().undoManager.add();
         } catch(e) {
             Ext.log({level: "error"}, 'Editor addUndoLevel: '+e);
         }
@@ -767,6 +767,7 @@ Ext.define('LIME.controller.Editor', {
     },
 
 	beforeLoadDocument: function(config) {
+        console.time('loadDocument');
 	    var initDocument = this.initDocument, me = this, loaded = false;
         if (!config.docMarkingLanguage && me.getStore('MarkupLanguages').count() == 1) {
             config.docMarkingLanguage = me.getStore('MarkupLanguages').getAt(0).get("name");
@@ -961,6 +962,7 @@ Ext.define('LIME.controller.Editor', {
 			app.fireEvent('editorDomChange', editorBody);
 			app.fireEvent(Statics.eventsNames.documentLoaded);
 		}
+        console.timeEnd('loadDocument');
 	},
 
 	/**
@@ -1024,7 +1026,12 @@ Ext.define('LIME.controller.Editor', {
 		if (!userRequested && !this.changed || this.parserWorking)
 			return;
 		this.changed = false;
-		this.getController('Storage').saveDocument();
+        var me = this;
+        me.history = me.history || [];
+		this.getController('Storage').saveDocument(function(xml, html) {
+            me.lastDoc = html;
+            me.history.push(html);
+        });
 	},
 
 	/**
@@ -1192,7 +1199,7 @@ Ext.define('LIME.controller.Editor', {
 
                 // the language of tinymce
                 language : Locale.getLang(),
-                toolbar: "undo redo | bold italic strikethrough | superscript subscript | bullist numlist outdent indent | alignleft aligncenter alignright | table | searchreplace | link image"  
+                toolbar: "lime-undo lime-redo | bold italic strikethrough | superscript subscript | bullist numlist outdent indent | alignleft aligncenter alignright | table | searchreplace | link image"  
             };
 
 		return config;
@@ -1345,6 +1352,45 @@ Ext.define('LIME.controller.Editor', {
         Ext.callback(Language.onNodeChange, Language, [node, deep]);
     },
 
+    doUndo: function() {
+        this.application.fireEvent(Statics.eventsNames.progressStart, null, {
+            value : 0.1,
+            text : 'Undo'
+        });
+        this.application.fireEvent(Statics.eventsNames.loadDocument, {
+            docText: this.lastDoc
+        });
+    },
+
+    addUndoButtons: function(editor) {
+        var me = this;
+        var onPostRender = function(type) {
+            return function() {
+                var button = this;
+                button.disabled(true);
+                editor.on('Undo Redo AddUndo TypingUndo ClearUndos', function() {
+                    if (type == 'undo') {
+                        button.disabled(false);
+                    }
+                });
+            }
+        };
+        editor.addButton('lime-undo', {
+            tooltip: 'Undo',
+            onPostRender: onPostRender('undo'),
+            onclick: function() {
+                me.doUndo();
+            }
+        });
+        editor.addButton('lime-redo', {
+            tooltip: 'Redo',
+            onPostRender: onPostRender('redo'),
+            onclick: function() {
+                console.log('button');
+            }
+        });
+    },
+
 	/* Initialization of the controller */
 	init : function() {
 		var me = this;
@@ -1437,6 +1483,8 @@ Ext.define('LIME.controller.Editor', {
 
 	                    // Events and callbacks
 	                    mysetup : function(editor) {
+                            me.addUndoButtons(editor);
+
                             editor.on('init', function(e) {
                                 console.log('init event', e);
                                 me.tinyInit();
@@ -1483,7 +1531,6 @@ Ext.define('LIME.controller.Editor', {
                                 me.tmpBookmark = null;
                             });
 
-
                             editor.on('click', function(e) {
                                 // Fire a click event only if left mousebutton was used
                                 if (e.which == 1){
@@ -1494,6 +1541,11 @@ Ext.define('LIME.controller.Editor', {
                             editor.on('contextmenu', function(e) {
                                 me.onClickHandler(editor, e);
                                 editorView.fireEvent('contextmenu', editor, e);
+                            });
+
+                            editor.on('BeforeAddUndo', function(e) {
+                                editor.fire('change');
+                                return false;
                             });
 	                    }});
 

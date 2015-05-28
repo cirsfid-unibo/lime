@@ -238,11 +238,8 @@ Ext.define('LIME.controller.Storage', {
         }
 
         Server.getDocument(filePath, function (content) {
-            // Detect the right XSLT for HTMLToso conversion
-            var lang = Utilities.detectMarkingLang(content);
-            var xslt = Config.getLanguageTransformationFile("languageToLIME", lang);
-            Server.applyXslt(content, xslt, function (content) {
-                config = {
+            me.transformContent(content, function(content, lang) {
+                var config = {
                     docText: content,
                     docId: filePath,
                     docMarkingLanguage: lang,
@@ -262,13 +259,21 @@ Ext.define('LIME.controller.Storage', {
                     openWindow.close();
                 }
                 me.application.fireEvent(Statics.eventsNames.progressEnd);
-
-            }, function (error) {
-                console.warn('Error translating file', filePath, xslt, error);
-                me.application.fireEvent(Statics.eventsNames.progressEnd);
             });
         }, function (error) {
             console.warn('Error downloading file', filePath, error);
+            me.application.fireEvent(Statics.eventsNames.progressEnd);
+        });
+    },
+
+    transformContent: function(content, callback) {
+        // Detect the right XSLT for HTMLToso conversion
+        var lang = Utilities.detectMarkingLang(content);
+        var xslt = Config.getLanguageTransformationFile("languageToLIME", lang);
+        Server.applyXslt(content, xslt, function (content) {
+            callback(content, lang);
+        }, function (error) {
+            console.warn('Error translating file', filePath, xslt, error);
             me.application.fireEvent(Statics.eventsNames.progressEnd);
         });
     },
@@ -511,9 +516,9 @@ Ext.define('LIME.controller.Storage', {
             documentInfo: DocProperties.documentInfo
         });
 
-        me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
+        me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml, idMapping, html) {
             Server.saveDocument(path, xml, function () {
-                if (callback) callback ();
+                if (callback) callback(xml, html);
 
                 // After saving
                 me.application.fireEvent(Statics.eventsNames.afterSave, {
