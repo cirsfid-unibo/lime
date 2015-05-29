@@ -505,7 +505,6 @@ Ext.define('LIME.controller.MainToolbar', {
             
             'newDocument button': {
                 click: function(cmp) {
-                    console.log('asd');
                     var newWindow = cmp.up('newDocument'),
                         docLangsStore = this.getStore('DocumentLanguages'),
                         data = {};

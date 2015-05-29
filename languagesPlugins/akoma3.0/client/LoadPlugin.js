@@ -71,8 +71,10 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
             } else {
                 metaResults.push(this.processMeta(null, params));
             }
-            
-            this.preProcessNotes(params.docDom);
+
+            if (!params.undoRequest) {
+                this.preProcessNotes(params.docDom);
+            }
                    
             // Set the properties of main document which is the first docuemnt found
             // params object contains properties inserted by user, 

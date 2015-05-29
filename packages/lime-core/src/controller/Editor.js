@@ -388,7 +388,6 @@ Ext.define('LIME.controller.Editor', {
             extNode.highlight("FFFF00", {duration: 800 });
         }
         if (actions.change) {
-            this.addUndoLevel();
             /* Warn of the change */
             this.changed = true;
             this.application.fireEvent("editorDomChange", node, "partial", config);
@@ -429,24 +428,16 @@ Ext.define('LIME.controller.Editor', {
 		this.getEditor().selection.setContent(text);
 	},
 
-    /* Add an undo level */
-    addUndoLevel: function() {
-        try {
-            //this.getEditor().undoManager.add();
-        } catch(e) {
-            Ext.log({level: "error"}, 'Editor addUndoLevel: '+e);
-        }
-    },
 
-	/**
-	 * This function set an attribute to the given element or
-	 * the given id of the element
-	 * using name as its name and value as its value.
-	 * @param {HTMLElement/String} element The node or its id
-	 * @param {String} name The name of the attribute
-	 * @param {String} value The value of the attribute
-	 * @returns {Boolean} true if the attribute was changed, false otherwise
-	 */
+    /**
+     * This function set an attribute to the given element or
+     * the given id of the element
+     * using name as its name and value as its value.
+     * @param {HTMLElement/String} element The node or its id
+     * @param {String} name The name of the attribute
+     * @param {String} value The value of the attribute
+     * @returns {Boolean} true if the attribute was changed, false otherwise
+     */
     setElementAttribute : function(elementId, name, value) {
         var element = elementId, oldValue, chaged = false, 
             dom = this.getDom(), query;
@@ -475,103 +466,103 @@ Ext.define('LIME.controller.Editor', {
         return chaged;
     },
 
-	/**
-	 * Returns the currently selected text in the format requested.
-	 * **Warning**: no checks are performed on the given format but
-	 * it should be one of the following:
-	 *
-	 * * html (default)
-	 * * raw
-	 * * text
-	 *
-	 * **Warning**: this method heavily relies on what editor is used (tested with tinyMCE)
-	 * @param {String} [formatType] The format of the selection
-	 */
-	getSelectionContent : function(formatType) {
-		if (!formatType)
-			formatType = "html";
-		return this.getEditor().selection.getContent({
-			format : formatType
-		});
-	},
+    /**
+     * Returns the currently selected text in the format requested.
+     * **Warning**: no checks are performed on the given format but
+     * it should be one of the following:
+     *
+     * * html (default)
+     * * raw
+     * * text
+     *
+     * **Warning**: this method heavily relies on what editor is used (tested with tinyMCE)
+     * @param {String} [formatType] The format of the selection
+     */
+    getSelectionContent : function(formatType) {
+        if (!formatType)
+            formatType = "html";
+        return this.getEditor().selection.getContent({
+            format : formatType
+        });
+    },
 
-	/**
-	 * Returns the body element of the dom of the editor.
-	 * **Warning**: this is _not_ the dom! See the {@link LIME.controller.Editor#getDom}
-	 * for further details.
-	 * @returns {HTMLElement} The body element
-	 */
-	getBody : function() {
-		return this.getEditor().getBody();
-	},
+    /**
+     * Returns the body element of the dom of the editor.
+     * **Warning**: this is _not_ the dom! See the {@link LIME.controller.Editor#getDom}
+     * for further details.
+     * @returns {HTMLElement} The body element
+     */
+    getBody : function() {
+        return this.getEditor().getBody();
+    },
 
-	/**
-	 * Returns a reference to the dom of the editor.
-	 * This method is very useful when separated-dom editors are used (such as tinyMCE).
-	 * @returns {HTMLDocument} A reference to the dom
-	 */
-	getDom : function(cmp) {
-		return this.getEditor(cmp).dom.doc;
-	},
-	/**
+    /**
+     * Returns a reference to the dom of the editor.
+     * This method is very useful when separated-dom editors are used (such as tinyMCE).
+     * @returns {HTMLDocument} A reference to the dom
+     */
+    getDom : function(cmp) {
+        return this.getEditor(cmp).dom.doc;
+    },
+    /**
      * Returns the Html string of entire dom
      * This method is very useful when separated-dom editors are used (such as tinyMCE).
      * @returns {String}
      */
-	getDocHtml: function() {
-	    var doc = this.getDom().documentElement;
-	    return DomUtils.serializeToString(doc);
-	},
+    getDocHtml: function() {
+        var doc = this.getDom().documentElement;
+        return DomUtils.serializeToString(doc);
+    },
 
-	getDocumentElement: function() {
-	    var me = this, body = me.getBody();
-	    return body.querySelector("*[class~='"+DocProperties.documentBaseClass+"']");
-	},
+    getDocumentElement: function() {
+        var me = this, body = me.getBody();
+        return body.querySelector("*[class~='"+DocProperties.documentBaseClass+"']");
+    },
 
-	getCurrentDocId: function() {
-	    var doc = this.getBody(),
-	       docEl = doc.querySelector("["+DocProperties.docIdAttribute+"]");
+    getCurrentDocId: function() {
+        var doc = this.getBody(),
+           docEl = doc.querySelector("["+DocProperties.docIdAttribute+"]");
         if(docEl) {
             return docEl.getAttribute(DocProperties.docIdAttribute);
         }
         return null;
-	},
+    },
 
-	getDocumentMetadata: function(docId) {
-	    var result = {};
-	    docId = docId || this.getCurrentDocId() || 0;
+    getDocumentMetadata: function(docId) {
+        var result = {};
+        docId = docId || this.getCurrentDocId() || 0;
 
-	    result.originalMetadata = DocProperties.docsMeta[docId];
-	    if(result.originalMetadata) {
-	        result.obj = DomUtils.nodeToJson(result.originalMetadata.metaDom);
-	        return result;
-	    }
-	    return null;
-	},
+        result.originalMetadata = DocProperties.docsMeta[docId];
+        if(result.originalMetadata) {
+            result.obj = DomUtils.nodeToJson(result.originalMetadata.metaDom);
+            return result;
+        }
+        return null;
+    },
 
-	/**
-	 * Returns the currently selected node or one of its ascendants
-	 * found by looking at two possible conditions given as arguments: either
-	 * a generic marked node or a node with a particular tag name (e.g.
-	 * div, span, p etc.).
-	 *
-	 * **Warning**: the two arguments are mutually exclusive and more
-	 * priority is given to the first one but both are optional.
-	 *
-	 * @param {Boolean} [marked]
-	 * @param {String} [elementName]
-	 * @return {HTMLElement} The selected/found element
-	 */
-	getSelectedNode : function(marked, elementName) {
-		var selectedNode = this.getEditor().selection.getNode();
-		if (marked) {
-			return DomUtils.getFirstMarkedAncestor(selectedNode);
-		} else if (elementName) {
-			return DomUtils.getNodeByName(selectedNode, elementName);
-		} else {
+    /**
+     * Returns the currently selected node or one of its ascendants
+     * found by looking at two possible conditions given as arguments: either
+     * a generic marked node or a node with a particular tag name (e.g.
+     * div, span, p etc.).
+     *
+     * **Warning**: the two arguments are mutually exclusive and more
+     * priority is given to the first one but both are optional.
+     *
+     * @param {Boolean} [marked]
+     * @param {String} [elementName]
+     * @return {HTMLElement} The selected/found element
+     */
+    getSelectedNode : function(marked, elementName) {
+        var selectedNode = this.getEditor().selection.getNode();
+        if (marked) {
+            return DomUtils.getFirstMarkedAncestor(selectedNode);
+        } else if (elementName) {
+            return DomUtils.getNodeByName(selectedNode, elementName);
+        } else {
             return selectedNode;
         }
-	},
+    },
 
     /*
       Returns the visually focused node in the editor
@@ -581,149 +572,154 @@ Ext.define('LIME.controller.Editor', {
         return body.querySelector("*["+DocProperties.elementFocusedCls+"]");
     },
 
-	/**
-	 * This method returns an object containing many things:
-	 *
-	 * * text : the content of the selected text
-	 * * node : the selected node
-	 * * start : the first node of the selected nodes
-	 * * end : the last node of the selected nodes
-	 *
-	 * All the involved nodes are retrieved depending on the given arguments.
-	 * Thus you can specify: what should the format of the text be, what
-	 * tag name should the retrieved nodes have and if start and end should be
-	 * at the same nesting level.
-	 *
-	 * The tag name of the nodes can be specified as an object:
-	 *
-	 * 		{
-	 * 			start : "div",
-	 * 			end : "p",
-	 * 			current : "span",
-	 * 		}
-	 *
-	 * Non specified names are simply ignored.
-	 *
-	 * @param {String} [formatType] The format of the selected text
-	 * @param {Object} [nodeNames] The names of the nodes
-	 * @param {Boolean} [sameLevel] If true start or end is brought to the same (upper) level as the other one
-	 */
-	getSelectionObject : function(formatType, nodeNames, sameLevel) {
-		/* TODO
-		 *  SE SONO ALLO STESSO LIVELLO E NON SONO FRATELLI SALI FINCHé NON TROVI DUE FRATELLI
-		 */
-		// Avoid lack of the parameter
-		nodeNames = nodeNames || {
-			start : null,
-			end : null,
-			current : null
-		};
-		var selStart = this.getEditor().selection.getStart();
-		var selEnd = this.getEditor().selection.getEnd();
-		var current = this.getEditor().selection.getNode();
-		if (nodeNames.start) {
-			selStart = DomUtils.getNodeByName(selStart, nodeNames.start);
-		}
-		if (nodeNames.end) {
-			selEnd = DomUtils.getNodeByName(selEnd, nodeNames.end);
-		}
-		if (sameLevel){
-			var startNesting = DomUtils.nestingLevel(selStart);
-			var endNesting = DomUtils.nestingLevel(selEnd);
-			var nestingDiff = Math.abs(startNesting-endNesting);
-			if (startNesting < endNesting){
-				for (var i=0; i<nestingDiff; i++){
-					selEnd = selEnd.parentNode;
-				}
-			} else if (endNesting < startNesting){
-				for (var i=0; i<nestingDiff; i++){
-					selStart = selStart.parentNode;
-				}
-			}
-		}
-		if (nodeNames.current) {
-			current = DomUtils.getNodeByName(current, nodeNames.current);
-		}
-		var selInfo = {
-			text : this.getSelectionContent(formatType),
-			node : current,
-			start : selStart,
-			end : selEnd
-		};
-		return selInfo;
-	},
+    /**
+     * This method returns an object containing many things:
+     *
+     * * text : the content of the selected text
+     * * node : the selected node
+     * * start : the first node of the selected nodes
+     * * end : the last node of the selected nodes
+     *
+     * All the involved nodes are retrieved depending on the given arguments.
+     * Thus you can specify: what should the format of the text be, what
+     * tag name should the retrieved nodes have and if start and end should be
+     * at the same nesting level.
+     *
+     * The tag name of the nodes can be specified as an object:
+     *
+     *      {
+     *          start : "div",
+     *          end : "p",
+     *          current : "span",
+     *      }
+     *
+     * Non specified names are simply ignored.
+     *
+     * @param {String} [formatType] The format of the selected text
+     * @param {Object} [nodeNames] The names of the nodes
+     * @param {Boolean} [sameLevel] If true start or end is brought to the same (upper) level as the other one
+     */
+    getSelectionObject : function(formatType, nodeNames, sameLevel) {
+        /* TODO
+         *  SE SONO ALLO STESSO LIVELLO E NON SONO FRATELLI SALI FINCHé NON TROVI DUE FRATELLI
+         */
+        // Avoid lack of the parameter
+        nodeNames = nodeNames || {
+            start : null,
+            end : null,
+            current : null
+        };
+        var selStart = this.getEditor().selection.getStart();
+        var selEnd = this.getEditor().selection.getEnd();
+        var current = this.getEditor().selection.getNode();
+        if (nodeNames.start) {
+            selStart = DomUtils.getNodeByName(selStart, nodeNames.start);
+        }
+        if (nodeNames.end) {
+            selEnd = DomUtils.getNodeByName(selEnd, nodeNames.end);
+        }
+        if (sameLevel){
+            var startNesting = DomUtils.nestingLevel(selStart);
+            var endNesting = DomUtils.nestingLevel(selEnd);
+            var nestingDiff = Math.abs(startNesting-endNesting);
+            if (startNesting < endNesting){
+                for (var i=0; i<nestingDiff; i++){
+                    selEnd = selEnd.parentNode;
+                }
+            } else if (endNesting < startNesting){
+                for (var i=0; i<nestingDiff; i++){
+                    selStart = selStart.parentNode;
+                }
+            }
+        }
+        if (nodeNames.current) {
+            current = DomUtils.getNodeByName(current, nodeNames.current);
+        }
+        var selInfo = {
+            text : this.getSelectionContent(formatType),
+            node : current,
+            start : selStart,
+            end : selEnd
+        };
+        return selInfo;
+    },
 
-	/**
-	 * Returns the whole content of the editor (__not__ the selection).
-	 *
-	 * **Warning**: this method heavily depends on what editor is used.
-	 * @param {String} formatType Specify the format of the output (html, raw, text etc.)
-	 */
-	getContent : function(formatType, cmp) {
-		if (!formatType)
-			formatType = "html";
-		return this.getEditor(cmp).getContent({
-			format : formatType
-		});
-	},
+    /**
+     * Returns the whole content of the editor (__not__ the selection).
+     *
+     * **Warning**: this method heavily depends on what editor is used.
+     * @param {String} formatType Specify the format of the output (html, raw, text etc.)
+     */
+    getContent : function(formatType, cmp) {
+        if (!formatType)
+            formatType = "html";
+        return this.getEditor(cmp).getContent({
+            format : formatType
+        });
+    },
 
-	/**
-	 * Given a css selector, an object with some css properties and
-	 * the name of a button (to match the class of marked elements)
-	 * apply the given style by appending one or more style elements
-	 * by using {@link LIME.controller.Editor#addContentStyle}.
-	 * @param {String} selector The css selector
-	 * @param {Object} styleObj An object with some css properties
-	 * @param {String} buttonName The name of the button
-	 */
-	applyAllStyles : function(selector, styleObj, buttonName, cmp) {
-		for (var i in styleObj) {
-			// Apply the style on the simple selector
-			if (i == "this") {
-				this.addContentStyle(selector, styleObj[i], cmp);
-			// Otherwise a complex selector was given
-			} else if (i.indexOf("this") != -1) {
-				var styleCss = styleObj[i];
-				selector = i.replace("this", selector);
-				this.applyAllStyles(selector, styleObj[i], buttonName, cmp);
-			// This means that another element was selected
-			} else {
-				var styleCss = styleObj[i];
-				if (styleCss.indexOf("content:") == -1) {
-					styleCss = "content:'" + buttonName.toUpperCase() + "';" + styleCss;
-				}
-				this.addContentStyle(selector + ':' + i, styleCss, cmp);
-			}
+    /**
+     * Given a css selector, an object with some css properties and
+     * the name of a button (to match the class of marked elements)
+     * apply the given style by appending one or more style elements
+     * by using {@link LIME.controller.Editor#addContentStyle}.
+     * @param {String} selector The css selector
+     * @param {Object} styleObj An object with some css properties
+     * @param {String} buttonName The name of the button
+     */
+    applyAllStyles : function(selector, styleObj, buttonName, cmp) {
+        for (var i in styleObj) {
+            // Apply the style on the simple selector
+            if (i == "this") {
+                this.addContentStyle(selector, styleObj[i], cmp);
+            // Otherwise a complex selector was given
+            } else if (i.indexOf("this") != -1) {
+                var styleCss = styleObj[i];
+                selector = i.replace("this", selector);
+                this.applyAllStyles(selector, styleObj[i], buttonName, cmp);
+            // This means that another element was selected
+            } else {
+                var styleCss = styleObj[i];
+                if (styleCss.indexOf("content:") == -1) {
+                    styleCss = "content:'" + buttonName.toUpperCase() + "';" + styleCss;
+                }
+                this.addContentStyle(selector + ':' + i, styleCss, cmp);
+            }
 
-		}
-	},
+        }
+    },
 
-	onPluginLoaded : function(data, styleUrls) {
-	    var markingMenuController = this.getController('MarkingMenu'),
-	    	mainToolbarController = this.getController('MainToolbar'),
-	       app = this.application, config = this.documentTempConfig;
+    onPluginLoaded : function(data, styleUrls) {
+        var markingMenuController = this.getController('MarkingMenu'),
+            mainToolbarController = this.getController('MainToolbar'),
+           app = this.application, config = this.documentTempConfig;
         
         this.stylesUrl = styleUrls || this.stylesUrl;
 
-	    this.addStyles(styleUrls);
+        this.addStyles(styleUrls);
         var editor2 = this.getSecondEditor();
         if (editor2) {
             this.addStyles(styleUrls, editor2);
         }
-		app.fireEvent(Statics.eventsNames.languageLoaded, data);
+        // Clear previous undo levels
+        this.clearUndoLevels();
+
+        app.fireEvent(Statics.eventsNames.languageLoaded, data);
         app.fireEvent(Statics.eventsNames.progressUpdate, Locale.strings.progressBar.loadingDocument);
 
         // If the document loaded is empty, use the template
         // following the complicated rules in our json configuration files.
         if (config.docText == '<div> &nbsp; </div>')
             config.docText = this.getStore('LanguagesPlugin').buildEmptyDocumentTemplate();
-        this.loadDocument(config.docText, config.docId);
 
-        app.fireEvent(Statics.eventsNames.progressEnd);
+        this.loadDocument(config.docText, config.docId);
         config.docDom = this.getDom();
         app.fireEvent(Statics.eventsNames.afterLoad, config);
         this.setPath(this.getBody());
         this.showDocumentIdentifier(config.docId);
+
+        this.startAutoSave();
+        app.fireEvent(Statics.eventsNames.progressEnd);
     },
 
     addStyles: function(urls, editor) {
@@ -747,15 +743,15 @@ Ext.define('LIME.controller.Editor', {
         });
     },
 
-	/**
-	 * Add the given style properties to the elements that match
-	 * the given css selector.
-	 * @param {String} selector The css selector
-	 * @param {String} styleText The string representing the property
-	 */
-	addContentStyle : function(selector, styleText, cmp) {
-		DomUtils.addStyle(selector, styleText, this.getDom(cmp), 'limeStyle');
-	},
+    /**
+     * Add the given style properties to the elements that match
+     * the given css selector.
+     * @param {String} selector The css selector
+     * @param {String} styleText The string representing the property
+     */
+    addContentStyle : function(selector, styleText, cmp) {
+        DomUtils.addStyle(selector, styleText, this.getDom(cmp), 'limeStyle');
+    },
 
     /**
      * Remove all the custom styles we've added to the editor
@@ -766,37 +762,36 @@ Ext.define('LIME.controller.Editor', {
             style.parentElement.removeChild(style);
     },
 
-	beforeLoadDocument: function(config) {
-        console.time('loadDocument');
-	    var initDocument = this.initDocument, me = this, loaded = false;
+    beforeLoadDocument: function(config) {
+        var initDocument = this.initDocument, me = this, loaded = false;
         if (!config.docMarkingLanguage && me.getStore('MarkupLanguages').count() == 1) {
             config.docMarkingLanguage = me.getStore('MarkupLanguages').getAt(0).get("name");
         }
-	    if (config.docMarkingLanguage) {
-	        if (me.getStore('MarkupLanguages').findExact('name', config.docMarkingLanguage)!=-1) {
-	           Config.setLanguage(config.docMarkingLanguage, function() {
-    	            me.getStore('DocumentTypes').loadData(Config.getDocTypesByLang(config.docMarkingLanguage));
-    	            if (!config.lightLoad) {
-    	                //Before load
+        if (config.docMarkingLanguage) {
+            if (me.getStore('MarkupLanguages').findExact('name', config.docMarkingLanguage)!=-1) {
+               Config.setLanguage(config.docMarkingLanguage, function() {
+                    me.getStore('DocumentTypes').loadData(Config.getDocTypesByLang(config.docMarkingLanguage));
+                    if (!config.lightLoad) {
+                        //Before load
                         me.application.fireEvent(Statics.eventsNames.beforeLoad, config, function(newConfig) {
                             initDocument(newConfig, me);
                         });
-    	            } else {
+                    } else {
                         initDocument(config, me);
-    	            }
+                    }
 
                 });
                 loaded = true;
             }
-	    }
-	    if(!loaded) {
-	        var newDocumentWindow = Ext.widget('newDocument');
+        }
+        if(!loaded) {
+            var newDocumentWindow = Ext.widget('newDocument');
             // TODO: temporary solution
             newDocumentWindow.tmpConfig = config;
             newDocumentWindow.onlyLanguage = true;
             newDocumentWindow.show();
-	    }
-	},
+        }
+    },
 
     initDocument : function(config, me) {
         var me = me || this, app = me.application, docType;
@@ -825,9 +820,9 @@ Ext.define('LIME.controller.Editor', {
         }, 200, me);
     },
 
-	linkNotes: function(body) {
-		var app = this.application, 
-			noteLinkers = body.querySelectorAll(".linker");
+    linkNotes: function(body) {
+        var app = this.application, 
+            noteLinkers = body.querySelectorAll(".linker");
         clickLinker = function() {
             var marker = this.getAttribute(LoadPlugin.refToAttribute), note;
             if (marker) {
@@ -844,24 +839,24 @@ Ext.define('LIME.controller.Editor', {
         Ext.each(noteLinkers, function(linker) {
             linker.onclick = clickLinker;
         }, this);
-	},
+    },
 
 
-	searchAndManageMarkedElements: function(body, cmp, noSideEffects) {
-		var LanguageController = this.getController('Language'),
-			marker = this.getController('Marker'),
-			markedElements = body.querySelectorAll("*[" + DomUtils.elementIdAttribute + "]");
-		
+    searchAndManageMarkedElements: function(body, cmp, noSideEffects) {
+        var LanguageController = this.getController('Language'),
+            marker = this.getController('Marker'),
+            markedElements = body.querySelectorAll("*[" + DomUtils.elementIdAttribute + "]");
+        
         //Parse the new document and build documentProprieties 
-		Ext.each(markedElements, function(element, index) {
-			var elId = element.getAttribute(DomUtils.elementIdAttribute),
-			    newElId;
-			var nameAttr = element.getAttribute(LanguageController.getLanguagePrefix()+'name');
-			var buttonId = DomUtils.getButtonIdByElementId(elId);
-			var button; // = DocProperties.getElementConfig(buttonId)
+        Ext.each(markedElements, function(element, index) {
+            var elId = element.getAttribute(DomUtils.elementIdAttribute),
+                newElId;
+            var nameAttr = element.getAttribute(LanguageController.getLanguagePrefix()+'name');
+            var buttonId = DomUtils.getButtonIdByElementId(elId);
+            var button; // = DocProperties.getElementConfig(buttonId)
 
-		    if (elId.indexOf(DomUtils.elementIdSeparator)==-1) {
-		        var parent = DomUtils.getFirstMarkedAncestor(element.parentNode);
+            if (elId.indexOf(DomUtils.elementIdSeparator)==-1) {
+                var parent = DomUtils.getFirstMarkedAncestor(element.parentNode);
                 if(parent) {
                     var buttonParent = DomUtils.getButtonByElement(parent);
                     if(buttonParent) {
@@ -881,7 +876,7 @@ Ext.define('LIME.controller.Editor', {
                 } else {
                     elId = marker.getMarkingId(button.id);
                 }
-		    } else {
+            } else {
                 elId = elId.substr(0, elId.indexOf(DomUtils.elementIdSeparator));
             }
 
@@ -891,20 +886,20 @@ Ext.define('LIME.controller.Editor', {
                 elId = (button) ? marker.getMarkingId(button.id) : elId;
             }
 
-			if (!button) {
-				if(!noSideEffects) {
+            if (!button) {
+                if(!noSideEffects) {
                     Ext.log({level: "error"}, "FATAL ERROR!!", "The button with id " + buttonId + " is missing!");
-					//Ext.MessageBox.alert("FATAL ERROR!!", "The button with id " + buttonId + " is missing!");	
-				}
-				return;
-			}
+                    //Ext.MessageBox.alert("FATAL ERROR!!", "The button with id " + buttonId + " is missing!"); 
+                }
+                return;
+            }
 
-			//if(!noSideEffects) {
-				DocProperties.setMarkedElementProperties(elId, {
-					button : button,
-					htmlElement : element
-				});	
-			//}
+            //if(!noSideEffects) {
+                DocProperties.setMarkedElementProperties(elId, {
+                    button : button,
+                    htmlElement : element
+                }); 
+            //}
 
             //remove inline style
             element.removeAttribute('style');
@@ -915,144 +910,141 @@ Ext.define('LIME.controller.Editor', {
             }
 
             this.onNodeChange(element, false);
-		}, this);
-	},
+        }, this);
+    },
 
-	/**
-	 * This method ensures that the given text is loaded after
-	 * some built-in preconditions are met. For example a default
-	 * content that must wrap the newly loaded text.
-	 * @param {String} docText The text that has to be loaded
-	 * @param {String} [docId] The id of the document
-	 * @param {Function} [callback] Function to call when finished
-	 * @param {Boolean} [initial] If true removing previous document properties
-	 * will be skipped
-	 */
-	loadDocument : function(docText, docId, cmp, noSideEffects) {
-		var editor = this.getEditor(cmp), editorBody,
-		    app = this.application;
+    /**
+     * This method ensures that the given text is loaded after
+     * some built-in preconditions are met. For example a default
+     * content that must wrap the newly loaded text.
+     * @param {String} docText The text that has to be loaded
+     * @param {String} [docId] The id of the document
+     * @param {Function} [callback] Function to call when finished
+     * @param {Boolean} [initial] If true removing previous document properties
+     * will be skipped
+     */
+    loadDocument : function(docText, docId, cmp, noSideEffects) {
+        var editor = this.getEditor(cmp), editorBody,
+            app = this.application;
 
-		//set new content to the editor
-		if (Ext.isEmpty(docText)) {
-		    docText = '&nbsp;';
-		}
-		
+        //set new content to the editor
+        if (Ext.isEmpty(docText)) {
+            docText = '&nbsp;';
+        }
         // Clear Css
         this.removeAllContentStyle(cmp);
+        editor.setContent(docText); // Add a space, empty content prevents other views from updating
 
-		// Clear previous undo levels
-		editor.undoManager.clear();
-		editor.setContent(docText); // Add a space, empty content prevents other views from updating
-		this.addUndoLevel();
-
-		if(!noSideEffects) {
-			//Remove all previous document proprieties
-			DocProperties.removeAll();
-		    // save the id of the currently opened file
+        if(!noSideEffects) {
+            //Remove all previous document proprieties
+            DocProperties.removeAll();
+            // save the id of the currently opened file
             if(docId)
-		      DocProperties.setDocId(docId);
-		}
+              DocProperties.setDocId(docId);
+        }
 
-		editorBody = editor.getBody();
+        editorBody = editor.getBody();
 
-		this.linkNotes(editorBody);
-		this.searchAndManageMarkedElements(editorBody, cmp, noSideEffects);
+        this.linkNotes(editorBody);
+        this.searchAndManageMarkedElements(editorBody, cmp, noSideEffects);
 
-		if(!noSideEffects) {
-			app.fireEvent('editorDomChange', editorBody);
-			app.fireEvent(Statics.eventsNames.documentLoaded);
-		}
-        console.timeEnd('loadDocument');
-	},
+        if(!noSideEffects) {
+            app.fireEvent('editorDomChange', editorBody);
+            app.fireEvent(Statics.eventsNames.documentLoaded);
+        }
+    },
 
-	/**
-	 * Replace the whole content of the editor with the given string.
-	 *
-	 * **Warning**: do NOT use this method to load text. Please refer to
-	 * {@link LIME.controller.Editor#loadDocument} that will perform additional checks.
-	 * @param {newContent} The content that has to be set
-	 * @private
-	 */
-	setContent : function(newContent) {
-		//set new content to the editor
-		this.getEditor().setContent(newContent);
-	},
+    /**
+     * Replace the whole content of the editor with the given string.
+     *
+     * **Warning**: do NOT use this method to load text. Please refer to
+     * {@link LIME.controller.Editor#loadDocument} that will perform additional checks.
+     * @param {newContent} The content that has to be set
+     * @private
+     */
+    setContent : function(newContent) {
+        //set new content to the editor
+        this.getEditor().setContent(newContent);
+    },
 
-	/**
-	 * Replace the given old node(s) with the new one.
-	 *
-	 * Note that this method can also replace an array of
-	 * siblings with a single node.
-	 *
-	 * **Warning**: this method doesn't check if the given nodes are siblings!
-	 * @param {HTMLElement} newNode
-	 * @param {HTMLElement/HTMLElement[]} oldNodes
-	 */
-	domReplace : function(newNode, oldNodes) {
-		if (Ext.isArray(oldNodes)) {
-			oldNodes[0].parentNode.insertBefore(newNode, oldNodes[0]);
-			Ext.each(oldNodes, function(node) {
-				node.parentNode.removeChild(node);
-			});
-		} else {
-			this.getEditor().dom.replace(newNode, oldNodes);
-		}
-		return newNode;
-	},
+    /**
+     * Replace the given old node(s) with the new one.
+     *
+     * Note that this method can also replace an array of
+     * siblings with a single node.
+     *
+     * **Warning**: this method doesn't check if the given nodes are siblings!
+     * @param {HTMLElement} newNode
+     * @param {HTMLElement/HTMLElement[]} oldNodes
+     */
+    domReplace : function(newNode, oldNodes) {
+        if (Ext.isArray(oldNodes)) {
+            oldNodes[0].parentNode.insertBefore(newNode, oldNodes[0]);
+            Ext.each(oldNodes, function(node) {
+                node.parentNode.removeChild(node);
+            });
+        } else {
+            this.getEditor().dom.replace(newNode, oldNodes);
+        }
+        return newNode;
+    },
 
-	/**
-	 * Split the content into many chunks to be saved (e.g. cookies max size is 4095 bytes)
-	 * @param {String} content The content to be split
-	 * @param {Integer} chunkSize The exact size of each chunk
-	 * @return {String[]} The split content
-	 */
-	splitContent : function(content, chunkSize){
-		// Compute how many chunks there are
-		var chunks = [];
-		var toSplit = content;
-		while (toSplit.length > chunkSize){
-			var chunk = toSplit.split(chunkSize);
+    /**
+     * Split the content into many chunks to be saved (e.g. cookies max size is 4095 bytes)
+     * @param {String} content The content to be split
+     * @param {Integer} chunkSize The exact size of each chunk
+     * @return {String[]} The split content
+     */
+    splitContent : function(content, chunkSize){
+        // Compute how many chunks there are
+        var chunks = [];
+        var toSplit = content;
+        while (toSplit.length > chunkSize){
+            var chunk = toSplit.split(chunkSize);
 
-		}
-	},
+        }
+    },
 
-	/**
-	 * This is a callback for the autosave functionality.
-	 * Do NOT rely on the existence of this function.
-	 * @private
-	 */
-	autoSaveContent : function(userRequested) {
-		/* Check if there has been a change */ /* TODO: pensare a una soluzione più intelligente */
-		if (!userRequested && !this.changed || this.parserWorking)
-			return;
-		this.changed = false;
+    startAutoSave: function() {
+        clearInterval(this.autoSaveInterval);
+        this.autoSaveInterval = window.setInterval(this.autoSaveContent.bind(this), 10000);
+    },
+
+    /**
+     * This is a callback for the autosave functionality.
+     * Do NOT rely on the existence of this function.
+     * @private
+     */
+    autoSaveContent : function(userRequested) {
+        /* Check if there has been a change */ /* TODO: pensare a una soluzione più intelligente */
+        if (!userRequested && !this.changed || this.parserWorking)
+            return;
+        this.changed = false;
         var me = this;
-        me.history = me.history || [];
-		this.getController('Storage').saveDocument(function(xml, html) {
-            me.lastDoc = html;
-            me.history.push(html);
+        this.getController('Storage').saveDocument(function(xml, html) {
+            me.addUndoLevel(html);
         });
-	},
+    },
 
-	/**
-	 * Set the callbacks for the autosave plugin in tinyMCE.
-	 * Do NOT rely on the existence of this function.
-	 * @private
-	 */
-	tinyInit : function() {
+    /**
+     * Set the callbacks for the autosave plugin in tinyMCE.
+     * Do NOT rely on the existence of this function.
+     * @private
+     */
+    tinyInit : function() {
         var me = this;
 
-		/* Load exemple document if there is no saved document */
+        /* Load exemple document if there is no saved document */
 
-		if (!User.preferences.lastOpened) {
-			/*Config.setLanguage(Config.languages[0].name, function() {
-	            me.application.fireEvent(Statics.eventsNames.languageLoaded, {});
+        if (!User.preferences.lastOpened) {
+            /*Config.setLanguage(Config.languages[0].name, function() {
+                me.application.fireEvent(Statics.eventsNames.languageLoaded, {});
             });*/
 
-    		Ext.Ajax.request({
-    			url : Statics.editorStartContentUrl,
-    			success : function(response) {
-    				var animation = me.getController('MainToolbar').highlightFileMenu();
+            Ext.Ajax.request({
+                url : Statics.editorStartContentUrl,
+                success : function(response) {
+                    var animation = me.getController('MainToolbar').highlightFileMenu();
                     // Create a window containing the example document and highlight the file menu
                     var exampleWin = Ext.widget('window', {
                         height : 400,
@@ -1086,52 +1078,52 @@ Ext.define('LIME.controller.Editor', {
                         }]
                     }).show();
                 }
-    		});
+            });
 
-		} else {
-		    me.restoreSession();
-		}
-	},
+        } else {
+            me.restoreSession();
+        }
+    },
 
 
-	/* -------------- Events handlers ---------------- */
+    /* -------------- Events handlers ---------------- */
 
-	/**
-	 * Create the path based on the given node's position in the dom.
-	 * @param {HTMLElement} selectedNode The dom node that was selected
-	 */
-	setPath : function(selectedNode) {
-		var elements = [];
-		var docClass = DocProperties.getDocClassList().split(" ");
-		if(selectedNode) {
-			var currentNode = selectedNode;
-			var classes = currentNode.getAttribute("class");
-			if (classes) {
-				while (currentNode && (classes.indexOf(docClass[0]) == -1)) {
-					classes = currentNode.getAttribute("class");
-					classes = classes.split(" ");
-					elements.push({
-						node : currentNode,
-						name : classes[(classes.length - 1)]
-					});
-					currentNode = DomUtils.getFirstMarkedAncestor(currentNode.parentNode);
-				}
-			}
-		}
-		elements.push({
-			node : null,
-			name : docClass[1]
-		});
-		this.getMain().down('mainEditorPath').setPath(elements);
-	},
+    /**
+     * Create the path based on the given node's position in the dom.
+     * @param {HTMLElement} selectedNode The dom node that was selected
+     */
+    setPath : function(selectedNode) {
+        var elements = [];
+        var docClass = DocProperties.getDocClassList().split(" ");
+        if(selectedNode) {
+            var currentNode = selectedNode;
+            var classes = currentNode.getAttribute("class");
+            if (classes) {
+                while (currentNode && (classes.indexOf(docClass[0]) == -1)) {
+                    classes = currentNode.getAttribute("class");
+                    classes = classes.split(" ");
+                    elements.push({
+                        node : currentNode,
+                        name : classes[(classes.length - 1)]
+                    });
+                    currentNode = DomUtils.getFirstMarkedAncestor(currentNode.parentNode);
+                }
+            }
+        }
+        elements.push({
+            node : null,
+            name : docClass[1]
+        });
+        this.getMain().down('mainEditorPath').setPath(elements);
+    },
 
-	onNodeClick: function(selectedNode) {
+    onNodeClick: function(selectedNode) {
         this.unFocusNodes();
-	    if(selectedNode) {
-	       this.setPath(selectedNode);
+        if(selectedNode) {
+           this.setPath(selectedNode);
            this.setFocusStyle(selectedNode);
-	    }
-	},
+        }
+    },
 
     setFocusStyle: function(node) {
         node.setAttribute(DocProperties.elementFocusedCls, "true");
@@ -1167,7 +1159,7 @@ Ext.define('LIME.controller.Editor', {
     },
 
     getTinyMceConfig: function() {
-    	var config = {
+        var config = {
                 doctype : '<!DOCTYPE html>',
                 theme : "modern",
                 schema: "html5",
@@ -1202,7 +1194,7 @@ Ext.define('LIME.controller.Editor', {
                 toolbar: "lime-undo lime-redo | bold italic strikethrough | superscript subscript | bullist numlist outdent indent | alignleft aligncenter alignright | table | searchreplace | link image"  
             };
 
-		return config;
+        return config;
     },
 
     onClickHandler : function(ed, e, selectedNode) {
@@ -1352,51 +1344,124 @@ Ext.define('LIME.controller.Editor', {
         Ext.callback(Language.onNodeChange, Language, [node, deep]);
     },
 
-    doUndo: function() {
-        this.application.fireEvent(Statics.eventsNames.progressStart, null, {
-            value : 0.1,
-            text : 'Undo'
-        });
-        this.application.fireEvent(Statics.eventsNames.loadDocument, {
-            docText: this.lastDoc
-        });
+
+    initUndoManager: function(editor) {
+        var me = this;
+        me.undoManager = {
+            maxLevels: 10,
+            levels: [],
+            level: -1,
+            buttons: {}
+        };
+        me.addUndoButtons(editor);
     },
 
     addUndoButtons: function(editor) {
         var me = this;
         var onPostRender = function(type) {
             return function() {
-                var button = this;
-                button.disabled(true);
-                editor.on('Undo Redo AddUndo TypingUndo ClearUndos', function() {
-                    if (type == 'undo') {
-                        button.disabled(false);
-                    }
-                });
+                me.undoManager.buttons[type] = this;
             }
         };
         editor.addButton('lime-undo', {
             tooltip: 'Undo',
             onPostRender: onPostRender('undo'),
-            onclick: function() {
-                me.doUndo();
-            }
+            onclick: me.doUndo.bind(me)
         });
         editor.addButton('lime-redo', {
             tooltip: 'Redo',
             onPostRender: onPostRender('redo'),
-            onclick: function() {
-                console.log('button');
-            }
+            onclick: function() {}
         });
     },
 
-	/* Initialization of the controller */
-	init : function() {
-		var me = this;
-		// Set the event listeners
-		this.application.on({
-			nodeFocusedExternally : this.focus,
+    enableUndoButtons: function(enabled, type) {
+        if (type && this.undoManager.buttons[type]) {
+            this.undoManager.buttons[type].disabled(!enabled);
+        } else {
+            Ext.Object.eachValue(this.undoManager.buttons, function(button) {
+                button.disabled(!enabled);
+            });
+        }
+    },
+
+    doUndo: function() {
+        var me = this;
+        me.undoManager.level--;
+
+        console.log(me.undoManager.level);
+        me.loadLevel(me.undoManager.level);
+        if ( !me.undoManager.level ) {
+            me.enableUndoButtons(false, 'undo');
+        } else {
+            //me.enableUndoButtons(true, 'redu');
+        }
+    },
+
+    loadLevel: function(index) {
+        var me = this, app = me.application,
+            level = me.undoManager.levels[index],
+            editor = me.getEditor();
+        if (!level) return;
+
+        app.fireEvent(Statics.eventsNames.progressStart, null, {
+            value : 0.1,
+            text : 'Undo'
+        });
+        app.fireEvent(Statics.eventsNames.beforeLoad, {
+            docText: level,
+            undoRequest: true
+        }, function(config) {
+            editor.setContent(config.docText);
+            app.fireEvent('editorDomChange', editor.getBody());
+            app.fireEvent(Statics.eventsNames.progressEnd);
+        });
+        me.undoManager.levelLoaded = true;
+    },
+
+    addUndoLevel: function(html) {
+        var me = this,
+            add = function(content) {
+                var len = me.undoManager.levels.length;
+                if (len && content == me.undoManager.levels[len-1]) return;
+
+                var levels = me.undoManager.levels;
+                if ( levels.length == me.undoManager.maxLevels ) {
+                    levels.shift();
+                }
+                levels.push(content);
+                me.undoManager.level = levels.length-1;
+                if ( levels.length > 1 ) {
+                    me.enableUndoButtons(true, 'undo');
+                }
+                console.info('added undo level');
+            };
+
+        if (me.undoManager.levelLoaded) {
+            me.undoManager.levelLoaded = false;
+            return;
+        }
+
+        if ( !html )
+            me.application.fireEvent(Statics.eventsNames.getDocumentHtml, function(html) {
+                add(html);
+            });
+        else
+            add(html);
+    },
+
+    clearUndoLevels: function() {
+        this.undoManager.levels = [];
+        this.undoManager.level = -1;
+        this.enableUndoButtons(false);
+    },
+
+    /* Initialization of the controller */
+    init : function() {
+        var me = this;
+        // Set the event listeners
+        this.application.on({
+            nodeFocusedExternally : this.focus,
 			nodeChangedExternally : this.focus,
 			editorDomNodeFocused : this.onNodeClick,
             editorDomChange: this.onNodeChange,
@@ -1406,8 +1471,6 @@ Ext.define('LIME.controller.Editor', {
 		this.application.on(Statics.eventsNames.disableEditing, this.disableEditor, this);
         this.application.on(Statics.eventsNames.enableEditing, this.enableEditor, this);
         this.application.on(Statics.eventsNames.afterSave, this.afterSave, this);
-
-        window.setInterval(me.autoSaveContent.bind(me), 10000);
 
 		// save a reference to the controller
 		var editorController = this;
@@ -1452,7 +1515,6 @@ Ext.define('LIME.controller.Editor', {
                     me.ensureContentWrapper(ed);
 					/* Warn of the change */
 					this.changed = true;
-                    me.addUndoLevel();
 				},
 				setcontent : function(ed, e) {
 					if(!DocProperties.getDocType()) return;
@@ -1483,10 +1545,9 @@ Ext.define('LIME.controller.Editor', {
 
 	                    // Events and callbacks
 	                    mysetup : function(editor) {
-                            me.addUndoButtons(editor);
+                            me.initUndoManager(editor);
 
                             editor.on('init', function(e) {
-                                console.log('init event', e);
                                 me.tinyInit();
                             });
 
