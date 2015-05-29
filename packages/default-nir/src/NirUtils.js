@@ -48,36 +48,11 @@ Ext.define('DefaultNir.NirUtils', {
     singleton : true,
     alternateClassName : 'NirUtils',
     
-    nirToHtml: function(content, callback) {
+    nirToHtml: function(nirXml, callback) {
         var me = this;
-
-        switch(me.getNirNamespace(content)) {
-            case 'http://www.normeinrete.it/nir/1.0':
-            me.nir1ToNir2(content, function(nir) {
-                me.nir2ToNir22(nir, function(nir) {
-                    me.nir22ToAkn(nir, function(akn) {
-                        me.aknToHtml(akn, callback);
-                    });
-                });
-            });
-            break;
-            case 'http://www.normeinrete.it/nir/2.0':
-            me.nir2ToNir22(content, function(nir) {
-                me.nir22ToAkn(nir, function(akn) {
-                    me.aknToHtml(akn, callback);
-                });
-            });
-            break;
-            case 'http://www.normeinrete.it/nir/2.2':
-            me.nir22ToAkn(content, function(akn) {
-                me.aknToHtml(akn, callback);
-            });
-            break;
-            default:
-                content = content.replace('<NIR', '<NIR  xmlns="http://www.normeinrete.it/nir/2.0"');
-                me.nirToHtml(content, callback);
-
-        }
+        Server.translateNir(nirXml, function (aknXml) {
+            me.aknToHtml(aknXml, callback);
+        });
     },
 
     aknToHtml: function(content, callback) {
@@ -87,39 +62,10 @@ Ext.define('DefaultNir.NirUtils', {
         });
     },
 
-    nir22ToAkn: function(content, callback) {
-        this.applyXslt('NirToAkn.xsl', content, callback);
-    },
-
-    nir1ToNir2: function(content, callback) {
-        this.applyXslt('Nir1XToNir20.xsl', content, callback);
-    },
-
-    nir2ToNir22: function(content, callback) {
-        this.applyXslt('Nir20ToNir22.xsl', content, callback);
-    },
-
-    applyXslt: function(path, content, callback) {
-        Server.getResourceFile(path, 'default-nir', function (path) {
-            Server.applyXslt(content, path, function (xml) {
-                Ext.callback(callback, null, [xml]);
-            });
-        });
-    },
-
     isNirContent: function(content) {
         var nirTag = content.match(/<NIR[^>]*>/);
         var nirNamespace = content.match(/<NIR[^>]+xmlns="http:\/\/www.normeinrete.it\/nir\//);
         return nirNamespace !== null || nirTag !== null ;
-    },
-
-    getNirNamespace: function(content) {
-        try {
-            return content.match("xmlns=\"(http://www.normeinrete.it/nir/\\d.\\d)/?\"")[1];
-        } catch (e) {
-            console.log('Error: getNirNamespace', e);
-            console.log(content);
-        }
     },
 
     confirmAknTranslation: function (cb, ncb) {
@@ -137,5 +83,4 @@ Ext.define('DefaultNir.NirUtils', {
             }
         });
     }
-
 });
