@@ -1350,7 +1350,7 @@ Ext.define('LIME.controller.Editor', {
         me.undoManager = {
             maxLevels: 10,
             levels: [],
-            level: -1,
+            level: 0,
             buttons: {}
         };
         me.addUndoButtons(editor);
@@ -1371,7 +1371,7 @@ Ext.define('LIME.controller.Editor', {
         editor.addButton('lime-redo', {
             tooltip: 'Redo',
             onPostRender: onPostRender('redo'),
-            onclick: function() {}
+            onclick: me.doRedo.bind(me)
         });
     },
 
@@ -1389,51 +1389,67 @@ Ext.define('LIME.controller.Editor', {
         var me = this;
         me.undoManager.level--;
 
-        console.log(me.undoManager.level);
         me.loadLevel(me.undoManager.level);
         if ( !me.undoManager.level ) {
             me.enableUndoButtons(false, 'undo');
-        } else {
-            //me.enableUndoButtons(true, 'redu');
         }
+        me.enableUndoButtons(true, 'redo');
+    },
+
+    doRedo: function() {
+        var me = this;
+        me.undoManager.level++;
+
+        me.loadLevel(me.undoManager.level);
+        if ( me.undoManager.level >= me.undoManager.levels.length - 1 ) {
+            me.enableUndoButtons(false, 'redo');
+        }
+        me.enableUndoButtons(true, 'undo');
     },
 
     loadLevel: function(index) {
         var me = this, app = me.application,
             level = me.undoManager.levels[index],
+            cmp = me.getMainEditor(),
             editor = me.getEditor();
         if (!level) return;
 
-        app.fireEvent(Statics.eventsNames.progressStart, null, {
-            value : 0.1,
-            text : 'Undo'
-        });
-        app.fireEvent(Statics.eventsNames.beforeLoad, {
-            docText: level,
-            undoRequest: true
-        }, function(config) {
-            editor.setContent(config.docText);
-            app.fireEvent('editorDomChange', editor.getBody());
-            app.fireEvent(Statics.eventsNames.progressEnd);
-        });
+        cmp.setLoading(true);
         me.undoManager.levelLoaded = true;
+        setTimeout(function() {
+            app.fireEvent(Statics.eventsNames.beforeLoad, {
+                docText: level,
+                undoRequest: true
+            }, function(config) {
+                editor.setContent(config.docText);
+                app.fireEvent('editorDomChange', editor.getBody());
+                cmp.setLoading(false);
+            });
+        }, 50);
     },
 
     addUndoLevel: function(html) {
         var me = this,
             add = function(content) {
-                var len = me.undoManager.levels.length;
-                if (len && content == me.undoManager.levels[len-1]) return;
+                var len = me.undoManager.levels.length,
+                    levels = me.undoManager.levels;
+                if (len && content == levels[len-1]) return;
+                var lastLevel = levels[me.undoManager.level];
+                if (lastLevel && lastLevel == content) return;
 
-                var levels = me.undoManager.levels;
-                if ( levels.length == me.undoManager.maxLevels ) {
+                if ( len == me.undoManager.maxLevels ) {
                     levels.shift();
+                }
+
+                if (me.undoManager.level < len - 1) {
+                    levels.length = me.undoManager.level + 1;
                 }
                 levels.push(content);
                 me.undoManager.level = levels.length-1;
                 if ( levels.length > 1 ) {
                     me.enableUndoButtons(true, 'undo');
                 }
+                me.enableUndoButtons(false, 'redo');
                 console.info('added undo level');
             };
 
@@ -1452,7 +1468,7 @@ Ext.define('LIME.controller.Editor', {
 
     clearUndoLevels: function() {
         this.undoManager.levels = [];
-        this.undoManager.level = -1;
+        this.undoManager.level = 0;
         this.enableUndoButtons(false);
     },
 
