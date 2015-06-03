@@ -567,6 +567,28 @@ Ext.define('LIME.controller.MetadataManagerController', {
             } else {
                 path += (tab.name != name) ? tab.name + "/" + name : tab.name;
                 //move this to a controller
+                if (path == "identification/FRBRWork/FRBRthis") {
+                    var manifestation = 
+                        editor.getDocumentMetadata().originalMetadata.metaDom
+                        .querySelector('.FRBRManifestation .FRBRthis').getAttribute('value');
+                    var manifestationList = manifestation.split('/');
+                    // console.log(data);
+                    var workList = data.value.split('/');
+                    // console.log('manifestation before', manifestation);
+                    for (var i = 0; i < workList.length -1; i++) {
+                        manifestationList[i] = workList[i];
+                    }
+                    manifestation = manifestationList.join('/');
+                    // console.log('manifestation after', manifestation);
+                    DocProperties.updateMetadata(Ext.merge({
+                        metadata : editor.getDocumentMetadata(),
+                        path : "identification/FRBRManifestation/FRBRthis",
+                        data : { value: manifestation },
+                        isAttr: data.source ? true : false,
+                        overwrite: data.source ? false : true
+                    }, conf));
+
+                }
                 var result = DocProperties.updateMetadata(Ext.merge({
                     metadata : editor.getDocumentMetadata(),
                     path : path,
