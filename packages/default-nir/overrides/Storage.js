@@ -69,10 +69,5 @@ Ext.define('DefaultNir.controller.Storage', {
     },
 
     // not needed to update doc propreties on save
-    updateDocProperties: function() {},
-
-    // build only internal metadata without changing the metadata of document
-    buildMetadata: function() {
-        return this.buildInternalMetadata(true);
-    }
+    updateDocProperties: function() {}
 });
