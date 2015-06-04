@@ -157,8 +157,7 @@ Ext.define('LIME.controller.Language', {
         
         var tmpHtml = editorController.serialize(tmpElement);
         
-        //temporary trick to remove focus class when removeCls don't work
-        tmpHtml = tmpHtml.replace(/(class=\"[^\"]+)(\s+\bfocused\")/g, '$1"').replace(/\bid="[^"]*"/g, "");
+        tmpHtml = tmpHtml.replace(/\bid="[^"]*"/g, "");
         return tmpHtml;
     },
 
@@ -198,14 +197,16 @@ Ext.define('LIME.controller.Language', {
        var languageController = this, editorController = this.getController("Editor"),
             beforeTranslate = TranslatePlugin.beforeTranslate,
         //removing all ext generated ids
-        editorContent = editorController.getContent(false, cmp).replace(/id="ext-element-(\d)+"/g, ""), 
+        editorContent = editorController.getContent(false, cmp).replace(/id="ext-element-(\d)+"/g, "")
+                        .replace(/(class=\"[^\"]+)(\s+\bfocused\")/g, '$1"'),
         params = {}, newParams, newFn;
 
         // creating a div that contains the editor content
         var tmpElement = Ext.DomHelper.createDom({
             tag : 'div',
             html : editorContent
-        }); 
+        });
+
         if (beforeTranslate) {
             params.docDom = tmpElement;
             newFn = Ext.Function.bind(beforeTranslate, TranslatePlugin, [Ext.Object.merge(params, config)]);

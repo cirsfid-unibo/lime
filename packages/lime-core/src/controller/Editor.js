@@ -376,8 +376,8 @@ Ext.define('LIME.controller.Editor', {
         if (!node)
             return;
 
-        if ( !Ext.Object.isEmpty(this.defaultActions) ) {
-            actions = Ext.merge(actions, this.defaultActions);
+        if ( !Ext.Object.isEmpty(me.defaultActions) ) {
+            actions = Ext.merge(actions, me.defaultActions);
         }
         
         if (actions.scroll) {
@@ -389,14 +389,15 @@ Ext.define('LIME.controller.Editor', {
         }
         if (actions.change) {
             /* Warn of the change */
-            this.changed = true;
-            this.application.fireEvent("editorDomChange", node, "partial", config);
+            me.changed = true;
+            me.changeEventsCounter.change++;
+            me.application.fireEvent("editorDomChange", node, "partial", config);
         }
         if (actions.click) {
-            this.application.fireEvent('editorDomNodeFocused', node, actions);
+            me.application.fireEvent('editorDomNodeFocused', node, actions);
         }
         if (actions.select) {
-            this.selectNode(node);
+            me.selectNode(node);
         }
     },
 
@@ -1023,6 +1024,7 @@ Ext.define('LIME.controller.Editor', {
         var me = this;
         this.getController('Storage').saveDocument(function(xml, html) {
             me.addUndoLevel(html);
+            me.initEventsCounter();
         });
     },
 
@@ -1415,7 +1417,6 @@ Ext.define('LIME.controller.Editor', {
         if (!level) return;
 
         cmp.setLoading(true);
-        me.undoManager.levelLoaded = true;
         setTimeout(function() {
             app.fireEvent(Statics.eventsNames.beforeLoad, {
                 docText: level,
@@ -1453,8 +1454,8 @@ Ext.define('LIME.controller.Editor', {
                 console.info('added undo level');
             };
 
-        if (me.undoManager.levelLoaded) {
-            me.undoManager.levelLoaded = false;
+        // Prevent to add a level when all events are setcontent
+        if ( me.undoManager.levels.length && !me.changeEventsCounter.change-me.changeEventsCounter.setcontent ) {
             return;
         }
 
@@ -1472,24 +1473,31 @@ Ext.define('LIME.controller.Editor', {
         this.enableUndoButtons(false);
     },
 
+    initEventsCounter: function() {
+        this.changeEventsCounter = {
+            change: 0,
+            setcontent: 0
+        };
+    },
+
     /* Initialization of the controller */
     init : function() {
         var me = this;
         // Set the event listeners
         this.application.on({
             nodeFocusedExternally : this.focus,
-			nodeChangedExternally : this.focus,
-			editorDomNodeFocused : this.onNodeClick,
+            nodeChangedExternally : this.focus,
+            editorDomNodeFocused : this.onNodeClick,
             editorDomChange: this.onNodeChange,
-			scope : this
-		});
-		this.application.on(Statics.eventsNames.loadDocument, this.beforeLoadDocument, this);
-		this.application.on(Statics.eventsNames.disableEditing, this.disableEditor, this);
+            scope : this
+        });
+        this.application.on(Statics.eventsNames.loadDocument, this.beforeLoadDocument, this);
+        this.application.on(Statics.eventsNames.disableEditing, this.disableEditor, this);
         this.application.on(Statics.eventsNames.enableEditing, this.enableEditor, this);
         this.application.on(Statics.eventsNames.afterSave, this.afterSave, this);
 
-		// save a reference to the controller
-		var editorController = this;
+        me.initEventsCounter();
+
 		var markerController = this.getController('Marker');
 		this.control({
 			// Handle the path panel
@@ -1531,12 +1539,14 @@ Ext.define('LIME.controller.Editor', {
                     me.ensureContentWrapper(ed);
 					/* Warn of the change */
 					this.changed = true;
+                    me.changeEventsCounter.change++;
 				},
 				setcontent : function(ed, e) {
 					if(!DocProperties.getDocType()) return;
 					me.ensureContentWrapper(ed);
 					/* Warn of the change */
 					this.changed = true;
+                    me.changeEventsCounter.setcontent++;
 				},
 
                 contextmenu : function(ed, e) {
