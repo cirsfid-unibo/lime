@@ -1,6 +1,7 @@
 {
     "name": "LIME",
     "requires": [
+        "ext-ux",
         "lime-core",
         "default-validation",
         "default-diff",

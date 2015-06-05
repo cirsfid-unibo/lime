@@ -18,6 +18,7 @@
     "output": "${package.dir}/build",
     "local": true,
     "requires": [
-        "extra-toggleslide"
+        "extra-toggleslide",
+        "ext-ux"
     ]
 }

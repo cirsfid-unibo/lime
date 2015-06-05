@@ -54,6 +54,7 @@
 Ext.syncRequire(['LIME.Application']);
 
 Ext.require([
+    'Ext.ux.IFrame',
     'Ext.ux.window.Notification',
     'Ext.ux.form.field.TinyMCE',
     'Ext.ux.form.field.TinyMCEWindowManager',
