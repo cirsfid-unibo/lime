@@ -50,6 +50,13 @@ Ext.define('AknTabVisualizer.view.VisualPreviewMainTab', {
     alias: 'widget.visualPreviewMainTab',
     controller: 'visualPreviewMainTabVController',
 
+    requires: [
+        'Ext.button.Segmented',
+        // Require this layout (which is used by Ext.button.Segmented) because
+        // ExtJs 5.1 is buggy ad doesn't inclue it by itself.
+        'Ext.layout.container.SegmentedButton'
+    ],
+
     cls: 'editorTab',
     notEditMode: true,
 

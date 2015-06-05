@@ -49,7 +49,8 @@ Ext.define('AknTabVisualizer.Application', {
     override: 'LIME.Application',
 
     requires: [
-        'AknTabVisualizer.view.VisualPreviewMainTab'
+        'AknTabVisualizer.view.VisualPreviewMainTab',
+        'AknTabVisualizer.controller.MainTab'
     ],
 
     initControllers : function() {

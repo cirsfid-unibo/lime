@@ -65,7 +65,6 @@ Ext.define('LIME.User', {
     loadFromLocalStorage: function () {
         var user = localStorage.getItem('user');
         if (user) {
-            console.log('loading from local storage');
             var user = JSON.parse(user);
             this.load(user);
        }
