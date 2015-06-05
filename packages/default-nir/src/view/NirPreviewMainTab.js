@@ -51,6 +51,8 @@
 Ext.define('DefaultNir.view.NirPreviewMainTab', {
     extend : 'Ext.panel.Panel',
     
+    requires: ['Ext.ux.form.field.CodeMirror'],
+    
     extend : 'Ext.Panel',
     // set the alias
     alias : 'widget.nirPreviewMainTab',

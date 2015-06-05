@@ -44,35 +44,18 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
-/*
-    This file is generated and updated by Sencha Cmd. You can edit this file as
-    needed for your application, but these edits will have to be merged by
-    Sencha Cmd when upgrading.
-*/
-
-Ext.syncRequire(['LIME.Application']);
-
-Ext.require([
-    'Ext.ux.IFrame',
-    'Ext.ux.window.Notification',
-    'Ext.ux.form.field.TinyMCE',
-    'Ext.ux.form.field.TinyMCEWindowManager',
-    'Ext.ux.form.field.CodeMirror',
-    'Ext.ux.layout.component.field.CodeMirror'
-]);
-
-Ext.application({
-    name: 'LIME',
-
-    extend: 'LIME.Application',
-    
-    launch : function() {
-        // First call the parent launch method
-        this.callParent();
+Ext.require('LIME.Application', function () {
+    Ext.application({
+        name: 'LIME',
+        extend: 'LIME.Application',
         
-        // Remove the loading icon
-        var loadingDiv = document.querySelector("#loading");
-        loadingDiv.parentNode.removeChild(loadingDiv);
-    }
+        launch : function() {
+            // First call the parent launch method
+            this.callParent();
+            
+            // Remove the loading icon
+            var loadingDiv = document.querySelector("#loading");
+            loadingDiv.parentNode.removeChild(loadingDiv);
+        }
+    });
 });

@@ -51,6 +51,7 @@
 
 Ext.define('LIME.controller.Notification', {
     extend : 'Ext.app.Controller',
+    requires: ['Ext.ux.window.Notification'],
 
     showNotification : function(config) {
         var content = config.content,

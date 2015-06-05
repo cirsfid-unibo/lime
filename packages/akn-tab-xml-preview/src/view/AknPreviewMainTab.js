@@ -51,6 +51,8 @@
 Ext.define('AknTabXmlPreview.view.AknPreviewMainTab', {
     extend : 'Ext.panel.Panel',
     
+    requires: ['Ext.ux.form.field.CodeMirror'],
+
     config : {
         pluginName : "aknPreview"
     },

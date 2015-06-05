@@ -46,9 +46,9 @@
 
 Ext.define('LIME.ux.translation.TranslationMainTab', {
     extend: 'Ext.panel.Panel',
-
-    alias: 'widget.translationMainTab',
+    requires : ['Ext.ux.IFrame'],
     controller: 'translationMainTabController',
+    alias: 'widget.translationMainTab',
 
     cls: 'editorTab',
     notEditMode: true,
