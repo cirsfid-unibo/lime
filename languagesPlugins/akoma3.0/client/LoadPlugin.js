@@ -282,20 +282,19 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
     },
     
     processMeta: function(doc, params) {
-        var extdom, meta, result = {}, ownDoc;
+        var meta, result = {}, ownDoc;
         
         result.docMarkingLanguage = params.docMarkingLanguage;
         
         if(!doc || !doc.querySelector("*[class="+this.getMetadataClass()+"]")) {
             result.metaDom = this.createBlankMeta();
         }  else {
-            extdom = Ext.get(doc);
-            meta = extdom.down("*[class=" + this.getMetadataClass() + "]");
+            meta = doc.querySelector("*[class=" + this.getMetadataClass() + "]");
             result = {}, ownDoc = doc.ownerDocument;
             result.docType = DomUtils.getDocTypeByNode(doc);
-            if (meta && meta.dom.parentNode) {
-                var language = meta.down("*[class=FRBRlanguage]", true),
-                    country = meta.down("*[class=FRBRcountry]", true);
+            if (meta && meta.parentNode) {
+                var language = meta.querySelector("*[class=FRBRlanguage]"),
+                    country = meta.querySelector("*[class=FRBRcountry]");
     
                 if (language) {
                     result.docLang = language.getAttribute('language');
@@ -303,7 +302,7 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
                 if (country) {
                     result.docLocale = country.getAttribute('value');
                 }
-                result.metaDom = meta.dom.parentNode.removeChild(meta.dom);
+                result.metaDom = meta.parentNode.removeChild(meta);
             }
         }         
         
