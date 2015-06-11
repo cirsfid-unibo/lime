@@ -273,7 +273,7 @@ Ext.define('LIME.controller.Editor', {
     getDocumentUri: function() {
         var metadata = this.getDocumentMetadata();
         var dom = metadata.originalMetadata.metaDom;
-        var frbrThis = dom.querySelector(".FRBRManifestation .FRBRthis");
+        var frbrThis = dom.querySelector("div[class='FRBRManifestation'] div[class='FRBRthis']");
         if ( frbrThis ) {
             return frbrThis.getAttribute('value');
         }
