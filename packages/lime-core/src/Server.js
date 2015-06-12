@@ -50,7 +50,7 @@ Ext.define('LIME.Server', {
     alternateClassName: 'Server',
     requires: ['Statics', 'Utilities'],
 
-    nodeServer: 'http://sinatra.cirsfid.unibo.it/node/documentsdb',
+    nodeServer: 'http://sinatra.cirsfid.unibo.it/node/aknservices/documentsdb',
     // nodeServer: 'http://localhost:9006',
 
     // ====================
@@ -86,6 +86,7 @@ Ext.define('LIME.Server', {
     saveUser: function (user, success, failure) {
         var username = user.username,
             password = user.password;
+        console.log('username', user.username, user.password);
         Ext.Ajax.request({
             method: 'PUT',
             url: this.nodeServer + '/Users/' + encodeURI(username),
