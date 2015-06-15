@@ -48,10 +48,13 @@
 Ext.define('LIME.Server', {
     singleton: true,
     alternateClassName: 'Server',
-    requires: ['Statics', 'Utilities'],
+    requires: ['Statics'],
 
     nodeServer: 'http://sinatra.cirsfid.unibo.it/node/aknservices/documentsdb',
     // nodeServer: 'http://localhost:9006',
+    phpServer: 'php/Services.php',
+    // 'baseUrl' : 'http://localhost:8080/lime-dev/php/Services.php'
+
 
     // ====================
     // ====== NODE ========
@@ -169,7 +172,7 @@ Ext.define('LIME.Server', {
     // Transform XML in content with the given xslt path
     applyXslt: function (content, xslt, success, failure, extraConfig) {
         Ext.Ajax.request({
-            url: Utilities.getAjaxUrl(),
+            url: this.phpServer,
             method: 'POST',
             params: Ext.merge({
                 requestedService: Statics.services.xsltTrasform,
@@ -198,7 +201,7 @@ Ext.define('LIME.Server', {
         });
 
         Ext.Ajax.request({
-            url: Utilities.getAjaxUrl(),
+            url: this.phpServer,
             method: 'POST',
             params: params,
             scope: this,
@@ -237,7 +240,7 @@ Ext.define('LIME.Server', {
         }
         Ext.Ajax.request({
             // the url of the web service
-            url: Utilities.getAjaxUrl(),
+            url: this.phpServer,
             method: 'POST',
             params: params,
             scope: this,
