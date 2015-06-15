@@ -87,7 +87,8 @@ Ext.define('LIME.Utilities', {
 	 */
 	ajaxUrls : {
 		// the base url of the ajax calls
-		'baseUrl' : 'php/Services.php'
+        'baseUrl' : 'php/Services.php'
+		// 'baseUrl' : 'http://localhost:8080/lime-dev/php/Services.php'
 	},
 	
 	/**
