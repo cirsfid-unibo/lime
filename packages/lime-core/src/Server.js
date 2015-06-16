@@ -53,7 +53,7 @@ Ext.define('LIME.Server', {
     nodeServer: 'http://sinatra.cirsfid.unibo.it/node/aknservices/documentsdb',
     // nodeServer: 'http://localhost:9006',
     phpServer: 'php/Services.php',
-    // 'baseUrl' : 'http://localhost:8080/lime-dev/php/Services.php'
+    // phpServer: 'http://localhost:8080/lime-dev/php/Services.php',
 
 
     // ====================

@@ -1,0 +1,201 @@
+/*
+ * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
+ * Computer Science and Engineering of the University of Bologna
+ * 
+ * Authors: 
+ * Monica Palmirani – CIRSFID of the University of Bologna
+ * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
+ * Luca Cervone – CIRSFID of the University of Bologna
+ * 
+ * Permission is hereby granted to any person obtaining a copy of this
+ * software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ * 
+ * The Software can be used by anyone for purposes without commercial gain,
+ * including scientific, individual, and charity purposes. If it is used
+ * for purposes having commercial gains, an agreement with the copyright
+ * holders is required. The above copyright notice and this permission
+ * notice shall be included in all copies or substantial portions of the
+ * Software.
+ * 
+ * Except as contained in this notice, the name(s) of the above copyright
+ * holders and authors shall not be used in advertising or otherwise to
+ * promote the sale, use or other dealings in this Software without prior
+ * written authorization.
+ * 
+ * The end-user documentation included with the redistribution, if any,
+ * must include the following acknowledgment: "This product includes
+ * software developed by University of Bologna (CIRSFID and Department of
+ * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Fabio Vitali, Luca Cervone)", in the same place and form as other
+ * third-party acknowledgments. Alternatively, this acknowledgment may
+ * appear in the software itself, in the same form and location as other
+ * such third-party acknowledgments.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+// Visual representation of AkomaNtoso documents.
+// Initial prototype: http://matteonardi.org/aknVisualizer/
+// This can be used as a base for further customizations.
+
+@import url(http://fonts.googleapis.com/css?family=Libre+Baskerville|Titillium+Web);
+
+.akomaNtoso {
+    max-width: 1240px;
+    margin: auto;
+    font: 14px/20px 'Libre Baskerville', serif;
+    color: #333;
+    text-align: justify;
+}
+
+.label(@color, @label) {
+
+    padding: 25px 10px 0;
+    margin: 20px 0 10px;
+
+    &:before {
+        content: @label;
+
+        position: absolute;
+        top: 0px;
+        left: 0px;
+
+        font: 13px/16px 'Titillium Web', sans-serif;
+
+        display: inline-block;
+        padding: 0px 6px;
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+        color: white;
+        background-color: hsl(@color, 30%, 40%);
+    }
+}
+
+.mainPart(@color, @label) {
+    .hcontainer(@color);
+    .label(@color, @label);
+    border-color: hsl(@color, 30%, 40%);
+}
+
+.hcontainer(@color) {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid hsl(@color, 30%, 65%);
+
+    >.num {
+        position: relative;
+        color: hsl(@color, 0%, 40%);
+        margin: 8px 0 15px;
+        font-size: 25px;
+        font-weight: bold;
+        display: inline-block;
+    }
+
+    >.heading {
+        position: relative;
+        color: hsl(@color, 0%, 40%);
+        margin-left: 15px;
+        font-size: 13px;
+        font-style: italic;
+        display: inline-block;
+    }
+}
+
+.inline (@color, @label) {
+    border-bottom: 1px solid hsl(@color, 0%, 65%);
+    display: inline-block;
+    position: relative;
+    margin: 5px 0 3px;
+    padding-right: 80px;
+
+    &:before {
+        content: @label;
+        width: 60px;
+        text-align: center;
+
+        font: 13px/16px 'Titillium Web', sans-serif;
+
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+
+        padding: 0px 4px;
+        border-top-right-radius: 4px;
+        border-top-left-radius: 4px;
+        color: white;
+        background-color: hsl(@color, 0%, 65%);
+    }
+}
+
+
+
+.aknVisualizer {
+
+    .meta { display:none; }
+
+    // Main parts
+    .preamble { .mainPart(206, 'preamble'); }
+    .preface { .mainPart(206, 'preface'); }
+    .conclusions { .mainPart(206, 'conclusions'); }
+    .body { .mainPart(50, 'body'); }
+
+    // HContainers
+    .title { .hcontainer(70); }
+    .section { .hcontainer(90); }
+    .article { .hcontainer(110); }
+    .chapter { .hcontainer(130); }
+    .clause { .hcontainer(150); }
+
+
+    // Lists
+    .list, .blockList {
+        >.point, >.item {
+            margin-top: 15px;
+            position: relative;
+            min-height: 30px;
+
+            >.num {
+                position: absolute;
+                top: 0px;
+                left: 5px;
+                
+                font-size: 17px;
+                font-weight: bold;
+            }
+
+            >.content, >.list, >.num ~ .p {
+                margin-left: 60px;
+                display: inline-block;
+            }
+        }
+        >.intro, >.listIntroduction {
+            font-style: italic;
+        }
+    }
+
+
+
+    // Inlines
+    .ins { display: inline-block; }
+    .omissis { .inline(206, 'omissis'); }
+    .def {
+        display: inline-block;
+        font-style: inline;
+    }
+    .ref {
+        display: inline;
+        color: hsl(206, 100%, 50%);
+        text-decoration: underline;
+    }
+}
