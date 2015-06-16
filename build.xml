@@ -44,16 +44,6 @@
 			<fileset dir="${build.dir}/config/locale/ext" includes="**"/>  
 		</copy>
         <echo><![CDATA[Copying images and compiled css.]]></echo>
-        <copy todir="${basedir}/resources/ext">
-            <fileset dir="${build.dir}/resources/ext" includes="**"/>  
-        </copy>
-        <copy todir="${basedir}/resources/images">
-            <fileset dir="${build.dir}/resources/images" includes="**"/>  
-        </copy>
-        <copy file="${build.dir}/resources/LIME-all.css" todir="${basedir}/resources"/>
-        <echo file="${basedir}/bootstrap.css" append="false">
-            @import 'resources/LIME-all.css';
-        </echo>
 	</target>
 
 </project>

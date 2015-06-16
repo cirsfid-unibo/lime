@@ -54,6 +54,10 @@ Ext.define('LIME.Utilities', {
 	singleton : true,
 	alternateClassName : 'Utilities',	
 	
+    requires: [
+        'Server'
+    ],
+
 	/**
 	 * @property {String} buttonFieldDefault
 	 * TODO
@@ -82,15 +86,6 @@ Ext.define('LIME.Utilities', {
 	},
 	
 	/**
-	 * @property {Object} ajaxUrls
-	 * A set of urls needed to load some data dynamically.
-	 */
-	ajaxUrls : {
-		// the base url of the ajax calls
-		'baseUrl' : 'php/Services.php'
-	},
-	
-	/**
 	 * Return a well formed url that contains the given arguments
 	 * properly encoded (to be set into the url).
 	 * @param {Array} params The parameters to be set into the url
@@ -98,7 +93,7 @@ Ext.define('LIME.Utilities', {
 	 */
 	getAjaxUrl : function(params) {
 		// get the url for the requested service
-		var requestedServiceUrl = this.ajaxUrls['baseUrl'] + '?';
+		var requestedServiceUrl = Server.phpServer + '?';
 
 		// itereate through the params
 		for (param in params) {

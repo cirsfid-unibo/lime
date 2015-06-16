@@ -276,7 +276,7 @@ Ext.define('LIME.store.LanguagesPlugin', {
             for (objIndex in reqUrls) {
                 /* Add a lister that waits for the given key file to be loaded */
                 var eventName = 'makeRequest' + objIndex;
-                me.addListener(eventName, languagesPlugins.requestLoader, me);
+                me.addListener(eventName, me.requestLoader, me);
             }
             
             /* Start the requests from the first file */

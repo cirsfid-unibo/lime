@@ -1,1 +1,6 @@
+/ext/
+/.sencha/
 /build/
+/bootstrap.js
+/bootstrap.json
+/bootstrap.css

@@ -19,8 +19,8 @@
             "path": "bootstrap.css"
         },
         { "path": "lib/codemirror/codemirror.css" },
-        { "path": "resources/stylesheets/extjs4.editor.css" },
-        { "path": "resources/stylesheets/extjs4.viewport.css" }
+        { "path": "resources/stylesheets/ext_custom.css" },
+        { "path": "resources/stylesheets/aknVisualizer.css" }
     ],
     "js": [
         { "path":"${ext.dir}/build/ext-all-debug.js" },
