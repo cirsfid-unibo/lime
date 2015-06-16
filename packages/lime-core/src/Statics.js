@@ -52,9 +52,6 @@ Ext.define('LIME.Statics', {
 	/* Since this is merely a utility class define it as a singleton (static members by default) */
 	singleton : true,
 	alternateClassName : 'Statics',
-
-	/*Used for debug*/
-	debugUrl : '/wawe-debug/',
 	
 	/**
 	 * @property {String} globalPatternsFile
