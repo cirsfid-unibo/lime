@@ -58,11 +58,6 @@ Ext.define('LIME.Statics', {
 	 * The path of global pattern configuration file 
 	 */
 	globalPatternsFile : "config/Patterns.json",
-	/**
-	 * @property {String} editorStartContentUrl
-	 * The path of default editor content file 
-	 */
-	editorStartContentUrl : 'config/examples/editorStartContent-'+Locale.getLang()+'.html',
 	
 	/**
 	 * Static values for metadata

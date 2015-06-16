@@ -1044,7 +1044,7 @@ Ext.define('LIME.controller.Editor', {
             });*/
 
             Ext.Ajax.request({
-                url : Statics.editorStartContentUrl,
+                url : me.getEditorStartContentUrl(),
                 success : function(response) {
                     var animation = me.getController('MainToolbar').highlightFileMenu();
                     // Create a window containing the example document and highlight the file menu
@@ -1085,6 +1085,13 @@ Ext.define('LIME.controller.Editor', {
         } else {
             me.restoreSession();
         }
+    },
+
+    /**
+    * The path of default editor content file 
+    */
+    getEditorStartContentUrl : function() {
+        return 'config/examples/editorStartContent-'+Locale.getLang()+'.html';
     },
 
 
