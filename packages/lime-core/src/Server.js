@@ -51,7 +51,7 @@ Ext.define('LIME.Server', {
     requires: ['Statics'],
 
     nodeServer: 'http://sinatra.cirsfid.unibo.it/node/aknservices/documentsdb',
-    phpServer: 'php/Services.php',
+    phpServer: 'php/',
 
     // ====================
     // ====== NODE ========
