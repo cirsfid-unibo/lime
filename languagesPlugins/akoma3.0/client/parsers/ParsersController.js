@@ -66,63 +66,63 @@ Ext.define('LIME.controller.ParsersController', {
      */
     parsersConfig : {
         'date' : {
-            'url' : 'php/parsers/date/index.php',
+            'url' : 'parsers/date/index.php',
             'method' : 'POST'
         },
         'docNum' : {
-            'url' : 'php/parsers/docNum/index.php',
+            'url' : 'parsers/docNum/index.php',
             'method' : 'POST'
         },
         'list' : {
-            'url' : 'php/parsers/list/index.php',
+            'url' : 'parsers/list/index.php',
             'method' : 'POST'
         },
         'docDate' : {
-            'url' : 'php/parsers/date/index.php',
+            'url' : 'parsers/date/index.php',
             'method' : 'POST'
         },
         'body' : {
-            'url' : 'php/parsers/body/index.php',
+            'url' : 'parsers/body/index.php',
             'method' : 'POST'
         },
         'structure' : {
-            'url' : 'php/parsers/structure/index.php',
+            'url' : 'parsers/structure/index.php',
             'method' : 'POST'
         },
         'reference' : {
-            'url' : 'php/parsers/reference/index.php',
+            'url' : 'parsers/reference/index.php',
             'method' : 'POST'
         },
         'quote' : {
-            'url' : 'php/parsers/quote/index.php',
+            'url' : 'parsers/quote/index.php',
             'method' : 'POST'
         },
         'docType': {
-            'url' : 'php/parsers/doctype/index.php',
+            'url' : 'parsers/doctype/index.php',
             'method' : 'POST'
         },
         'authority': {
-            'url' : 'php/parsers/authority/index.php',
+            'url' : 'parsers/authority/index.php',
             'method' : 'POST'
         },
         'location': {
-            'url' : 'php/parsers/location/index.php',
+            'url' : 'parsers/location/index.php',
             'method' : 'POST'
         },
         'enactingFormula': {
-            'url' : 'php/parsers/enactingFormula/index.php',
+            'url' : 'parsers/enactingFormula/index.php',
             'method' : 'POST'
         },
         'note': {
-            'url' : 'php/parsers/note/index.php',
+            'url' : 'parsers/note/index.php',
             'method' : 'POST'
         },
         'organization': {
-            'url' : 'php/parsers/organization/index.php',
+            'url' : 'parsers/organization/index.php',
             'method' : 'POST'
         },
         'attachment': {
-            'url' : 'php/parsers/attachment/index.php',
+            'url' : 'parsers/attachment/index.php',
             'method' : 'POST'
         }
     },
@@ -1453,6 +1453,7 @@ Ext.define('LIME.controller.ParsersController', {
             headingButton = DocProperties.getChildConfigByName(markButton,"heading");
 
         if( partName == "item" ) {
+            console.log(parts);
             me.wrapBlockList(partName, parts, node, button);
             return;
         }
@@ -2769,7 +2770,7 @@ Ext.define('LIME.controller.ParsersController', {
             sendString = sendString.replace(/<br[^>]*>/g, "\n\n");
             Ext.Ajax.request({
                 // the url of the web service
-                url : config.url,
+                url : Server.phpServer+config.url,
                 timeout : me.parserAjaxTimeOut,
                 // set the method
                 method : config.method,

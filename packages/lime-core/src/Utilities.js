@@ -93,7 +93,7 @@ Ext.define('LIME.Utilities', {
 	 */
 	getAjaxUrl : function(params) {
 		// get the url for the requested service
-		var requestedServiceUrl = Server.phpServer + '?';
+		var requestedServiceUrl = Server.phpServer + 'Services.php?';
 
 		// itereate through the params
 		for (param in params) {
