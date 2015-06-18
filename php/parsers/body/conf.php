@@ -47,17 +47,17 @@
  
 $rules = Array(
     //"roman" => "(M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3}))",
-    "roman" => "\b[IVXLCDM]+",
+    "roman" => "\b[IVXLCDM]+\b",
     "number" => "\d+|{{roman}}+|(U|Ú)NICO",
     "book" => "/(?P<num>({{bookList}})\s*({{number}}\s*[º°\.]*))/",
     "title" => "/(?P<num>({{titleList}})\s*({{number}}))/",
     "section" => "/(?P<num>({{sectionList}})\s*({{number}}\s*[º°\.]*))/",
     "chapter" => "/(?P<num>({{chapterList}})\s*({{number}}))/",
-    "article" => "/(?P<num>({{articleList}})\s*({{number}}\s*[º°\.]*)({{latino}})?)\s*({{heading}})?/",
+    "article" => "/(?P<num>({{articleList}})\s*({{number}}\s*[º°\.]*)([ -]*{{latino}})?)\s*({{heading}})?/",
 
     "heading" => "\([A-Z].+\)",
 
-    "paragraph" => "/(?<![\.\w] ){{numparagraph}} +{{bodyitem}}/u",
+    "paragraph" => "/(?<![\.,\w] ){{numparagraph}} +{{bodyitem}}/u",
     "numparagraph" => "\b\d{1,2}[\)\.\-]",
 
     "item" => "/(?<![\.,\w] ){{numitem}} +{{bodyitem}}/u",
