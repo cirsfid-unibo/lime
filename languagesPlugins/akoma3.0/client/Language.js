@@ -170,14 +170,8 @@ Ext.define('LIME.ux.akoma3.Language', {
             num = Ext.fly(element).down('.num', true);
 
         if ( num && (num.parentNode == element || Ext.fly(num.parentNode).is('.content')) ) {
-            var text = (num) ? num.textContent : "",
-                numVal = text.match(/(?:[\u00C0-\u1FFF\u2C00-\uD7FF\w]+\W*\s+)*(\w+\s*\w*)/),
-                romanChecker = new RegExp(/M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3})/);
-
-            elNum = (numVal && numVal.length) ? numVal[numVal.length-1] : false;
-            var romanNumer = (elNum) ? elNum.match(romanChecker) : false;
-            elNum = (elNum && (!romanNumer || !romanNumer[0].length ) ) ? elNum.toLowerCase() : elNum;
-            elNum = elNum && elNum.replace(/\s/g,'');
+            var text = (num) ? num.textContent : "";
+            elNum = AknMain.parsers.Num.normalize(text);
         }
 
         if ( !elNum ) {

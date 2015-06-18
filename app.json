@@ -10,7 +10,8 @@
         "akn-tab-visualizer",
         "extra-toggleslide",
         "default-import",
-        "default-nir"
+        "default-nir",
+        "akn-main"
     ],
     "framework": "ext",
     "css": [

@@ -44,19 +44,10 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('DefaultNir.Application', {
+Ext.define('AknMain.Application', {
     override: 'LIME.Application',
 
     requires: [
-        'DefaultNir.NirUtils',
-        'DefaultNir.controller.NirPreview',
-        'DefaultNir.view.NirPreviewMainTab'
-    ],
-
-    initControllers : function() {
-        this.controllers.push('DefaultNir.controller.NirPreview');
-        
-        Locale.getPackageStrings('default-nir');
-        this.callParent();
-    }
+        'AknMain.parsers.Num'
+    ]
 });

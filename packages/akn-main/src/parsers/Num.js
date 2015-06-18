@@ -44,19 +44,32 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('DefaultNir.Application', {
-    override: 'LIME.Application',
+// Class for AkomaNtoso num parsing
+// normalize() normalize <num> content for eId 'number' part
+// Examples:
+// "Art. 2" -> "2"
+// "Art. 2.2.3" -> "223"
+// "Title IV" -> "IV"
+Ext.define('AknMain.parsers.Num', {
+    singleton: true,
+    
+    numReg: new RegExp(/(?:[\u00C0-\u1FFF\u2C00-\uD7FF\w]+\W*\s+)*((\w+[\.)\s]*)+)/),
+    romanReg: new RegExp(/M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3})/),
 
-    requires: [
-        'DefaultNir.NirUtils',
-        'DefaultNir.controller.NirPreview',
-        'DefaultNir.view.NirPreviewMainTab'
-    ],
+    normalize: function(str) {
+        var normalized = "",
+            numMatch = str.match(this.numReg);
 
-    initControllers : function() {
-        this.controllers.push('DefaultNir.controller.NirPreview');
-        
-        Locale.getPackageStrings('default-nir');
-        this.callParent();
+        if ( numMatch && numMatch.length ) {
+            normalized = numMatch[1];
+        }
+
+        var romanNumer = normalized.match(this.romanReg);
+        if ( !romanNumer || !romanNumer[0].length ) {
+            normalized = normalized.toLowerCase();
+        }
+
+        normalized = normalized.replace(/[\.)\s]/g,'');
+        return normalized;
     }
 });
