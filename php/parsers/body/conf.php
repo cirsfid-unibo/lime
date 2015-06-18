@@ -57,11 +57,14 @@ $rules = Array(
 
     "heading" => "\([A-Z].+\)",
 
-    "numitem" => "\b([A-Za-z-]+|\d+|{{roman}})\)|\b(\d+\s*\.)",
+    "paragraph" => "/(?<![\.\w] ){{numitem}} +{{bodyitem}}/u",
+
+    #"numitem" => "\b([A-Za-z-]+|\d+|{{roman}})\)|\b(\d+\s*\.)",
+    "numitem" => "\b\w+[\)\.\-]",
     "item" => "/(?<![\.\w] ){{numitem}} +{{bodyitem}}/u",
     "bodyitem" => "[\p{L}\p{N}\p{P}\p{S} ]+[\.;]?",
     
-    "hierarchy" => Array("book","title","chapter","section","article","item")
+    "hierarchy" => Array("book","title","chapter","section","article","paragraph","item")
     
 );
 
