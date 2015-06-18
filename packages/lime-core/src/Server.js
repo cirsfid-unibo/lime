@@ -50,7 +50,7 @@ Ext.define('LIME.Server', {
     alternateClassName: 'Server',
     requires: ['Statics'],
 
-    nodeServer: 'http://sinatra.cirsfid.unibo.it/node/aknservices/documentsdb',
+    nodeServer: 'http://sinatra.cirsfid.unibo.it/node/aknservices',
     phpServer: 'php/',
 
     // ====================
@@ -62,7 +62,7 @@ Ext.define('LIME.Server', {
     login: function (username, password, success, failure) {
         Ext.Ajax.request({
             method: 'GET',
-            url: this.nodeServer + '/Users/' + encodeURI(username),
+            url: this.nodeServer + '/documentsdb/Users/' + encodeURI(username),
             headers: {
                 Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password)
             },
@@ -75,7 +75,7 @@ Ext.define('LIME.Server', {
     register: function (user, success, failure) {
         Ext.Ajax.request({
             method: 'POST',
-            url: this.nodeServer + '/Users',
+            url: this.nodeServer + '/documentsdb/Users',
             jsonData: user,
             success: success,
             failure: failure
@@ -89,7 +89,7 @@ Ext.define('LIME.Server', {
         console.log('username', user.username, user.password);
         Ext.Ajax.request({
             method: 'PUT',
-            url: this.nodeServer + '/Users/' + encodeURI(username),
+            url: this.nodeServer + '/documentsdb/Users/' + encodeURI(username),
             headers: {
                 Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password)
             },
@@ -106,7 +106,7 @@ Ext.define('LIME.Server', {
 
         Ext.Ajax.request({
             method: 'GET',
-            url: this.nodeServer + '/Documents' + path,
+            url: this.nodeServer + '/documentsdb/Documents' + path,
             headers: {
                 Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password)
             },
@@ -124,7 +124,7 @@ Ext.define('LIME.Server', {
 
         Ext.Ajax.request({
             method: 'GET',
-            url: this.nodeServer + '/Documents' + path,
+            url: this.nodeServer + '/documentsdb/Documents' + path,
             headers: {
                 Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password),
                 Accept: 'text/html'
@@ -147,7 +147,7 @@ Ext.define('LIME.Server', {
         Ext.Ajax.request({
             method: 'PUT',
             rawData: content,
-            url: this.nodeServer + '/Documents' + path,
+            url: this.nodeServer + '/documentsdb/Documents' + path,
             headers: {
                 Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password)
             },
