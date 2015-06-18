@@ -57,10 +57,10 @@ $rules = Array(
 
     "heading" => "\([A-Z].+\)",
 
-    "paragraph" => "/(?<![\.\w] ){{numitem}} +{{bodyitem}}/u",
-    "numparagraph" => "\b\d{1,2}[\)\.\-]"
+    "paragraph" => "/(?<![\.\w] ){{numparagraph}} +{{bodyitem}}/u",
+    "numparagraph" => "\b\d{1,2}[\)\.\-]",
 
-    "item" => "/(?<![\.\w] ){{numitem}} +{{bodyitem}}/u",
+    "item" => "/(?<![\.,\w] ){{numitem}} +{{bodyitem}}/u",
     "numitem" => "\b[A-Za-z]{1,2}[\)\.\-]",
     #"numitem" => "\b([A-Za-z-]+|\d+|{{roman}})\)|\b(\d+\s*\.)",
     "bodyitem" => "[\p{L}\p{N}\p{P}\p{S} ]+[\.;]?",
