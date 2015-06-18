@@ -94,6 +94,7 @@ class BodyParser {
 					$headingsOffset = array();
 					$values = array();
 					$numitems = array();
+					$numparagraphs = array();
 					$bodyitems = array();
 
 					//////////////////////////////////////////
@@ -118,6 +119,12 @@ class BodyParser {
 								$headings[] = $match[0];
 								$headingsOffset[] = $match[1];
 							}
+						}
+					}
+
+					if(array_key_exists("numparagraph",$result)) {
+						foreach($result["numparagraph"] as $index => $match) {
+							$numparagraphs[] = $match[0];
 						}
 					}
 					
@@ -157,14 +164,15 @@ class BodyParser {
 							$headingContent["start"] = $headingsOffset[$i];
 							$valueArray["heading"] = $headingContent;
 						}
+						if(array_key_exists($i,$numparagraphs)) {
+							$valueArray["numparagraph"] = $numparagraphs[$i];
+						}
 						if(array_key_exists($i,$numitems)) {
 							$valueArray["numitem"] = $numitems[$i];
 						}
 						if(array_key_exists($i,$bodyitems)) {
 							$valueArray["bodyitem"] = trim($bodyitems[$i]);
 						}
-				
-						
 						$valueArray["contains"] = $this->parse_ricorsive($subString,$hierarchyIndex+$key+1);
 						$return[$value][] = $valueArray;
 
