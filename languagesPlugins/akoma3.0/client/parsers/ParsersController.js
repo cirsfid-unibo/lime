@@ -1453,17 +1453,34 @@ Ext.define('LIME.controller.ParsersController', {
             headingButton = DocProperties.getChildConfigByName(markButton,"heading");
 
         if( partName == "item" ) {
-            console.log(parts);
             me.wrapBlockList(partName, parts, node, button);
             return;
+        }
+
+        if ( partName == "paragraph" ) {
+            parts = parts.map(function(data) {
+                data.num = {
+                    value: data.numparagraph,
+                    start: data.start
+                }
+                return data;
+            });
         }
 
         Ext.each(parts, function(element) {
             if(!element.value.trim()) return; 
             var numVal = (element.num && element.num.value) || element.value;
-            var headingVal = (element.heading && element.heading.value);
-            var textNodesObj = DomUtils.smartFindTextNodes(numVal, node),
+            var headingVal = (element.heading && element.heading.value),
                 parent, partNode;
+            var textNodesObj = [];
+
+            if ( partName == "paragraph" ) {
+                textNodesObj = DomUtils.smartFindTextNodes(element.value, node);
+            }
+
+            if ( !textNodesObj.length )
+                textNodesObj = DomUtils.smartFindTextNodes(numVal, node);
+
             if ( !textNodesObj.length ) return;
 
             var firstNode = textNodesObj[0][0].node;
@@ -1831,9 +1848,9 @@ Ext.define('LIME.controller.ParsersController', {
         var next = function(index) {
             index = index || total-nums;
             var obj = data[index];
-            var matchStr = obj.ref;
 
             try {
+                var matchStr = obj.ref;
                 var ranges = DomUtils.findText(matchStr, body);
                 var date = obj.date || "",
                     docNum = obj.docnum || "",
@@ -2207,7 +2224,7 @@ Ext.define('LIME.controller.ParsersController', {
     newTextNodeToSpans : function(tNodeObjs, str, applyFn) {
         var me = this, spanElements = [], textNodes = [];
         Ext.each(tNodeObjs, function(obj) {
-            var splitedNodes = me.splitNode(obj.node, obj.str);
+            var splitedNodes = me.splitNode(obj.node, str);
             if ( splitedNodes.length ) {
                 textNodes.push(splitedNodes[0]); //TODO: Take all
             }
@@ -2323,7 +2340,6 @@ Ext.define('LIME.controller.ParsersController', {
     },
 
     addHcontainerHeading: function(node) {
-        return;
         var me = this;
         var num = Ext.fly(node).child('.num', true);
         var headings = [], subheadings = [];
@@ -2405,14 +2421,13 @@ Ext.define('LIME.controller.ParsersController', {
 
     addArticleParagrapths: function(node) {
         var me = this, nodesToMark = [], prevWrapper = null, brEndPar = [];
-
+        if ( node.querySelector('.paragraph') ) return;
         Ext.each(node.querySelectorAll('div'), function(el) {
             var notMarkedChild = (el.parentNode == node && !el.getAttribute(DomUtils.elementIdAttribute));
             if ( notMarkedChild ) {
                 nodesToMark.push(el);
             }
         });
-
         Ext.each(node.querySelectorAll('br+br'), function(brNode) {
             var prevTextNode = DomUtils.getPreviousTextNode(brNode, true);
             if ( prevTextNode && prevTextNode.textContent.trim().match(/\.$/) ) {
@@ -2521,8 +2536,9 @@ Ext.define('LIME.controller.ParsersController', {
             }
         });
 
-        var hcontainers = Ext.Array.toArray(node.querySelectorAll('.hcontainer')).filter(function(el) {
-            if ( Ext.fly(el).child("div") ) {
+        var hcontainers = Ext.Array.toArray(node.querySelectorAll('.article')).filter(function(el) {
+            var fly = Ext.fly(el);
+            if ( fly.child("div") && !fly.child(".paragraph") ) {
                 return true;
             }
         });
