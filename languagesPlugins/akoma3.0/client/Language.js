@@ -93,7 +93,7 @@ Ext.define('LIME.ux.akoma3.Language', {
             temporalGroup : "tmpg",
             wrapUp : "wrapup"
         },
-        noPrefixElements : ["collectionBody", "body", "mainBody", "documentRef", "componentRef", "mod"],
+        noPrefixElements : ["collectionBody", "body", "mainBody", "documentRef", "componentRef", "mod", "authorialNote"],
         noIdElements: ["preface", "preamble", "body", "mainBody", "collectionBody"],
         noIdPatterns: ["block", "inline"],
         exceptIdElements: ["mod", "documentRef", "componentRef", "heading", "ins", "del"],

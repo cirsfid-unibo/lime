@@ -235,10 +235,18 @@ Ext.define('LIME.controller.ParsersController', {
     getTextChildrenGroups: function(node, extraElements, isTextNodeFn) {
         extraElements = extraElements || [];
         var textGroups = [], group = [],
-            groupElementsName = ["br", "sub", "sup"].concat(extraElements);
+            groupElementsName = ["br", "sub", "sup"].concat(extraElements),
+            headingNode = Ext.fly(node).last('.num,.heading,.subheading', true);
 
         for ( var i = 0; i < node.childNodes.length; i++ ) {
             var child = node.childNodes[i];
+            // Don't consider the text before heading nodes
+            if ( headingNode ) {
+                if (child == headingNode) {
+                    headingNode = null;
+                }
+                continue;
+            } 
             var fly = Ext.fly(child);
 
             if ( Ext.isFunction(isTextNodeFn) ) {
@@ -2341,23 +2349,24 @@ Ext.define('LIME.controller.ParsersController', {
 
     addHcontainerHeading: function(node) {
         var me = this;
-        var num = Ext.fly(node).child('.num', true);
+        var fly = Ext.fly(node);
+        var searchAfter = fly.last('.num,.heading,.subheading', true);
         var headings = [], subheadings = [];
-        var hcontainerChild = Ext.fly(node).child('.hcontainer', true);
-        var headingNode = Ext.DomHelper.createDom({
+        var hcontainerChild = fly.child('.hcontainer', true);
+        var headingNode = fly.child('.heading', true) || Ext.DomHelper.createDom({
             tag : 'span',
             cls : DomUtils.tempParsingClass
         });
-        var subHeadingNode = Ext.DomHelper.createDom({
+        var subHeadingNode = fly.child('.subheading', true) || Ext.DomHelper.createDom({
             tag : 'span',
             cls : DomUtils.tempParsingClass
         });
         var headingButton = DocProperties.getFirstButtonByName('heading'),
             subheadingButton = DocProperties.getFirstButtonByName('subheading');
 
-        if ( num ) {
-            var iterNode = num;
-            while ( iterNode.nextSibling && iterNode.nextSibling != hcontainerChild ) {
+        if ( searchAfter ) {
+            var iterNode = searchAfter;
+            while ( iterNode.nextSibling && DomUtils.getNodeNameLower(iterNode.nextSibling) != 'div' ) {
                 if ( Ext.isEmpty(DomUtils.getTextOfNode(headingNode).trim()) ) {
                     headingNode.appendChild(iterNode.nextSibling);
                 } else {
@@ -2365,7 +2374,7 @@ Ext.define('LIME.controller.ParsersController', {
                 }
             }
             if ( !Ext.isEmpty(DomUtils.getTextOfNode(headingNode).trim()) ) {
-                Ext.fly(headingNode).insertAfter(num);
+                Ext.fly(headingNode).insertAfter(searchAfter);
                 if ( !Ext.isEmpty(DomUtils.getTextOfNode(subHeadingNode).trim()) ) {
                     Ext.fly(subHeadingNode).insertAfter(headingNode);
                     subheadings.push(subHeadingNode);
@@ -2510,10 +2519,7 @@ Ext.define('LIME.controller.ParsersController', {
                 nodes : nodesToMark
             });
         }
-
-        if ( !node.querySelector('.heading') ) {
-            me.addHcontainerHeading(node);
-        }
+        me.addHcontainerHeading(node);
     },
 
     normalizeNodes: function(node) {
