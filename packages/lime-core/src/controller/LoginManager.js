@@ -137,7 +137,6 @@ Ext.define('LIME.controller.LoginManager', {
     fakeLogin: function () {
         User.username = 'demo@prova.com';
         User.password = 'demo';
-        User.preferences.documentsPath = '/path/to/collection';
 
         this.getLogin().hide();
         this.getViewport().showEditor();
@@ -193,8 +192,8 @@ Ext.define('LIME.controller.LoginManager', {
         }, function(error) {
             Ext.Msg.alert(Locale.strings.authErrors.REGISTRATION_FAILED_TITLE, Locale.strings.authErrors.ERR_1);
             console.log(error);
-            modal.setLoading(false); 
-            modal.registrationFailed();
+            registrationWindow.setLoading(false); 
+            registrationWindow.registrationFailed();
         });
     },
     

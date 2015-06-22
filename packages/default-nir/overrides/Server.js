@@ -51,20 +51,6 @@ Ext.define('DefaultNir.Server', {
     nirConversionUrl: 'http://sinatra.cirsfid.unibo.it/node/xsltconverters/nir2akn',
     // nirConversionUrl: 'http://localhost:9006/nir2akn',
 
-    // By default, add 'acquisizione' and 'spedizione' folders to the
-    // user folders.
-    login: function (username, password, success, failure) {
-        this.callParent([username, password, function (response) {
-            success(response);
-            setTimeout(function () {
-                var folders = User.preferences.folders.slice() || [];
-                if (folders.indexOf('/acquisizione/') == -1) folders.push('/acquisizione/');
-                if (folders.indexOf('/spedizione/') == -1) folders.push('/spedizione/');
-                User.setPreference('folders', folders);
-            }, 0);
-        }, failure]);
-    },
-
     translateNir: function (nirXml, success, failure) {
         Ext.Ajax.request({
             method: 'POST',

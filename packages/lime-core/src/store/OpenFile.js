@@ -95,7 +95,7 @@ Ext.define('LIME.store.OpenFile', {
     listeners: {
         beforeload: function(store, operation, eOpts) {
             if (store.requestNode == 'root') {
-                this.loadRawData(User.preferences.folders)
+                this.loadRawData(User.properties.folders)
                 return false;
             } else {
                 var path = store.requestNode;

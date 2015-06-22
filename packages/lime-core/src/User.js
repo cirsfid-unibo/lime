@@ -55,10 +55,13 @@ Ext.define('LIME.User', {
     preferences: {
         fullName: '',
         editorLanguage: '',
-        folders: ['/'],
         lastOpened: '',
         // List (strings) of currently open views
         views: []
+    },
+
+    properties: {
+        folders: ['/']
     },
 
     // Load user from local storage
@@ -78,6 +81,8 @@ Ext.define('LIME.User', {
             this.password = user.password;
         for (var key in user.preferences) 
             this.preferences[key] = user.preferences[key];
+        for (var key in user.properties) 
+            this.properties[key] = user.properties[key];
     },
 
     // Save user to local storage
@@ -94,7 +99,8 @@ Ext.define('LIME.User', {
         return {
             username: this.username,
             password: this.password,
-            preferences: this.preferences
+            preferences: this.preferences,
+            properties: this.properties
         }
     },
 
@@ -117,6 +123,6 @@ Ext.define('LIME.User', {
 
     // Get default file path for new documents.
     getDefaultFilePath: function () {
-        return User.preferences.folders[0] + '.untitled.xml';
+        return User.properties.folders[0] + '.untitled.xml';
     }
 });

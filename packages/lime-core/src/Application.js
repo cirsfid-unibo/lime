@@ -46,7 +46,6 @@
 
 
 // Todo: remove Locale and Config references in files all around
-console.log('loaded')
 Ext.syncRequire(['LIME.Locale', 'LIME.Config']);
 Ext.define('LIME.Application', {
     name: 'LIME',
