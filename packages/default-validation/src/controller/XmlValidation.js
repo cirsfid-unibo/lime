@@ -429,7 +429,7 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
             range = DomUtils.findTextIgnoringHtml(row.trim(), editorBody).filter(function(range) {
                             return me.queryIncludingNode(range.startContainer, '.'+name) ? true : false;
                         })[0];
-            return range;
+            return range.startContainer;
         } catch (e) {
             console.warn(e);
             return null;
