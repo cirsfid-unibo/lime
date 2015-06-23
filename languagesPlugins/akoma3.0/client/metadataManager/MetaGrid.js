@@ -72,7 +72,7 @@ Ext.define('LIME.ux.metadataManager.MetaGrid', {
     }],
     tools : [{
         type : 'plusUri',
-        tooltip : Locale.getString("addUri", "uriManager"),
+        tooltip : Locale.getString("addUri", "metadataManager"),
         listeners : {
             afterrender : function(cmp) {
                 this.up("metaGrid").setAddIcon(cmp);
@@ -88,7 +88,7 @@ Ext.define('LIME.ux.metadataManager.MetaGrid', {
 	    me.columns = [];
 	    Ext.each(me.columnsNames, function(name) {
 	        var column = Ext.merge(Ext.clone(templateColumn), {
-                    text: Ext.String.capitalize(name.replace("akn_", "")),
+                    text: Ext.String.capitalize(Locale.getString(name.replace("akn_", ""), me.getPluginName())),
                     dataIndex: name,
                     flex: 1
             });
@@ -114,7 +114,7 @@ Ext.define('LIME.ux.metadataManager.MetaGrid', {
 	        menuDisabled : true,
 	        items : [{
 	            icon : 'resources/images/icons/delete.png',
-	            tooltip : Locale.getString("removeComponent", "uriManager"),
+	            tooltip : Locale.getString("removeComponent", me.getPluginName()),
 	            scope : me,
 	            handler : function(grid, rowIndex) {
 	                grid.getStore().removeAt(rowIndex);

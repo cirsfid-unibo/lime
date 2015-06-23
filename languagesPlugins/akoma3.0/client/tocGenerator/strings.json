@@ -4,6 +4,7 @@
         "noPreambleFound": "Document markup is required"
 	},
 	"it": {
-        "generateToc": "Genera il TOC"
+        "generateToc": "Genera il TOC",
+        "noPreambleFound": "Il documento deve essere marcato"
 	}
 }

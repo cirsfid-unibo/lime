@@ -157,7 +157,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
         flex: 1,
         baseCls: 'form-success-state',
         cls: Ext.baseCSSPrefix + 'success-icon',
-        html: Locale.getString('Data has been saved', 'metadataManager')
+        html: Locale.getString('savedMsg', 'metadataManager')
     },'->', {
         xtype: 'button',
         text: Locale.getString("saveDocumentButtonLabel"),
@@ -175,7 +175,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
         this.addMetaTab("lifecycle", "lifecycle", [
             this.createFieldsetItem ("lifecycle", ["source"]),
             this.createMetaGrid (
-                "Lifecycle",
+                "lifecycle",
                 ["eId", "date", "source", "type"],
                 {
                     // Custom columns
@@ -191,7 +191,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
         this.addMetaTab("workflow", "workflow", [
             this.createFieldsetItem ("workflow", ["source"]),
             this.createMetaGrid (
-                "Workflow",
+                "workflow",
                 ["date", "actor", "outcome", "refersTo"],
                 {
                     "type": ["generation", "amendment", "repeal"]
@@ -206,7 +206,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
         this.addMetaTab("classification", "classification", [
             this.createFieldsetItem ("classification", ["source"]),
             this.createMetaGrid (
-                "Classification",
+                "classification",
                 ["value", "showAs", "dictionary", "href"],
                 {
                 },
@@ -220,7 +220,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
         this.addMetaTab("proprietary", "proprietary", [
             this.createFieldsetItem ("proprietary", ["source"]),
             this.createMetaGrid (
-                "Proprietary",
+                "proprietary",
                 ["name", "content"],
                 {
                     "name": ["Asunto", "Carpeta", "WorkflowTitle", "Cuerpo", "SubType", "Variante", "Iniciativa", "Asunto", "Repartido", "Destribuito"]
@@ -298,7 +298,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
     addMetaTab: function (tabName, metadataTag, items) {
         var tab = this.addTab({
             name: metadataTag,
-            title: tabName,
+            title: Ext.String.capitalize(Locale.getString(tabName, this.getPluginName())),
             items: items,
             bbar: this.fakeSavingToolbar
         });
@@ -319,7 +319,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
         var me = this,
             callback = callback || me.storeGridChanged;
         return Ext.widget("metaGrid", {
-                title: name,
+                title: Locale.getString(name, me.getPluginName()),
                 width: "98%",
                 margin: '5 0 0 5',
                 name: name,
@@ -363,7 +363,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
         if(possibleChildren) {
             // if(possibleChildren.names) {
                 values = Ext.Array.push("type", me.getValuesFromObj(possibleChildren.attributes));
-                items.push(me.createMetaGrid("Children", values, {
+                items.push(me.createMetaGrid("children", values, {
                     "type": possibleChildren.names
                 }));
             // } else {
@@ -373,13 +373,14 @@ Ext.define('LIME.controller.MetadataManagerController', {
         }
   		return me.addTab({
   			name: name,
-  			title: name,
+  			title: Ext.String.capitalize(Locale.getString(name, me.getPluginName())),
   			items: items,
             bbar: me.fakeSavingToolbar
   		});
     },
 
     createFieldsetItem: function(name, values) {
+        var me = this;
     	return {
             xtype: "form",
             width: "98%",
@@ -391,12 +392,14 @@ Ext.define('LIME.controller.MetadataManagerController', {
                 padding:'5',
                 align:'right'
             },
-            title: name,
+            title: Locale.getString(name, me.getPluginName()),
             items: values.map(function(attr) {
               return {
                 xtype: (attr == "date") ? "datefield" : "textfield",
                 format: (attr == "date") ? "Y-m-d" : "",
-                fieldLabel: (values[0] == 'source') ? 'Provenance' : Ext.String.capitalize(attr.replace("akn_", "")),
+                fieldLabel: (values[0] == 'source') ? 
+                    Locale.getString("provenance", me.getPluginName()) : 
+                    Locale.getString(attr.replace("akn_", ""),me.getPluginName()),
                 labelAlign : 'right',
                 anchor: '30%',
                 labelWidth: 80,
@@ -426,25 +429,25 @@ Ext.define('LIME.controller.MetadataManagerController', {
         	Ext.each(metadata[tab.name].children, function(el) {
         		var cmpToFill = tabMap.tab.down("*[name='"+el.attr.class+"']");
 
-        		if(tabMap.tab.down("*[name='Children']")) {
-                    cmpToFill = tabMap.tab.down("*[name='Children']");
+        		if(tabMap.tab.down("*[name='children']")) {
+                    cmpToFill = tabMap.tab.down("*[name='children']");
                     el.attr["type"] = el.attr["class"];
                 }
-                if(tabMap.tab.down("*[name='Lifecycle']")) {
-                    cmpToFill = tabMap.tab.down("*[name='Lifecycle']");
+                if(tabMap.tab.down("*[name='lifecycle']")) {
+                    cmpToFill = tabMap.tab.down("*[name='lifecycle']");
                     el.attr["type"] = el.attr["class"];
                 }
-                if(tabMap.tab.down("*[name='Workflow']")) {
-                    cmpToFill = tabMap.tab.down("*[name='Workflow']");
+                if(tabMap.tab.down("*[name='workflow']")) {
+                    cmpToFill = tabMap.tab.down("*[name='workflow']");
                     el.attr["type"] = el.attr["class"];
                 }
-                if(tabMap.tab.down("*[name='Classification']")) {
-                    cmpToFill = tabMap.tab.down("*[name='Classification']");
+                if(tabMap.tab.down("*[name='classification']")) {
+                    cmpToFill = tabMap.tab.down("*[name='classification']");
                     el.attr["type"] = el.attr["class"];
                 }
 
-                if(tabMap.tab.down("*[name='Proprietary']")) {
-                    cmpToFill = tabMap.tab.down("*[name='Proprietary']");
+                if(tabMap.tab.down("*[name='proprietary']")) {
+                    cmpToFill = tabMap.tab.down("*[name='proprietary']");
                     el.attr["name"] = el.attr["class"].substring(el.attr["class"].indexOf(':')+1);
                     el.attr["content"] = el.el.innerHTML;
                 }
@@ -528,7 +531,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
 
     	if(tabMap && cmp) {
     	    path = (tabMap.metaParent) ? tabMap.metaParent + "/" : "";
-    	    if(name == "Children") {
+    	    if(name == "children") {
     	       var groups = {};
     	       Ext.each(data, function(obj) {
     	           var type = obj.type;
@@ -551,7 +554,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
                         editor.changed = true;
                     }
     	       });
-    	    } else if (name == "Lifecycle" || name == "Workflow" || name == "Classification") {
+    	    } else if (name == "lifecycle" || name == "workflow" || name == "classification") {
                 var result = DocProperties.updateMetadata(Ext.merge({
                     metadata : editor.getDocumentMetadata(),
                     path : cmp.customPath,
@@ -570,7 +573,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
                 if (path == "identification/FRBRWork/FRBRthis") {
                     var manifestation = 
                         editor.getDocumentMetadata().originalMetadata.metaDom
-                        .querySelector('.FRBRManifestation .FRBRthis').getAttribute('value');
+                        .querySelector('[class="FRBRManifestation"] [class="FRBRthis"]').getAttribute('value');
                     var manifestationList = manifestation.split('/');
                     // console.log(data);
                     var workList = data.value.split('/');
