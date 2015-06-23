@@ -386,8 +386,8 @@ body .ux-notification-success {
 }
 
 .explorer-icon[data-containsmod] {
-  border: 1px solid #478552;
-  background-color: #FFFCEF;
+	background-color: #25a0c5;
+	border: 1px solid #19738c;
 }
 
 .x-tree-custom .x-tree-node-text  {
