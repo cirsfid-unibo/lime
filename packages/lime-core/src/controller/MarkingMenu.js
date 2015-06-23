@@ -169,11 +169,12 @@ Ext.define('LIME.controller.MarkingMenu', {
             throw "Error: There is some error in the configuration of the plugin, the button with name " + name + " couldn't be initialized";
         }
 
-        if (buttonConfig.pattern) {
-            style = buttonConfig.pattern.buttonStyle;
-        } else {
-            style = buttonConfig.markupConfig.buttonStyle;
-        }
+        // TODO: remove all style from marking menu
+        // if (buttonConfig.pattern) {
+        //     style = buttonConfig.pattern.buttonStyle;
+        // } else {
+        //     style = buttonConfig.markupConfig.buttonStyle;
+        // }
 
         // Create the actual button
         newButton = Ext.widget('treeButton', {
@@ -220,11 +221,11 @@ Ext.define('LIME.controller.MarkingMenu', {
             throw "Error: There is some error in the configuration of the plugin, the button with name " + name + " couldn't be initialized";
         }
 
-        if (config.pattern) {
-            style = config.pattern.buttonStyle;
-        } else {
-            style = config.markupConfig.buttonStyle;
-        }
+        // if (config.pattern) {
+        //     style = config.pattern.buttonStyle;
+        // } else {
+        //     style = config.markupConfig.buttonStyle;
+        // }
 
         newConfig = Ext.merge(config, {
             type: type,
@@ -242,11 +243,12 @@ Ext.define('LIME.controller.MarkingMenu', {
             newConfig.children.push(me.buildConfigData(child, buttons, rules, scope, type));
         });
 
-        if ( Ext.Object.isEmpty(me.configReferences[name]) ) {
-            if(style) {
-                DomUtils.addStyle('.x-tree-custom *[class~="'+ name + '"] .x-tree-node-text ', style, document, me.styleId);
-            }
-        }
+        // TODO: remove all style from marking menu tree
+        // if ( Ext.Object.isEmpty(me.configReferences[name]) ) {
+        //     if(style) {
+        //         DomUtils.addStyle('.x-tree-custom *[class~="'+ name + '"] .x-tree-node-text ', style, document, me.styleId);
+        //     }
+        // }
 
         DocProperties.setElementConfig(configId, newConfig);
         me.configReferences[name][configId] = newConfig;

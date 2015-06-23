@@ -5,9 +5,54 @@
 	table[data-highlight] {
 		background-color: hsl(228, 90, 70);
 		border-left: 5px solid hsl(228, 90, 20);
+
+
+		>* {
+			position: relative;
+			left: -5px;
+			display: block;
+		}
+
+		.x-tree-node-text {
+			border-color: hsl(228, 90, 20);
+			box-shadow: 0px 1px 3px hsla(228, 90, 20, 0.5);
+		}
 	}
 
 	.x-tree-icon {
 		display: none;
+	}
+
+	.x-tree-node-text {
+		border: 1px solid hsl(228, 90, 90);
+		border-radius: 4px;
+		width: 250px;
+		display: inline-block;
+		padding: 8px 5px;
+		font-size: 1.3em;
+		cursor: pointer;
+		box-shadow: 0px 1px 3px #aaa;
+
+		background-color: hsl(212, 100%, 97%);
+		
+		&:hover {
+			box-shadow: 0px 1px 3px #333;
+		}
+	}
+	
+	img + img + img + .x-tree-node-text {
+		background-color: hsl(212, 100%, 92%);
+	}
+
+	img + img + img + img + .x-tree-node-text {
+		background-color: hsl(212, 100%, 87%);
+	}
+
+	img + img + img + img + img + .x-tree-node-text {
+		background-color: hsl(212, 100%, 82%);
+	}
+
+	.x-tree-expander {
+		vertical-align: text-bottom;
 	}
 }
