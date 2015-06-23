@@ -37,6 +37,10 @@
         "successMessage": "Consolidazione completata",
 
         "modifiedDocument": "Documento da modificare",
-        "modifyingDocument": "Documento modificante"
+        "modifyingDocument": "Documento modificante",
+
+        "reportWindowTitle": "Report da stampare",
+        "printReport": "Stampa report",
+        "Pagination_beforePageText": "Modifica"
     }
 }

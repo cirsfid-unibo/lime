@@ -49,23 +49,25 @@
  * Each button is a TreeButton (our "panelish" implementation of a tree made of buttons)
  */
 Ext.define('LIME.view.MarkingMenu', {
-    extend : 'Ext.tab.Panel',
+    extend: 'Ext.tab.Panel',
 
-    requires : ['LIME.view.NationalitySelector'],
+    requires: [
+        'LIME.view.NationalitySelector'
+    ],
 
-    alias : 'widget.markingMenu',
+    alias: 'widget.markingMenu',
 
-    collapsible : true,
+    collapsible: true,
 
-    layout : 'fit',
+    layout: 'fit',
 
-    listeners : {
-        resize : function(cmp) {
+    listeners: {
+        resize: function(cmp) {
             cmp.doLayout();
         }
     },
 
-    constructor : function() {
+    constructor: function() {
         /**
          * @property {Array} shown
          * Array containing references to the currently opened buttons
@@ -73,24 +75,52 @@ Ext.define('LIME.view.MarkingMenu', {
         this.shown = [];
         this.title = Locale.strings.eastToolbarTitle;
         this.items = [{
-            xtype : 'treepanel',
-            title : Locale.strings.documentStructure,
-            cls : 'x-tree-noicon x-tree-custom structure',
-            id: 'treeStructure',
-            useArrows: true,
-            border : false,
-            rootVisible: false,
-            autoScroll : true
+            xtype: 'markingMenuTreePanel',
+            title: Locale.strings.documentStructure,
+            cls: 'x-tree-custom structure',
+            id: 'treeStructure'
         },{
-            xtype : 'treepanel',
-            title : Locale.strings.commonButtons,
-            cls : 'x-tree-noicon x-tree-custom commons',
-            id: 'treeCommons',
-            useArrows: true,
-            border : false,
-            rootVisible: false,
-            autoScroll : true
+            xtype: 'markingMenuTreePanel',
+            title: Locale.strings.commonButtons,
+            cls: 'x-tree-custom commons',
+            id: 'treeCommons'
         }],
         this.callParent(arguments);
     }
 });
+
+Ext.define('LIME.view.MarkingMenuTreePanel', {
+    extend: 'Ext.tree.Panel',
+    alias: 'widget.markingMenuTreePanel',
+    
+    useArrows: true,
+    border: false,
+    rootVisible: false,
+    autoScroll: true,
+    cls: 'abracadabra',
+
+    unhighlight: null,
+
+    expandPath: function (path, options) {
+        var me = this,
+            options = options || {},
+            cb = options.callback;
+        options.callback = function (success, record, node) {
+            me.highlight(node);
+            if (cb) cb.apply(this, arguments);
+        }
+        this.callParent([path, options]);
+    },
+
+    highlight: function (node) {
+        this.removeOldHighlight();
+        node.dataset['highlight'] = true;
+        this.removeOldHighlight = function () {
+            delete node.dataset['highlight'];
+        }
+    },
+
+    // This function starts as noop and is set by highlight
+    removeOldHighlight: function () {}
+});
+
