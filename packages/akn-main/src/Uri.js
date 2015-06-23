@@ -70,125 +70,125 @@
 // uri.manifestation() -> "/akn/it/act/legge/stato/2014-09-12/2/ita@2015-03-12!official/2015-04-11/main.xml"
 // uri.item()          -> "http://sinatra.cirsfid.unibo.it/node/documentsdb/mnardi@unibo.it/myFiles/esempio.xml"
 
-Ext.define('AknMain.Uri', function (uriStr) {
-    var uri = {
-        country: undefined,
-        type: undefined,
-        subtype: undefined,
-        author: undefined,
-        date: undefined,
-        name: undefined,
-        language: undefined,
-        version: undefined,
-        official: undefined,
-        generation: undefined,
-        media: undefined,
-        path: undefined,
+// Ext.define('AknMain.Uri', function (uriStr) {
+//     var uri = {
+//         country: undefined,
+//         type: undefined,
+//         subtype: undefined,
+//         author: undefined,
+//         date: undefined,
+//         name: undefined,
+//         language: undefined,
+//         version: undefined,
+//         official: undefined,
+//         generation: undefined,
+//         media: undefined,
+//         path: undefined,
 
-        work: work,
-        expression: expression,
-        manifestation: manifestation,
-        item: item,
-        constructor: parseUri
-    };
+//         work: work,
+//         expression: expression,
+//         manifestation: manifestation,
+//         item: item,
+//         constructor: parseUri
+//     };
 
-    function work () {
-        return '/akn' +
-               '/' + this.country +
-               '/' + this.type +
-               (this.subtype ? '/' + this.subtype : '') +
-               (this.author ? '/' + this.author : '') +
-               '/' + this.date +
-               (this.name ? '/' + this.name : '');
-    }
+//     function work () {
+//         return '/akn' +
+//                '/' + this.country +
+//                '/' + this.type +
+//                (this.subtype ? '/' + this.subtype : '') +
+//                (this.author ? '/' + this.author : '') +
+//                '/' + this.date +
+//                (this.name ? '/' + this.name : '');
+//     }
 
-    function expression () {
-        return this.work() +
-               '/' + this.language +
-               '@' + this.version +
-               (this.official ? '!' + this.official : '') +
-               (this.generation ? '/' + this.generation : '');
-    }
+//     function expression () {
+//         return this.work() +
+//                '/' + this.language +
+//                '@' + this.version +
+//                (this.official ? '!' + this.official : '') +
+//                (this.generation ? '/' + this.generation : '');
+//     }
 
-    function manifestation () {
-        return this.expression() +
-               '/main.' + this.media;
-    }
+//     function manifestation () {
+//         return this.expression() +
+//                '/main.' + this.media;
+//     }
 
-    function item () {
-        return this.path;
-    }
+//     function item () {
+//         return this.path;
+//     }
 
-    function parseUri (uriStr) {
-        var workStr = uriStr;
-        var expressionStart = uriStr.search(/\/\w\w\w@/);
-        if (expressionStart != -1) {
-            workStr = uriStr.substring(0, expressionStart);
-            var expressionStr = uriStr.substring(expressionStart);
-        }
+//     function parseUri (uriStr) {
+//         var workStr = uriStr;
+//         var expressionStart = uriStr.search(/\/\w\w\w@/);
+//         if (expressionStart != -1) {
+//             workStr = uriStr.substring(0, expressionStart);
+//             var expressionStr = uriStr.substring(expressionStart);
+//         }
 
-        var work = workStr.split('/');
-        if (work[0]) error('Unexpected uri start', work[0]);
-        if (work[1] != 'akn') error('Missing /akn/ start', work[1]);
+//         var work = workStr.split('/');
+//         if (work[0]) error('Unexpected uri start', work[0]);
+//         if (work[1] != 'akn') error('Missing /akn/ start', work[1]);
 
-        var country = work[2];
-        if (!country || (country.length != 2 && country.length != 4))
-            error('Missing country', country);
+//         var country = work[2];
+//         if (!country || (country.length != 2 && country.length != 4))
+//             error('Missing country', country);
 
-        var type = work[3];
-        if (!type || ['doc', 'act', 'bill', 'debaterecord'].indexOf(type) == -1)
-            error('Invalid doc type', type);
+//         var type = work[3];
+//         if (!type || ['doc', 'act', 'bill', 'debaterecord'].indexOf(type) == -1)
+//             error('Invalid doc type', type);
 
-        var dateIndex = 4;
-        // If work[4] is not a date, expect it to be the subtype
-        var subtype;
-        if (!Date.parse(work[4])) {
-            subtype = work[4];
-            dateIndex++;
-        }
+//         var dateIndex = 4;
+//         // If work[4] is not a date, expect it to be the subtype
+//         var subtype;
+//         if (!Date.parse(work[4])) {
+//             subtype = work[4];
+//             dateIndex++;
+//         }
 
-        // If work[4] and work[5] are not dates,
-        // expect work[5] it to be the author.
-        // Problem: we do not support author if there is no subtype
-        var author;
-        if (subtype && !Date.parse(work[5])) {
-            author = work[5];
-            dateIndex++;
-        }
+//         // If work[4] and work[5] are not dates,
+//         // expect work[5] it to be the author.
+//         // Problem: we do not support author if there is no subtype
+//         var author;
+//         if (subtype && !Date.parse(work[5])) {
+//             author = work[5];
+//             dateIndex++;
+//         }
 
-        var date = work[dateIndex];
-        if (!Date.parse(date)) {
-            if (dateIndex != 4) date = work.slice(4, 7);
-            error('Invalid date', date);
-        }
+//         var date = work[dateIndex];
+//         if (!Date.parse(date)) {
+//             if (dateIndex != 4) date = work.slice(4, 7);
+//             error('Invalid date', date);
+//         }
 
-        var name = work[dateIndex + 1];
+//         var name = work[dateIndex + 1];
 
-        // Expression
-        var language;
-        var version;
-        if (expressionStr) {
-            try {
-                language = expressionStr.match(/\/(\w\w\w)@/)[1];
-            } catch (e) { error('Missing language', expressionStr); }
-            try {
-                version = expressionStr.match(/\/\w\w\w@([\w\W\d\-]*)(!|$|\/)/)[1];
-            } catch (e) { error('Missing version', expressionStr); }
-        }
+//         // Expression
+//         var language;
+//         var version;
+//         if (expressionStr) {
+//             try {
+//                 language = expressionStr.match(/\/(\w\w\w)@/)[1];
+//             } catch (e) { error('Missing language', expressionStr); }
+//             try {
+//                 version = expressionStr.match(/\/\w\w\w@([\w\W\d\-]*)(!|$|\/)/)[1];
+//             } catch (e) { error('Missing version', expressionStr); }
+//         }
 
-        this.country = country;
-        this.type = type;
-        this.subtype = subtype;
-        this.author = author;
-        this.date = date;
-        this.name = name;
-        this.language = language;
-        this.version = version;
-    }
+//         this.country = country;
+//         this.type = type;
+//         this.subtype = subtype;
+//         this.author = author;
+//         this.date = date;
+//         this.name = name;
+//         this.language = language;
+//         this.version = version;
+//     }
 
-    function error (msg, piece) {
-        throw new Error(msg + ': "' + piece + '"');
-    } 
+//     function error (msg, piece) {
+//         throw new Error(msg + ': "' + piece + '"');
+//     } 
 
-    return uri;
-});
+//     return uri;
+// });
