@@ -141,7 +141,7 @@ Ext.define('LIME.controller.Outliner', {
 
         if (markedObj) {
             button = markedObj.button;
-            var containsModClass = (node.querySelector('.mod')) ? 'data-containsmod' : '';
+            var containsModClass = (node.querySelector('.mod') || node.querySelector('.quotedStructure')) ? 'data-containsmod' : '';
             var wrapperClass = button.pattern.wrapperClass,
                 newIcon = '<div class="'+this.iconBaseCls+' ' + wrapperClass + '" '+containsModClass+' ></div>',
                 text = newIcon + button.shortLabel;
