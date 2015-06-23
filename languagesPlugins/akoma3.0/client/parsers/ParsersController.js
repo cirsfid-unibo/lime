@@ -1484,6 +1484,12 @@ Ext.define('LIME.controller.ParsersController', {
 
             if ( partName == "paragraph" ) {
                 textNodesObj = DomUtils.smartFindTextNodes(element.value, node);
+                textNodesObj = textNodesObj.map(function(group) {
+                    return group.map(function(obj) {
+                        obj.str = numVal;
+                        return obj;
+                    });
+                });
             }
 
             if ( !textNodesObj.length )
@@ -1499,12 +1505,12 @@ Ext.define('LIME.controller.ParsersController', {
             var newWrapper = me.wrapPartNode(partNode, node);
             element.wrapper = newWrapper;
             nodesToMark.push(newWrapper);
-            numsToMark = Ext.Array.push(numsToMark, me.newTextNodeToSpans(textNodesObj[0], numVal));
+            numsToMark = Ext.Array.push(numsToMark, me.newTextNodeToSpans(textNodesObj[0]));
 
             if ( headingVal ) {
                 var text = DomUtils.smartFindTextNodes(headingVal, node);
                 if ( text.length ) {
-                    headingsToMark = Ext.Array.push(headingsToMark, me.newTextNodeToSpans(text[0], headingVal));
+                    headingsToMark = Ext.Array.push(headingsToMark, me.newTextNodeToSpans(text[0]));
                 }
             }
 
@@ -2229,10 +2235,10 @@ Ext.define('LIME.controller.ParsersController', {
         return spanElements;
     },
 
-    newTextNodeToSpans : function(tNodeObjs, str, applyFn) {
+    newTextNodeToSpans : function(tNodeObjs, applyFn) {
         var me = this, spanElements = [], textNodes = [];
         Ext.each(tNodeObjs, function(obj) {
-            var splitedNodes = me.splitNode(obj.node, str);
+            var splitedNodes = me.splitNode(obj.node, obj.str);
             if ( splitedNodes.length ) {
                 textNodes.push(splitedNodes[0]); //TODO: Take all
             }
