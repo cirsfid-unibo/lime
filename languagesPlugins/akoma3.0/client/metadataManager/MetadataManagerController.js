@@ -409,11 +409,26 @@ Ext.define('LIME.controller.MetadataManagerController', {
           };
     },
 
+    afterSave: function() {
+        // TODO: finish updating data after save
+        /*try {
+            var contextPanel = this.getContextPanel();
+            if (contextPanel.down()) {
+                var tab = contextPanel.down().activeTab;
+                this.fillMetadataFields(tab, false);
+            }
+        } catch(e) {
+            console.error('AfterSave metadataManager failed get activeTab', e);
+        }*/
+    },
+
     // TODO: update every time
-    fillMetadataFields: function(tab) {
+    fillMetadataFields: function(tab, filled) {
     	var me = this, editor = me.getController("Editor"),
             metadata = editor.getDocumentMetadata(),
             tabMap = me.tabMetaMap[tab.name];
+
+        tabMap.filled = (filled !== undefined) ? filled : tabMap.filled;
 
         if(!tabMap || tabMap.filled ) return;
         metadata = (metadata && metadata.obj && tabMap.metaParent) ?  metadata.obj[tabMap.metaParent] : metadata.obj;
@@ -613,6 +628,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
     init : function() {
         var me = this;
         me.application.on(Statics.eventsNames.afterLoad, me.docLoaded, me);
+        me.application.on(Statics.eventsNames.afterSave, me.afterSave, me);
         me.control({
         	'metaManagerPanel': {
         		activate: me.tabActivated

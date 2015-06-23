@@ -49,7 +49,7 @@ Ext.define('DefaultNir.controller.Language', {
 
     appendMetadata: function(node) {
         var meta = this.callParent(arguments),
-            alias = meta.querySelector('.FRBRWork .FRBRalias');
+            alias = meta.querySelector('[class~="FRBRWork"] [class~="FRBRalias"]');
 
         if ( alias ) {
             var value = new Ext.Template("urn:nir:stato:{docType}:{docDate};{docNumber}"),
