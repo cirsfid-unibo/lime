@@ -390,7 +390,7 @@ body .ux-notification-success {
   background-color: #FFFCEF;
 }
 
-.x-tree-custom .x-tree-node-text  {
+/*.x-tree-custom .x-tree-node-text  {
 	padding: 2px 10px 2px 10px;
 	background-color:#DBEADC;
 	border-radius:3px;
@@ -408,7 +408,7 @@ body .ux-notification-success {
 }
 
 .x-tree-custom .x-tree-elbow-img {
-}
+}*/
 
 .x-panel-error {
     background-color: #f2dede;
