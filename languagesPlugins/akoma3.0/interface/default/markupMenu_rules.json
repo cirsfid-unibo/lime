@@ -20,6 +20,9 @@
 		"externalFragment": {
 			"children": ["extractText", "rmod", "mmod", "mod", "quotedText", "extractStructure", "quotedStructure"]
 		},
+        "structureNotes": {
+            "children": ["noteRef", "authorialNote"]
+        },
 		"commonsInline": {
 			"children": ["def", "decoration", "docPurpose"]
 		},

@@ -608,8 +608,8 @@ Ext.define('LIME.controller.ModsMarkerController', {
             },
             config = {
                 name : 'passiveModifications',
-                group: "commons",
-                after: "activeModifications",
+                group: "structure",
+                //after: "activeModifications",
                 buttons: markerButtons,
                 rules: rules,
                 scope: me
@@ -709,8 +709,8 @@ Ext.define('LIME.controller.ModsMarkerController', {
             },
             config = {
                 name : 'activeModifications',
-                group: "commons",
-                after: "commonReference",
+                group: "structure",
+                //after: "commonReference",
                 buttons: markerButtons,
                 rules: rules,
                 scope: me

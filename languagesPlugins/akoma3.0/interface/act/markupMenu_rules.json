@@ -1,5 +1,5 @@
 {
-	"rootElements": ["coverPage", "preface", "preamble", "body", "conclusions", "attachments", "components"],
+	"rootElements": ["coverPage", "preface", "preamble", "body", "conclusions", "attachments", "components", "structureNotes", "commonReference"],
 	"commonElements": ["commonElement", "hierarchicalStructure",  "genericElement", "externalFragment", "commonsInline", "contentInline", "commonReference", "remark",  "foreign"],
 	
 	"elements": {
