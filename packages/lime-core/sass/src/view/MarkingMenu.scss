@@ -55,4 +55,12 @@
 	.x-tree-expander {
 		vertical-align: text-bottom;
 	}
+
+
+	.activeModifications .x-tree-node-text, 
+	.commonReference .x-tree-node-text, 
+	.passiveModifications .x-tree-node-text,
+	.structureNotes .x-tree-node-text {
+		background-color: hsl(212, 100%, 82%);
+	}
 }
