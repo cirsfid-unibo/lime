@@ -98,7 +98,7 @@ Ext.define('LIME.view.Viewport', {
         //draggable: true,
         //collapsed: true,
         region : 'east',
-        width : '22%',
+        width : '26%',
         collapsible : true,
         expandable : true,
         resizable : true,
