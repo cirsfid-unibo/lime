@@ -1842,7 +1842,7 @@ Ext.define('LIME.controller.ParsersController', {
 
         var total = nums = data.length;
         var callCallback = function() {
-            if (--nums) {
+            if (--nums > 0) {
                 if ( !(nums % 100) ) {
                     me.application.fireEvent(Statics.eventsNames.progressUpdate, Locale.getString("referenceParser", me.getPluginName())+' '+Math.ceil(nums/100));
                 }
@@ -1897,8 +1897,10 @@ Ext.define('LIME.controller.ParsersController', {
         };
 
         setTimeout(function() {
-            nums = 1;
-            callCallback();
+            if (nums > 0) {
+                nums = 0;
+                callCallback();
+            }
         }, 10000);
 
         if ( nums ) {
@@ -2367,8 +2369,6 @@ Ext.define('LIME.controller.ParsersController', {
             tag : 'span',
             cls : DomUtils.tempParsingClass
         });
-        var headingButton = DocProperties.getFirstButtonByName('heading'),
-            subheadingButton = DocProperties.getFirstButtonByName('subheading');
 
         if ( searchAfter ) {
             var iterNode = searchAfter;
@@ -2379,7 +2379,7 @@ Ext.define('LIME.controller.ParsersController', {
                     subHeadingNode.appendChild(iterNode.nextSibling);
                 }
             }
-            if ( !Ext.isEmpty(DomUtils.getTextOfNode(headingNode).trim()) ) {
+            if ( !Ext.isEmpty(DomUtils.getTextOfNode(headingNode).trim()) ) {    
                 Ext.fly(headingNode).insertAfter(searchAfter);
                 if ( !Ext.isEmpty(DomUtils.getTextOfNode(subHeadingNode).trim()) ) {
                     Ext.fly(subHeadingNode).insertAfter(headingNode);
@@ -2394,21 +2394,23 @@ Ext.define('LIME.controller.ParsersController', {
                 }
             }
         }
-        if ( headings.length ) {
-            me.requestMarkup(headingButton, {
-                silent : true,
-                noEvent : true,
-                nodes : headings
+
+        var markup = function(nodes, name) {
+            Ext.each(nodes, function(node) {
+                if ( node.getAttribute(DomUtils.elementIdAttribute) ) return;
+                var parentButton = DomUtils.getButtonByElement(DomUtils.getFirstMarkedAncestor(node)),
+                    headingButton = DocProperties.getChildConfigByName(parentButton, name) || 
+                                    DocProperties.getFirstButtonByName(name);
+                me.requestMarkup(headingButton, {
+                    silent : true,
+                    noEvent : true,
+                    nodes : [node]
+                });
             });
         }
 
-        if ( subheadings.length ) {
-            me.requestMarkup(subheadingButton, {
-                silent : true,
-                noEvent : true,
-                nodes : subheadings
-            });
-        }
+        markup(headings, 'heading');
+        markup(subheadings, 'subheading');
     },
 
     addHcontainerHeadings: function(node) {
