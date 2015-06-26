@@ -53,7 +53,8 @@ Ext.define('LIME.view.Viewport', {
     alias : 'widget.appViewport',
 
     requires : [
-        'LIME.view.Outliner',
+        'LIME.components.outliner.OutlinerTreePanel',
+        'LIME.components.outliner.OutlineEditorProxy',
         'LIME.view.MainToolbar',
         'LIME.view.MarkingMenu',
         'LIME.view.Main',
@@ -125,6 +126,7 @@ Ext.define('LIME.view.Viewport', {
         margin : 2
     }, {
         xtype : 'outliner',
+        proxy: 'LIME.components.outliner.OutlineEditorProxy',
         region : 'west',
         //draggable : true,
         //hidden: true,
