@@ -45,5 +45,7 @@
  */
 
 Ext.define('LIME.components.outliner.OutlineModel', {
-    extend: 'Ext.data.TreeModel'
+    extend: 'Ext.data.TreeModel',
+
+    idProperty: 'id'
 });

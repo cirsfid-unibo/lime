@@ -56,13 +56,10 @@ Ext.define('LIME.components.outliner.OutlineStore', {
     root: {
         expanded: true,
         text: "Hello world",
+        id: "ID1",
         children: [
-            { text: 'detention' },
-            { text: 'homework', expanded: true, children: [
-                { text: 'book report'  },
-                { text: 'algebra' }
-            ] },
-            { text: 'buy lottery tickets'  }
+            { id: "ID2",text: 'detention' },
+            { id: "ID6",text: 'buy lottery tickets'  }
         ]
     }
 
