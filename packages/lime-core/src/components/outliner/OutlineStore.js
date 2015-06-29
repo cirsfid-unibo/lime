@@ -54,13 +54,7 @@ Ext.define('LIME.components.outliner.OutlineStore', {
     model: 'LIME.components.outliner.OutlineModel',
 
     root: {
-        expanded: true,
-        text: "Hello world",
-        id: "ID1",
-        children: [
-            { id: "ID2",text: 'detention' },
-            { id: "ID6",text: 'buy lottery tickets'  }
-        ]
+        expanded: true
     }
 
     // Todo: map event data to store record
