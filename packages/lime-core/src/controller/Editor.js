@@ -379,7 +379,7 @@ Ext.define('LIME.controller.Editor', {
         if ( !Ext.Object.isEmpty(me.defaultActions) ) {
             actions = Ext.merge(actions, me.defaultActions);
         }
-        
+
         if (actions.scroll) {
             node.scrollIntoView();
         }
@@ -395,20 +395,16 @@ Ext.define('LIME.controller.Editor', {
         }
         if (actions.click) {
             me.application.fireEvent('editorDomNodeFocused', node, actions);
+			var path = DomUtils.getElementIdPath(node);
+			Ext.GlobalEvents.fireEvent('contentFocused', path);
         }
         if (actions.select) {
             me.selectNode(node);
         }
     },
 
-	/**
-	 * Just select the given node in the editor
-	 * @param {HTMLElement} node The node to highlight
-	 */
-	selectNode : function(node, content) {
-        // content = (content == undefined) ? true : content;
-        // this.getEditor().selection.select(node, content);
-
+	// Change the editor selection to surround node
+	selectNode: function(node) {
         // We want to select the span.breaking before and after the given node
         var range = node.ownerDocument.createRange();
         range.setStartBefore((DomUtils.isBreakingNode(node.previousSibling) && node.previousSibling) || node);
@@ -440,7 +436,7 @@ Ext.define('LIME.controller.Editor', {
      * @returns {Boolean} true if the attribute was changed, false otherwise
      */
     setElementAttribute : function(elementId, name, value) {
-        var element = elementId, oldValue, chaged = false, 
+        var element = elementId, oldValue, chaged = false,
             dom = this.getDom(), query;
 
         if(Ext.isString(element)) {
@@ -694,7 +690,7 @@ Ext.define('LIME.controller.Editor', {
         var markingMenuController = this.getController('MarkingMenu'),
             mainToolbarController = this.getController('MainToolbar'),
            app = this.application, config = this.documentTempConfig;
-        
+
         this.stylesUrl = styleUrls || this.stylesUrl;
 
         this.addStyles(styleUrls);
@@ -733,7 +729,7 @@ Ext.define('LIME.controller.Editor', {
                 head.removeChild(styleNode);
             });
         }
-        
+
         Ext.each(urls, function(url) {
             var link = editorDom.createElement("link");
             link.setAttribute("href", url);
@@ -803,7 +799,7 @@ Ext.define('LIME.controller.Editor', {
             newDocumentWindow.show();
             return;
         }
-        
+
         DocProperties.documentInfo.docId = config.docId || User.getDefaultFilePath();
         DocProperties.documentInfo.docType = config.docType;
         DocProperties.documentInfo.docLang = config.docLang;
@@ -822,7 +818,7 @@ Ext.define('LIME.controller.Editor', {
     },
 
     linkNotes: function(body) {
-        var app = this.application, 
+        var app = this.application,
             noteLinkers = body.querySelectorAll(".linker");
         clickLinker = function() {
             var marker = this.getAttribute(LoadPlugin.refToAttribute), note;
@@ -847,8 +843,8 @@ Ext.define('LIME.controller.Editor', {
         var LanguageController = this.getController('Language'),
             marker = this.getController('Marker'),
             markedElements = body.querySelectorAll("*[" + DomUtils.elementIdAttribute + "]");
-        
-        //Parse the new document and build documentProprieties 
+
+        //Parse the new document and build documentProprieties
         Ext.each(markedElements, function(element, index) {
             var elId = element.getAttribute(DomUtils.elementIdAttribute),
                 newElId;
@@ -861,13 +857,13 @@ Ext.define('LIME.controller.Editor', {
                 if(parent) {
                     var buttonParent = DomUtils.getButtonByElement(parent);
                     if(buttonParent) {
-                        button = DocProperties.getChildConfigByName(buttonParent, elId) || 
+                        button = DocProperties.getChildConfigByName(buttonParent, elId) ||
                                  DocProperties.getChildConfigByName(buttonParent, nameAttr);
                     }
                 }
                 if(!button) {
                     button = DocProperties.getFirstButtonByName(elId, 'common') ||
-                             DocProperties.getFirstButtonByName(nameAttr, 'common') || 
+                             DocProperties.getFirstButtonByName(nameAttr, 'common') ||
                              DocProperties.getFirstButtonByName(elId) ||
                              DocProperties.getFirstButtonByName(nameAttr);
                     if ( button ) {
@@ -882,7 +878,7 @@ Ext.define('LIME.controller.Editor', {
             }
 
             if ( !button ) {
-                button = DocProperties.getElementConfig(elId) || 
+                button = DocProperties.getElementConfig(elId) ||
                         DocProperties.getFirstButtonByName(elId.replace(/\d/g,''));
                 elId = (button) ? marker.getMarkingId(button.id) : elId;
             }
@@ -890,7 +886,7 @@ Ext.define('LIME.controller.Editor', {
             if (!button) {
                 if(!noSideEffects) {
                     Ext.log({level: "error"}, "FATAL ERROR!!", "The button with id " + buttonId + " is missing!");
-                    //Ext.MessageBox.alert("FATAL ERROR!!", "The button with id " + buttonId + " is missing!"); 
+                    //Ext.MessageBox.alert("FATAL ERROR!!", "The button with id " + buttonId + " is missing!");
                 }
                 return;
             }
@@ -899,7 +895,7 @@ Ext.define('LIME.controller.Editor', {
                 DocProperties.setMarkedElementProperties(elId, {
                     button : button,
                     htmlElement : element
-                }); 
+                });
             //}
 
             //remove inline style
@@ -1088,7 +1084,7 @@ Ext.define('LIME.controller.Editor', {
     },
 
     /**
-    * The path of default editor content file 
+    * The path of default editor content file
     */
     getEditorStartContentUrl : function() {
         return 'config/examples/editorStartContent-'+Locale.getLang()+'.html';
@@ -1200,7 +1196,7 @@ Ext.define('LIME.controller.Editor', {
 
                 // the language of tinymce
                 language : Locale.getLang(),
-                toolbar: "lime-undo lime-redo | bold italic strikethrough | superscript subscript | bullist numlist outdent indent | alignleft aligncenter alignright | table | searchreplace | link image"  
+                toolbar: "lime-undo lime-redo | bold italic strikethrough | superscript subscript | bullist numlist outdent indent | alignleft aligncenter alignright | table | searchreplace | link image"
             };
 
         return config;
@@ -1310,7 +1306,7 @@ Ext.define('LIME.controller.Editor', {
     },
 
     /*
-        This function ensures that the first node 
+        This function ensures that the first node
         in the body is the right content wrapper
     */
     ensureContentWrapper: function(editor) {
@@ -1526,7 +1522,7 @@ Ext.define('LIME.controller.Editor', {
 			},
 
             // When clicking a link in the URI toolbar, show the open document
-            // dialog with the given path. 
+            // dialog with the given path.
 			'mainEditorUri' : {
                 update : function() {
                     var me = this;
@@ -1569,11 +1565,11 @@ Ext.define('LIME.controller.Editor', {
                 },
 
 				beforerender : function(cmp) {
-                    var me = this, 
-                    	editorView = cmp, 
+                    var me = this,
+                    	editorView = cmp,
                     	tinyView = me.getEditorComponent(cmp),
                     	tinyConfig = me.getTinyMceConfig();
-						
+
 					tinyConfig = Ext.merge(tinyConfig, {
 
 	                    // Events and callbacks
@@ -1601,11 +1597,11 @@ Ext.define('LIME.controller.Editor', {
                                     }
                                 }
                             });
-                            
+
                             var blurHandler = Ext.bind(me.blurHandler, me, [editor], true);
                             editor.on('blur', blurHandler);
                             editor.on('focusOut', blurHandler);
-                            
+
                             var focusHandler = Ext.bind(me.focusHandler, me, [editor], true);
                             editor.on('focus', focusHandler);
 
@@ -1613,7 +1609,7 @@ Ext.define('LIME.controller.Editor', {
                                 if ( document.activeElement == me.getIframe().dom ) {
                                     me.removeVisualSelectionObjects();
                                 } else {
-                                    /* IE bug workaround, avoid moving the caret 
+                                    /* IE bug workaround, avoid moving the caret
                                         at beginning of the document on focusing editor */
                                     me.tmpBookmark = me.getBookmark();
                                 }
@@ -1703,5 +1699,21 @@ Ext.define('LIME.controller.Editor', {
                 change: me.showDocumentIdentifier.bind(me)
             }
 		});
+	},
+
+	listen: {
+		controller: {
+			outliner: {
+				elementFocused: 'onOutlinerClick'
+			}
+		}
+	},
+
+	onOutlinerClick: function (id) {
+		var node = DomUtils.getElementById(id, this.getDom());
+		if (node) {
+			this.selectNode(node);
+			node.scrollIntoView();
+		}
 	}
 });

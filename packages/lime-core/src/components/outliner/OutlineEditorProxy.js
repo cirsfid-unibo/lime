@@ -63,7 +63,7 @@ Ext.define('LIME.components.outliner.OutlineEditorProxy', {
         });
     },
 
-    // Try to read the children of the element with the given internalid
+    // Try to read the children of the element with the given id
     // and call cb with result when successful.
     readChildren: function (parentId, cb) {
         try {
@@ -79,7 +79,7 @@ Ext.define('LIME.components.outliner.OutlineEditorProxy', {
         cb(this.getVisibleChildren(el).map(this.convertToModel, this));
     },
 
-    // Return the element with internalid equal to id.
+    // Return the element with the given id.
     getDomElement: function (id) {
         // Todo: this use of the global LIME object is suboptimal.
         // Maybe this should be set as a config.
@@ -87,7 +87,7 @@ Ext.define('LIME.components.outliner.OutlineEditorProxy', {
             result;
 
         if (id == 'root') result = doc.querySelector('[docid]');
-        else result = doc.querySelector('[internalid=' + id + ']');
+        else result = DomUtils.getElementById(id, doc);
 
         if (!result) throw new Error('Couldn\'t find element');
         else return result;
@@ -97,7 +97,7 @@ Ext.define('LIME.components.outliner.OutlineEditorProxy', {
     getVisibleChildren: function (node) {
         var results = [];
         for (var child = node.firstChild; child; child = child.nextSibling)
-            if (child.nodeType == 1 && child.hasAttribute('internalid'))
+            if (DomUtils.getElementId(child))
                 results.push(child);
         return results;
     },
@@ -106,8 +106,8 @@ Ext.define('LIME.components.outliner.OutlineEditorProxy', {
         var text = node.classList[1],
             isLeaf = this.getVisibleChildren(node).length == 0;
         return Ext.create('LIME.components.outliner.OutlineModel', {
-            id: node.getAttribute('internalid'),
-            parentId: node.parentNode.getAttribute('internalid'),
+            id: DomUtils.getElementId(node),
+            parentId: DomUtils.getElementId(node.parentNode),
             expanded: false,
             leaf: isLeaf,
             text: text,

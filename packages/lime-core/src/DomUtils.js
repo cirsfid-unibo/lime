@@ -81,7 +81,7 @@ Ext.define('LIME.DomUtils', {
      * This is the name of the identificator attribute
      */
     langElementIdAttribute : "id",
-    
+
     toMarkNodeClass: "toMarkNode",
     /**
      * @property {String} elementIdSeparator
@@ -103,7 +103,7 @@ Ext.define('LIME.DomUtils', {
      * RegExp object used for vowels
      */
     vowelsRegex : /([a, e, i, o, u]|[0-9]+)/gi,
-    
+
     tagRegex: /<(.|\n)*?>/g,
 
     // Matches tags including their content
@@ -413,7 +413,7 @@ Ext.define('LIME.DomUtils', {
         }
         return null;
     },
-    
+
     getMarkedParents: function(node, filterFunction) {
         var parents = [], iterNode = node;
 
@@ -478,16 +478,30 @@ Ext.define('LIME.DomUtils', {
         }
         return null;
     },
-    
+
+    // Get the unique id of the given editor dom element.
     getElementId: function(element) {
-        var elementId, markingElement;
-        if (element && element.getAttribute) {
-            elementId = element.getAttribute(DomUtils.elementIdAttribute);
-            return elementId;
-        }
+        if (element && element.getAttribute)
+            return element.getAttribute(DomUtils.elementIdAttribute);
         return null;
     },
-    
+
+    // Get the dom node with the given unique id which is contained in document.
+    getElementById: function (id, document) {
+        return document.querySelector('[' + DomUtils.elementIdAttribute + '="' +  id +  '"]');
+    },
+
+    // Get the concatenation of element id of the given dom element.
+    getElementIdPath: function (element) {
+        var path = '',
+            id;
+        while(id = this.getElementId(element)) {
+            element = element.parentNode;
+            path = id + '/' + path;
+        }
+        return 'root/' + path;
+    },
+
     getElementNameByNode: function(node) {
         var button = DomUtils.getButtonByElement(node);
         if(button && button.name) {
@@ -532,7 +546,7 @@ Ext.define('LIME.DomUtils', {
                 return NodeFilter.FILTER_SKIP;
         };
         var nodes = [];
-        
+
         if (initNode) {
            var w = initNode.ownerDocument.createTreeWalker(initNode, NodeFilter.SHOW_TEXT, containsText, false);
             try {
@@ -644,7 +658,7 @@ Ext.define('LIME.DomUtils', {
             },
 
             // Normalize range by enlarging it to include starting/closing tags around it.
-            // This should make it easier to wrap it in new tags with surroundContents. 
+            // This should make it easier to wrap it in new tags with surroundContents.
             enlargeToClosingTags: function (range) {
                 // Include starting tag
                 function normalizeStart () {
@@ -688,7 +702,7 @@ Ext.define('LIME.DomUtils', {
             },
 
             // Update range by moving its start and end out of the fake LIME editor
-            // dom elements 
+            // dom elements
             getOutOfFakeEditorElements: function (range) {
                 function isInFakeElement (el) {
                     if (el.nodeType == DomUtils.nodeType.TEXT)
@@ -706,14 +720,14 @@ Ext.define('LIME.DomUtils', {
         // Traverse range in DFS order and call callbacks.
         // {
         //   onText: function(textNode) {},
-        //   onTagOpened: function(node) {},   
-        //   onTagClosed: function(node) {}   
+        //   onTagOpened: function(node) {},
+        //   onTagClosed: function(node) {}
         // }
         traverse: function (range, callbacks) {
             var onText = callbacks.onText || function () {},
                 onTagOpened = callbacks.onTagOpened || function () {},
                 onTagClosed = callbacks.onTagClosed || function () {};
-            
+
             DomUtils.range.normalization.splitRangeNodes(range);
             var container = range.startContainer,
                 offset = range.startOffset;
@@ -770,7 +784,7 @@ Ext.define('LIME.DomUtils', {
                 },
                 onTagClosed: function (node) {
                     // If it was an auto-closed tag, don't close it again
-                    if (!node.firstChild) return; 
+                    if (!node.firstChild) return;
                     output += '</' + node.tagName.toLowerCase() + '>';
                 }
             });
@@ -837,7 +851,7 @@ Ext.define('LIME.DomUtils', {
                 var siblings = this.getSiblings(node1, node2);
                 var sLen = siblings.length;
                 var firstNode = null;
-                if ( sLen && sLen <= (g2.index-g1.index+2) && 
+                if ( sLen && sLen <= (g2.index-g1.index+2) &&
                      siblings[0] == node1 && siblings[sLen-1] == node2 ) {
                     var list = this.findNodeListInGroup(node1, groups);
                     if (list) {
@@ -857,12 +871,12 @@ Ext.define('LIME.DomUtils', {
     findNodeListInGroup : function(node, groups) {
         var list = groups.filter(function(group) {
             return group.filter(function(obj) {
-                return obj.node == node; 
+                return obj.node == node;
             }).length
         })[0];
         return list;
     },
-    
+
     getTextOfNodeClassic: function(node) {
         var text = "";
         for(var i = 0; i < node.childNodes.length; i++) {
@@ -1020,7 +1034,7 @@ Ext.define('LIME.DomUtils', {
             return cls.split(" ")[1];
         }
     },
-    
+
     allNodesHaveClass : function(nodes, cls) {
         for (var i = 0; i < nodes.length; i++) {
             if (!nodes[i].getAttribute || nodes[i].getAttribute("class") != cls) {
@@ -1035,39 +1049,39 @@ Ext.define('LIME.DomUtils', {
             textNode.appendData(" ");
         }
     },
-    
+
     removeChildren: function(node) {
         while (node.firstChild) {
             node.removeChild(node.firstChild);
         }
     },
-    
+
     replaceTextOfNode: function(node, newText) {
         var oldText = this.getTextOfNode(node);
         this.removeChildren(node);
         node.appendChild(node.ownerDocument.createTextNode(newText));
         return oldText;
     },
-    
+
     isNodeBlock: function(node) {
         return this.blockRegex.test(node.nodeName);
     },
-    
+
     isSameNodeWithHtml: function(node, html) {
         var re = new RegExp("^<"+node.nodeName+">", 'i');
         return re.test(html);
     },
-    
+
     filterMarkedNodes: function(nodes) {
         return Ext.Array.toArray(nodes).filter(function(el) {
             return el.getAttribute(DomUtils.elementIdAttribute);
         });
     },
-    
+
     isBreakingNode: function(node) {
         return node && node.nodeType == DomUtils.nodeType.ELEMENT && Ext.fly(node).is('.'+DomUtils.breakingElementClass);
     },
-    
+
     isNodeFocused: function(node) {
         var cls = node.getAttribute(DocProperties.elementFocusedCls);
         if(cls && cls === "true") {
@@ -1075,7 +1089,7 @@ Ext.define('LIME.DomUtils', {
         }
         return false;
     },
-    
+
     insertAfter: function(node, target) {
         if(target.nextElementSibling) {
             target.parentNode.insertBefore(node, target.nextSibling);
@@ -1083,7 +1097,7 @@ Ext.define('LIME.DomUtils', {
             target.parentNode.appendChild(node);
         }
     },
-    
+
     getLastFromQuery: function(node, query) {
         var result = node.querySelectorAll(query);
         if(result && result.length) {
@@ -1098,7 +1112,7 @@ Ext.define('LIME.DomUtils', {
         wrapper.appendChild(node);
         return wrapper;
     },
-    
+
     unwrapNode: function(node) {
         var iterNode;
         if(node.parentNode) {
@@ -1108,21 +1122,21 @@ Ext.define('LIME.DomUtils', {
                 node.parentNode.insertBefore(iterNode, node);
                 iterNode = nextSibling;
             }
-            node.parentNode.removeChild(node);    
+            node.parentNode.removeChild(node);
         }
     },
-    
+
     isNodeSiblingOfNode: function(node1, node2) {
         if(node1 && node2) {
             var iterNode = node1.nextSibling;
             while(iterNode && iterNode != node2) {
                 iterNode = iterNode.nextSibling;
             }
-            return (iterNode == node2);    
+            return (iterNode == node2);
         }
         return false;
     },
-    
+
     getAscendantNodes: function(node) {
         var nodes = [], parent = node.parentNode;
         while(parent && parent.nodeName.toLowerCase() != "body") {
@@ -1131,21 +1145,21 @@ Ext.define('LIME.DomUtils', {
         }
         return nodes;
     },
-    
+
     getCommonAscendant: function(node1, node2) {
         var ascendants1 = Ext.Array.toArray(this.getAscendantNodes(node1)),
             ascendants2 = Ext.Array.toArray(this.getAscendantNodes(node2)),
             index1, index2;
-        
+
         ascendant = ascendants1.filter(function(node) {
             return (ascendants2.indexOf(node) != -1);
         })[0];
-        
+
         index1 = ascendants1.indexOf(ascendant);
         index2 = ascendants2.indexOf(ascendant);
         index1 = (index1 != 0) ? index1-1 : 0;
         index2 = (index2 != 0) ? index2-1 : 0;
-        
+
         return {
             ascendant: ascendant,
             firstParent: ascendants1[index1],
@@ -1188,7 +1202,7 @@ Ext.define('LIME.DomUtils', {
     normalizeBr: function(str) {
         return str.replace(/(<br\/>(<br\/>)?(\s*))+/g, '$1');
     },
-    
+
     constructor: function() {
         this.setBreakingElementHtml("<span class=\""+this.breakingElementClass+"\">&nbsp;</span>");
     }
