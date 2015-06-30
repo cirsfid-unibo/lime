@@ -497,7 +497,7 @@ Ext.define('LIME.DomUtils', {
             id;
         while(id = this.getElementId(element)) {
             element = element.parentNode;
-            path = id + '/' + path;
+            path = path ? id + '/' + path : id;
         }
         return 'root/' + path;
     },

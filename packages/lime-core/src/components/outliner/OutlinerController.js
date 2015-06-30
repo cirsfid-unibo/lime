@@ -69,7 +69,11 @@ Ext.define('LIME.components.outliner.OutlinerController', {
     // Expand element
     onContentFocused: function (path) {
         console.log('onContentFocused', path);
-        this.getView().ensureVisible(path);
+        this.getView().ensureVisible(path, {
+            highlight: true,
+            select: true,
+            animate: true
+        });
     },
 
     // Map the event data to the Outline model record it identifies.

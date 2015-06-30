@@ -63,17 +63,21 @@ Ext.define('LIME.components.outliner.OutlinerTreePanel', {
         store: '{outline}'
     },
 
+    animate: true,
+    lines: false,
+    singleExpand: true,
+    useArrows: true,
+
     initComponent: function () {
         if (!this.proxy)
             throw new Error('You must configure a proxy in order to use Outliner');
-
-        this.setViewModel({
+        this.setViewModel(Ext.create('Ext.app.ViewModel', {
             stores: {
                 outline: Ext.create('LIME.components.outliner.OutlineStore', {
                     proxy: Ext.create(this.proxy)
                 })
             }
-        });
+        }));
         this.callParent(arguments);
     }
 });
