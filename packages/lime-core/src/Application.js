@@ -72,6 +72,7 @@ Ext.define('LIME.Application', {
         'LIME.controller.Editor', 
         'LIME.controller.MarkingMenu', 
         'LIME.controller.Marker', 
+        'LIME.controller.Outliner', 
         'LIME.controller.Language', 
         'LIME.controller.ProgressWindow',
         'LIME.controller.Notification',
@@ -79,6 +80,7 @@ Ext.define('LIME.Application', {
         'LIME.controller.ContextInfoManager',
         'LIME.controller.WidgetManager',
         
+        'LIME.store.Outliner', 
         'LIME.store.Languages',
         'LIME.store.OpenFile',
         'LIME.store.LanguagesPlugin',
@@ -99,6 +101,7 @@ Ext.define('LIME.Application', {
         'Editor', 
         'MarkingMenu', 
         'Marker', 
+        'Outliner', 
         'Language', 
         'ProgressWindow',
         'Notification',
@@ -108,6 +111,7 @@ Ext.define('LIME.Application', {
     ],
 
     stores: [
+        'Outliner', 
         'Languages',
         'OpenFile',
         'LanguagesPlugin',

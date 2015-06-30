@@ -50,7 +50,7 @@
 // (Ids of elements are assigned by the proxy)
 Ext.define('LIME.components.outliner.OutlinerTreePanel', {
     extend: 'Ext.tree.Panel',
-    alias: 'widget.outliner',
+    alias: 'widget.outlinerTreePanel',
 
     requires: [
         'LIME.components.outliner.OutlinerController',
