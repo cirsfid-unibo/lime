@@ -1203,6 +1203,10 @@ Ext.define('LIME.DomUtils', {
         return str.replace(/(<br\/>(<br\/>)?(\s*))+/g, '$1');
     },
 
+    nodeListToArray: function (nodelist) {
+        return Array.prototype.slice.call(nodelist);
+    },
+
     constructor: function() {
         this.setBreakingElementHtml("<span class=\""+this.breakingElementClass+"\">&nbsp;</span>");
     }

@@ -27,7 +27,7 @@
  * written authorization.
  *
  * The end-user documentation included with the redistribution, if any,
- * must include the following acknowledgment: "This product includes
+ * must include the  acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
  * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
@@ -40,20 +40,40 @@
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
  * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * TORT OR OTHERWISEfollowing, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('LIME.components.outliner.OutlineStore', {
-    extend: 'Ext.data.TreeStore',
+Ext.define('AknTabComments.pBlocking.XmlToHtml', {
+    singleton: true,
 
-    requires: [
-        'LIME.components.outliner.OutlineModel'
-    ],
+    parser: new DOMParser(),
+    serializer: new XMLSerializer(),
 
-    model: 'LIME.components.outliner.OutlineModel',
+    translateString: function (akomaNtoso) {
+        var inputDom = this.parser.parseFromString(akomaNtoso, "text/xml"),
+            outputDom = this.translateNode(inputDom),
+            outputString = this.serializer.serializeToString(outputDom)
+        return outputString;
+    },
 
-    root: {
-        expanded: true
+    translateNode: function (node) {
+        switch (node.nodeType) {
+            case 3: // Text
+                return document.createTextNode(node.wholeText);
+            case 9: // Document
+            case 1: // Element
+                var el = document.createElement('div');
+                el.className = node.nodeName;
+                var children = node.childNodes;
+                for (var i = 0; i < children.length; i++)
+                    el.appendChild(this.translateNode(children[i]));
+                var attributes = node.hasAttributes && node.hasAttributes() ? node.attributes : [];
+                for (var i = 0; i < attributes.length; i++)
+                    el.dataset[attributes[i].name] = attributes[i].value;
+                return el;
+            default:
+                console.warn('Unknown node type:', node.nodeType);
+        }
     }
 });

@@ -27,7 +27,7 @@
  * written authorization.
  *
  * The end-user documentation included with the redistribution, if any,
- * must include the following acknowledgment: "This product includes
+ * must include the  acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
  * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
@@ -40,20 +40,52 @@
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
  * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * TORT OR OTHERWISEfollowing, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('LIME.components.outliner.OutlineStore', {
-    extend: 'Ext.data.TreeStore',
+// Ext only (no iframe) visualizer interface for AkomaNtoso documents
+Ext.define('AknTabVisualizer.visualizer.MainTab', {
+    extend: 'Ext.panel.Panel',
+    alias: 'widget.newVisualPreviewMainTab',
+    controller: 'newVisualPreviewMainTab',
 
     requires: [
-        'LIME.components.outliner.OutlineModel'
+        'AknTabVisualizer.visualizer.AknVisualizerComponent',
+        'AknTabVisualizer.visualizer.AknVisualizerComponent',
+        'LIME.components.outliner.OutlinerTreePanel',
+        'LIME.components.outliner.OutlineStore'
     ],
 
-    model: 'LIME.components.outliner.OutlineModel',
+    cls: 'editorTab',
+    notEditMode: true,
 
-    root: {
-        expanded: true
+    layout: 'border',
+    items: [{
+        xtype: 'outlinerTreePanel',
+        region: 'west',
+        width: 250,
+        collapsible: true
+    },{
+        xtype: 'aknVisualizer',
+        scrollable: 'vertical',
+        reference: 'aknVisualizer',
+        region: 'center'
+    }],
+
+    initComponent: function () {
+        this.title = Locale.getString('tabTitle', 'akn-tab-visualizer');
+
+        this.setViewModel(Ext.create('Ext.app.ViewModel', {
+            stores: {
+                outline: Ext.create('LIME.components.outliner.OutlineStore', {
+                    root: {
+                        loaded: true
+                    }
+                })
+            }
+        }));
+
+        this.callParent(arguments);
     }
 });

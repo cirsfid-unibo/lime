@@ -27,7 +27,7 @@
  * written authorization.
  *
  * The end-user documentation included with the redistribution, if any,
- * must include the following acknowledgment: "This product includes
+ * must include the  acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
  * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
@@ -40,20 +40,61 @@
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
  * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * TORT OR OTHERWISEfollowing, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('LIME.components.outliner.OutlineStore', {
-    extend: 'Ext.data.TreeStore',
+// Ext only (no iframe) visualizer interface for AkomaNtoso documents
+Ext.define('AknTabVisualizer.visualizer.MainTabController', {
+    extend: 'Ext.app.ViewController',
+    alias: 'controller.newVisualPreviewMainTab',
 
-    requires: [
-        'LIME.components.outliner.OutlineModel'
-    ],
+    listen: {
+        component: {
+            '#': {
+                activate: 'onActivate'
+            }
+        }
+    },
 
-    model: 'LIME.components.outliner.OutlineModel',
+    onActivate: function () {
+        var me = this,
+            view = this.getView(),
+            uri = LIME.app.getController('Editor').getDocumentUri();
+        view.setLoading(true);
+        Server.getDocument(DocProperties.documentInfo.docId, function (akn) {
+            console.log('onActivate', view);
+            view.lookupReference('aknVisualizer').setData({
+                akomaNtoso:akn
+            });
+            me.updateOutliner(akn);
+            view.setLoading(false);
+        });
+    },
 
-    root: {
-        expanded: true
+    updateOutliner: function (akn) {
+        var parser = new DOMParser(),
+            inputDom = parser.parseFromString(akn, "text/xml"),
+            inputEl = inputDom.querySelector('akomaNtoso');
+        this.getStore('outline').setRoot({
+            text: 'Root',
+            expanded: true,
+            children: this.translateNode(inputEl).children
+        });
+    },
+
+    translateNode: function (node) {
+        if (node.nodeType == 1) { // Element
+            var children = DomUtils.nodeListToArray(node.childNodes)
+                                   .map(this.translateNode, this)
+                                   .filter(function (el) { return !!el });
+            console.log('children', children);
+            return {
+                text: node.nodeName,
+                leaf: !children.length,
+                children: children
+            };
+        }
     }
+
 });

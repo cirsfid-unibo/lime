@@ -48,6 +48,9 @@
 // Must be configured with a valid proxy (See OutlineEditorProxy for an example).
 // Its controller fires the "elementFocused" event, with the id of the element
 // (Ids of elements are assigned by the proxy)
+// This component can be configured with:
+// - proxy: a proxy where to read store data from
+// - a viewModel containing an LIME.components.outliner.OutlineStore
 Ext.define('LIME.components.outliner.OutlinerTreePanel', {
     extend: 'Ext.tree.Panel',
     alias: 'widget.outlinerTreePanel',
@@ -69,15 +72,15 @@ Ext.define('LIME.components.outliner.OutlinerTreePanel', {
     useArrows: true,
 
     initComponent: function () {
-        if (!this.proxy)
-            throw new Error('You must configure a proxy in order to use Outliner');
-        this.setViewModel(Ext.create('Ext.app.ViewModel', {
-            stores: {
-                outline: Ext.create('LIME.components.outliner.OutlineStore', {
-                    proxy: Ext.create(this.proxy)
-                })
-            }
-        }));
+        this.title = Locale.strings.westToolbarTitle;
+        if (this.proxy)
+            this.setViewModel(Ext.create('Ext.app.ViewModel', {
+                stores: {
+                    outline: Ext.create('LIME.components.outliner.OutlineStore', {
+                        proxy: this.proxy && Ext.create(this.proxy)
+                    })
+                }
+            }));
         this.callParent(arguments);
     }
 });
