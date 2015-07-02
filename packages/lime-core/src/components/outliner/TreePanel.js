@@ -44,39 +44,15 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Generic document outline widget.
-// Must be configured with a valid proxy (See OutlineEditorProxy for an example).
-// Its controller fires the "elementFocused" event, with the id of the element
-// (Ids of elements are assigned by the proxy)
-// This component can be configured with:
-// - proxy: a proxy where to read store data from
-// - a viewModel containing an LIME.components.outliner.OutlineStore
-Ext.define('LIME.components.outliner.OutlinerTreePanel', {
-    extend: 'LIME.components.outliner.TreePanel',
-    alias: 'widget.outlinerTreePanel',
+// A simple and fast implementation of a tree panel.
+// Must be configured with a TreeStore.
+Ext.define('LIME.components.outliner.TreePanel', {
+    extend: 'Ext.view.View',
+    alias: 'widget.treePanel',
 
-    requires: [
-        'LIME.components.outliner.TreePanel',
-        'LIME.components.outliner.OutlinerController',
-        'LIME.components.outliner.OutlineStore'
-    ],
-
-    controller: 'outliner',
-
-    bind: {
-        store: '{outline}'
-    },
-
-    initComponent: function () {
-        this.title = Locale.strings.westToolbarTitle;
-        if (this.proxy)
-            this.setViewModel(Ext.create('Ext.app.ViewModel', {
-                stores: {
-                    outline: Ext.create('LIME.components.outliner.OutlineStore', {
-                        proxy: this.proxy && Ext.create(this.proxy)
-                    })
-                }
-            }));
-        this.callParent(arguments);
-    }
+    tpl: new Ext.XTemplate(
+        '<tpl for=".">',
+            '<tpl for=".">',
+        '</tpl>'
+    )
 });

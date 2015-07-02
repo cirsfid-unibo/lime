@@ -1,106 +1,961 @@
-/**
- * 	PATTERN STYLING
-*/
-
+@charset "UTF-8";
 /*
-.container, .hcontainer{
-	margin-top:5px;	
-}
-*/
+ * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
+ * Computer Science and Engineering of the University of Bologna
+ *
+ * Authors:
+ * Monica Palmirani ÔÇô CIRSFID of the University of Bologna
+ * Fabio Vitali ÔÇô Department of Computer Science and Engineering of the University of Bologna
+ * Luca Cervone ÔÇô CIRSFID of the University of Bologna
+ *
+ * Permission is hereby granted to any person obtaining a copy of this
+ * software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The Software can be used by anyone for purposes without commercial gain,
+ * including scientific, individual, and charity purposes. If it is used
+ * for purposes having commercial gains, an agreement with the copyright
+ * holders is required. The above copyright notice and this permission
+ * notice shall be included in all copies or substantial portions of the
+ * Software.
+ *
+ * Except as contained in this notice, the name(s) of the above copyright
+ * holders and authors shall not be used in advertising or otherwise to
+ * promote the sale, use or other dealings in this Software without prior
+ * written authorization.
+ *
+ * The end-user documentation included with the redistribution, if any,
+ * must include the following acknowledgment: "This product includes
+ * software developed by University of Bologna (CIRSFID and Department of
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
+ * Fabio Vitali, Luca Cervone)", in the same place and form as other
+ * third-party acknowledgments. Alternatively, this acknowledgment may
+ * appear in the software itself, in the same form and location as other
+ * such third-party acknowledgments.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+@import "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css";
+.aknVisualizer {
+  padding: 20px 50px;
+  background-color: white; }
+  .aknVisualizer .akomaNtoso {
+    max-width: 1240px;
+    margin: auto;
+    font: 14px/20px 'Libre Baskerville', serif;
+    color: #333;
+    text-align: justify; }
+  .aknVisualizer .meta {
+    display: none; }
+  .aknVisualizer .preamble {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid #8ba9c1;
+    padding: 25px 10px 0;
+    margin: 20px 0 10px;
+    border-color: #476a85; }
+    .aknVisualizer .preamble > .num {
+      position: relative;
+      color: #666666;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    .aknVisualizer .preamble > .heading {
+      position: relative;
+      color: #666666;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+    .aknVisualizer .preamble:before {
+      content: "preamble";
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      font: 13px/15px 'Titillium Web', sans-serif;
+      display: inline-block;
+      padding: 1px 6px 0;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+      color: white;
+      background-color: #476a85; }
+  .aknVisualizer .preface {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid #8ba9c1;
+    padding: 25px 10px 0;
+    margin: 20px 0 10px;
+    border-color: #476a85; }
+    .aknVisualizer .preface > .num {
+      position: relative;
+      color: #666666;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    .aknVisualizer .preface > .heading {
+      position: relative;
+      color: #666666;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+    .aknVisualizer .preface:before {
+      content: "preface";
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      font: 13px/15px 'Titillium Web', sans-serif;
+      display: inline-block;
+      padding: 1px 6px 0;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+      color: white;
+      background-color: #476a85; }
+  .aknVisualizer .conclusions {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid #8ba9c1;
+    padding: 25px 10px 0;
+    margin: 20px 0 10px;
+    border-color: #476a85; }
+    .aknVisualizer .conclusions > .num {
+      position: relative;
+      color: #666666;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    .aknVisualizer .conclusions > .heading {
+      position: relative;
+      color: #666666;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+    .aknVisualizer .conclusions:before {
+      content: "conclusions";
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      font: 13px/15px 'Titillium Web', sans-serif;
+      display: inline-block;
+      padding: 1px 6px 0;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+      color: white;
+      background-color: #476a85; }
+  .aknVisualizer .body {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid #c1b88b;
+    padding: 25px 10px 0;
+    margin: 20px 0 10px;
+    border-color: #857a47; }
+    .aknVisualizer .body > .num {
+      position: relative;
+      color: #666666;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    .aknVisualizer .body > .heading {
+      position: relative;
+      color: #666666;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+    .aknVisualizer .body:before {
+      content: "body";
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      font: 13px/15px 'Titillium Web', sans-serif;
+      display: inline-block;
+      padding: 1px 6px 0;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+      color: white;
+      background-color: #857a47; }
+  .aknVisualizer .title {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid #b8c18b; }
+    .aknVisualizer .title > .num {
+      position: relative;
+      color: #666666;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    .aknVisualizer .title > .heading {
+      position: relative;
+      color: #666666;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+  .aknVisualizer .section {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid #a6c18b; }
+    .aknVisualizer .section > .num {
+      position: relative;
+      color: #666666;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    .aknVisualizer .section > .heading {
+      position: relative;
+      color: #666666;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+  .aknVisualizer .article {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid #94c18b; }
+    .aknVisualizer .article > .num {
+      position: relative;
+      color: #666666;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    .aknVisualizer .article > .heading {
+      position: relative;
+      color: #666666;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+  .aknVisualizer .chapter {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid #8bc194; }
+    .aknVisualizer .chapter > .num {
+      position: relative;
+      color: #666666;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    .aknVisualizer .chapter > .heading {
+      position: relative;
+      color: #666666;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+  .aknVisualizer .clause {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid #8bc1a6; }
+    .aknVisualizer .clause > .num {
+      position: relative;
+      color: #666666;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    .aknVisualizer .clause > .heading {
+      position: relative;
+      color: #666666;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+  .aknVisualizer .list > .point, .aknVisualizer .list > .item, .aknVisualizer .blockList > .point, .aknVisualizer .blockList > .item {
+    margin-top: 15px;
+    position: relative;
+    min-height: 30px; }
+    .aknVisualizer .list > .point > .num, .aknVisualizer .list > .item > .num, .aknVisualizer .blockList > .point > .num, .aknVisualizer .blockList > .item > .num {
+      position: absolute;
+      top: 0px;
+      left: 5px;
+      font-size: 17px;
+      font-weight: bold; }
+    .aknVisualizer .list > .point > .content, .aknVisualizer .list > .point > .list, .aknVisualizer .list > .point > .num ~ .p, .aknVisualizer .list > .item > .content, .aknVisualizer .list > .item > .list, .aknVisualizer .list > .item > .num ~ .p, .aknVisualizer .blockList > .point > .content, .aknVisualizer .blockList > .point > .list, .aknVisualizer .blockList > .point > .num ~ .p, .aknVisualizer .blockList > .item > .content, .aknVisualizer .blockList > .item > .list, .aknVisualizer .blockList > .item > .num ~ .p {
+      margin-left: 60px;
+      display: inline-block; }
+  .aknVisualizer .list > .intro, .aknVisualizer .list > .listIntroduction, .aknVisualizer .blockList > .intro, .aknVisualizer .blockList > .listIntroduction {
+    font-style: italic; }
+  .aknVisualizer .ins {
+    display: inline-block; }
+  .aknVisualizer .omissis {
+    border-bottom: 1px solid #8ba9c1;
+    display: inline-block;
+    position: relative;
+    margin: 5px 0 3px;
+    padding-right: 80px; }
+    .aknVisualizer .omissis:before {
+      content: "omissis";
+      width: 60px;
+      text-align: center;
+      font: 13px/16px 'Titillium Web', sans-serif;
+      position: absolute;
+      right: 0px;
+      bottom: 0px;
+      padding: 0px 4px;
+      border-top-right-radius: 4px;
+      border-top-left-radius: 4px;
+      color: white;
+      background-color: #8ba9c1; }
+  .aknVisualizer .def {
+    display: inline-block;
+    font-style: inline; }
+  .aknVisualizer .ref {
+    display: inline;
+    color: #0091ff;
+    text-decoration: underline; }
 
-body {
-	font-size: .8em;
-}
+#tinymce.lime.italian .preface {
+  padding-right: 116px; }
+  #tinymce.lime.italian .preface:before {
+    content: "Intestazione";
+    width: 99px;
+    font: 13px/15px 'FontAwesome', sans-serif;
+    color: white;
+    position: absolute; }
+#tinymce.lime.italian .body {
+  padding-right: 60px; }
+  #tinymce.lime.italian .body:before {
+    content: "Corpo";
+    width: 50px;
+    font: 13px/15px 'FontAwesome', sans-serif;
+    color: white;
+    position: absolute; }
+#tinymce.lime.italian .title {
+  padding-right: 68px; }
+  #tinymce.lime.italian .title:before {
+    content: "Titolo";
+    width: 57px;
+    font: 13px/15px 'FontAwesome', sans-serif;
+    color: white;
+    position: absolute; }
+#tinymce.lime.italian .setion {
+  padding-right: 76px; }
+  #tinymce.lime.italian .setion:before {
+    content: "Sezione";
+    width: 64px;
+    font: 13px/15px 'FontAwesome', sans-serif;
+    color: white;
+    position: absolute; }
+#tinymce.lime.italian .paragraph {
+  padding-right: 60px; }
+  #tinymce.lime.italian .paragraph:before {
+    content: "Comma";
+    width: 50px;
+    font: 13px/15px 'FontAwesome', sans-serif;
+    color: white;
+    position: absolute; }
+#tinymce.lime.italian .preface {
+  padding-right: 116px; }
+  #tinymce.lime.italian .preface:before {
+    content: "Intestazione";
+    width: 99px;
+    font: 13px/15px 'FontAwesome', sans-serif;
+    color: white;
+    position: absolute; }
 
-.breaking {
-	border: 0;
-	margin : 2px;
-	background-color: rgba(0,0,0,0);
-	display: block;
-}
-
-hr[data-mce-selected] {
-	outline: 0px solid black;
-}
-
-.breaking:hover {
-}
-
-*[focused = 'true'] {
-	-webkit-box-shadow: 0px 0px 10px 2px rgba(105,105,105,1);
-	-moz-box-shadow: 0px 0px 10px 2px rgba(105,105,105,1);
-	box-shadow: 0px 0px 10px 2px rgba(105,105,105,1);
-}
-
-#tinymce.noboxes *::before, #tinymce.noboxes *::after {
-	/* Since IE does not support initial... -.- */
-	border: 0;
-	padding: 0;
-	background: none;
-	margin: 0;
-	content: none;
-	position: static;
-	display: inline;
-
-	border: initial;
-	line-height: initial; 
-	padding: initial;
-	background: initial;
-	margin: initial;
-	content: initial;
-	position: initial;
-	display: initial;
-}
-
-#tinymce.noboxes * {
-	border: 0;
-	background: none;
-
-	border: initial;
-	background: initial;
-}
-
-#tinymce.nocolors * {
-	color: black;
-}
-
-#tinymce.pdfstyle .breaking {
-	display: none;
-}
-
-#tinymce.secondEditor *:before, #tinymce.readOnly *:before, #tinymce.secondEditor *:after, #tinymce.readOnly *:after {
-	background-color: #CCCCCC;
-	border-color: #CCCCCC;
-}
-
-#tinymce.secondEditor *, #tinymce.readOnly * {
-	border-color: #CCCCCC;
-}
-
-#tinymce.readOnly *:before, #tinymce.readOnly *:after {
-	background-color: #A4E2E2;
-}
-
-span.visibleBookmark:before {
-	overflow: initial !important;
-	background-color: rgba(205, 101, 103, 1.0) !important;
+#tinymce {
+  font-size: .8em; }
+  #tinymce hr[data-mce-selected] {
+    outline: 0px solid black; }
+  #tinymce span.visibleBookmark:before {
+    overflow: initial !important;
+    background-color: #cd6567 !important;
     display: inline-block  !important;
     line-height: 18px  !important;
     width: 2px !important;
     margin: 0 0px !important;
-    content: '\00a0';
-}
+    content: '\00a0'; }
+  #tinymce span[data-mce-type="bookmark"]:not(.visibleBookmark) {
+    display: none; }
+  #tinymce span.visibleSelection {
+    background-color: #B0B0B0; }
+  #tinymce #tinymce *[highlighted=true] {
+    background-color: #fafcc0; }
+  #tinymce.lime .preamble {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid;
+    border-color: #958a50;
+    padding: 25px 10px 0;
+    margin: 20px 0 10px; }
+    #tinymce.lime .preamble > .num {
+      position: relative;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    #tinymce.lime .preamble > .heading {
+      position: relative;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+    #tinymce.lime .preamble:before {
+      background-color: #958a50; }
+    #tinymce.lime .preamble > .heading, #tinymce.lime .preamble > .num {
+      color: #423d24; }
+    #tinymce.lime .preamble:before {
+      content: "preamble";
+      width: 71px;
+      font: 13px/15px 'FontAwesome', sans-serif;
+      color: white;
+      position: absolute; }
+    #tinymce.lime .preamble:before {
+      padding-left: 10px;
+      top: 0px;
+      left: 0px;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px; }
+  #tinymce.lime .preface {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid;
+    border-color: #958a50;
+    padding: 25px 10px 0;
+    margin: 20px 0 10px; }
+    #tinymce.lime .preface > .num {
+      position: relative;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    #tinymce.lime .preface > .heading {
+      position: relative;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+    #tinymce.lime .preface:before {
+      background-color: #958a50; }
+    #tinymce.lime .preface > .heading, #tinymce.lime .preface > .num {
+      color: #423d24; }
+    #tinymce.lime .preface:before {
+      content: "preface";
+      width: 64px;
+      font: 13px/15px 'FontAwesome', sans-serif;
+      color: white;
+      position: absolute; }
+    #tinymce.lime .preface:before {
+      padding-left: 10px;
+      top: 0px;
+      left: 0px;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px; }
+  #tinymce.lime .conclusions {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid;
+    border-color: #958a50;
+    padding: 25px 10px 0;
+    margin: 20px 0 10px; }
+    #tinymce.lime .conclusions > .num {
+      position: relative;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    #tinymce.lime .conclusions > .heading {
+      position: relative;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+    #tinymce.lime .conclusions:before {
+      background-color: #958a50; }
+    #tinymce.lime .conclusions > .heading, #tinymce.lime .conclusions > .num {
+      color: #423d24; }
+    #tinymce.lime .conclusions:before {
+      content: "conclusions";
+      width: 92px;
+      font: 13px/15px 'FontAwesome', sans-serif;
+      color: white;
+      position: absolute; }
+    #tinymce.lime .conclusions:before {
+      padding-left: 10px;
+      top: 0px;
+      left: 0px;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px; }
+  #tinymce.lime .body {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid;
+    border-color: #958a50;
+    padding: 25px 10px 0;
+    margin: 20px 0 10px; }
+    #tinymce.lime .body > .num {
+      position: relative;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    #tinymce.lime .body > .heading {
+      position: relative;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+    #tinymce.lime .body:before {
+      background-color: #958a50; }
+    #tinymce.lime .body > .heading, #tinymce.lime .body > .num {
+      color: #423d24; }
+    #tinymce.lime .body:before {
+      content: "body";
+      width: 43px;
+      font: 13px/15px 'FontAwesome', sans-serif;
+      color: white;
+      position: absolute; }
+    #tinymce.lime .body:before {
+      padding-left: 10px;
+      top: 0px;
+      left: 0px;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px; }
+  #tinymce.lime .title {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid;
+    border-color: #958a50;
+    padding: 25px 10px 0;
+    margin: 20px 0 10px; }
+    #tinymce.lime .title > .num {
+      position: relative;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    #tinymce.lime .title > .heading {
+      position: relative;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+    #tinymce.lime .title:before {
+      background-color: #958a50; }
+    #tinymce.lime .title > .heading, #tinymce.lime .title > .num {
+      color: #423d24; }
+    #tinymce.lime .title:before {
+      content: "title";
+      width: 50px;
+      font: 13px/15px 'FontAwesome', sans-serif;
+      color: white;
+      position: absolute; }
+    #tinymce.lime .title:before {
+      padding-left: 10px;
+      top: 0px;
+      left: 0px;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px; }
+  #tinymce.lime .section {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid;
+    border-color: #958a50;
+    padding: 25px 10px 0;
+    margin: 20px 0 10px; }
+    #tinymce.lime .section > .num {
+      position: relative;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    #tinymce.lime .section > .heading {
+      position: relative;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+    #tinymce.lime .section:before {
+      background-color: #958a50; }
+    #tinymce.lime .section > .heading, #tinymce.lime .section > .num {
+      color: #423d24; }
+    #tinymce.lime .section:before {
+      content: "section";
+      width: 64px;
+      font: 13px/15px 'FontAwesome', sans-serif;
+      color: white;
+      position: absolute; }
+    #tinymce.lime .section:before {
+      padding-left: 10px;
+      top: 0px;
+      left: 0px;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px; }
+  #tinymce.lime .paragraph {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid;
+    border-color: #958a50;
+    padding: 25px 10px 0;
+    margin: 20px 0 10px; }
+    #tinymce.lime .paragraph > .num {
+      position: relative;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    #tinymce.lime .paragraph > .heading {
+      position: relative;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+    #tinymce.lime .paragraph:before {
+      background-color: #958a50; }
+    #tinymce.lime .paragraph > .heading, #tinymce.lime .paragraph > .num {
+      color: #423d24; }
+    #tinymce.lime .paragraph:before {
+      content: "paragraph";
+      width: 78px;
+      font: 13px/15px 'FontAwesome', sans-serif;
+      color: white;
+      position: absolute; }
+    #tinymce.lime .paragraph:before {
+      padding-left: 10px;
+      top: 0px;
+      left: 0px;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px; }
+  #tinymce.lime .article {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid;
+    border-color: #958a50;
+    padding: 25px 10px 0;
+    margin: 20px 0 10px; }
+    #tinymce.lime .article > .num {
+      position: relative;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    #tinymce.lime .article > .heading {
+      position: relative;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+    #tinymce.lime .article:before {
+      background-color: #958a50; }
+    #tinymce.lime .article > .heading, #tinymce.lime .article > .num {
+      color: #423d24; }
+    #tinymce.lime .article:before {
+      content: "article";
+      width: 64px;
+      font: 13px/15px 'FontAwesome', sans-serif;
+      color: white;
+      position: absolute; }
+    #tinymce.lime .article:before {
+      padding-left: 10px;
+      top: 0px;
+      left: 0px;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px; }
+  #tinymce.lime .chapter {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid;
+    border-color: #958a50;
+    padding: 25px 10px 0;
+    margin: 20px 0 10px; }
+    #tinymce.lime .chapter > .num {
+      position: relative;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    #tinymce.lime .chapter > .heading {
+      position: relative;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+    #tinymce.lime .chapter:before {
+      background-color: #958a50; }
+    #tinymce.lime .chapter > .heading, #tinymce.lime .chapter > .num {
+      color: #423d24; }
+    #tinymce.lime .chapter:before {
+      content: "chapter";
+      width: 64px;
+      font: 13px/15px 'FontAwesome', sans-serif;
+      color: white;
+      position: absolute; }
+    #tinymce.lime .chapter:before {
+      padding-left: 10px;
+      top: 0px;
+      left: 0px;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px; }
+  #tinymce.lime .clause {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid;
+    border-color: #958a50;
+    padding: 25px 10px 0;
+    margin: 20px 0 10px; }
+    #tinymce.lime .clause > .num {
+      position: relative;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    #tinymce.lime .clause > .heading {
+      position: relative;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+    #tinymce.lime .clause:before {
+      background-color: #958a50; }
+    #tinymce.lime .clause > .heading, #tinymce.lime .clause > .num {
+      color: #423d24; }
+    #tinymce.lime .clause:before {
+      content: "clause";
+      width: 57px;
+      font: 13px/15px 'FontAwesome', sans-serif;
+      color: white;
+      position: absolute; }
+    #tinymce.lime .clause:before {
+      padding-left: 10px;
+      top: 0px;
+      left: 0px;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px; }
+  #tinymce.lime .list {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid;
+    border-color: #958a50;
+    padding: 25px 10px 0;
+    margin: 20px 0 10px; }
+    #tinymce.lime .list > .num {
+      position: relative;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    #tinymce.lime .list > .heading {
+      position: relative;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+    #tinymce.lime .list:before {
+      background-color: #958a50; }
+    #tinymce.lime .list > .heading, #tinymce.lime .list > .num {
+      color: #423d24; }
+    #tinymce.lime .list:before {
+      content: "list";
+      width: 43px;
+      font: 13px/15px 'FontAwesome', sans-serif;
+      color: white;
+      position: absolute; }
+    #tinymce.lime .list:before {
+      padding-left: 10px;
+      top: 0px;
+      left: 0px;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px; }
+  #tinymce.lime .point {
+    position: relative;
+    margin: 10px 0;
+    padding: 0 10px;
+    border-left: 4px solid; }
+    #tinymce.lime .point > .num {
+      position: relative;
+      margin: 8px 0 15px;
+      font-size: 25px;
+      font-weight: bold;
+      display: inline-block; }
+    #tinymce.lime .point > .heading {
+      position: relative;
+      margin-left: 15px;
+      font-size: 13px;
+      font-style: italic;
+      display: inline-block; }
+  #tinymce.lime .inline {
+    padding-right: 36px;
+    border-bottom: 1px solid #82abc9;
+    display: inline-block;
+    position: relative;
+    margin: 5px 0 3px; }
+    #tinymce.lime .inline:before {
+      content: "->";
+      width: 29px;
+      font: 13px/15px 'FontAwesome', sans-serif;
+      color: white;
+      position: absolute; }
+    #tinymce.lime .inline:before {
+      background-color: #82abc9;
+      text-align: center;
+      right: 0px;
+      bottom: 0px;
+      border-top-right-radius: 4px;
+      border-top-left-radius: 4px; }
+  #tinymce.lime .docType {
+    padding-right: 92px;
+    border-bottom: 1px solid #82abc9;
+    display: inline-block;
+    position: relative;
+    margin: 5px 0 3px; }
+    #tinymce.lime .docType:before {
+      content: "docType ";
+      width: 78px;
+      font: 13px/15px 'FontAwesome', sans-serif;
+      color: white;
+      position: absolute; }
+    #tinymce.lime .docType:before {
+      background-color: #82abc9;
+      text-align: center;
+      right: 0px;
+      bottom: 0px;
+      border-top-right-radius: 4px;
+      border-top-left-radius: 4px; }
+  #tinymce.lime .docNumber {
+    padding-right: 108px;
+    border-bottom: 1px solid #82abc9;
+    display: inline-block;
+    position: relative;
+    margin: 5px 0 3px; }
+    #tinymce.lime .docNumber:before {
+      content: "docNumber ";
+      width: 92px;
+      font: 13px/15px 'FontAwesome', sans-serif;
+      color: white;
+      position: absolute; }
+    #tinymce.lime .docNumber:before {
+      background-color: #82abc9;
+      text-align: center;
+      right: 0px;
+      bottom: 0px;
+      border-top-right-radius: 4px;
+      border-top-left-radius: 4px; }
+  #tinymce.lime .num {
+    padding-right: 60px;
+    border-bottom: 1px solid #82abc9;
+    display: inline-block;
+    position: relative;
+    margin: 5px 0 3px; }
+    #tinymce.lime .num:before {
+      content: "num ";
+      width: 50px;
+      font: 13px/15px 'FontAwesome', sans-serif;
+      color: white;
+      position: absolute; }
+    #tinymce.lime .num:before {
+      background-color: #82abc9;
+      text-align: center;
+      right: 0px;
+      bottom: 0px;
+      border-top-right-radius: 4px;
+      border-top-left-radius: 4px; }
+  #tinymce.lime .intro {
+    padding-right: 76px;
+    border-bottom: 1px solid #82abc9;
+    display: inline-block;
+    position: relative;
+    margin: 5px 0 3px; }
+    #tinymce.lime .intro:before {
+      content: "intro ";
+      width: 64px;
+      font: 13px/15px 'FontAwesome', sans-serif;
+      color: white;
+      position: absolute; }
+    #tinymce.lime .intro:before {
+      background-color: #82abc9;
+      text-align: center;
+      right: 0px;
+      bottom: 0px;
+      border-top-right-radius: 4px;
+      border-top-left-radius: 4px; }
+  #tinymce.lime .heading {
+    padding-right: 76px;
+    border-bottom: 1px solid #82abc9;
+    display: inline-block;
+    position: relative;
+    margin: 5px 0 3px;
+    max-width: 65%;
+    vertical-align: sub; }
+    #tinymce.lime .heading:before {
+      content: "heading";
+      width: 64px;
+      font: 13px/15px 'FontAwesome', sans-serif;
+      color: white;
+      position: absolute; }
+    #tinymce.lime .heading:before {
+      background-color: #82abc9;
+      text-align: center;
+      right: 0px;
+      bottom: 0px;
+      border-top-right-radius: 4px;
+      border-top-left-radius: 4px; }
+  #tinymce.lime .hcontainer {
+    border-color: #8a9550; }
+    #tinymce.lime .hcontainer:before {
+      background-color: #8a9550; }
+    #tinymce.lime .hcontainer > .heading, #tinymce.lime .hcontainer > .num {
+      color: #3d4224; }
+    #tinymce.lime .hcontainer .hcontainer {
+      border-color: #739550; }
+      #tinymce.lime .hcontainer .hcontainer:before {
+        background-color: #739550; }
+      #tinymce.lime .hcontainer .hcontainer > .heading, #tinymce.lime .hcontainer .hcontainer > .num {
+        color: #334224; }
+      #tinymce.lime .hcontainer .hcontainer .hcontainer {
+        border-color: #5c9550; }
+        #tinymce.lime .hcontainer .hcontainer .hcontainer:before {
+          background-color: #5c9550; }
+        #tinymce.lime .hcontainer .hcontainer .hcontainer > .heading, #tinymce.lime .hcontainer .hcontainer .hcontainer > .num {
+          color: #294224; }
+        #tinymce.lime .hcontainer .hcontainer .hcontainer .hcontainer {
+          border-color: #50955c; }
+          #tinymce.lime .hcontainer .hcontainer .hcontainer .hcontainer:before {
+            background-color: #50955c; }
+          #tinymce.lime .hcontainer .hcontainer .hcontainer .hcontainer > .heading, #tinymce.lime .hcontainer .hcontainer .hcontainer .hcontainer > .num {
+            color: #244229; }
+          #tinymce.lime .hcontainer .hcontainer .hcontainer .hcontainer .hcontainer {
+            border-color: #509573; }
+            #tinymce.lime .hcontainer .hcontainer .hcontainer .hcontainer .hcontainer:before {
+              background-color: #509573; }
+            #tinymce.lime .hcontainer .hcontainer .hcontainer .hcontainer .hcontainer > .heading, #tinymce.lime .hcontainer .hcontainer .hcontainer .hcontainer .hcontainer > .num {
+              color: #244233; }
 
-span[data-mce-type="bookmark"]:not(.visibleBookmark) {
-	display: none;
-}
-
-span.visibleSelection {
-	background-color: #B0B0B0;
-}
-
-#tinymce *[highlighted=true] {
-	background-color: #fafcc0;
-}
-
-
+/*# sourceMappingURL=content.css.map */

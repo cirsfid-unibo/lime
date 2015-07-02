@@ -96,5 +96,4 @@ Ext.define('AknTabVisualizer.visualizer.MainTabController', {
             };
         }
     }
-
 });
