@@ -481,6 +481,7 @@ Ext.define('LIME.DomUtils', {
 
     // Get the unique id of the given editor dom element.
     getElementId: function(element) {
+        console.info('getElementId', element);
         if (element && element.getAttribute)
             return element.getAttribute(DomUtils.elementIdAttribute);
         return null;

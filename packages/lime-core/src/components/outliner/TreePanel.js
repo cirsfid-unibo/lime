@@ -50,9 +50,25 @@ Ext.define('LIME.components.outliner.TreePanel', {
     extend: 'Ext.view.View',
     alias: 'widget.treePanel',
 
+    itemSelector: '.item',
+    baseCls: 'treePanel',
+    scrollable: 'vertical',
+
     tpl: new Ext.XTemplate(
+        // Todo: try to work around this
         '<tpl for=".">',
-            '<tpl for=".">',
-        '</tpl>'
+            '<div class="item">',
+                '<div class="header">{text}</div>',
+                '<div class="children">',
+                    '{[ this.recurse(values.children) ]}',
+                '</div>',
+            '</div>',
+        '</tpl>',
+        {
+            recurse: function (values) {
+                // console.log(values);
+                return this.apply(values);
+            }
+        }
     )
 });

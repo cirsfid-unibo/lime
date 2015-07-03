@@ -45,6 +45,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 @import "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css";
+@import url(http://fonts.googleapis.com/css?family=Libre+Baskerville);
 .aknVisualizer {
   padding: 20px 50px;
   background-color: white; }
@@ -381,7 +382,9 @@
     position: absolute; }
 
 #tinymce {
-  font-size: .8em; }
+  font-size: .9em;
+  font-family: 'Libre Baskerville', serif;
+  padding: 20px 5px; }
   #tinymce hr[data-mce-selected] {
     outline: 0px solid black; }
   #tinymce span.visibleBookmark:before {
