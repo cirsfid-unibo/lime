@@ -44,6 +44,37 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+ // Since Ext templates are really really bad for doing stuff with trees,
+ // we implement a custom one for our outliner.
+ Ext.define('LIME.components.outliner.OutlinerTemplate', {
+     extend: 'Ext.Template',
+
+     apply: function (values) {
+         var root = values[0];
+         return this.applyChildren(root);
+     },
+
+     applyChildren: function (node) {
+         if (!node || !node.children) return '';
+         return node.children
+                    .map(this.applyItem, this)
+                    .join('\n');
+     },
+
+     applyItem: function (node) {
+         return [
+            '<div class="item">',
+                '<div class="header">',
+                    node.text,
+                '</div>',
+                '<div class="children">',
+                    this.applyChildren(node),
+                '</div>',
+            '</div>'
+         ].join('\n');
+     }
+ });
+
 // A simple and fast implementation of a tree panel.
 // Must be configured with a TreeStore.
 Ext.define('LIME.components.outliner.TreePanel', {
@@ -54,21 +85,5 @@ Ext.define('LIME.components.outliner.TreePanel', {
     baseCls: 'treePanel',
     scrollable: 'vertical',
 
-    tpl: new Ext.XTemplate(
-        // Todo: try to work around this
-        '<tpl for=".">',
-            '<div class="item">',
-                '<div class="header">{text}</div>',
-                '<div class="children">',
-                    '{[ this.recurse(values.children) ]}',
-                '</div>',
-            '</div>',
-        '</tpl>',
-        {
-            recurse: function (values) {
-                // console.log(values);
-                return this.apply(values);
-            }
-        }
-    )
+    tpl: new LIME.components.outliner.OutlinerTemplate()
 });

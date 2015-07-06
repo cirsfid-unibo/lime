@@ -52,6 +52,7 @@ Ext.define('LIME.components.outliner.OutlineStore', {
     ],
 
     model: 'LIME.components.outliner.OutlineModel',
+    rootVisible: true,
 
     root: {
         expanded: true

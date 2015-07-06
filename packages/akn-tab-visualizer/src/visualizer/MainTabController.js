@@ -61,14 +61,14 @@ Ext.define('AknTabVisualizer.visualizer.MainTabController', {
         var me = this,
             view = this.getView(),
             uri = LIME.app.getController('Editor').getDocumentUri();
-        view.setLoading(true);
+        // view.setLoading(true);
         Server.getDocument(DocProperties.documentInfo.docId, function (akn) {
             console.log('onActivate', view);
             view.lookupReference('aknVisualizer').setData({
                 akomaNtoso:akn
             });
             me.updateOutliner(akn);
-            view.setLoading(false);
+            // view.setLoading(false);
         });
     },
 
