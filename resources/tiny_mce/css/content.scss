@@ -2,7 +2,8 @@
 @import "../../../packages/akn-tab-visualizer/sass/src/visualizer/AknVisualizerComponent.scss";
 @import "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css";
 @import "mixin";
-@import "italian";
+@import "akn";
+@import "akn_ita";
 
 @import url(http://fonts.googleapis.com/css?family=Libre+Baskerville);
 
@@ -12,12 +13,9 @@
     padding: 20px 5px;
 
     // Generic editor rules
-    // .breaking {
-    // 	border: 0;
-    // 	margin: 2px;
-    // 	background-color: transparent;
-    // 	display: block;
-    // }
+    .breaking {
+    	border-bottom: 1px solid #ccc;
+    }
     hr[data-mce-selected] { outline: 0px solid black; }
     // *[focused = 'true'] {
     // 	-webkit-box-shadow: 0px 0px 10px 2px rgba(105,105,105,1);
@@ -39,54 +37,6 @@
     #tinymce *[highlighted=true] { background-color: #fafcc0; }
 
 
-    // Todo: add language selector
-    &.lime {
-        // Main parts
-        .preamble { @include MainPart('preamble'); }
-        .preface { @include MainPart('preface'); }
-        .conclusions { @include MainPart('conclusions'); }
-        .body { @include MainPart('body'); }
-
-
-        .title { @include MainPart('title'); }
-        .section { @include MainPart('section'); }
-        .paragraph { @include MainPart('paragraph'); }
-        .article { @include MainPart('article'); }
-        .chapter { @include MainPart('chapter'); }
-        .clause { @include MainPart('clause'); }
-        .list { @include MainPart('list'); }
-        .point { @include Hcontainer(); }
-
-        .inline { @include Inline(206, '->'); }
-
-        // Inlines
-        .docType { @include Inline(206, 'docType \f0e3');}
-        .docNumber { @include Inline(206, 'docNumber \f02d');}
-        .num { @include Inline(206, 'num \f1dd');}
-        .intro { @include Inline(206, 'intro \f0ca');}
-        .heading {
-            @include Inline(206, 'heading');
-            max-width: 65%;
-            vertical-align: sub;
-        }
-
-        // Set color for hcontainers depending on level
-        .hcontainer {
-            @include Color(70);
-            .hcontainer {
-                @include Color(90);
-                .hcontainer {
-                    @include Color(110);
-                    .hcontainer {
-                        @include Color(130);
-                        .hcontainer {
-                            @include Color(150);
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     &.colors {
         // TODO: migrate from jsons
