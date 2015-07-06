@@ -73,10 +73,12 @@ Ext.define('LIME.components.outliner.OutlineEditorProxy', {
             var me = this;
             setTimeout(function () {
                 me.readChildren.apply(me, [parentId, cb]);
-            }, 2000);
+            }, 5000);
             return;
         }
-        cb(this.getVisibleChildren(el).map(this.convertToModel, this));
+        var elements = this.getVisibleChildren(el);
+                        //    .concat(this.getDomElement(parentId));
+        cb(elements.map(this.convertToModel, this));
     },
 
     // Return the element with the given id.
@@ -104,14 +106,18 @@ Ext.define('LIME.components.outliner.OutlineEditorProxy', {
 
     convertToModel: function (node) {
         var text = node.classList[1],
-            isLeaf = this.getVisibleChildren(node).length == 0;
-        return Ext.create('LIME.components.outliner.OutlineModel', {
-            id: DomUtils.getElementId(node),
-            parentId: DomUtils.getElementId(node.parentNode),
-            expanded: false,
-            leaf: isLeaf,
-            text: text,
-            phantom: false
-        });
+            children = this.getVisibleChildren(node)
+                           .map(function (el) { return { id: el } }),
+            model = Ext.create('LIME.components.outliner.OutlineModel', {
+                id: DomUtils.getElementId(node),
+                // parentId: DomUtils.getElementId(node.parentNode),
+                expanded: false,
+                leaf: children.length == 0,
+                text: text,
+                // children: children,
+                phantom: false
+            });
+        // model.updateInfo(false, {});
+        return model;
     }
 });

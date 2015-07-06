@@ -50,13 +50,15 @@
      extend: 'Ext.Template',
 
      apply: function (values) {
-         var root = values[0];
+         console.info('apply', values);
+         var root = values.root;
+         console.info('ROOOOT', root);
          return this.applyChildren(root);
      },
 
      applyChildren: function (node) {
-         if (!node || !node.children) return '';
-         return node.children
+         if (!node || !node.childNodes) return '';
+         return node.childNodes
                     .map(this.applyItem, this)
                     .join('\n');
      },
@@ -65,7 +67,7 @@
          return [
             '<div class="item">',
                 '<div class="header">',
-                    node.text,
+                    node.get('text'),
                 '</div>',
                 '<div class="children">',
                     this.applyChildren(node),
@@ -85,5 +87,21 @@ Ext.define('LIME.components.outliner.TreePanel', {
     baseCls: 'treePanel',
     scrollable: 'vertical',
 
-    tpl: new LIME.components.outliner.OutlinerTemplate()
+    tpl: new LIME.components.outliner.OutlinerTemplate(),
+
+    collectData: function(records, startIndex) {
+        var data = this.callParent(arguments);
+        var store = this.getStore();
+        console.info('str', store);
+        if (store.getRoot)
+            data.root = store.getRoot();
+        // data.root = this.getStore().getRoot();
+        return data;
+    },
+
+    // Todo: implent ensureVisible:
+    // A) Reimplement copying part of it from TreePanel
+    // B) Always read all of them (?) 
+    // ensureVisible: function(path, options) {
+    // },
 });
