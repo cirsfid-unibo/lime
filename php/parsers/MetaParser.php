@@ -335,8 +335,19 @@ class MetaParser {
     private function rawHandleBodyResult($elementName, $elements, &$completeResult, $startOffset = 0) {
         $nums = Array();
         foreach ($elements as $element) {
-            $string = (array_key_exists("numitem", $element)) ? rtrim($element["numitem"]) : rtrim($element["num"]["value"]);
-            $start = (array_key_exists("numitem", $element)) ? $element["start"] : $element["num"]["start"];
+            switch($elementName) {
+                case "item":
+                    $string = rtrim($element["numitem"]);
+                    $start = $element["start"];
+                    break;
+                case "paragraph":
+                    $string = rtrim($element["numparagraph"]);
+                    $start = $element["start"];
+                    break;
+                default:
+                    $string = rtrim($element["num"]["value"]);
+                    $start = $element["num"]["start"];
+            }
 
             $newElement = Array("name"=> "num",
                                       "string" => $string,
