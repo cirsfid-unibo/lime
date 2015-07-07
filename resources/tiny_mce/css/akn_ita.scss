@@ -1,10 +1,10 @@
 
 
 #tinymce.lime.italian {
-    .preface    { @include SetLabel('Intestazione') }
-    .body       { @include SetLabel('Corpo') }
-    .title      { @include SetLabel('Titolo') }
-    .setion     { @include SetLabel('Sezione') }
-    .paragraph  { @include SetLabel('Comma') }
-    .preface    { @include SetLabel('Intestazione') }
+    .preface    { @include Label('Intestazione') }
+    .body       { @include Label('Corpo') }
+    .title      { @include Label('Titolo') }
+    .setion     { @include Label('Sezione') }
+    .paragraph  { @include Label('Comma') }
+    .preface    { @include Label('Intestazione') }
 }

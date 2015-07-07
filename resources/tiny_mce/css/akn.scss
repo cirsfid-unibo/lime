@@ -2,99 +2,107 @@
 // Todo: add language selector
 #tinymce.lime {
     // ----------------
+    // -- Main Parts --
+    // ----------------
+    $mainHue: 0;
+    .preamble       { @include MainPart; @include Color($mainHue - 60); }
+    .preface        { @include MainPart; @include Color($mainHue - 30); }
+    .body,
+    .mainBody,
+    .amendmentBody,
+    .collectionBody,
+    .fragmentBody,
+    .debateBody     { @include MainPart; @include Color($mainHue); }
+    .conclusions    { @include MainPart; @include Color($mainHue + 30); }
+
+    // ----------------
     // -- Containers --
     // ----------------
-    .administrationOfOath { @include MainPart('administrationOfOath'); }
-    .amendmentBody { @include MainPart('amendmentBody'); }
-    .amendmentContent { @include MainPart('amendmentContent'); }
-    .amendmentHeading { @include MainPart('amendmentHeading'); }
-    .amendmentJustification { @include MainPart('amendmentJustification'); }
-    .amendmentReference { @include MainPart('amendmentReference'); }
-    .answer { @include MainPart('answer'); }
-    .arguments { @include MainPart('arguments'); }
-    .attachments { @include MainPart('attachments'); }
-    .attachment { @include MainPart('attachment'); }
-    .background { @include MainPart('background'); }
-    .blockContainer { @include MainPart('blockContainer'); }
-    .blockList { @include MainPart('blockList'); }
-    .body { @include MainPart('body'); }
-    .citation { @include MainPart('citation'); }
-    .collectionBody { @include MainPart('collectionBody'); }
-    .component { @include MainPart('component'); }
-    .components { @include MainPart('components'); }
-    .conclusions { @include MainPart('conclusions'); }
-    .coverPage { @include MainPart('coverPage'); }
-    .debateBody { @include MainPart('debateBody'); }
-    .decision { @include MainPart('decision'); }
-    .extractStructure { @include MainPart('extractStructure'); }
-    .foreign { @include MainPart('foreign'); }
-    .formula { @include MainPart('formula'); }
-    .fragmentBody { @include MainPart('fragmentBody'); }
-    .introduction { @include MainPart('introduction'); }
-    .mainBody { @include MainPart('mainBody'); }
-    .motivation { @include MainPart('motivation'); }
-    .preamble { @include MainPart('preamble'); }
-    .preface { @include MainPart('preface'); }
-    .question { @include MainPart('question'); }
-    .recital { @include MainPart('recital'); }
-    .speech { @include MainPart('speech'); }
-    .speechGroup { @include MainPart('speechGroup'); }
-    .tblock { @include MainPart('tblock'); }
-    .toc { @include MainPart('toc'); }
-    .wrap { @include MainPart('wrap'); }
-    .content { @include MainPart('content'); }
-    .remedies { @include MainPart('remedies'); }
+    .administrationOfOath,
+    .amendmentContent,
+    .amendmentHeading,
+    .amendmentJustification,
+    .amendmentReference,
+    .answer,
+    .arguments,
+    .attachments,
+    .attachment,
+    .background,
+    .blockContainer,
+    .blockList,
+    .citation,
+    .component,
+    .components,
+    .coverPage,
+    .decision,
+    .extractStructure,
+    .foreign,
+    .formula,
+    .introduction,
+    .motivation,
+    .question,
+    .recital,
+    .speech,
+    .speechGroup,
+    .tblock,
+    .toc,
+    .wrap,
+    .content,
+    .remedies,
+    .address,
+    .alinea,
+    .article,
+    .book,
+    .chapter,
+    .citations,
+    .clause,
+    .debateSection,
+    .declarationOfVote,
+    .division,
+    .indent,
+    .item,
+    .list,
+    .ministerialStatements,
+    .nationalInterest,
+    .noticesOfMotion,
+    .oralStatements,
+    .papers,
+    .paragraph,
+    .part,
+    .personalStatements,
+    .petitions,
+    .pointOfOrder,
+    .proceduralMotions,
+    .proviso,
+    .questions,
+    .recitals,
+    .resolutions,
+    .rollCall,
+    .rule,
+    .section,
+    .subchapter,
+    .subclause,
+    .subdivision,
+    .sublist,
+    .subparagraph,
+    .subpart,
+    .subrule,
+    .subsection,
+    .subtitle,
+    .title,
+    .tome,
+    .transitional,
+    .mod,
+    .mmod,
+    .authorialNote,
+    .quotedStructure,
+    .point,
+    .writtenStatements   { @include Container; }
 
-    // -----------------
-    // -- HContainers --
-    // -----------------
-    .address { @include MainPart('address'); }
-    .alinea { @include MainPart('alinea'); }
-    .article { @include MainPart('article'); }
-    .book { @include MainPart('book'); }
-    .chapter { @include MainPart('chapter'); }
-    .citations { @include MainPart('citations'); }
-    .clause { @include MainPart('clause'); }
-    .debateSection { @include MainPart('debateSection'); }
-    .declarationOfVote { @include MainPart('declarationOfVote'); }
-    .division { @include MainPart('division'); }
-    .indent { @include MainPart('indent'); }
-    .item { @include MainPart('item'); }
-    .list { @include MainPart('list'); }
-    .ministerialStatements { @include MainPart('ministerialStatements'); }
-    .nationalInterest { @include MainPart('nationalInterest'); }
-    .noticesOfMotion { @include MainPart('noticesOfMotion'); }
-    .oralStatements { @include MainPart('oralStatements'); }
-    .papers { @include MainPart('papers'); }
-    .paragraph { @include MainPart('paragraph'); }
-    .part { @include MainPart('part'); }
-    .personalStatements { @include MainPart('personalStatements'); }
-    .petitions { @include MainPart('petitions'); }
-    .pointOfOrder { @include MainPart('pointOfOrder'); }
-    .proceduralMotions { @include MainPart('proceduralMotions'); }
-    .proviso { @include MainPart('proviso'); }
-    .questions { @include MainPart('questions'); }
-    .recitals { @include MainPart('recitals'); }
-    .resolutions { @include MainPart('resolutions'); }
-    .rollCall { @include MainPart('rollCall'); }
-    .rule { @include MainPart('rule'); }
-    .section { @include MainPart('section'); }
-    .subchapter { @include MainPart('subchapter'); }
-    .subclause { @include MainPart('subclause'); }
-    .subdivision { @include MainPart('subdivision'); }
-    .sublist { @include MainPart('sublist'); }
-    .subparagraph { @include MainPart('subparagraph'); }
-    .subpart { @include MainPart('subpart'); }
-    .subrule { @include MainPart('subrule'); }
-    .subsection { @include MainPart('subsection'); }
-    .subtitle { @include MainPart('subtitle'); }
-    .title { @include MainPart('title'); }
-    .tome { @include MainPart('tome'); }
-    .transitional { @include MainPart('transitional'); }
-    .writtenStatements { @include MainPart('writtenStatements'); }
-
-    .intro { @include Hcontainer(); font-style: italic; }
-    .point { @include Hcontainer(); }
+    .intro {
+        @include Container;
+        font-style: italic;
+    }
 
 
     // ------------
@@ -108,76 +116,70 @@
         vertical-align: sub;
         font-style: italic;
     }
-    .affectedDocument { @include Inline(206, 'affectedDocument'); }
-    .argument { @include Inline(206, 'argument'); }
-    .change { @include Inline(206, 'change'); }
-    .concept { @include Inline(206, 'concept'); }
-    .courtType { @include Inline(206, 'courtType'); }
-    .date { @include Inline(206, 'date'); }
-    .decoration { @include Inline(206, 'decoration'); }
-    .def { @include Inline(206, 'def'); }
-    .del { @include Inline(206, 'del'); }
-    .docAuthority { @include Inline(206, 'docAuthority'); }
-    .docCommittee { @include Inline(206, 'docCommittee'); }
-    .docDate { @include Inline(206, 'docDate'); }
-    .docIntroducer { @include Inline(206, 'docIntroducer'); }
-    .docJurisdiction { @include Inline(206, 'docJurisdiction'); }
-    .docketNumber { @include Inline(206, 'docketNumber'); }
-    .docNumber { @include Inline(206, 'docNumber \f02d'); }
-    .docProponent { @include Inline(206, 'docProponent'); }
-    .docPurpose { @include Inline(206, 'docPurpose'); }
-    .docStage { @include Inline(206, 'docStage'); }
-    .docStatus { @include Inline(206, 'docStatus'); }
-    .docTitle { @include Inline(206, 'docTitle'); }
-    .docType { @include Inline(206, 'docType \f0e3'); }
-    .documentRef { @include Inline(206, 'documentRef'); }
-    .entity { @include Inline(206, 'entity'); }
-    .event { @include Inline(206, 'event'); }
-    .extractText { @include Inline(206, 'extractText'); }
-    .fillIn { @include Inline(206, 'fillIn'); }
-    .from { @include Inline(206, 'from'); }
-    .ins { @include Inline(206, 'ins'); }
-    .judge { @include Inline(206, 'judge'); }
-    .legislature { @include Inline(206, 'legislature'); }
-    .listConclusion { @include Inline(206, 'listConclusion'); }
-    .listIntroduction { @include Inline(206, 'listIntroduction'); }
-    .location { @include Inline(206, 'location'); }
-    .mmod { @include Inline(206, 'mmod'); }
-    .mod { @include Inline(206, 'mod'); }
-    .mref { @include Inline(206, ''); @include Icon('\f0c1'); }
-    .ref  { @include Inline(206, ''); @include Icon('\f0c1'); }
-    .rref { @include Inline(206, ''); @include Icon('\f0c1'); }
-    .narrative { @include Inline(206, 'narrative'); }
-    .neutralCitation { @include Inline(206, 'neutralCitation'); }
-    .object { @include Inline(206, 'object'); }
-    .omissis { @include Inline(206, 'omissis'); }
-    .opinion { @include Inline(206, 'opinion'); }
-    .organization { @include Inline(206, 'organization'); }
-    .outcome { @include Inline(206, 'outcome'); }
-    .party { @include Inline(206, 'party'); }
-    .person { @include Inline(206, 'person'); }
-    .placeholder { @include Inline(206, 'placeholder'); }
-    .process { @include Inline(206, 'process'); }
-    .quantity { @include Inline(206, 'quantity'); }
-    .quotedText { @include Inline(206, 'quotedText'); }
-    .relatedDocument { @include Inline(206, 'relatedDocument'); }
-    .remark { @include Inline(206, 'remark'); }
-    .rmod { @include Inline(206, 'rmod'); }
-    .role { @include Inline(206, 'role'); }
-    .scene { @include Inline(206, 'scene'); }
-    .session { @include Inline(206, 'session'); }
-    .shortTitle { @include Inline(206, 'shortTitle'); }
-    .signature { @include Inline(206, 'signature'); }
-    .subheading { @include Inline(206, 'subheading'); }
-    .term { @include Inline(206, 'term'); }
-    .time { @include Inline(206, 'time'); }
-    .tocItem { @include Inline(206, 'tocItem'); }
-    .vote { @include Inline(206, 'vote'); }
+    .docNumber         { @include Icon('\f02d'); }
+    .docType           { @include Icon('\f0e3'); }
+    .mref, .ref, .rref { @include Icon('\f0c1'); }
+
+    .affectedDocument,
+    .argument,
+    .change,
+    .concept,
+    .courtType,
+    .date,
+    .decoration,
+    .def,
+    .del,
+    .docAuthority,
+    .docCommittee,
+    .docDate,
+    .docIntroducer,
+    .docJurisdiction,
+    .docketNumber,
+    .docProponent,
+    .docPurpose,
+    .docStage,
+    .docStatus,
+    .docTitle,
+    .documentRef,
+    .entity,
+    .event,
+    .extractText,
+    .fillIn,
+    .from,
+    .ins,
+    .judge,
+    .legislature,
+    .listConclusion,
+    .listIntroduction,
+    .location,
+    .narrative,
+    .neutralCitation,
+    .object,
+    .omissis,
+    .opinion,
+    .organization,
+    .outcome,
+    .party,
+    .person,
+    .placeholder,
+    .process,
+    .quantity,
+    .relatedDocument,
+    .remark,
+    .rmod,
+    .role,
+    .scene,
+    .session,
+    .shortTitle,
+    .signature,
+    .subheading,
+    .term,
+    .time,
+    .tocItem,
+    .vote,
+    .quotedText { @include Inline; }
 
     // Popup
-    .authorialNote { @include MainPart('authorialNote'); }
-    .quotedStructure { @include MainPart('quotedStructure'); }
-
     // Other
     .p {
         margin: 0 4px;
@@ -208,13 +210,13 @@
 
     // Set color for hcontainers depending on level
     .hcontainer { @include Color(70);
-        .hcontainer { @include Color(90);
-            .hcontainer { @include Color(110);
-                .hcontainer { @include Color(130);
-                    .hcontainer { @include Color(150);
-                        .hcontainer { @include Color(170);
-                            .hcontainer { @include Color(190);
-                                .hcontainer { @include Color(210);
+        .hcontainer, .container { @include Color(90);
+            .hcontainer, .container { @include Color(110);
+                .hcontainer, .container { @include Color(130);
+                    .hcontainer, .container { @include Color(150);
+                        .hcontainer, .container { @include Color(170);
+                            .hcontainer, .container { @include Color(190);
+                                .hcontainer, .container { @include Color(210);
                                 }
                             }
                         }

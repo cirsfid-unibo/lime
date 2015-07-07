@@ -9,7 +9,6 @@
         width: (10px + str-length($label) * 6px);
         font: 13px/15px 'FontAwesome', sans-serif;
         color: white;
-        position: absolute;
     }
 }
 
@@ -20,13 +19,8 @@
     }
 }
 
-@mixin SetLabel ($label) {
-    @include Label($label);
-    // padding-left: 10px + (10px + str-length($label) * 8px);
-}
-
-@mixin Inline ($color, $label) {
-    @include SetLabel($label);
+@mixin Inline () {
+    $color: 220;
     $colorDark: hsl($color, 80%, 50%);
     $colorLight: hsl($color, 75%, 97%);
 
@@ -47,9 +41,7 @@
         top: 1px;
         line-height: 150%;
         text-align: center;
-
         border-radius: 0 5px 0 5px;
-
         padding: 0 5px 0 5px;
         margin-right: 5px;
     }
@@ -69,21 +61,26 @@
     }
 }
 
-@mixin MainPart($label) {
+@mixin MainPart() {
     @include Hcontainer();
     @include Color(50);
 
-    padding: 25px 10px 0;
+    padding: 25px 5px 0;
     margin: 20px 0 10px;
 
-    @include Label($label);
     &:before {
+        position: absolute;
         padding-left: 10px;
         top: 0px;
         left: 0px;
         border-top-right-radius: 4px;
         border-bottom-right-radius: 4px;
     }
+}
+
+@mixin Container() {
+    @include MainPart;
+    border-left: 2px solid #eee;
 }
 
 @mixin Hcontainer() {

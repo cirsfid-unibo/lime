@@ -106,14 +106,8 @@ Ext.define('LIME.view.Viewport', {
     },
 
     editorItems : [{
-        xtype: 'panel',
-        border: 0,
-        region : 'north',
-        width : '100%',
-        margin : 2,
-        items: [{
-            xtype : 'mainToolbar'
-        }]
+        xtype: 'mainToolbar',
+        region : 'north'
     }, {
         xtype : 'main',
         region : 'center',
