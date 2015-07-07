@@ -159,28 +159,20 @@ Ext.define('LIME.controller.Editor', {
     /**
      * Enables/Disables boxes, color and custom typography in the editor.
      */
-    updateStyle : function(displayBox, displayColor, displayStyle) {
-        var el = Ext.fly(this.getEditor().getBody());
-
-        if(displayBox) el.removeCls('noboxes');
-        else el.addCls('noboxes');
-
-        if(displayColor) el.removeCls('nocolors');
-        else el.addCls('nocolors');
-
-        if(displayStyle) el.addCls('pdfstyle');
-        else el.removeCls('pdfstyle');
-
-        var el2 = Ext.fly(this.getEditor(this.getSecondEditor()).getBody());
-
-        if(displayBox) el2.removeCls('noboxes');
-        else el2.addCls('noboxes');
-
-        if(displayColor) el2.removeCls('nocolors');
-        else el2.addCls('nocolors');
-
-        if(displayStyle) el2.addCls('pdfstyle');
-        else el2.removeCls('pdfstyle');
+    updateStyle: function(displayBox, displayColor, displayStyle) {
+		[this.getMainEditor(), this.getSecondEditor()]
+		.map(function (editor) {
+			return Ext.fly(this.getEditor(editor).getBody())
+		}, this)
+		.forEach(function (el) {
+			function setCls(name, enabled) {
+		        if (enabled) el.addCls(name);
+		        else el.removeCls(name);
+			}
+			setCls('lime', displayBox);
+			setCls('colors', displayColor);
+			setCls('pdf', displayStyle);
+		});
     },
 
 	/**
@@ -1176,7 +1168,8 @@ Ext.define('LIME.controller.Editor', {
                 content_css : 'resources/tiny_mce/css/content.css',
 
                 // the editor mode
-                mode : 'textareas',
+				mode : 'textareas',
+                body_class: 'lime',
 
                 entity_encoding : 'raw',
 

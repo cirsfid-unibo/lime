@@ -61,40 +61,52 @@ Ext.define('AknTabVisualizer.visualizer.MainTabController', {
         var me = this,
             view = this.getView(),
             uri = LIME.app.getController('Editor').getDocumentUri();
-        view.setLoading(true);
+        // view.setLoading(true);
         Server.getDocument(DocProperties.documentInfo.docId, function (akn) {
             console.log('onActivate', view);
             view.lookupReference('aknVisualizer').setData({
                 akomaNtoso:akn
             });
             me.updateOutliner(akn);
-            view.setLoading(false);
+            // view.setLoading(false);
         });
     },
 
     updateOutliner: function (akn) {
         var parser = new DOMParser(),
             inputDom = parser.parseFromString(akn, "text/xml"),
-            inputEl = inputDom.querySelector('akomaNtoso');
+            inputEl = inputDom.querySelector('akomaNtoso>*');
         this.getStore('outline').setRoot({
             text: 'Root',
             expanded: true,
-            children: this.translateNode(inputEl).children
+            children: this.translateElement(inputEl).children
         });
+        console.info(this.getStore('outline'));
     },
 
-    translateNode: function (node) {
-        if (node.nodeType == 1) { // Element
-            var children = DomUtils.nodeListToArray(node.childNodes)
-                                   .map(this.translateNode, this)
-                                   .filter(function (el) { return !!el });
-            console.log('children', children);
-            return {
-                text: node.nodeName,
-                leaf: !children.length,
-                children: children
-            };
-        }
-    }
+    translateElement: function (node) {
+        var children = DomUtils.nodeListToArray(node.childNodes)
+                               .filter(this.filterNodes, this)
+                               .map(this.translateElement, this)
+                               .filter(function (el) { return !!el });
+        return {
+            text: node.nodeName,
+            leaf: !children.length,
+            expanded: !!children.length,
+            children: children
+        };
+    },
 
+    excludedElements: [
+        'meta',
+        'content',
+        'eol',
+        'num',
+        'p'
+    ],
+    filterNodes: function (node) {
+        var isElement = node.nodeType == 1,
+            isIncluded = this.excludedElements.indexOf(node.nodeName) == -1;
+        return isElement && isIncluded;
+    }
 });

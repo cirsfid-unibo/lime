@@ -44,39 +44,64 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Generic document outline widget.
-// Must be configured with a valid proxy (See OutlineEditorProxy for an example).
-// Its controller fires the "elementFocused" event, with the id of the element
-// (Ids of elements are assigned by the proxy)
-// This component can be configured with:
-// - proxy: a proxy where to read store data from
-// - a viewModel containing an LIME.components.outliner.OutlineStore
-Ext.define('LIME.components.outliner.OutlinerTreePanel', {
-    extend: 'LIME.components.outliner.TreePanel',
-    alias: 'widget.outlinerTreePanel',
+ // Since Ext templates are really really bad for doing stuff with trees,
+ // we implement a custom one for our outliner.
+ Ext.define('LIME.components.outliner.OutlinerTemplate', {
+     extend: 'Ext.Template',
 
-    requires: [
-        'LIME.components.outliner.TreePanel',
-        'LIME.components.outliner.OutlinerController',
-        'LIME.components.outliner.OutlineStore'
-    ],
+     apply: function (values) {
+         console.info('apply', values);
+         var root = values.root;
+         console.info('ROOOOT', root);
+         return this.applyChildren(root);
+     },
 
-    controller: 'outliner',
+     applyChildren: function (node) {
+         if (!node || !node.childNodes) return '';
+         return node.childNodes
+                    .map(this.applyItem, this)
+                    .join('\n');
+     },
 
-    bind: {
-        store: '{outline}'
+     applyItem: function (node) {
+         return [
+            '<div class="item">',
+                '<div class="header">',
+                    node.get('text'),
+                '</div>',
+                '<div class="children">',
+                    this.applyChildren(node),
+                '</div>',
+            '</div>'
+         ].join('\n');
+     }
+ });
+
+// A simple and fast implementation of a tree panel.
+// Must be configured with a TreeStore.
+Ext.define('LIME.components.outliner.TreePanel', {
+    extend: 'Ext.view.View',
+    alias: 'widget.treePanel',
+
+    itemSelector: '.item',
+    baseCls: 'treePanel',
+    scrollable: 'vertical',
+
+    tpl: new LIME.components.outliner.OutlinerTemplate(),
+
+    collectData: function(records, startIndex) {
+        var data = this.callParent(arguments);
+        var store = this.getStore();
+        console.info('str', store);
+        if (store.getRoot)
+            data.root = store.getRoot();
+        // data.root = this.getStore().getRoot();
+        return data;
     },
 
-    initComponent: function () {
-        this.title = Locale.strings.westToolbarTitle;
-        if (this.proxy)
-            this.setViewModel(Ext.create('Ext.app.ViewModel', {
-                stores: {
-                    outline: Ext.create('LIME.components.outliner.OutlineStore', {
-                        proxy: this.proxy && Ext.create(this.proxy)
-                    })
-                }
-            }));
-        this.callParent(arguments);
-    }
+    // Todo: implent ensureVisible:
+    // A) Reimplement copying part of it from TreePanel
+    // B) Always read all of them (?) 
+    // ensureVisible: function(path, options) {
+    // },
 });
