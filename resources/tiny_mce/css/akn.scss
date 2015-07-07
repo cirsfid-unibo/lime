@@ -95,13 +95,32 @@
     .mod,
     .mmod,
     .authorialNote,
-    .quotedStructure,
     .point,
     .writtenStatements   { @include Container; }
 
     .intro {
         @include Container;
         font-style: italic;
+    }
+
+    .quotedStructure {
+        margin: 5px 0;
+        padding: 15px;
+        box-shadow: 3px 3px 15px black;
+        background-color: #FFFCEF;
+        position: relative;
+
+        &:before {
+            display: none;
+        }
+        &:after {
+            content: '\f02e';
+            position: absolute;
+            top: -3px;
+            color: #478552;
+            right: 15px;
+            font: 2em 'FontAwesome';
+        }
     }
 
 

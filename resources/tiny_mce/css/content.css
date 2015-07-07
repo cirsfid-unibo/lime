@@ -599,7 +599,6 @@
 #tinymce.lime .mod,
 #tinymce.lime .mmod,
 #tinymce.lime .authorialNote,
-#tinymce.lime .quotedStructure,
 #tinymce.lime .point,
 #tinymce.lime .writtenStatements {
   position: relative;
@@ -687,7 +686,6 @@
   #tinymce.lime .mod > .num,
   #tinymce.lime .mmod > .num,
   #tinymce.lime .authorialNote > .num,
-  #tinymce.lime .quotedStructure > .num,
   #tinymce.lime .point > .num,
   #tinymce.lime .writtenStatements > .num {
     position: relative;
@@ -771,7 +769,6 @@
   #tinymce.lime .mod > .heading,
   #tinymce.lime .mmod > .heading,
   #tinymce.lime .authorialNote > .heading,
-  #tinymce.lime .quotedStructure > .heading,
   #tinymce.lime .point > .heading,
   #tinymce.lime .writtenStatements > .heading {
     position: relative;
@@ -856,7 +853,6 @@
   #tinymce.lime .mod:before,
   #tinymce.lime .mmod:before,
   #tinymce.lime .authorialNote:before,
-  #tinymce.lime .quotedStructure:before,
   #tinymce.lime .point:before,
   #tinymce.lime .writtenStatements:before {
     background-color: #958a50; }
@@ -1013,8 +1009,6 @@
   #tinymce.lime .mmod > .num,
   #tinymce.lime .authorialNote > .heading,
   #tinymce.lime .authorialNote > .num,
-  #tinymce.lime .quotedStructure > .heading,
-  #tinymce.lime .quotedStructure > .num,
   #tinymce.lime .point > .heading,
   #tinymce.lime .point > .num,
   #tinymce.lime .writtenStatements > .heading,
@@ -1097,7 +1091,6 @@
   #tinymce.lime .mod:before,
   #tinymce.lime .mmod:before,
   #tinymce.lime .authorialNote:before,
-  #tinymce.lime .quotedStructure:before,
   #tinymce.lime .point:before,
   #tinymce.lime .writtenStatements:before {
     position: absolute;
@@ -1138,6 +1131,21 @@
     left: 0px;
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px; }
+#tinymce.lime .quotedStructure {
+  margin: 5px 0;
+  padding: 15px;
+  box-shadow: 3px 3px 15px black;
+  background-color: #FFFCEF;
+  position: relative; }
+  #tinymce.lime .quotedStructure:before {
+    display: none; }
+  #tinymce.lime .quotedStructure:after {
+    content: '\f02e';
+    position: absolute;
+    top: -3px;
+    color: #478552;
+    right: 15px;
+    font: 2em 'FontAwesome'; }
 #tinymce.lime .num {
   font-size: 1.5em; }
 #tinymce.lime .heading {
