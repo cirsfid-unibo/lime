@@ -93,14 +93,21 @@
     .transitional { @include MainPart('transitional'); }
     .writtenStatements { @include MainPart('writtenStatements'); }
 
+    .intro { @include Hcontainer(); font-style: italic; }
     .point { @include Hcontainer(); }
 
 
     // ------------
     // -- Inline --
     // ------------
-    .inline { @include Inline(206, '?'); }
-
+    .num { font-size: 1.5em; }
+    .heading {
+        // @include Inline(206, 'heading');
+        font-size: 1.2em;
+        max-width: 65%;
+        vertical-align: sub;
+        font-style: italic;
+    }
     .affectedDocument { @include Inline(206, 'affectedDocument'); }
     .argument { @include Inline(206, 'argument'); }
     .change { @include Inline(206, 'change'); }
@@ -129,12 +136,6 @@
     .extractText { @include Inline(206, 'extractText'); }
     .fillIn { @include Inline(206, 'fillIn'); }
     .from { @include Inline(206, 'from'); }
-    .heading {
-        @include Inline(206, 'heading');
-        max-width: 65%;
-        vertical-align: sub;
-    }
-    .inline { @include Inline(206, 'inline'); }
     .ins { @include Inline(206, 'ins'); }
     .judge { @include Inline(206, 'judge'); }
     .legislature { @include Inline(206, 'legislature'); }
@@ -143,10 +144,11 @@
     .location { @include Inline(206, 'location'); }
     .mmod { @include Inline(206, 'mmod'); }
     .mod { @include Inline(206, 'mod'); }
-    .mref { @include Inline(206, 'mref'); }
+    .mref { @include Inline(206, ''); @include Icon('\f0c1'); }
+    .ref  { @include Inline(206, ''); @include Icon('\f0c1'); }
+    .rref { @include Inline(206, ''); @include Icon('\f0c1'); }
     .narrative { @include Inline(206, 'narrative'); }
     .neutralCitation { @include Inline(206, 'neutralCitation'); }
-    .num { @include Inline(206, 'num'); }
     .object { @include Inline(206, 'object'); }
     .omissis { @include Inline(206, 'omissis'); }
     .opinion { @include Inline(206, 'opinion'); }
@@ -158,12 +160,10 @@
     .process { @include Inline(206, 'process'); }
     .quantity { @include Inline(206, 'quantity'); }
     .quotedText { @include Inline(206, 'quotedText'); }
-    .ref { @include Inline(206, 'ref'); }
     .relatedDocument { @include Inline(206, 'relatedDocument'); }
     .remark { @include Inline(206, 'remark'); }
     .rmod { @include Inline(206, 'rmod'); }
     .role { @include Inline(206, 'role'); }
-    .rref { @include Inline(206, 'rref'); }
     .scene { @include Inline(206, 'scene'); }
     .session { @include Inline(206, 'session'); }
     .shortTitle { @include Inline(206, 'shortTitle'); }
@@ -206,25 +206,18 @@
     .componentRef {}
     .subFlow {}
 
-    // Inlines
-    .intro { @include Inline(206, 'intro \f0ca');}
-    .heading {
-        @include Inline(206, 'heading');
-        max-width: 65%;
-        vertical-align: sub;
-    }
-
     // Set color for hcontainers depending on level
-    .hcontainer {
-        @include Color(70);
-        .hcontainer {
-            @include Color(90);
-            .hcontainer {
-                @include Color(110);
-                .hcontainer {
-                    @include Color(130);
-                    .hcontainer {
-                        @include Color(150);
+    .hcontainer { @include Color(70);
+        .hcontainer { @include Color(90);
+            .hcontainer { @include Color(110);
+                .hcontainer { @include Color(130);
+                    .hcontainer { @include Color(150);
+                        .hcontainer { @include Color(170);
+                            .hcontainer { @include Color(190);
+                                .hcontainer { @include Color(210);
+                                }
+                            }
+                        }
                     }
                 }
             }

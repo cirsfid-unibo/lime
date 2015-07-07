@@ -6,37 +6,57 @@
 @mixin Label ($label) {
     &:before {
         content: $label;
-        width: (15px + str-length($label) * 7px);
+        width: (10px + str-length($label) * 6px);
         font: 13px/15px 'FontAwesome', sans-serif;
         color: white;
         position: absolute;
     }
 }
 
+@mixin Icon ($code) {
+    &:before {
+        content: $code;
+        width: 13px;
+    }
+}
 
 @mixin SetLabel ($label) {
     @include Label($label);
-    padding-right: 10px + (10px + str-length($label) * 8px);
+    // padding-left: 10px + (10px + str-length($label) * 8px);
 }
 
 @mixin Inline ($color, $label) {
     @include SetLabel($label);
-    $bgColor: hsl($color, 40%, 65%);
-    border-bottom: 1px solid $bgColor;
-    display: inline-block;
-    position: relative;
-    margin: 5px 0 3px;
+    $colorDark: hsl($color, 80%, 50%);
+    $colorLight: hsl($color, 75%, 97%);
+
+    display: inline;
+    padding-right: 5px;
+    line-height: 1.5em;
+
+    background-color: $colorLight;
+    border-radius: 5px;
+    margin: 0 3px;
+    border-bottom: 2px solid $colorDark;
 
     &:before {
-        background-color: $bgColor;
+        box-shadow: 2px 1px 3px -2px #333333;
+        background-color: $colorDark;
+        display: inline-block;
+        position: relative;
+        top: 1px;
+        line-height: 150%;
         text-align: center;
-        right: 0px;
-        bottom: 0px;
 
-        border-top-right-radius: 4px;
-        border-top-left-radius: 4px;
+        border-radius: 0 5px 0 5px;
+
+        padding: 0 5px 0 5px;
+        margin-right: 5px;
     }
 }
+
+
+
 
 @mixin Color ($hue) {
     $bgColor: hsl($hue, 30%, 45%);
@@ -75,7 +95,7 @@
     >.num {
         position: relative;
         margin: 8px 0 15px;
-        font-size: 25px;
+        // font-size: 25px;
         font-weight: bold;
         display: inline-block;
     }
