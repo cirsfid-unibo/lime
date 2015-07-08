@@ -76,6 +76,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
         	toolbar.add({xtype: 'tbfill'});
             toolbar.add({
                 xtype: 'button',
+                enableToggle: true,
                 cls : me.getBtnCls(),
                 margin : "0 10 0 0",
                 text : Locale.getString("title", me.getPluginName()),
@@ -94,9 +95,9 @@ Ext.define('LIME.controller.MetadataManagerController', {
         }
     },
 
-    openManager: function() {
-    	this.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
-    								true, this.getPluginName());
+    openManager: function(btn) {
+        this.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
+                                    btn.pressed, this.getPluginName());
     },
 
 	addTab: function(conf) {

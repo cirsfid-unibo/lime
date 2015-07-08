@@ -142,6 +142,7 @@ Ext.define('LIME.controller.WidgetManager', {
      * */
     addTab: function() {
         var cmp = Ext.widget("panel", {
+            itemId: 'widgetsPanel',
             title: "Widgets",
             padding: 5,
             border: 0,
@@ -330,6 +331,11 @@ Ext.define('LIME.controller.WidgetManager', {
                             highlight:true
                         });
                     }
+                }
+            },
+            "[itemId=widgetsPanel]": {
+                render: function(cmp) {
+                    cmp.up('tabpanel').tabBar.hide()
                 }
             }
         });
