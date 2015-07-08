@@ -65,6 +65,8 @@ Ext.define('LIME.view.Outliner', {
     // The root must not be visible
     rootVisible: false,
 
+    useArrows: true,
+
     // the view configuration
     //viewConfig: {baseCls: 'elements_tree'},
 

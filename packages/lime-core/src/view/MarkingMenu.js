@@ -97,7 +97,6 @@ Ext.define('LIME.view.MarkingMenuTreePanel', {
     border: false,
     rootVisible: false,
     autoScroll: true,
-    cls: 'abracadabra',
 
     unhighlight: null,
 

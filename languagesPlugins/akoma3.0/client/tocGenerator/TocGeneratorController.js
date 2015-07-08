@@ -180,7 +180,7 @@
             tocNode.appendChild(tocItemNode);
         });
 
-        var body = DocProperties.getMarkedElementsByName(this.getBodyName())[0].htmlElement;
+        var body = DocProperties.getMarkedElementsByName(Language.getBodyName())[0].htmlElement;
         body.parentNode.insertBefore(tocNode, body);
 
         marker.autoWrap(tocItemConfig, {
@@ -189,9 +189,8 @@
             nodes: tocItems
         });
         marker.autoWrap(tocConfig, {
-            silent : true,
-            noEvent : true,
-            nodes: [tocNode]
+            nodes: [tocNode],
+            scroll: true
         });
 
         return tocNode;
