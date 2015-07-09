@@ -7,20 +7,18 @@
     &:before {
         content: $label;
         width: (10px + str-length($label) * 6px);
-        font: 13px/15px 'FontAwesome', sans-serif;
-        color: white;
     }
 }
 
 @mixin Icon ($code) {
     &:before {
         content: $code;
-        width: 13px;
+        padding: 0 6px;
     }
 }
 
 @mixin Inline () {
-    $color: 220;
+    $color: 206;
     $colorDark: hsl($color, 80%, 50%);
     $colorLight: hsl($color, 75%, 97%);
 

@@ -112,17 +112,17 @@ Ext.define("Ext.ux.form.field.TinyMCE", {
             });
 
             /*
-             * Old tinymce 3.x 
+             * Old tinymce 3.x
              *editor.onInit.add(function(editor) {
                 me.inProgress = false;
             });*/
 
             editor.on('keypress', Ext.Function.createBuffered(me.validate, 250, me));
-            
-            /* Old tinymce 3.x 
-             * editor.onKeyPress.add(Ext.Function.createBuffered(me.validate, 250, me)); 
+
+            /* Old tinymce 3.x
+             * editor.onKeyPress.add(Ext.Function.createBuffered(me.validate, 250, me));
              */
-            
+
             editor.on('postRender', function(ed) {
                 var tableId;
                 me.editor = editor;
@@ -136,10 +136,10 @@ Ext.define("Ext.ux.form.field.TinyMCE", {
                 me.tableEl = Ext.get(tableId);
                 me.edToolbar = me.tableEl.down(".mce-toolbar");
                 me.edStatusbar = me.tableEl.down(".mce-statusbar");
-               /* 
+               /*
                 * me.tableEl = Ext.get(me.editor.id + "_tbl");
 
-                
+
                  */
                  if (me.hideBorder) {
                      me.tableEl.setStyle('border', '0px');
@@ -148,17 +148,17 @@ Ext.define("Ext.ux.form.field.TinyMCE", {
 
                 Ext.Function.defer(function() {
                     if (me.tableEl.getHeight() != me.lastHeight - 5)
-                        me.setEditorSize(me.lastWidth, me.lastHeight);
-                    //me.setEditorSize(me.lastWidth, (me.tableEl.getHeight() != me.lastHeight - 2) ? me.tableEl.getHeight() : me.lastHeight);
+                        // me.setEditorSize(me.lastWidth, me.lastHeight);
+                        me.setEditorSize(me.lastWidth, (me.tableEl.getHeight() != me.lastHeight - 2) ? me.tableEl.getHeight() : me.lastHeight);
                 }, 10, me);
 
                 me.fireEvent('editorcreated', me.editor, me);
             });
             /*
-             * Old tinymce 3.x 
+             * Old tinymce 3.x
              * editor.onPostRender.add();
             });*/
-            
+
             //CIRSFID @Marco: Load custom setup
 			try {
 				me.tinymceConfig.mysetup(editor);

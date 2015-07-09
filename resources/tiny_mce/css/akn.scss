@@ -135,9 +135,9 @@
         vertical-align: sub;
         font-style: italic;
     }
-    .docNumber         { @include Icon('\f02d'); }
-    .docType           { @include Icon('\f0e3'); }
-    .mref, .ref, .rref { @include Icon('\f0c1'); }
+    .docNumber         { @include Inline; @include Icon('\f02d'); }
+    .docType           { @include Inline; @include Icon('\f0e3'); }
+    .mref, .ref, .rref { @include Inline; @include Icon('\f0c1'); }
 
     .affectedDocument,
     .argument,

@@ -1,4 +1,5 @@
 /ext/
+/resources/ext/
 /.sencha/
 /build/
 /bootstrap.js

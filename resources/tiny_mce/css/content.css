@@ -1153,15 +1153,72 @@
   max-width: 65%;
   vertical-align: sub;
   font-style: italic; }
-#tinymce.lime .docNumber:before {
-  content: "";
-  width: 13px; }
-#tinymce.lime .docType:before {
-  content: "";
-  width: 13px; }
-#tinymce.lime .mref:before, #tinymce.lime .ref:before, #tinymce.lime .rref:before {
-  content: "";
-  width: 13px; }
+#tinymce.lime .docNumber {
+  display: inline;
+  padding-right: 5px;
+  line-height: 1.5em;
+  background-color: #f2f8fd;
+  border-radius: 5px;
+  margin: 0 3px;
+  border-bottom: 2px solid #1a8de6; }
+  #tinymce.lime .docNumber:before {
+    box-shadow: 2px 1px 3px -2px #333333;
+    background-color: #1a8de6;
+    display: inline-block;
+    position: relative;
+    top: 1px;
+    line-height: 150%;
+    text-align: center;
+    border-radius: 0 5px 0 5px;
+    padding: 0 5px 0 5px;
+    margin-right: 5px; }
+  #tinymce.lime .docNumber:before {
+    content: "";
+    width: 13px; }
+#tinymce.lime .docType {
+  display: inline;
+  padding-right: 5px;
+  line-height: 1.5em;
+  background-color: #f2f8fd;
+  border-radius: 5px;
+  margin: 0 3px;
+  border-bottom: 2px solid #1a8de6; }
+  #tinymce.lime .docType:before {
+    box-shadow: 2px 1px 3px -2px #333333;
+    background-color: #1a8de6;
+    display: inline-block;
+    position: relative;
+    top: 1px;
+    line-height: 150%;
+    text-align: center;
+    border-radius: 0 5px 0 5px;
+    padding: 0 5px 0 5px;
+    margin-right: 5px; }
+  #tinymce.lime .docType:before {
+    content: "";
+    width: 13px; }
+#tinymce.lime .mref, #tinymce.lime .ref, #tinymce.lime .rref {
+  display: inline;
+  padding-right: 5px;
+  line-height: 1.5em;
+  background-color: #f2f8fd;
+  border-radius: 5px;
+  margin: 0 3px;
+  border-bottom: 2px solid #1a8de6; }
+  #tinymce.lime .mref:before, #tinymce.lime .ref:before, #tinymce.lime .rref:before {
+    box-shadow: 2px 1px 3px -2px #333333;
+    background-color: #1a8de6;
+    display: inline-block;
+    position: relative;
+    top: 1px;
+    line-height: 150%;
+    text-align: center;
+    border-radius: 0 5px 0 5px;
+    padding: 0 5px 0 5px;
+    margin-right: 5px; }
+  #tinymce.lime .mref:before, #tinymce.lime .ref:before, #tinymce.lime .rref:before {
+    content: "";
+    width: 13px; }
 #tinymce.lime .affectedDocument,
 #tinymce.lime .argument,
 #tinymce.lime .change,
@@ -1223,10 +1280,10 @@
   display: inline;
   padding-right: 5px;
   line-height: 1.5em;
-  background-color: #f2f5fd;
+  background-color: #f2f8fd;
   border-radius: 5px;
   margin: 0 3px;
-  border-bottom: 2px solid #1a5ee6; }
+  border-bottom: 2px solid #1a8de6; }
   #tinymce.lime .affectedDocument:before,
   #tinymce.lime .argument:before,
   #tinymce.lime .change:before,
@@ -1286,7 +1343,7 @@
   #tinymce.lime .vote:before,
   #tinymce.lime .quotedText:before {
     box-shadow: 2px 1px 3px -2px #333333;
-    background-color: #1a5ee6;
+    background-color: #1a8de6;
     display: inline-block;
     position: relative;
     top: 1px;
@@ -1350,765 +1407,461 @@
 
 #tinymce.lime .preamble:before {
   content: "preamble";
-  width: 58px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 58px; }
 #tinymce.lime .preface:before {
   content: "preface";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .body:before {
   content: "body";
-  width: 34px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 34px; }
 #tinymce.lime .mainBody:before {
   content: "mainBody";
-  width: 58px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 58px; }
 #tinymce.lime .amendmentBody:before {
   content: "amendmentBody";
-  width: 88px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 88px; }
 #tinymce.lime .collectionBody:before {
   content: "collectionBody";
-  width: 94px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 94px; }
 #tinymce.lime .fragmentBody:before {
   content: "fragmentBody";
-  width: 82px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 82px; }
 #tinymce.lime .debateBody:before {
   content: "debateBody";
-  width: 70px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 70px; }
 #tinymce.lime .conclusions:before {
   content: "conclusions";
-  width: 76px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 76px; }
 #tinymce.lime .administrationOfOath:before {
   content: "administrationOfOath";
-  width: 130px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 130px; }
 #tinymce.lime .amendmentContent:before {
   content: "amendmentContent";
-  width: 106px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 106px; }
 #tinymce.lime .amendmentHeading:before {
   content: "amendmentHeading";
-  width: 106px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 106px; }
 #tinymce.lime .amendmentJustification:before {
   content: "amendmentJustification";
-  width: 142px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 142px; }
 #tinymce.lime .amendmentReference:before {
   content: "amendmentReference";
-  width: 118px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 118px; }
 #tinymce.lime .answer:before {
   content: "answer";
-  width: 46px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 46px; }
 #tinymce.lime .arguments:before {
   content: "arguments";
-  width: 64px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 64px; }
 #tinymce.lime .attachments:before {
   content: "attachments";
-  width: 76px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 76px; }
 #tinymce.lime .attachment:before {
   content: "attachment";
-  width: 70px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 70px; }
 #tinymce.lime .background:before {
   content: "background";
-  width: 70px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 70px; }
 #tinymce.lime .blockContainer:before {
   content: "blockContainer";
-  width: 94px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 94px; }
 #tinymce.lime .blockList:before {
   content: "blockList";
-  width: 64px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 64px; }
 #tinymce.lime .citation:before {
   content: "citation";
-  width: 58px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 58px; }
 #tinymce.lime .component:before {
   content: "component";
-  width: 64px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 64px; }
 #tinymce.lime .components:before {
   content: "components";
-  width: 70px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 70px; }
 #tinymce.lime .coverPage:before {
   content: "coverPage";
-  width: 64px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 64px; }
 #tinymce.lime .decision:before {
   content: "decision";
-  width: 58px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 58px; }
 #tinymce.lime .extractStructure:before {
   content: "extractStructure";
-  width: 106px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 106px; }
 #tinymce.lime .foreign:before {
   content: "foreign";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .formula:before {
   content: "formula";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .introduction:before {
   content: "introduction";
-  width: 82px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 82px; }
 #tinymce.lime .motivation:before {
   content: "motivation";
-  width: 70px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 70px; }
 #tinymce.lime .question:before {
   content: "question";
-  width: 58px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 58px; }
 #tinymce.lime .recital:before {
   content: "recital";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .speech:before {
   content: "speech";
-  width: 46px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 46px; }
 #tinymce.lime .speechGroup:before {
   content: "speechGroup";
-  width: 76px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 76px; }
 #tinymce.lime .tblock:before {
   content: "tblock";
-  width: 46px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 46px; }
 #tinymce.lime .toc:before {
   content: "toc";
-  width: 28px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 28px; }
 #tinymce.lime .wrap:before {
   content: "wrap";
-  width: 34px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 34px; }
 #tinymce.lime .content:before {
   content: "content";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .remedies:before {
   content: "remedies";
-  width: 58px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 58px; }
 #tinymce.lime .address:before {
   content: "address";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .alinea:before {
   content: "alinea";
-  width: 46px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 46px; }
 #tinymce.lime .article:before {
   content: "article";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .book:before {
   content: "book";
-  width: 34px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 34px; }
 #tinymce.lime .chapter:before {
   content: "chapter";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .citations:before {
   content: "citations";
-  width: 64px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 64px; }
 #tinymce.lime .clause:before {
   content: "clause";
-  width: 46px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 46px; }
 #tinymce.lime .debateSection:before {
   content: "debateSection";
-  width: 88px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 88px; }
 #tinymce.lime .declarationOfVote:before {
   content: "declarationOfVote";
-  width: 112px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 112px; }
 #tinymce.lime .division:before {
   content: "division";
-  width: 58px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 58px; }
 #tinymce.lime .indent:before {
   content: "indent";
-  width: 46px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 46px; }
 #tinymce.lime .item:before {
   content: "item";
-  width: 34px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 34px; }
 #tinymce.lime .list:before {
   content: "list";
-  width: 34px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 34px; }
 #tinymce.lime .ministerialStatements:before {
   content: "ministerialStatements";
-  width: 136px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 136px; }
 #tinymce.lime .nationalInterest:before {
   content: "nationalInterest";
-  width: 106px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 106px; }
 #tinymce.lime .noticesOfMotion:before {
   content: "noticesOfMotion";
-  width: 100px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 100px; }
 #tinymce.lime .oralStatements:before {
   content: "oralStatements";
-  width: 94px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 94px; }
 #tinymce.lime .papers:before {
   content: "papers";
-  width: 46px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 46px; }
 #tinymce.lime .paragraph:before {
   content: "paragraph";
-  width: 64px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 64px; }
 #tinymce.lime .part:before {
   content: "part";
-  width: 34px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 34px; }
 #tinymce.lime .personalStatements:before {
   content: "personalStatements";
-  width: 118px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 118px; }
 #tinymce.lime .petitions:before {
   content: "petitions";
-  width: 64px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 64px; }
 #tinymce.lime .pointOfOrder:before {
   content: "pointOfOrder";
-  width: 82px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 82px; }
 #tinymce.lime .proceduralMotions:before {
   content: "proceduralMotions";
-  width: 112px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 112px; }
 #tinymce.lime .proviso:before {
   content: "proviso";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .questions:before {
   content: "questions";
-  width: 64px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 64px; }
 #tinymce.lime .recitals:before {
   content: "recitals";
-  width: 58px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 58px; }
 #tinymce.lime .resolutions:before {
   content: "resolutions";
-  width: 76px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 76px; }
 #tinymce.lime .rollCall:before {
   content: "rollCall";
-  width: 58px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 58px; }
 #tinymce.lime .rule:before {
   content: "rule";
-  width: 34px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 34px; }
 #tinymce.lime .section:before {
   content: "section";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .subchapter:before {
   content: "subchapter";
-  width: 70px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 70px; }
 #tinymce.lime .subclause:before {
   content: "subclause";
-  width: 64px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 64px; }
 #tinymce.lime .subdivision:before {
   content: "subdivision";
-  width: 76px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 76px; }
 #tinymce.lime .sublist:before {
   content: "sublist";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .subparagraph:before {
   content: "subparagraph";
-  width: 82px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 82px; }
 #tinymce.lime .subpart:before {
   content: "subpart";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .subrule:before {
   content: "subrule";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .subsection:before {
   content: "subsection";
-  width: 70px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 70px; }
 #tinymce.lime .subtitle:before {
   content: "subtitle";
-  width: 58px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 58px; }
 #tinymce.lime .title:before {
   content: "title";
-  width: 40px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 40px; }
 #tinymce.lime .tome:before {
   content: "tome";
-  width: 34px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 34px; }
 #tinymce.lime .transitional:before {
   content: "transitional";
-  width: 82px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 82px; }
 #tinymce.lime .writtenStatements:before {
   content: "writtenStatements";
-  width: 112px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 112px; }
 #tinymce.lime .affectedDocument:before {
   content: "affectedDocument";
-  width: 106px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 106px; }
 #tinymce.lime .argument:before {
   content: "argument";
-  width: 58px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 58px; }
 #tinymce.lime .change:before {
   content: "change";
-  width: 46px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 46px; }
 #tinymce.lime .concept:before {
   content: "concept";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .courtType:before {
   content: "courtType";
-  width: 64px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 64px; }
 #tinymce.lime .date:before {
   content: "date";
-  width: 34px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 34px; }
 #tinymce.lime .decoration:before {
   content: "decoration";
-  width: 70px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 70px; }
 #tinymce.lime .def:before {
   content: "def";
-  width: 28px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 28px; }
 #tinymce.lime .del:before {
   content: "del";
-  width: 28px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 28px; }
 #tinymce.lime .docAuthority:before {
   content: "docAuthority";
-  width: 82px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 82px; }
 #tinymce.lime .docCommittee:before {
   content: "docCommittee";
-  width: 82px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 82px; }
 #tinymce.lime .docDate:before {
   content: "docDate";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .docIntroducer:before {
   content: "docIntroducer";
-  width: 88px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 88px; }
 #tinymce.lime .docJurisdiction:before {
   content: "docJurisdiction";
-  width: 100px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 100px; }
 #tinymce.lime .docketNumber:before {
   content: "docketNumber";
-  width: 82px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 82px; }
 #tinymce.lime .docProponent:before {
   content: "docProponent";
-  width: 82px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 82px; }
 #tinymce.lime .docPurpose:before {
   content: "docPurpose";
-  width: 70px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 70px; }
 #tinymce.lime .docStage:before {
   content: "docStage";
-  width: 58px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 58px; }
 #tinymce.lime .docStatus:before {
   content: "docStatus";
-  width: 64px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 64px; }
 #tinymce.lime .docTitle:before {
   content: "docTitle";
-  width: 58px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 58px; }
 #tinymce.lime .documentRef:before {
   content: "documentRef";
-  width: 76px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 76px; }
 #tinymce.lime .entity:before {
   content: "entity";
-  width: 46px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 46px; }
 #tinymce.lime .event:before {
   content: "event";
-  width: 40px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 40px; }
 #tinymce.lime .extractText:before {
   content: "extractText";
-  width: 76px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 76px; }
 #tinymce.lime .fillIn:before {
   content: "fillIn";
-  width: 46px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 46px; }
 #tinymce.lime .from:before {
   content: "from";
-  width: 34px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 34px; }
 #tinymce.lime .ins:before {
   content: "ins";
-  width: 28px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 28px; }
 #tinymce.lime .judge:before {
   content: "judge";
-  width: 40px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 40px; }
 #tinymce.lime .legislature:before {
   content: "legislature";
-  width: 76px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 76px; }
 #tinymce.lime .listConclusion:before {
   content: "listConclusion";
-  width: 94px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 94px; }
 #tinymce.lime .listIntroduction:before {
   content: "listIntroduction";
-  width: 106px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 106px; }
 #tinymce.lime .location:before {
   content: "location";
-  width: 58px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 58px; }
 #tinymce.lime .mmod:before {
   content: "mmod";
-  width: 34px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 34px; }
 #tinymce.lime .mod:before {
   content: "mod";
-  width: 28px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 28px; }
 #tinymce.lime .narrative:before {
   content: "narrative";
-  width: 64px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 64px; }
 #tinymce.lime .neutralCitation:before {
   content: "neutralCitation";
-  width: 100px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 100px; }
 #tinymce.lime .object:before {
   content: "object";
-  width: 46px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 46px; }
 #tinymce.lime .omissis:before {
   content: "omissis";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .opinion:before {
   content: "opinion";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .organization:before {
   content: "organization";
-  width: 82px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 82px; }
 #tinymce.lime .outcome:before {
   content: "outcome";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .party:before {
   content: "party";
-  width: 40px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 40px; }
 #tinymce.lime .person:before {
   content: "person";
-  width: 46px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 46px; }
 #tinymce.lime .placeholder:before {
   content: "placeholder";
-  width: 76px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 76px; }
 #tinymce.lime .process:before {
   content: "process";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .quantity:before {
   content: "quantity";
-  width: 58px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 58px; }
 #tinymce.lime .relatedDocument:before {
   content: "relatedDocument";
-  width: 100px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 100px; }
 #tinymce.lime .remark:before {
   content: "remark";
-  width: 46px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 46px; }
 #tinymce.lime .rmod:before {
   content: "rmod";
-  width: 34px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 34px; }
 #tinymce.lime .role:before {
   content: "role";
-  width: 34px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 34px; }
 #tinymce.lime .scene:before {
   content: "scene";
-  width: 40px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 40px; }
 #tinymce.lime .session:before {
   content: "session";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .shortTitle:before {
   content: "shortTitle";
-  width: 70px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 70px; }
 #tinymce.lime .signature:before {
   content: "signature";
-  width: 64px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 64px; }
 #tinymce.lime .subheading:before {
   content: "subheading";
-  width: 70px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 70px; }
 #tinymce.lime .term:before {
   content: "term";
-  width: 34px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 34px; }
 #tinymce.lime .time:before {
   content: "time";
-  width: 34px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 34px; }
 #tinymce.lime .tocItem:before {
   content: "tocItem";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime .vote:before {
   content: "vote";
-  width: 34px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 34px; }
 #tinymce.lime .quotedText:before {
   content: "quotedText";
-  width: 70px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 70px; }
 #tinymce.lime .authorialNote:before {
   content: "authorialNote";
-  width: 88px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 88px; }
 #tinymce.lime .quotedStructure:before {
   content: "quotedStructure";
-  width: 100px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 100px; }
 
 #tinymce.lime.italian .preface:before {
   content: "Intestazione";
-  width: 82px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 82px; }
 #tinymce.lime.italian .body:before {
   content: "Corpo";
-  width: 40px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 40px; }
 #tinymce.lime.italian .title:before {
   content: "Titolo";
-  width: 46px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 46px; }
 #tinymce.lime.italian .setion:before {
   content: "Sezione";
-  width: 52px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 52px; }
 #tinymce.lime.italian .paragraph:before {
   content: "Comma";
-  width: 40px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 40px; }
 #tinymce.lime.italian .preface:before {
   content: "Intestazione";
-  width: 82px;
-  font: 13px/15px 'FontAwesome', sans-serif;
-  color: white; }
+  width: 82px; }
 
 #tinymce {
   font-size: .9em;
@@ -2118,6 +1871,9 @@
     border-bottom: 1px solid #ccc; }
   #tinymce hr[data-mce-selected] {
     outline: 0px solid black; }
+  #tinymce *[focused='true'] {
+    background-color: #f5f5f5;
+    box-shadow: 1px 2px 3px #777; }
   #tinymce span.visibleBookmark:before {
     overflow: initial !important;
     background-color: #cd6567 !important;
@@ -2132,5 +1888,10 @@
     background-color: #B0B0B0; }
   #tinymce #tinymce *[highlighted=true] {
     background-color: #fafcc0; }
+  #tinymce.lime *::before {
+    font-family: 'FontAwesome', sans-serif;
+    color: white;
+    font-size: 13px;
+    line-height: 15px; }
 
 /*# sourceMappingURL=content.css.map */
