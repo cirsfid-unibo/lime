@@ -59,13 +59,12 @@ Ext.define('LIME.controller.Notification', {
             iconClsError = "ux-notification-icon-error",
             moreLink,
             cls = (config.status) ? 'ux-notification-success' : 'ux-notification-light';
-        if (!this.notification || this.notification.cls != cls) {
-            this.notification = this.createNotificationWindow({
-                cls: cls,
-                title : Locale.strings.error,
-                closeAction : 'hide'
-            });
-        }
+
+        this.notification = this.createNotificationWindow(Ext.merge({
+            cls: cls,
+            title : Locale.strings.error
+        }, config));
+
         if (config.width) {
             this.notification.setWidth(config.width);
         }
@@ -90,8 +89,8 @@ Ext.define('LIME.controller.Notification', {
     createNotificationWindow: function(config) {
         return Ext.create('widget.uxNotification', Ext.merge({
             position : 'tr',
-            useXAxis : true,
-            autoClose : false,
+            useXAxis : false,
+            autoClose : true,
             shadow : false,
             spacing : 20,
             slideInDuration : 1500,
