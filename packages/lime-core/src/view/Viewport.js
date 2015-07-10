@@ -54,7 +54,6 @@ Ext.define('LIME.view.Viewport', {
 
     requires : [
         'LIME.view.MainToolbar',
-        'LIME.view.MarkingMenu',
         'LIME.view.Main',
         'LIME.view.ContextMenu',
         'LIME.view.DownloadManager',
@@ -62,6 +61,8 @@ Ext.define('LIME.view.Viewport', {
         'LIME.view.Login',
         'LIME.view.generic.SimplePagingToolbar'
      ],
+
+
 
 
     style : {
@@ -90,44 +91,21 @@ Ext.define('LIME.view.Viewport', {
         }]
     }],
 
-    markingMenu : {
-        xtype : 'markingMenu',
-        cls: 'markingMenuContainer',
-        //floating: true,
-        //draggable: true,
-        //collapsed: true,
-        region : 'east',
-        width : '26%',
-        collapsible : true,
-        expandable : true,
-        resizable : true,
-        margin : 2,
-        autoScroll : true
-    },
-
     editorItems : [{
-        xtype: 'mainToolbar',
-        region : 'north'
+        region : 'north',
+        items: [{
+            xtype: 'mainToolbar'
+        }, {
+            xtype: 'mainEditorUri'
+        }]
     }, {
         xtype : 'main',
         region : 'center',
         id: 'mainEditor',
-        //draggable : true,
         expandable : true,
         resizable : true,
         margin : 2
     }, {
-        xtype : 'outliner',
-        region : 'west',
-        //draggable : true,
-        //hidden: true,
-        expandable : true,
-        resizable : true,
-        width : '15%',
-        autoScroll : true,
-        margin : 2
-    },
-    {
         // Context menu related to the editor
         xtype : 'contextMenu'
     }, {

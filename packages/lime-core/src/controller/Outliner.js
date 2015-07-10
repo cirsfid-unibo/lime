@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -62,8 +62,8 @@ Ext.define('LIME.controller.Outliner', {
         ref : 'contextMenu',
         selector : 'contextMenu'
     }],
-    
-    iconBaseCls: 'explorer-icon', 
+
+    iconBaseCls: 'explorer-icon',
 
     getTreeNodeFromDomNode: function(treeRootNode, domNode) {
         var treeNode = null;
@@ -243,12 +243,12 @@ Ext.define('LIME.controller.Outliner', {
         try {
             //convert to tree format json the node
             if (config != "partial" || DomUtils.getFirstMarkedAncestor(node.parentNode) == null) {
-                
-                var docClass = DocProperties.getDocClassList().split(" "), 
+
+                var docClass = DocProperties.getDocClassList().split(" "),
                     foundNode = node.ownerDocument.querySelector("."+docClass[(docClass.length-1)]);
 
                 data = me.createTreeDataNew(foundNode, depth);
-                
+
                 if (Ext.isArray(data)) {
                     wrapper = {
                         text : 'root',
@@ -316,18 +316,6 @@ Ext.define('LIME.controller.Outliner', {
         }
     },
 
-    onChangeEditorMode: function(config) {
-        var cmp = this.getOutliner();
-        if(cmp) {
-            if (config.sidebarsHidden) {
-                cmp.collapse();
-                //cmp.placeholder.tools[0].hide();
-            } else {
-                cmp.expand();
-            }    
-        }
-    },
-
     // init the app
     init : function() {
         // Register for events
@@ -336,7 +324,6 @@ Ext.define('LIME.controller.Outliner', {
             editorDomNodeFocused : this.beforeExpandItem,
             scope : this
         });
-        this.application.on(Statics.eventsNames.changedEditorMode, this.onChangeEditorMode, this);
         this.application.on(Statics.eventsNames.markingMenuLoaded, this.loadCss, this);
 
         // set up the control
@@ -355,7 +342,7 @@ Ext.define('LIME.controller.Outliner', {
                 },
                 rowclick: function(view, rec, item, index, e) {
                     var node = DocProperties.markedElements[rec.getData().cls];
-                    if ( e.target && Ext.fly(e.target).is('.x-tree-expander') 
+                    if ( e.target && Ext.fly(e.target).is('.x-tree-expander')
                         && node && ( !rec.childNodes.length || !rec.getChildAt(0).isVisible() ) ) {
                         this.beforeExpandItem(node.htmlElement);
                     }

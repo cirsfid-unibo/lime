@@ -44,47 +44,22 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-/**
- * This view implements a URI viewer of the document.
- */
-Ext.define('LIME.view.main.editor.Uri', {
-    extend: 'Ext.Panel',
-    alias: 'widget.mainEditorUri',
+Ext.define('LIME.components.uri.UriController', {
+    extend: 'Ext.app.ViewController',
+    alias: 'controller.uri',
 
-    frame: true,
-    layout: 'fit',
-    padding: "0px 0px 5px 0px",
-    style: {
-        borderRadius: "0px",
-        margin: "0px",
-        border: '0px'
+    listen: {
+        global: {},
+        component: {
+            '#': {
+                'itemClicked': 'onItemClicked'
+            }
+        }
     },
 
-    linkTemplate: '<a path="{id}" class="uriSelector" style="" href="javascript:;">{text}</a>',
-
-    setUri: function(uri) {
-        var me = this, 
-            linkTpl = new Ext.Template(me.linkTemplate),
-            html = "", 
-            partialUri = "";
-        var parts = uri.split("/");
-
-        if (parts.length < 2) {
-            html = uri;
-        } else {
-            Ext.each(parts, function(text, index) {
-                partialUri+= text+"/";
-                html += (index != parts.length - 1) ? 
-                        linkTpl.apply({id: partialUri, text: text})+"/" :
-                        text;  
-            });
-        }
-
-        // Update html
-        me.update("");
-        me.removeAll(true);
-        me.update(html, false, function() {
-            me.fireEvent("update");
+    onItemClicked: function (path) {
+        LIME.app.fireEvent(Statics.eventsNames.openDocument, {
+            path: path
         });
     }
 });

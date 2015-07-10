@@ -1,4 +1,14 @@
 {
+	"plugins": [
+		"consolidation",
+		"parsers",
+		"documentCollection",
+		"modsMarker",
+		"notesManager",
+		"metadataManager",
+        "widgetManager",
+        "tocGenerator"
+    ],
     "schemaRegex": "xmlns=\"(http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD\\d+)\"",
     "formulaName": "formulaIniziale",
 	"docTypes": [
@@ -144,15 +154,6 @@
 	],
 
 	"customViews": ["MarkingMenu"],
-	"plugins": [
-				"consolidation",
-				"parsers", 
-				"documentCollection",
-				"modsMarker", 
-				"notesManager",
-				"metadataManager",
-                "widgetManager",
-                "tocGenerator"],
 	"transformationFiles": {
 		"languageToLIME": "AknToXhtml.xsl",
 		"LIMEtoLanguage": "HtmlToAkn.xsl"

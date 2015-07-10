@@ -56,41 +56,22 @@
 Ext.define('LIME.controller.Editor', {
 
 	extend : 'Ext.app.Controller',
-	views : ['main.Editor', 'main.editor.Path', 'main.editor.Uri','modal.NewDocument'],
+	views : ['main.Editor', 'main.editor.Path', 'modal.NewDocument'],
 
-	refs : [{
-		ref : 'mainEditor',
-		selector : '#mainEditor mainEditor'
-	}, {
-		ref: 'secondEditor',
-		selector: '#secondEditor mainEditor'
-	},
-	{
-		ref : 'main',
-		selector : 'main'
-	}, {
-		ref : 'contextMenu',
-		selector : 'contextMenu'
-	}, {
-		ref : 'contextMenuItems',
-		selector : 'menuitem[cls=editor]'
-	},
-	{
-		ref : 'explorer',
-		selector : 'explorer'
-	}, {
-		ref : 'mainEditorPath',
-		selector : 'mainEditorPath'
-	},{
-		ref : 'markingMenu',
-		selector : 'markingMenu'
-	},{
-		ref : 'mainToolbar',
-		selector : 'mainToolbar'
-	},{
-        ref : 'codemirror',
-        selector : 'codemirror'
-    }, { ref:'uriPathSwitcher', selector: '[itemId=uriPathSwitcher]' }],
+	refs: [
+		{ ref: 'mainEditor',       selector : '#mainEditor mainEditor' },
+		{ ref: 'secondEditor',     selector: '#secondEditor mainEditor' },
+		{ ref: 'main',             selector : 'main' },
+		{ ref: 'contextMenu',      selector : 'contextMenu' },
+		{ ref: 'contextMenuItems', selector : 'menuitem[cls=editor]' },
+		{ ref: 'explorer',         selector : 'explorer' },
+		{ ref: 'mainEditorPath',   selector : 'mainEditorPath' },
+		{ ref: 'markingMenu',      selector : 'markingMenu' },
+		{ ref: 'mainToolbar',      selector : 'mainToolbar' },
+		{ ref: 'codemirror',       selector : 'codemirror' },
+		{ ref: 'uri',              selector : 'mainEditorUri' },
+		{ ref: 'uriPathSwitcher',  selector: '[itemId=uriPathSwitcher]' }
+	],
 
 	constructor : function(){
 		/**
@@ -255,11 +236,12 @@ Ext.define('LIME.controller.Editor', {
 	},
 
     showDocumentIdentifier: function() {
-        var showUri = this.getUriPathSwitcher().state,
+		var switcher = this.getUriPathSwitcher(),
+	        showUri = switcher ? switcher.state : true,
             valueToShow = (showUri) ? this.getDocumentUri() : this.getDocumentPath();
 
-        valueToShow = (valueToShow && valueToShow.replace(/%3A/g, ':')) || Locale.getString("newDocument");
-        this.setEditorHeader(valueToShow);
+		valueToShow = (valueToShow && valueToShow.replace(/%3A/g, ':')) || Locale.getString("newDocument");
+	    this.setEditorHeader(valueToShow);
     },
 
     getDocumentUri: function() {
@@ -277,7 +259,7 @@ Ext.define('LIME.controller.Editor', {
 
     setEditorHeader: function(value) {
         this.getMainEditor().up().tab.setTooltip(value);
-        this.getMain().down("mainEditorUri").setUri(value);
+        this.getUri().setUri(value);
     },
 
 	/**
@@ -1513,20 +1495,6 @@ Ext.define('LIME.controller.Editor', {
                     }, this);
                 }
 			},
-
-            // When clicking a link in the URI toolbar, show the open document
-            // dialog with the given path.
-			'mainEditorUri' : {
-                update : function() {
-                    var me = this;
-                    Ext.select(".uriSelector", true).on("click", function(evt, el) {
-                        var elId = el.getAttribute("path");
-                        if (elId) {
-                            me.application.fireEvent(Statics.eventsNames.openDocument, config = {path: elId});
-                        }
-                    }, this);
-                }
-            },
 
 			// Handle the viewable events on the editor (click, contextmenu etc.)
 			'#mainEditor mainEditor' : {

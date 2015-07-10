@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -47,7 +47,7 @@
 
 /**
  * This controller takes care of loading customizations.
- * 
+ *
  */
 
 Ext.define('LIME.controller.CustomizationManager', {
@@ -56,9 +56,9 @@ Ext.define('LIME.controller.CustomizationManager', {
     views : ['DocumentLangSelector', 'LocaleSelector', 'MarkingMenu', 'Ext.ux.IframePlugin'],
 
     customCallbacks : {},
-    
+
     customMenuItems: {},
-    
+
     refs : [{
         selector: 'appViewport',
         ref: 'appViewport'
@@ -85,7 +85,7 @@ Ext.define('LIME.controller.CustomizationManager', {
     },
 
     loadControllers : function(controllers) {
-        var me = this, 
+        var me = this,
             controllers = controllers || [];
 
         if (controllers) {
@@ -111,19 +111,19 @@ Ext.define('LIME.controller.CustomizationManager', {
             me.customCallbacks[className][name](cmp);
         }
     },
-    
+
     fullNameToName: function(className) {
         var lastPoint = className.lastIndexOf(".");
         return className.substring(lastPoint+1);
     },
-    
+
     beforeCreation: function(className, originalConfig, callback) {
         var me = this, config = Ext.clone(originalConfig), customs = Config.getCustomViews(className);
         // Calling every customization of 'className' view
         Ext.each(customs, function(custom) {
             if(Ext.isFunction(custom.beforeCreation)) {
                 try {
-                    config = Ext.bind(custom.beforeCreation, custom)(config);   
+                    config = Ext.bind(custom.beforeCreation, custom)(config);
                 } catch(e) {
                     Ext.log({level: "warn"}, "Exception beforeCreation plugin of "+className, e);
                 }
@@ -136,17 +136,17 @@ Ext.define('LIME.controller.CustomizationManager', {
             callback(config);
         }
     },
-    
+
     addMenuItem: function(controller, config, menuConfig) {
         var me = this, mainToolbar = me.getController("MainToolbar"), item;
-        
+
         item = mainToolbar.addMenuItem(config, menuConfig);
         if(item) {
             me.customMenuItems[controller.id] = me.customMenuItems[controller.id] || [];
             me.customMenuItems[controller.id].push(item);
         }
     },
-    
+
     removeCustomMenuItems: function(controller) {
         var me = this;
         Ext.each(me.customMenuItems[controller.id], function(item) {
@@ -258,7 +258,6 @@ Ext.define('LIME.controller.CustomizationManager', {
         var me = this,
             mainTabPanel = me.getMain(),
             explorer = me.getOutliner(),
-            markingMenu = me.getMarkingMenuContainer(),
             editorTab = me.getMainEditor().up(),
             storage = me.getController("Storage"),
             editorController = me.getController("Editor"),
@@ -274,22 +273,13 @@ Ext.define('LIME.controller.CustomizationManager', {
         mainTabPanel.setActiveTab(editorTab);
 
         if(xmlDiff) {
-            xmlDiff.tab.hide();  
+            xmlDiff.tab.hide();
         }
-        
+
         //explorer.setVisible(false);
 
         explorer.up().remove(explorer);
 
-        //markingMenu.collapse();
-
-        // Bug: this causes the first editor to disappear
-        // if(markingMenu) {
-        //     markingMenu.placeholder.getEl().on('mouseenter', function(){ 
-        //         markingMenu.floatCollapsedPanel();
-        //     });
-        // }
-        
         secondEditor = me.createSecondEditor();
         me.secondEditor = secondEditor;
 
@@ -327,9 +317,9 @@ Ext.define('LIME.controller.CustomizationManager', {
                     };
                     storage.openDocument(dualConfig.editableDoc);
                 }, true);
-            });    
+            });
         }, 100);
-        
+
     },
 
     afterDocumentLoaded: function() {
@@ -348,8 +338,8 @@ Ext.define('LIME.controller.CustomizationManager', {
         me.application.on(Statics.eventsNames.addMenuItem, me.addMenuItem, me);
         me.application.on(Statics.eventsNames.enableDualEditorMode, me.enableDualEditorMode, me);
         me.application.on(Statics.eventsNames.afterLoad, me.afterDocumentLoaded, me);
-        
-                
+
+
         Config.beforeSetLanguage = function(lang, callback) {
             if (Config.customControllers) {
                 Ext.each(Config.customControllers, function(controller) {

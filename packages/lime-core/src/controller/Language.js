@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -60,11 +60,11 @@ Ext.define('LIME.controller.Language', {
 
     refs : [{
         ref: 'main',
-        selector: 'main' 
+        selector: 'main'
     }],
 
     processTranslateRequest: function(callback, config, cmp, frbrDom) {
-        var me = this, 
+        var me = this,
             html = me.getHtmlToTranslate();
 
         me.translateContent(html, callback);
@@ -89,10 +89,10 @@ Ext.define('LIME.controller.Language', {
      * @param {Object} params
      */
     prepareToTranslate : function(params, frbrDom) {
-        var me = this, 
+        var me = this,
             editorController = this.getController("Editor"),
             tmpElement = params.docDom,
-            unusedElements = tmpElement.querySelectorAll(DomUtils.getTempClassesQuery()), 
+            unusedElements = tmpElement.querySelectorAll(DomUtils.getTempClassesQuery()),
             markedElements = tmpElement.querySelectorAll("*[" + DomUtils.elementIdAttribute + "]"),
             focusedElements  = tmpElement.querySelectorAll("."+DocProperties.elementFocusedCls),
             langPrefix = me.getLanguagePrefix(),
@@ -100,7 +100,7 @@ Ext.define('LIME.controller.Language', {
 
         me.aknIdMapping = {};
         me.appendMetadata(tmpElement, frbrDom);
-        
+
         // TODO: decide if this part is general for all languages or specific
         try {
             //Remove all unused elements
@@ -113,16 +113,16 @@ Ext.define('LIME.controller.Language', {
             });
 
             editorController.removeVisualSelectionObjects(tmpElement);
-            
+
             Ext.each(focusedElements, function(node) {
                 Ext.fly(node).removeCls(DocProperties.elementFocusedCls);
             });
-            
+
             //Apply rules for all marked elements
             Ext.each(markedElements, function(element) {
                 var intId = element.getAttribute(DomUtils.elementIdAttribute), newId,
                     hrefElements = tmpElement.querySelectorAll("*["+langPrefix+"href *= '#"+intId+"']");
-                
+
                 var elName = DomUtils.getNameByNode(element),
                     button = DocProperties.getFirstButtonByName(elName),
                     wrappingElements = Interpreters.wrappingRulesHandlerOnTranslate(element, button);
@@ -147,16 +147,16 @@ Ext.define('LIME.controller.Language', {
 
                 // Add ids also to wrapping elements
                 Ext.each(wrappingElements, function (el) {
-                    var id = me.setLanguageMarkingId(el, counters, tmpElement);                    
+                    var id = me.setLanguageMarkingId(el, counters, tmpElement);
                 });
             }, this);
         } catch(e) {
             Ext.log({level: "error"}, 'prepareToTranslate '+ e);
             return;
         }
-        
+
         var tmpHtml = editorController.serialize(tmpElement);
-        
+
         tmpHtml = tmpHtml.replace(/\bid="[^"]*"/g, "");
         return tmpHtml;
     },
@@ -167,7 +167,7 @@ Ext.define('LIME.controller.Language', {
             success : function(response) {
                 // pretty print the code because codemirror is not enough
                 var xmlPretty = vkbeautify.xml(response.responseText);
-                
+
                 if (Ext.isFunction(callback)) {
                     callback.call(me, xmlPretty, me.aknIdMapping, html);
                 }
@@ -177,17 +177,17 @@ Ext.define('LIME.controller.Language', {
             }
         });
     },
-    
+
     appendMetadata: function(node, meta) {
         meta = meta || DocProperties.frbrDom;
 
         if (meta) {
-            var root = node.querySelector("*["+DocProperties.docIdAttribute+"]") 
+            var root = node.querySelector("*["+DocProperties.docIdAttribute+"]")
                         || node.querySelector(".document");
             var metaDom = Ext.clone(meta);
             metaDom.setAttribute("class", "meta");
             if (root && !root.querySelector("*[class*=meta]")) {
-                root.insertBefore(metaDom, root.firstChild);    
+                root.insertBefore(metaDom, root.firstChild);
             }
             return metaDom;
         }
@@ -254,10 +254,10 @@ Ext.define('LIME.controller.Language', {
             }
             newId += counter;
         }
-        
+
         return newId;
     },
-    
+
     setLanguageMarkingId: function(markedElement, counters, root) {
         var me = this, langSetId, newId, langPrefix = me.getLanguagePrefix();
         if(Ext.isFunction(Language.getLanguageMarkingId)) {
@@ -268,7 +268,7 @@ Ext.define('LIME.controller.Language', {
         newId = langSetId(markedElement, langPrefix, root, counters);
 
         var oldId = markedElement.getAttribute(langPrefix + Language.getElementIdAttribute());
-        
+
         // TODO: understand how to manage changing ids
         if ( oldId && newId && oldId != newId ) {
             markedElement.setAttribute(langPrefix + 'wId', oldId);
@@ -278,10 +278,10 @@ Ext.define('LIME.controller.Language', {
             markedElement.setAttribute(langPrefix + DomUtils.langElementIdAttribute, newId);
             markedElement.setAttribute(langPrefix + Language.getElementIdAttribute(), newId);
         }
-            
+
         return newId;
     },
-    
+
     parseFrbrMetadata : function(dom, noSideEffects) {
         var frbr, frbrDom = Ext.fly(dom);
         frbr = (noSideEffects) ? {} : DocProperties.frbr;
@@ -291,41 +291,41 @@ Ext.define('LIME.controller.Language', {
 
         var nationality = frbrDom.down('*[class=FRBRWork] *[class=FRBRcountry]', true);
         if (nationality) {
-            frbr.work.nationality = nationality.getAttribute('value');  
+            frbr.work.nationality = nationality.getAttribute('value');
         }
         var workDate = frbrDom.down('*[class=FRBRWork] *[class=FRBRdate]', true);
         if (workDate) {
-            frbr.work.date = new Date(workDate.getAttribute('date'));    
+            frbr.work.date = new Date(workDate.getAttribute('date'));
         }
-        
+
         var workUri = frbrDom.down('*[class=FRBRWork] *[class=FRBRuri]', true);
         if (workUri) {
-            frbr.work.FRBRuri = workUri.getAttribute('value');    
+            frbr.work.FRBRuri = workUri.getAttribute('value');
         }
-        
+
         var expLang = frbrDom.down('*[class=FRBRExpression] *[class=FRBRlanguage]', true);
         if (expLang) {
-            frbr.expression.docLang = expLang.getAttribute('language');    
+            frbr.expression.docLang = expLang.getAttribute('language');
         }
-        
+
         var expDate = frbrDom.down('*[class=FRBRExpression] *[class=FRBRdate]', true);
         if (expDate) {
-            frbr.expression.date = new Date(expDate.getAttribute('date'));    
+            frbr.expression.date = new Date(expDate.getAttribute('date'));
         }
-        
+
         var expUri = frbrDom.down('*[class=FRBRExpression] *[class=FRBRuri]', true);
         if (expUri) {
-            frbr.expression.FRBRuri = expUri.getAttribute('value');    
+            frbr.expression.FRBRuri = expUri.getAttribute('value');
         }
-        
+
         var manDate = frbrDom.down('*[class=FRBRManifestation] *[class=FRBRdate]', true);
         if (manDate) {
-            frbr.manifestation.date = new Date(manDate.getAttribute('date'));    
+            frbr.manifestation.date = new Date(manDate.getAttribute('date'));
         }
-        
+
         var manUri = frbrDom.down('*[class=FRBRManifestation] *[class=FRBRuri]', true);
         if (manUri) {
-            frbr.manifestation.FRBRuri = manUri.getAttribute('value');    
+            frbr.manifestation.FRBRuri = manUri.getAttribute('value');
         }
 
         if(!noSideEffects) {
@@ -334,7 +334,7 @@ Ext.define('LIME.controller.Language', {
                     workUri = DocProperties.frbrDom.querySelector('.FRBRWork .FRBRuri');
                     if ( workUri ) {
                         workUri.setAttribute('value', frbr.work.FRBRuri);
-                    } 
+                    }
                 }
 
                 if ( frbr.expression.FRBRuri ) {
@@ -345,7 +345,7 @@ Ext.define('LIME.controller.Language', {
                         if ( expThisUri ) {
                             expThisUri.setAttribute('value', frbr.expression.FRBRuri);
                         }
-                    } 
+                    }
                 }
 
                 if ( frbr.manifestation.FRBRuri ) {
@@ -356,7 +356,7 @@ Ext.define('LIME.controller.Language', {
                         if ( manThisUri ) {
                             manThisUri.setAttribute('value', frbr.manifestation.FRBRuri);
                         }
-                    } 
+                    }
                 }
                 if ( manDate ) {
                     var date = manDate.getAttribute('date');
@@ -368,19 +368,19 @@ Ext.define('LIME.controller.Language', {
             } else {
                 DocProperties.frbrDom = dom;
             }
-            this.application.fireEvent(Statics.eventsNames.frbrChanged);  
+            this.application.fireEvent(Statics.eventsNames.frbrChanged);
         }
         return frbr;
     },
-    
+
     getLanguagePrefix: function() {
         return Language.getAttributePrefix();
     },
-    
+
     nodeGetLanguageAttribute: function(node, attribute) {
         var prefix = this.getLanguagePrefix(),
             value = node.getAttribute(prefix+attribute);
-        
+
         return {
             name: prefix+attribute,
             value: value
@@ -416,20 +416,20 @@ Ext.define('LIME.controller.Language', {
             newParams = newFn();
             if (newParams) {
                 newParams.beforeLoaded = true;
-                
+
                 if (newParams.metaResults && !noSideEffects) {
                     Ext.each(newParams.metaResults, function(metaObj, index) {
                         var name = metaObj.docType;
-                        docCounters[name] = docCounters[name]+1 || 1; 
+                        docCounters[name] = docCounters[name]+1 || 1;
                         if (metaObj.docDom) {
-                            metaObj.docDom.setAttribute(DocProperties.docIdAttribute, index);    
+                            metaObj.docDom.setAttribute(DocProperties.docIdAttribute, index);
                         }
                         name = (docCounters[name]>1) ? name+docCounters[name] : name;
                         openedDocumentsData.push({name: name, docId: index});
                         DocProperties.docsMeta[index] = metaObj;
                     });
                 }
-                
+
                 if(newParams.docDom) {
                     /*try {
                         console.log(newParams.docDom.firstChild);
@@ -448,7 +448,7 @@ Ext.define('LIME.controller.Language', {
         }
         callback(newParams);
     },
-    
+
     afterLoad: function(params) {
         var docEl = params.docDom.querySelector("."+DocProperties.documentBaseClass);
         if(docEl && !docEl.getAttribute(DocProperties.docIdAttribute)) {
@@ -457,17 +457,17 @@ Ext.define('LIME.controller.Language', {
         var newFn = Ext.Function.bind(LoadPlugin.afterLoad, LoadPlugin, [params, this.application]);
         newFn();
     },
-    
+
     beforeSave: function(params) {
-        var newFn = Ext.Function.bind(SavePlugin.beforeSave, SavePlugin, [params]); 
+        var newFn = Ext.Function.bind(SavePlugin.beforeSave, SavePlugin, [params]);
         newFn();
-             
+
     },
     afterSave: function(params) {
         var newFn = Ext.Function.bind(SavePlugin.afterSave, SavePlugin, [params, this.application]);
-        newFn(); 
+        newFn();
     },
-    
+
     init : function() {
         // save a reference to the controller
         var languageController = this;
@@ -482,21 +482,5 @@ Ext.define('LIME.controller.Language', {
         this.application.on(Statics.eventsNames.beforeLoad, this.beforeLoad, this);
         this.application.on(Statics.eventsNames.beforeSave, this.beforeSave, this);
         this.application.on(Statics.eventsNames.afterSave, this.afterSave, this);
-
-        this.control({
-            'main' : {
-                tabchange: function(panel, newC, oldC) {
-                    var me = this;
-                    if(!newC.noChangeModeEvent) {
-                        Ext.defer(function() {
-                            me.application.fireEvent(Statics.eventsNames.changedEditorMode, {
-                                sidebarsHidden: newC.notEditMode,
-                                markingMenu: newC.markingMenu
-                            });            
-                        }, 100);    
-                    }
-                }
-            }
-        });
     }
 });

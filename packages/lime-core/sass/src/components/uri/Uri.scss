@@ -1,0 +1,24 @@
+.mainEditorUri {
+    $color: rgb(56, 146, 211);
+    display: block;
+    margin: auto;
+    padding: 1px;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    border: 1px solid $color;
+    margin: 0 3px 3px;
+    font-size: 1.1em;
+
+    .inner {
+        background-color: $color;
+        padding-top: 6px;
+        height: 100%;
+        color: white;
+
+        * {
+            color: white;
+            margin-left: 3px;
+        }
+    }
+}

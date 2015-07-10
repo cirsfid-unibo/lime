@@ -44,87 +44,92 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-/**
- * This is the main view that contains diferent tools.
- */
-
 Ext.define('LIME.view.Main', {
-
-    extend : 'Ext.tab.Panel',
-    //id : 'editorTab',
-    requires : ['Ext.ux.TabCloseMenuImproved',
-    			'Ext.ux.form.field.TinyMCE',
-                'Extra.ux.toggleslide.view.ToggleSlide',
-    			'LIME.view.main.Editor',
-    			'LIME.view.ContextMenu',
-    			'LIME.view.main.editor.Path',
-    			'LIME.view.main.editor.Uri',
-    			'LIME.view.DocumentLangSelector',
-    			'LIME.view.main.ContextPanel'],
+    extend: 'Ext.tab.Panel',
+    requires: [
+        'Ext.ux.TabCloseMenuImproved',
+        'Ext.ux.form.field.TinyMCE',
+        'Extra.ux.toggleslide.view.ToggleSlide',
+        'LIME.view.main.Editor',
+        'LIME.view.ContextMenu',
+        'LIME.view.main.editor.Path',
+        'LIME.components.uri.Uri',
+        'LIME.view.DocumentLangSelector',
+        'LIME.view.MarkingMenu',
+        'LIME.view.Outliner',
+        'LIME.view.main.ContextPanel'
+    ],
 
     // set the alias
-    alias : 'widget.main',
-    style : {
-        padding : "0px",
-        margin : "0px"
+    alias: 'widget.main',
+    style: {
+        padding: "0px",
+        margin: "0px"
     },
 
-    tbar : [{
-        xtype : 'toolbar',
-        border: 0,
-        height: 20,
-        items : [{
-            xtype : 'mainEditorUri'
-        }]
-    }, "->", {
-        xtype: 'toggleslide',
-        itemId: 'uriPathSwitcher',
-        onText: 'uri',
-        offText: 'path',
-        booleanMode: false,
-        state: true,
-        margin:'0 10 0 0'
-    }],
 
-    initComponent : function() {
+    // This is istantiated by the MarkingMenu controller on language loaded.
+    // TODO: This should really be contained inside this component items and
+    // just reload its data on language load.
+    markingMenu: {
+        xtype: 'markingMenu',
+        cls: 'markingMenuContainer',
+        region: 'east',
+        width: '26%',
+        collapsible: true,
+        expandable: true,
+        resizable: true,
+        autoScroll: true
+    },
+
+    initComponent: function() {
+        console.info('main initComponent')
         this.items = [{
+            // This is the main tab. It contains the TinyMCE editor on the center and
+            // the outliner and markingMenu panels on the sides.
             cls: "editor",
-            layout : "border",
-            padding : 0,
-            margin : 0,
-            border : 0,
-            title : Locale.getString("mainEditor"),
-            items : [{
-                region : "center",
-                xtype : 'mainEditor'
+            layout: "border",
+            padding: '3 0 0 0',
+            title: Locale.getString("mainEditor"),
+            items: [{
+                region: "center",
+                xtype: 'mainEditor',
+                margin: '0 3'
             }, {
-                region : "south",
-                border : 0,
-                xtype : 'panel',
-                layout : {
-                    type : 'hbox',
-                    align : 'stretch'
+                region: "south",
+                border: 0,
+                xtype: 'panel',
+                layout: {
+                    type: 'hbox',
+                    align: 'stretch'
                 },
-                frame : true,
-                style : {
-                    borderRadius : "0px",
-                    margin : "0px",
-                    border : '0px',
-                    padding : 0
+                frame: true,
+                style: {
+                    borderRadius: "0px",
+                    margin: "0px",
+                    border: '0px',
+                    padding: 0
                 },
-                items : [{
-                    xtype : 'mainEditorPath'
+                items: [{
+                    xtype: 'mainEditorPath'
                 }]
             },{
             	xtype: 'contextPanel',
-                region : "south"
+                region: "south"
+            }, {
+                xtype: 'outliner',
+                region: 'west',
+                expandable: true,
+                resizable: true,
+                width: '17%',
+                autoScroll: true
             }]
         }];
         this.plugins = {
-            ptype : 'tabclosemenuimproved',
-            closeTabText : Locale.getString("closeTabText"),
-            closeOthersTabsText : Locale.getString("closeOthersTabsText"),
-            closeAllTabsText : Locale.getString("closeAllTabsText")
+            ptype: 'tabclosemenuimproved',
+            closeTabText: Locale.getString("closeTabText"),
+            closeOthersTabsText: Locale.getString("closeOthersTabsText"),
+            closeAllTabsText: Locale.getString("closeAllTabsText")
         };
         this.callParent(arguments);
     }

@@ -139,7 +139,6 @@ Ext.define('LIME.Application', {
             Ext.defer(this.secureLaunch, 100, this);
         } else {
             this.getStore('MarkupLanguages').loadData(Config.languages);
-            console.info('LIME.view.Viewport')
             Ext.create('LIME.view.Viewport');
         }
     }
