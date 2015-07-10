@@ -427,7 +427,7 @@ Ext.define('LIME.controller.Editor', {
                 //set attribute that has the same name of field
                 element.setAttribute(name, value);
                 /* Prevent from inserting empty attributes */
-                if (value == "") {
+                if (value === "") {
                     element.removeAttribute(name);
                 }
                 this.getEditorComponent().fireEvent('change', this.getEditor());
@@ -598,7 +598,7 @@ Ext.define('LIME.controller.Editor', {
                     selEnd = selEnd.parentNode;
                 }
             } else if (endNesting < startNesting){
-                for (var i=0; i<nestingDiff; i++){
+                for (var j = 0; j < nestingDiff; j++){
                     selStart = selStart.parentNode;
                 }
             }
@@ -765,7 +765,8 @@ Ext.define('LIME.controller.Editor', {
     },
 
     initDocument : function(config, me) {
-        var me = me || this, app = me.application, docType;
+        me = me || this;
+		var app = me.application, docType;
         if (!config.docType || !config.docLang || !config.docLocale) {
             var newDocumentWindow = Ext.widget('newDocument');
             // TODO: temporary solution
@@ -1193,7 +1194,7 @@ Ext.define('LIME.controller.Editor', {
 
         // Hide the context menu
         this.getContextMenu().hide();
-        if (Ext.Object.getSize(selectedNode)==0) {
+        if (Ext.Object.getSize(selectedNode)===0) {
             selectedNode = DomUtils.getFirstMarkedAncestor(e.target);
             if(DomUtils.isBreakingNode(e.target)) {
                 var content = Ext.fly(e.target).getHtml();
@@ -1341,7 +1342,7 @@ Ext.define('LIME.controller.Editor', {
         var onPostRender = function(type) {
             return function() {
                 me.undoManager.buttons[type] = this;
-            }
+            };
         };
         editor.addButton('lime-undo', {
             tooltip: 'Undo',
