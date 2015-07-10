@@ -83,7 +83,6 @@ Ext.define('LIME.view.Main', {
     },
 
     initComponent: function() {
-        console.info('main initComponent')
         this.items = [{
             // This is the main tab. It contains the TinyMCE editor on the center and
             // the outliner and markingMenu panels on the sides.
