@@ -268,20 +268,11 @@ div#markingMenu-body table tr td.something div.x-grid-cell-inner{
 	width: 300px;
 }
 
-.ux-notification-light .x-window-header {
-	background-color: transparent;
-}
-
-body .ux-notification-light {
-	background-color: #f2dede;
-    border-color: #ebccd1;
-	border-size: 3px;
-}
-
 .ux-notification-light .x-window-body {
 	text-align: center;
 	padding: 15px 5px 20px 5px;
-	background-color: transparent;
+	background-color: #f2dede;
+    border-color: #ebccd1;
 	border: 0px solid white;
 	color: #a94442;
 }

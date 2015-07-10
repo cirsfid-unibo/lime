@@ -688,9 +688,10 @@ Ext.define('LIME.controller.Marker', {
 
         if(patternError) {
             this.application.fireEvent(Statics.eventsNames.showNotification, {
-                title: Locale.strings.notAllowedMarking,
-                content: new Ext.Template(Locale.strings.semanticError).apply({'name': "<b>"+config.name+"</b>"}),
-                moreInfo: new Ext.Template(Locale.strings.patternNotAllowed).apply({
+                title: Locale.getString('notAllowedMarking'),
+                autoCloseDelay: 5000,
+                content: new Ext.Template(Locale.getString('semanticError')).apply({'name': "<b>"+config.name+"</b>"}),
+                moreInfo: new Ext.Template(Locale.getString('patternNotAllowed')).apply({
                     'elementPattern': config.pattern.pattern,
                     'parentPattern': nodePattern.pattern
                 })

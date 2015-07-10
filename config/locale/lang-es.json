@@ -15,6 +15,8 @@
 	"userSettings": "Mi Perfil",
 	"passwordsDontMatch": "Le contraseña sono diferenciar!",
 	"semanticError": "Element {name} no se puede insertar aquí!",
+    "patternNotAllowed": "Pattern <b>{elementPattern}</b> is not allowed in the <b>{parentPattern}</b> pattern!",
+    "notAllowedMarking": "Not allowed element",
 	"markupLanguage": "Markup language",
 	"authErrors": {
 		"LOGIN_FAILED_TITLE": "Error de acceso",
