@@ -1207,6 +1207,17 @@ Ext.define('LIME.DomUtils', {
         return Array.prototype.slice.call(nodelist);
     },
 
+    // Execute "fn" in "after" milliseconds.
+    // This is useful for delaying some evend handlers while
+    // executing them once.
+    delayedExec: function (after, fn) {
+        var timer;
+        return function() {
+            if (timer) clearTimeout(timer);
+            timer = setTimeout(fn, after);
+        };
+    },
+
     constructor: function() {
         this.setBreakingElementHtml("<span class=\""+this.breakingElementClass+"\">&nbsp;</span>");
     }

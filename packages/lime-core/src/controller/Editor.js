@@ -59,21 +59,21 @@ Ext.define('LIME.controller.Editor', {
 	views : ['main.Editor', 'main.editor.Path', 'modal.NewDocument'],
 
 	refs: [
-		{ ref: 'mainEditor',       selector : '#mainEditor mainEditor' },
+		{ ref: 'mainEditor',       selector: '#mainEditor mainEditor' },
 		{ ref: 'secondEditor',     selector: '#secondEditor mainEditor' },
-		{ ref: 'main',             selector : 'main' },
-		{ ref: 'contextMenu',      selector : 'contextMenu' },
-		{ ref: 'contextMenuItems', selector : 'menuitem[cls=editor]' },
-		{ ref: 'explorer',         selector : 'explorer' },
-		{ ref: 'mainEditorPath',   selector : 'mainEditorPath' },
-		{ ref: 'markingMenu',      selector : 'markingMenu' },
-		{ ref: 'mainToolbar',      selector : 'mainToolbar' },
-		{ ref: 'codemirror',       selector : 'codemirror' },
-		{ ref: 'uri',              selector : 'mainEditorUri' },
+		{ ref: 'main',             selector: 'main' },
+		{ ref: 'contextMenu',      selector: 'contextMenu' },
+		{ ref: 'contextMenuItems', selector: 'menuitem[cls=editor]' },
+		{ ref: 'explorer',         selector: 'explorer' },
+		{ ref: 'mainEditorPath',   selector: 'mainEditorPath' },
+		{ ref: 'markingMenu',      selector: 'markingMenu' },
+		{ ref: 'mainToolbar',      selector: 'mainToolbar' },
+		{ ref: 'codemirror',       selector: 'codemirror' },
+		{ ref: 'uri',              selector: 'mainEditorUri' },
 		{ ref: 'uriPathSwitcher',  selector: '[itemId=uriPathSwitcher]' }
 	],
 
-	constructor : function(){
+	constructor: function(){
 		/**
 		 * @property {HTMLElement} lastFocused The last focused element
 		 */
@@ -97,7 +97,7 @@ Ext.define('LIME.controller.Editor', {
 	 * that contains the editor plugin.
 	 * @returns {LIME.view.main.Editor} The component that contains the editor
 	 */
-	getEditorComponent : function(cmp) {
+	getEditorComponent: function(cmp) {
 		cmp = cmp || this.getMainEditor();
 		return cmp.down('tinymcefield');
 	},
@@ -107,7 +107,7 @@ Ext.define('LIME.controller.Editor', {
 	 * use its own interface (that depends on what editor is currently installed e.g. tinyMCE).
 	 * @returns {Object} A reference to the editor object
 	 */
-	getEditor : function(cmp) {
+	getEditor: function(cmp) {
 		return this.getEditorComponent(cmp).getEditor();
 	},
 
@@ -117,7 +117,7 @@ Ext.define('LIME.controller.Editor', {
 	 * independent DOM and thus are forced to include an iframe in the main DOM.
 	 * @returns {HTMLElement} The iframe element
 	 */
-	getIframe : function(){
+	getIframe: function(){
 		return this.getEditorComponent().iframeEl;
 	},
 
@@ -125,7 +125,7 @@ Ext.define('LIME.controller.Editor', {
 	 * Returns the real height of the editor body.
 	 * @returns {Number} The height
 	 */
-	getHeight : function(){
+	getHeight: function(){
 		return this.getIframe().getHeight();
 	},
 
@@ -133,7 +133,7 @@ Ext.define('LIME.controller.Editor', {
 	 * Returns the real height of the editor body.
 	 * @returns {Number} The width
 	 */
-	getWidth : function(){
+	getWidth: function(){
 		return this.getIframe().getWidth();
 	},
 
@@ -160,7 +160,7 @@ Ext.define('LIME.controller.Editor', {
 	 * Returns the editor DOM position inside the whole page (main DOM).
 	 * @returns {Array} The coordinates of the position as an array (i.e. [x,y])
 	 */
-	getPosition : function(){
+	getPosition: function(){
 		var cmp = this.getEditorComponent();
 		return [cmp.getX(), cmp.getY()+cmp.edToolbar.getHeight()];
 	},
@@ -170,7 +170,7 @@ Ext.define('LIME.controller.Editor', {
 	 * **Warning**: this method heavily relies on what kind of editor is used (only tested with tinyMCE).
 	 * @returns {Object} The intenal parser (its type varies depending on what editor is used)
 	 */
-	getParser : function() {
+	getParser: function() {
 		return new tinymce.html.DomParser({
 			validate : true
 		}, tinymce.html.schema);
@@ -182,7 +182,7 @@ Ext.define('LIME.controller.Editor', {
 	 * **Warning**: this method heavily relies on what kind of editor is used (only tested with tinyMCE).
 	 * @returns {Object} The serializer (its type varies depending on what editor is used)
 	 */
-	getSerializer : function() {
+	getSerializer: function() {
 		//Return the serializer of active editor instead a new serializer
 		return tinymce.activeEditor.serializer;
 	},
@@ -192,7 +192,7 @@ Ext.define('LIME.controller.Editor', {
 	 * @param {HTMLElement} element to serialize
 	 * @returns {String}
 	 */
-	serialize : function(dom){
+	serialize: function(dom){
 		return this.getSerializer().serialize(dom);
 	},
 
@@ -200,7 +200,7 @@ Ext.define('LIME.controller.Editor', {
 	 * This function returns a bookmark to store the current cursor position.
 	 * @returns {Object} The bookmark object
 	 */
-	getBookmark : function() {
+	getBookmark: function() {
         var selection  = this.getEditor().selection;
         return selection.getBookmark.apply(selection, arguments);
 	},
@@ -220,7 +220,7 @@ Ext.define('LIME.controller.Editor', {
 	 * This function reset the cursor to the given bookmark.
 	 * @param {Object} bookmark A reference to a bookmark instance
 	 */
-	restoreBookmark : function(bookmark) {
+	restoreBookmark: function(bookmark) {
 		this.getEditor().selection.moveToBookmark(bookmark);
 	},
 
@@ -230,7 +230,7 @@ Ext.define('LIME.controller.Editor', {
 	 * after j characters from the beginning of the row the range will be [i,j]
 	 * @returns {Number[]} [start, end] The array containing the start and end of the range
 	 */
-	getSelectionRange : function() {
+	getSelectionRange: function() {
 		var ed = this.getEditor(), rng = ed.selection.getRng(), range = [rng.startOffset, rng.endOffset];
 		return range;
 	},
@@ -272,7 +272,7 @@ Ext.define('LIME.controller.Editor', {
 	 * @param {Object} [patternProperties] Some optional properties for the pattern
 	 * @returns {Array} The array of the nodes which the pattern was applied to
 	 */
-	applyPattern : function(patternName, patternProperties) {
+	applyPattern: function(patternName, patternProperties) {
 		tinymce.activeEditor.formatter.register(patternName, patternProperties);
 		tinymce.activeEditor.formatter.apply(patternName);
 		var searchRoot = this.getBody();
@@ -289,7 +289,7 @@ Ext.define('LIME.controller.Editor', {
 	 * @param {HTMLElement/HTMLElement[]/String} nodes The node(s) to focus
 	 * @param {Object} actions The actions that have to be performed on the node(s), e.g. click, scroll, select and
 	 */
-	focus : function(nodes, actions, config){
+	focus: function(nodes, actions, config){
 			var markedAscendant,
 				lastNode;
 			if (Ext.isString(nodes)){
@@ -345,7 +345,7 @@ Ext.define('LIME.controller.Editor', {
 	 * @param {HTMLElement} node The dom node to focus
 	 * @param {Object} actions The actions to perform
 	 */
-    focusNode : function(node, actions, config) {
+    focusNode: function(node, actions, config) {
         var me = this;
         if (!node)
             return;
@@ -395,7 +395,7 @@ Ext.define('LIME.controller.Editor', {
 	 * Replace the content of the selected text with the text given
 	 * @param {String} text The substitute text
 	 */
-	setSelectionContent : function(text) {
+	setSelectionContent: function(text) {
 		this.getEditor().selection.setContent(text);
 	},
 
@@ -409,7 +409,7 @@ Ext.define('LIME.controller.Editor', {
      * @param {String} value The value of the attribute
      * @returns {Boolean} true if the attribute was changed, false otherwise
      */
-    setElementAttribute : function(elementId, name, value) {
+    setElementAttribute: function(elementId, name, value) {
         var element = elementId, oldValue, chaged = false,
             dom = this.getDom(), query;
 
@@ -449,7 +449,7 @@ Ext.define('LIME.controller.Editor', {
      * **Warning**: this method heavily relies on what editor is used (tested with tinyMCE)
      * @param {String} [formatType] The format of the selection
      */
-    getSelectionContent : function(formatType) {
+    getSelectionContent: function(formatType) {
         if (!formatType)
             formatType = "html";
         return this.getEditor().selection.getContent({
@@ -463,7 +463,7 @@ Ext.define('LIME.controller.Editor', {
      * for further details.
      * @returns {HTMLElement} The body element
      */
-    getBody : function() {
+    getBody: function() {
         return this.getEditor().getBody();
     },
 
@@ -472,7 +472,7 @@ Ext.define('LIME.controller.Editor', {
      * This method is very useful when separated-dom editors are used (such as tinyMCE).
      * @returns {HTMLDocument} A reference to the dom
      */
-    getDom : function(cmp) {
+    getDom: function(cmp) {
         return this.getEditor(cmp).dom.doc;
     },
     /**
@@ -524,7 +524,7 @@ Ext.define('LIME.controller.Editor', {
      * @param {String} [elementName]
      * @return {HTMLElement} The selected/found element
      */
-    getSelectedNode : function(marked, elementName) {
+    getSelectedNode: function(marked, elementName) {
         var selectedNode = this.getEditor().selection.getNode();
         if (marked) {
             return DomUtils.getFirstMarkedAncestor(selectedNode);
@@ -570,7 +570,7 @@ Ext.define('LIME.controller.Editor', {
      * @param {Object} [nodeNames] The names of the nodes
      * @param {Boolean} [sameLevel] If true start or end is brought to the same (upper) level as the other one
      */
-    getSelectionObject : function(formatType, nodeNames, sameLevel) {
+    getSelectionObject: function(formatType, nodeNames, sameLevel) {
         /* TODO
          *  SE SONO ALLO STESSO LIVELLO E NON SONO FRATELLI SALI FINCHé NON TROVI DUE FRATELLI
          */
@@ -621,7 +621,7 @@ Ext.define('LIME.controller.Editor', {
      * **Warning**: this method heavily depends on what editor is used.
      * @param {String} formatType Specify the format of the output (html, raw, text etc.)
      */
-    getContent : function(formatType, cmp) {
+    getContent: function(formatType, cmp) {
         if (!formatType)
             formatType = "html";
         return this.getEditor(cmp).getContent({
@@ -638,7 +638,7 @@ Ext.define('LIME.controller.Editor', {
      * @param {Object} styleObj An object with some css properties
      * @param {String} buttonName The name of the button
      */
-    applyAllStyles : function(selector, styleObj, buttonName, cmp) {
+    applyAllStyles: function(selector, styleObj, buttonName, cmp) {
         for (var i in styleObj) {
             // Apply the style on the simple selector
             if (i == "this") {
@@ -660,7 +660,7 @@ Ext.define('LIME.controller.Editor', {
         }
     },
 
-    onPluginLoaded : function(data, styleUrls) {
+    onPluginLoaded: function(data, styleUrls) {
         var markingMenuController = this.getController('MarkingMenu'),
             mainToolbarController = this.getController('MainToolbar'),
            app = this.application, config = this.documentTempConfig;
@@ -720,14 +720,14 @@ Ext.define('LIME.controller.Editor', {
      * @param {String} selector The css selector
      * @param {String} styleText The string representing the property
      */
-    addContentStyle : function(selector, styleText, cmp) {
+    addContentStyle: function(selector, styleText, cmp) {
         DomUtils.addStyle(selector, styleText, this.getDom(cmp), 'limeStyle');
     },
 
     /**
      * Remove all the custom styles we've added to the editor
      */
-    removeAllContentStyle : function (cmp) {
+    removeAllContentStyle: function (cmp) {
         var style = this.getDom(cmp).querySelector('head #limeStyle');
         if (style)
             style.parentElement.removeChild(style);
@@ -764,7 +764,7 @@ Ext.define('LIME.controller.Editor', {
         }
     },
 
-    initDocument : function(config, me) {
+    initDocument: function(config, me) {
         me = me || this;
 		var app = me.application, docType;
         if (!config.docType || !config.docLang || !config.docLocale) {
@@ -895,7 +895,7 @@ Ext.define('LIME.controller.Editor', {
      * @param {Boolean} [initial] If true removing previous document properties
      * will be skipped
      */
-    loadDocument : function(docText, docId, cmp, noSideEffects) {
+    loadDocument: function(docText, docId, cmp, noSideEffects) {
         var editor = this.getEditor(cmp), editorBody,
             app = this.application;
 
@@ -934,7 +934,7 @@ Ext.define('LIME.controller.Editor', {
      * @param {newContent} The content that has to be set
      * @private
      */
-    setContent : function(newContent) {
+    setContent: function(newContent) {
         //set new content to the editor
         this.getEditor().setContent(newContent);
     },
@@ -949,7 +949,7 @@ Ext.define('LIME.controller.Editor', {
      * @param {HTMLElement} newNode
      * @param {HTMLElement/HTMLElement[]} oldNodes
      */
-    domReplace : function(newNode, oldNodes) {
+    domReplace: function(newNode, oldNodes) {
         if (Ext.isArray(oldNodes)) {
             oldNodes[0].parentNode.insertBefore(newNode, oldNodes[0]);
             Ext.each(oldNodes, function(node) {
@@ -967,7 +967,7 @@ Ext.define('LIME.controller.Editor', {
      * @param {Integer} chunkSize The exact size of each chunk
      * @return {String[]} The split content
      */
-    splitContent : function(content, chunkSize){
+    splitContent: function(content, chunkSize){
         // Compute how many chunks there are
         var chunks = [];
         var toSplit = content;
@@ -987,7 +987,7 @@ Ext.define('LIME.controller.Editor', {
      * Do NOT rely on the existence of this function.
      * @private
      */
-    autoSaveContent : function(userRequested) {
+    autoSaveContent: function(userRequested) {
         /* Check if there has been a change */ /* TODO: pensare a una soluzione più intelligente */
         if (!userRequested && !this.changed || this.parserWorking)
             return;
@@ -1004,7 +1004,7 @@ Ext.define('LIME.controller.Editor', {
      * Do NOT rely on the existence of this function.
      * @private
      */
-    tinyInit : function() {
+    tinyInit: function() {
         var me = this;
 
         /* Load exemple document if there is no saved document */
@@ -1016,7 +1016,7 @@ Ext.define('LIME.controller.Editor', {
 
             Ext.Ajax.request({
                 url : me.getEditorStartContentUrl(),
-                success : function(response) {
+                success: function(response) {
                     var animation = me.getController('MainToolbar').highlightFileMenu();
                     // Create a window containing the example document and highlight the file menu
                     var exampleWin = Ext.widget('window', {
@@ -1044,7 +1044,7 @@ Ext.define('LIME.controller.Editor', {
                                 height : '40px',
                                 margin : '5px 5px 5px 5px'
                             },
-                            handler : function(cmp){
+                            handler: function(cmp){
                                 clearInterval(animation);
                                 cmp.up('window').close();
                             }
@@ -1061,7 +1061,7 @@ Ext.define('LIME.controller.Editor', {
     /**
     * The path of default editor content file
     */
-    getEditorStartContentUrl : function() {
+    getEditorStartContentUrl: function() {
         return 'config/examples/editorStartContent-'+Locale.getLang()+'.html';
     },
 
@@ -1072,7 +1072,7 @@ Ext.define('LIME.controller.Editor', {
      * Create the path based on the given node's position in the dom.
      * @param {HTMLElement} selectedNode The dom node that was selected
      */
-    setPath : function(selectedNode) {
+    setPath: function(selectedNode) {
         var elements = [];
         var docClass = DocProperties.getDocClassList().split(" ");
         if(selectedNode) {
@@ -1097,6 +1097,19 @@ Ext.define('LIME.controller.Editor', {
         this.getMain().down('mainEditorPath').setPath(elements);
     },
 
+	addScrollHandler: function () {
+		var doc = this.getEditorComponent().iframeEl.dom.contentDocument;
+		doc.addEventListener('scroll', DomUtils.delayedExec(500, this.onScroll.bind(this)));
+	},
+
+	// On scroll, update the path breadcrumb toolbar
+	onScroll: function () {
+		var dom = this.getEditorComponent().iframeEl.dom,
+			document = dom.contentDocument,
+			el = document.elementFromPoint(150, 0);
+		this.setPath(el);
+	},
+
     onNodeClick: function(selectedNode) {
         this.unFocusNodes();
         if(selectedNode) {
@@ -1113,7 +1126,7 @@ Ext.define('LIME.controller.Editor', {
      * Restore a previously opened document by settings the appropriate
      * document properties and content taking them from the HTML5 localStorage object
      */
-    restoreSession : function() {
+    restoreSession: function() {
         var callback, app = this.application, config;
         var me = this,
             storage = me.getController('Storage');
@@ -1132,8 +1145,8 @@ Ext.define('LIME.controller.Editor', {
     },
 
     setEditorReadonly: function(readonly, tinyView) {
-        var tinyView = tinyView || this.getEditorComponent(),
-            tinyEditor = tinyView.editor;
+        tinyView = tinyView || this.getEditorComponent();
+        var tinyEditor = tinyView.editor;
 
         tinyEditor.execCommand("contentReadOnly", false, (readonly) ? tinyEditor.getElement() : tinyEditor.getElement().disabled);
     },
@@ -1178,7 +1191,7 @@ Ext.define('LIME.controller.Editor', {
         return config;
     },
 
-    onClickHandler : function(ed, e, selectedNode) {
+    onClickHandler: function(ed, e, selectedNode) {
         var me = this,
            toMarkNodes = me.getBody().querySelectorAll("."+DomUtils.toMarkNodeClass);
 
@@ -1321,7 +1334,7 @@ Ext.define('LIME.controller.Editor', {
         });
     },
 
-    onNodeChange : function(node, deep) {
+    onNodeChange: function(node, deep) {
         Ext.callback(Language.onNodeChange, Language, [node, deep]);
     },
 
@@ -1460,7 +1473,7 @@ Ext.define('LIME.controller.Editor', {
     },
 
     /* Initialization of the controller */
-    init : function() {
+    init: function() {
         var me = this;
         // Set the event listeners
         this.application.on({
@@ -1481,7 +1494,7 @@ Ext.define('LIME.controller.Editor', {
 		this.control({
 			// Handle the path panel
 			'mainEditorPath' : {
-				update : function() {
+				update: function() {
                     var selectorsConfig = this.getMainEditorPath().elements;
                     Ext.select(".pathSelectors", true).on("click", function(evt, el) {
                         var elId = el.getAttribute("path");
@@ -1500,13 +1513,13 @@ Ext.define('LIME.controller.Editor', {
 			// Handle the viewable events on the editor (click, contextmenu etc.)
 			'#mainEditor mainEditor' : {
 				click : me.onClickHandler,
-				change : function(ed, e) {
+				change: function(ed, e) {
                     me.ensureContentWrapper(ed);
 					/* Warn of the change */
 					this.changed = true;
                     me.changeEventsCounter.change++;
 				},
-				setcontent : function(ed, e) {
+				setcontent: function(ed, e) {
 					if(!DocProperties.getDocType()) return;
 					me.ensureContentWrapper(ed);
 					/* Warn of the change */
@@ -1514,7 +1527,7 @@ Ext.define('LIME.controller.Editor', {
                     me.changeEventsCounter.setcontent++;
 				},
 
-                contextmenu : function(ed, e) {
+                contextmenu: function(ed, e) {
                     var coordinates = [],
                         offsetPosition = this.getPosition();
                     // Prevent the default context menu to show
@@ -1526,7 +1539,7 @@ Ext.define('LIME.controller.Editor', {
                     this.application.fireEvent(Statics.eventsNames.showContextMenu, coordinates);
                 },
 
-				beforerender : function(cmp) {
+				beforerender: function(cmp) {
                     var me = this,
                     	editorView = cmp,
                     	tinyView = me.getEditorComponent(cmp),
@@ -1535,7 +1548,7 @@ Ext.define('LIME.controller.Editor', {
 					tinyConfig = Ext.merge(tinyConfig, {
 
 	                    // Events and callbacks
-	                    mysetup : function(editor) {
+	                    mysetup: function(editor) {
                             me.initUndoManager(editor);
 
                             editor.on('init', function(e) {
@@ -1599,6 +1612,8 @@ Ext.define('LIME.controller.Editor', {
                                 editor.fire('change');
                                 return false;
                             });
+
+							editor.on('init', me.addScrollHandler.bind(me));
 	                    }});
 
                     tinyConfig.menubar = false;
