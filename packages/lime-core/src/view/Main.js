@@ -62,11 +62,6 @@ Ext.define('LIME.view.Main', {
 
     // set the alias
     alias: 'widget.main',
-    style: {
-        padding: "0px",
-        margin: "0px"
-    },
-
 
     // This is istantiated by the MarkingMenu controller on language loaded.
     // TODO: This should really be contained inside this component items and
@@ -86,35 +81,28 @@ Ext.define('LIME.view.Main', {
         this.items = [{
             // This is the main tab. It contains the TinyMCE editor on the center and
             // the outliner and markingMenu panels on the sides.
-            cls: "editor",
-            layout: "border",
+            cls: 'editor',
+            itemId: 'mainEditorTab',
+            layout: 'border',
             padding: '3 0 0 0',
-            title: Locale.getString("mainEditor"),
+            title: Locale.getString('mainEditor'),
             items: [{
-                region: "center",
-                xtype: 'mainEditor',
-                margin: '0 3'
+                region: 'center',
+                // xtype: 'panel',
+                // layout: 'fit',
+                // items: [{
+                    xtype: 'mainEditor',
+                // }],
+                // bbar: [{
+                //     xtype: 'mainEditorPath'
+                // }]
+                margin: '0 3',
             }, {
-                region: "south",
-                border: 0,
-                xtype: 'panel',
-                layout: {
-                    type: 'hbox',
-                    align: 'stretch'
-                },
-                frame: true,
-                style: {
-                    borderRadius: "0px",
-                    margin: "0px",
-                    border: '0px',
-                    padding: 0
-                },
-                items: [{
-                    xtype: 'mainEditorPath'
-                }]
+                region: 'south',
+                xtype: 'mainEditorPath'
             },{
             	xtype: 'contextPanel',
-                region: "south"
+                region: 'south'
             }, {
                 xtype: 'outliner',
                 region: 'west',
@@ -126,9 +114,9 @@ Ext.define('LIME.view.Main', {
         }];
         this.plugins = {
             ptype: 'tabclosemenuimproved',
-            closeTabText: Locale.getString("closeTabText"),
-            closeOthersTabsText: Locale.getString("closeOthersTabsText"),
-            closeAllTabsText: Locale.getString("closeAllTabsText")
+            closeTabText: Locale.getString('closeTabText'),
+            closeOthersTabsText: Locale.getString('closeOthersTabsText'),
+            closeAllTabsText: Locale.getString('closeAllTabsText')
         };
         this.callParent(arguments);
     }

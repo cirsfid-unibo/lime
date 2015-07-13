@@ -200,8 +200,8 @@ Ext.define('LIME.controller.ContextInfoManager', {
         me.control({
         	"mainEditorPath": {
         		afterrender: function(cmp) {
-        			cmp.add({
-				        xtype:"tool",
+        			cmp.addTool({
+				        // xtype:"tool",
 				        type: 'up',
 				        callback: function() {
 				            me.openCloseContextPanel(null, null, "lastHeight");

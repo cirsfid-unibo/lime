@@ -59,6 +59,7 @@ Ext.define('LIME.controller.Editor', {
 	views : ['main.Editor', 'main.editor.Path', 'modal.NewDocument'],
 
 	refs: [
+		{ ref: 'mainEditorTab',    selector: '#mainEditor #mainEditorTab' },
 		{ ref: 'mainEditor',       selector: '#mainEditor mainEditor' },
 		{ ref: 'secondEditor',     selector: '#secondEditor mainEditor' },
 		{ ref: 'main',             selector: 'main' },
@@ -99,7 +100,9 @@ Ext.define('LIME.controller.Editor', {
 	 */
 	getEditorComponent: function(cmp) {
 		cmp = cmp || this.getMainEditor();
-		return cmp.down('tinymcefield');
+		// return cmp.down('tinymcefield');
+		// TODO: this function is completely useless, remove it.
+		return cmp;
 	},
 
 	/**
@@ -258,7 +261,7 @@ Ext.define('LIME.controller.Editor', {
     },
 
     setEditorHeader: function(value) {
-        this.getMainEditor().up().tab.setTooltip(value);
+        this.getMainEditorTab().tab.setTooltip(value);
         this.getUri().setUri(value);
     },
 
@@ -1492,23 +1495,7 @@ Ext.define('LIME.controller.Editor', {
 
 		var markerController = this.getController('Marker');
 		this.control({
-			// Handle the path panel
-			'mainEditorPath' : {
-				update: function() {
-                    var selectorsConfig = this.getMainEditorPath().elements;
-                    Ext.select(".pathSelectors", true).on("click", function(evt, el) {
-                        var elId = el.getAttribute("path");
-                        if (elId && selectorsConfig[elId]) {
-                            var nodeToSelect = selectorsConfig[elId];
-                            me.focusNode(nodeToSelect, {
-                                select : true,
-                                scroll : true,
-                                click : true
-                            });
-                        }
-                    }, this);
-                }
-			},
+
 
 			// Handle the viewable events on the editor (click, contextmenu etc.)
 			'#mainEditor mainEditor' : {
@@ -1663,15 +1650,11 @@ Ext.define('LIME.controller.Editor', {
                     Ext.apply(tinyView, {tinymceConfig: tinyConfig});
                 },
 
-                afterrender: function(cmp) {
-                }
-            },
-            '#secondEditor mainEditor tinymcefield': {
                 editorcreated: function(tinyEditor) {
                     var editor2 = Ext.fly(this.getEditor(this.getSecondEditor()).getBody());
                     editor2.addCls('secondEditor');
 				}
-			},
+            },
             '[itemId=uriPathSwitcher]' : {
                 change: me.showDocumentIdentifier.bind(me)
             }
@@ -1683,6 +1666,11 @@ Ext.define('LIME.controller.Editor', {
 			outliner: {
 				elementFocused: 'onOutlinerClick'
 			}
+		},
+		component: {
+			mainEditorPath: {
+				pathItemClicked: 'onPathItemClicked'
+			}
 		}
 	},
 
@@ -1692,5 +1680,13 @@ Ext.define('LIME.controller.Editor', {
 			this.selectNode(node);
 			node.scrollIntoView();
 		}
+	},
+
+	onPathItemClicked: function (node) {
+		this.focusNode(node, {
+			select: true,
+			scroll: true,
+			click: true
+		});
 	}
 });
