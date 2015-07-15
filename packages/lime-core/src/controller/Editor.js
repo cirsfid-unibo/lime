@@ -1168,7 +1168,7 @@ Ext.define('LIME.controller.Editor', {
 
                 // the editor mode
 				mode : 'textareas',
-                body_class: 'lime',
+                body_class: 'lime ' + Locale.getLang(),
 
                 entity_encoding : 'raw',
 

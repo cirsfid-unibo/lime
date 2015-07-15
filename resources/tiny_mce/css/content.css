@@ -1174,7 +1174,7 @@
     margin-right: 5px; }
   #tinymce.lime .docNumber:before {
     content: "";
-    width: 13px; }
+    padding: 0 6px; }
 #tinymce.lime .docType {
   display: inline;
   padding-right: 5px;
@@ -1196,7 +1196,7 @@
     margin-right: 5px; }
   #tinymce.lime .docType:before {
     content: "";
-    width: 13px; }
+    padding: 0 6px; }
 #tinymce.lime .mref, #tinymce.lime .ref, #tinymce.lime .rref {
   display: inline;
   padding-right: 5px;
@@ -1218,7 +1218,7 @@
     margin-right: 5px; }
   #tinymce.lime .mref:before, #tinymce.lime .ref:before, #tinymce.lime .rref:before {
     content: "";
-    width: 13px; }
+    padding: 0 6px; }
 #tinymce.lime .affectedDocument,
 #tinymce.lime .argument,
 #tinymce.lime .change,
@@ -1407,461 +1407,974 @@
 
 #tinymce.lime .preamble:before {
   content: "preamble";
-  width: 58px; }
+  width: 61px; }
 #tinymce.lime .preface:before {
   content: "preface";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .body:before {
   content: "body";
-  width: 34px; }
+  width: 37px; }
 #tinymce.lime .mainBody:before {
   content: "mainBody";
-  width: 58px; }
+  width: 61px; }
 #tinymce.lime .amendmentBody:before {
   content: "amendmentBody";
-  width: 88px; }
+  width: 91px; }
 #tinymce.lime .collectionBody:before {
   content: "collectionBody";
-  width: 94px; }
+  width: 97px; }
 #tinymce.lime .fragmentBody:before {
   content: "fragmentBody";
-  width: 82px; }
+  width: 85px; }
 #tinymce.lime .debateBody:before {
   content: "debateBody";
-  width: 70px; }
+  width: 73px; }
 #tinymce.lime .conclusions:before {
   content: "conclusions";
-  width: 76px; }
+  width: 79px; }
 #tinymce.lime .administrationOfOath:before {
   content: "administrationOfOath";
-  width: 130px; }
+  width: 133px; }
 #tinymce.lime .amendmentContent:before {
   content: "amendmentContent";
-  width: 106px; }
+  width: 109px; }
 #tinymce.lime .amendmentHeading:before {
   content: "amendmentHeading";
-  width: 106px; }
+  width: 109px; }
 #tinymce.lime .amendmentJustification:before {
   content: "amendmentJustification";
-  width: 142px; }
+  width: 145px; }
 #tinymce.lime .amendmentReference:before {
   content: "amendmentReference";
-  width: 118px; }
+  width: 121px; }
 #tinymce.lime .answer:before {
   content: "answer";
-  width: 46px; }
+  width: 49px; }
 #tinymce.lime .arguments:before {
   content: "arguments";
-  width: 64px; }
+  width: 67px; }
 #tinymce.lime .attachments:before {
   content: "attachments";
-  width: 76px; }
+  width: 79px; }
 #tinymce.lime .attachment:before {
   content: "attachment";
-  width: 70px; }
+  width: 73px; }
 #tinymce.lime .background:before {
   content: "background";
-  width: 70px; }
+  width: 73px; }
 #tinymce.lime .blockContainer:before {
   content: "blockContainer";
-  width: 94px; }
+  width: 97px; }
 #tinymce.lime .blockList:before {
   content: "blockList";
-  width: 64px; }
+  width: 67px; }
 #tinymce.lime .citation:before {
   content: "citation";
-  width: 58px; }
+  width: 61px; }
 #tinymce.lime .component:before {
   content: "component";
-  width: 64px; }
+  width: 67px; }
 #tinymce.lime .components:before {
   content: "components";
-  width: 70px; }
+  width: 73px; }
 #tinymce.lime .coverPage:before {
   content: "coverPage";
-  width: 64px; }
+  width: 67px; }
 #tinymce.lime .decision:before {
   content: "decision";
-  width: 58px; }
+  width: 61px; }
 #tinymce.lime .extractStructure:before {
   content: "extractStructure";
-  width: 106px; }
+  width: 109px; }
 #tinymce.lime .foreign:before {
   content: "foreign";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .formula:before {
   content: "formula";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .introduction:before {
   content: "introduction";
-  width: 82px; }
+  width: 85px; }
 #tinymce.lime .motivation:before {
   content: "motivation";
-  width: 70px; }
+  width: 73px; }
 #tinymce.lime .question:before {
   content: "question";
-  width: 58px; }
+  width: 61px; }
 #tinymce.lime .recital:before {
   content: "recital";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .speech:before {
   content: "speech";
-  width: 46px; }
+  width: 49px; }
 #tinymce.lime .speechGroup:before {
   content: "speechGroup";
-  width: 76px; }
+  width: 79px; }
 #tinymce.lime .tblock:before {
   content: "tblock";
-  width: 46px; }
+  width: 49px; }
 #tinymce.lime .toc:before {
   content: "toc";
-  width: 28px; }
+  width: 31px; }
 #tinymce.lime .wrap:before {
   content: "wrap";
-  width: 34px; }
+  width: 37px; }
 #tinymce.lime .content:before {
   content: "content";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .remedies:before {
   content: "remedies";
-  width: 58px; }
+  width: 61px; }
 #tinymce.lime .address:before {
   content: "address";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .alinea:before {
   content: "alinea";
-  width: 46px; }
+  width: 49px; }
 #tinymce.lime .article:before {
   content: "article";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .book:before {
   content: "book";
-  width: 34px; }
+  width: 37px; }
 #tinymce.lime .chapter:before {
   content: "chapter";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .citations:before {
   content: "citations";
-  width: 64px; }
+  width: 67px; }
 #tinymce.lime .clause:before {
   content: "clause";
-  width: 46px; }
+  width: 49px; }
 #tinymce.lime .debateSection:before {
   content: "debateSection";
-  width: 88px; }
+  width: 91px; }
 #tinymce.lime .declarationOfVote:before {
   content: "declarationOfVote";
-  width: 112px; }
+  width: 115px; }
 #tinymce.lime .division:before {
   content: "division";
-  width: 58px; }
+  width: 61px; }
 #tinymce.lime .indent:before {
   content: "indent";
-  width: 46px; }
+  width: 49px; }
 #tinymce.lime .item:before {
   content: "item";
-  width: 34px; }
+  width: 37px; }
 #tinymce.lime .list:before {
   content: "list";
-  width: 34px; }
+  width: 37px; }
 #tinymce.lime .ministerialStatements:before {
   content: "ministerialStatements";
-  width: 136px; }
+  width: 139px; }
 #tinymce.lime .nationalInterest:before {
   content: "nationalInterest";
-  width: 106px; }
+  width: 109px; }
 #tinymce.lime .noticesOfMotion:before {
   content: "noticesOfMotion";
-  width: 100px; }
+  width: 103px; }
 #tinymce.lime .oralStatements:before {
   content: "oralStatements";
-  width: 94px; }
+  width: 97px; }
 #tinymce.lime .papers:before {
   content: "papers";
-  width: 46px; }
+  width: 49px; }
 #tinymce.lime .paragraph:before {
   content: "paragraph";
-  width: 64px; }
+  width: 67px; }
 #tinymce.lime .part:before {
   content: "part";
-  width: 34px; }
+  width: 37px; }
 #tinymce.lime .personalStatements:before {
   content: "personalStatements";
-  width: 118px; }
+  width: 121px; }
 #tinymce.lime .petitions:before {
   content: "petitions";
-  width: 64px; }
+  width: 67px; }
 #tinymce.lime .pointOfOrder:before {
   content: "pointOfOrder";
-  width: 82px; }
+  width: 85px; }
 #tinymce.lime .proceduralMotions:before {
   content: "proceduralMotions";
-  width: 112px; }
+  width: 115px; }
 #tinymce.lime .proviso:before {
   content: "proviso";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .questions:before {
   content: "questions";
-  width: 64px; }
+  width: 67px; }
 #tinymce.lime .recitals:before {
   content: "recitals";
-  width: 58px; }
+  width: 61px; }
 #tinymce.lime .resolutions:before {
   content: "resolutions";
-  width: 76px; }
+  width: 79px; }
 #tinymce.lime .rollCall:before {
   content: "rollCall";
-  width: 58px; }
+  width: 61px; }
 #tinymce.lime .rule:before {
   content: "rule";
-  width: 34px; }
+  width: 37px; }
 #tinymce.lime .section:before {
   content: "section";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .subchapter:before {
   content: "subchapter";
-  width: 70px; }
+  width: 73px; }
 #tinymce.lime .subclause:before {
   content: "subclause";
-  width: 64px; }
+  width: 67px; }
 #tinymce.lime .subdivision:before {
   content: "subdivision";
-  width: 76px; }
+  width: 79px; }
 #tinymce.lime .sublist:before {
   content: "sublist";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .subparagraph:before {
   content: "subparagraph";
-  width: 82px; }
+  width: 85px; }
 #tinymce.lime .subpart:before {
   content: "subpart";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .subrule:before {
   content: "subrule";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .subsection:before {
   content: "subsection";
-  width: 70px; }
+  width: 73px; }
 #tinymce.lime .subtitle:before {
   content: "subtitle";
-  width: 58px; }
+  width: 61px; }
 #tinymce.lime .title:before {
   content: "title";
-  width: 40px; }
+  width: 43px; }
 #tinymce.lime .tome:before {
   content: "tome";
-  width: 34px; }
+  width: 37px; }
 #tinymce.lime .transitional:before {
   content: "transitional";
-  width: 82px; }
+  width: 85px; }
 #tinymce.lime .writtenStatements:before {
   content: "writtenStatements";
-  width: 112px; }
+  width: 115px; }
 #tinymce.lime .affectedDocument:before {
   content: "affectedDocument";
-  width: 106px; }
+  width: 109px; }
 #tinymce.lime .argument:before {
   content: "argument";
-  width: 58px; }
+  width: 61px; }
 #tinymce.lime .change:before {
   content: "change";
-  width: 46px; }
+  width: 49px; }
 #tinymce.lime .concept:before {
   content: "concept";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .courtType:before {
   content: "courtType";
-  width: 64px; }
+  width: 67px; }
 #tinymce.lime .date:before {
   content: "date";
-  width: 34px; }
+  width: 37px; }
 #tinymce.lime .decoration:before {
   content: "decoration";
-  width: 70px; }
+  width: 73px; }
 #tinymce.lime .def:before {
   content: "def";
-  width: 28px; }
+  width: 31px; }
 #tinymce.lime .del:before {
   content: "del";
-  width: 28px; }
+  width: 31px; }
 #tinymce.lime .docAuthority:before {
   content: "docAuthority";
-  width: 82px; }
+  width: 85px; }
 #tinymce.lime .docCommittee:before {
   content: "docCommittee";
-  width: 82px; }
+  width: 85px; }
 #tinymce.lime .docDate:before {
   content: "docDate";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .docIntroducer:before {
   content: "docIntroducer";
-  width: 88px; }
+  width: 91px; }
 #tinymce.lime .docJurisdiction:before {
   content: "docJurisdiction";
-  width: 100px; }
+  width: 103px; }
 #tinymce.lime .docketNumber:before {
   content: "docketNumber";
-  width: 82px; }
+  width: 85px; }
 #tinymce.lime .docProponent:before {
   content: "docProponent";
-  width: 82px; }
+  width: 85px; }
 #tinymce.lime .docPurpose:before {
   content: "docPurpose";
-  width: 70px; }
+  width: 73px; }
 #tinymce.lime .docStage:before {
   content: "docStage";
-  width: 58px; }
+  width: 61px; }
 #tinymce.lime .docStatus:before {
   content: "docStatus";
-  width: 64px; }
+  width: 67px; }
 #tinymce.lime .docTitle:before {
   content: "docTitle";
-  width: 58px; }
+  width: 61px; }
 #tinymce.lime .documentRef:before {
   content: "documentRef";
-  width: 76px; }
+  width: 79px; }
 #tinymce.lime .entity:before {
   content: "entity";
-  width: 46px; }
+  width: 49px; }
 #tinymce.lime .event:before {
   content: "event";
-  width: 40px; }
+  width: 43px; }
 #tinymce.lime .extractText:before {
   content: "extractText";
-  width: 76px; }
+  width: 79px; }
 #tinymce.lime .fillIn:before {
   content: "fillIn";
-  width: 46px; }
+  width: 49px; }
 #tinymce.lime .from:before {
   content: "from";
-  width: 34px; }
+  width: 37px; }
 #tinymce.lime .ins:before {
   content: "ins";
-  width: 28px; }
+  width: 31px; }
 #tinymce.lime .judge:before {
   content: "judge";
-  width: 40px; }
+  width: 43px; }
 #tinymce.lime .legislature:before {
   content: "legislature";
-  width: 76px; }
+  width: 79px; }
 #tinymce.lime .listConclusion:before {
   content: "listConclusion";
-  width: 94px; }
+  width: 97px; }
 #tinymce.lime .listIntroduction:before {
   content: "listIntroduction";
-  width: 106px; }
+  width: 109px; }
 #tinymce.lime .location:before {
   content: "location";
-  width: 58px; }
+  width: 61px; }
 #tinymce.lime .mmod:before {
   content: "mmod";
-  width: 34px; }
+  width: 37px; }
 #tinymce.lime .mod:before {
   content: "mod";
-  width: 28px; }
+  width: 31px; }
 #tinymce.lime .narrative:before {
   content: "narrative";
-  width: 64px; }
+  width: 67px; }
 #tinymce.lime .neutralCitation:before {
   content: "neutralCitation";
-  width: 100px; }
+  width: 103px; }
 #tinymce.lime .object:before {
   content: "object";
-  width: 46px; }
+  width: 49px; }
 #tinymce.lime .omissis:before {
   content: "omissis";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .opinion:before {
   content: "opinion";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .organization:before {
   content: "organization";
-  width: 82px; }
+  width: 85px; }
 #tinymce.lime .outcome:before {
   content: "outcome";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .party:before {
   content: "party";
-  width: 40px; }
+  width: 43px; }
 #tinymce.lime .person:before {
   content: "person";
-  width: 46px; }
+  width: 49px; }
 #tinymce.lime .placeholder:before {
   content: "placeholder";
-  width: 76px; }
+  width: 79px; }
 #tinymce.lime .process:before {
   content: "process";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .quantity:before {
   content: "quantity";
-  width: 58px; }
+  width: 61px; }
 #tinymce.lime .relatedDocument:before {
   content: "relatedDocument";
-  width: 100px; }
+  width: 103px; }
 #tinymce.lime .remark:before {
   content: "remark";
-  width: 46px; }
+  width: 49px; }
 #tinymce.lime .rmod:before {
   content: "rmod";
-  width: 34px; }
+  width: 37px; }
 #tinymce.lime .role:before {
   content: "role";
-  width: 34px; }
+  width: 37px; }
 #tinymce.lime .scene:before {
   content: "scene";
-  width: 40px; }
+  width: 43px; }
 #tinymce.lime .session:before {
   content: "session";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .shortTitle:before {
   content: "shortTitle";
-  width: 70px; }
+  width: 73px; }
 #tinymce.lime .signature:before {
   content: "signature";
-  width: 64px; }
+  width: 67px; }
 #tinymce.lime .subheading:before {
   content: "subheading";
-  width: 70px; }
+  width: 73px; }
 #tinymce.lime .term:before {
   content: "term";
-  width: 34px; }
+  width: 37px; }
 #tinymce.lime .time:before {
   content: "time";
-  width: 34px; }
+  width: 37px; }
 #tinymce.lime .tocItem:before {
   content: "tocItem";
-  width: 52px; }
+  width: 55px; }
 #tinymce.lime .vote:before {
   content: "vote";
-  width: 34px; }
+  width: 37px; }
 #tinymce.lime .quotedText:before {
   content: "quotedText";
-  width: 70px; }
+  width: 73px; }
 #tinymce.lime .authorialNote:before {
   content: "authorialNote";
-  width: 88px; }
+  width: 91px; }
 #tinymce.lime .quotedStructure:before {
   content: "quotedStructure";
-  width: 100px; }
+  width: 103px; }
 
-#tinymce.lime.italian .preface:before {
-  content: "Intestazione";
-  width: 82px; }
-#tinymce.lime.italian .body:before {
-  content: "Corpo";
-  width: 40px; }
-#tinymce.lime.italian .title:before {
-  content: "Titolo";
-  width: 46px; }
-#tinymce.lime.italian .setion:before {
-  content: "Sezione";
-  width: 52px; }
-#tinymce.lime.italian .paragraph:before {
-  content: "Comma";
-  width: 40px; }
-#tinymce.lime.italian .preface:before {
-  content: "Intestazione";
-  width: 82px; }
+#tinymce.lime.it .address:before {
+  content: "indirizzo";
+  width: 67px; }
+#tinymce.lime.it .administrationOfOath:before {
+  content: "asserzione";
+  width: 73px; }
+#tinymce.lime.it .affectedDocument:before {
+  content: "modificato";
+  width: 73px; }
+#tinymce.lime.it .alinea:before {
+  content: "non-numerato";
+  width: 85px; }
+#tinymce.lime.it .amendmentBody:before {
+  content: "corpo-emendamento";
+  width: 115px; }
+#tinymce.lime.it .amendmentContent:before {
+  content: "cont.emend.";
+  width: 79px; }
+#tinymce.lime.it .amendmentHeading:before {
+  content: "intenstazione";
+  width: 91px; }
+#tinymce.lime.it .amendmentJustification:before {
+  content: "giustificazione";
+  width: 103px; }
+#tinymce.lime.it .amendmentReference:before {
+  content: "riferimento";
+  width: 79px; }
+#tinymce.lime.it .answer:before {
+  content: "risposta";
+  width: 61px; }
+#tinymce.lime.it .argument:before {
+  content: "argomento";
+  width: 67px; }
+#tinymce.lime.it .arguments:before {
+  content: "argomenti";
+  width: 67px; }
+#tinymce.lime.it .article:before {
+  content: "articolo";
+  width: 61px; }
+#tinymce.lime.it .attachments:before {
+  content: "allegato";
+  width: 61px; }
+#tinymce.lime.it .authorialNote:before {
+  content: "nota-autore";
+  width: 79px; }
+#tinymce.lime.it .background:before {
+  content: "fatto";
+  width: 43px; }
+#tinymce.lime.it .block:before {
+  content: "blocco";
+  width: 49px; }
+#tinymce.lime.it .blockContainer:before {
+  content: "contenitore-blocchi";
+  width: 127px; }
+#tinymce.lime.it .blockList:before {
+  content: "lista";
+  width: 43px; }
+#tinymce.lime.it .body:before {
+  content: "corpo";
+  width: 43px; }
+#tinymce.lime.it .book:before {
+  content: "libro";
+  width: 43px; }
+#tinymce.lime.it .change:before {
+  content: "xxx";
+  width: 31px; }
+#tinymce.lime.it .chapter:before {
+  content: "capitolo";
+  width: 61px; }
+#tinymce.lime.it .citation:before {
+  content: "citazione";
+  width: 67px; }
+#tinymce.lime.it .citations:before {
+  content: "citazioni";
+  width: 67px; }
+#tinymce.lime.it .clause:before {
+  content: "clausola";
+  width: 61px; }
+#tinymce.lime.it .collectionBody:before {
+  content: "corpo";
+  width: 43px; }
+#tinymce.lime.it .component:before {
+  content: "componente";
+  width: 73px; }
+#tinymce.lime.it .componentRef:before {
+  content: "link-componente";
+  width: 103px; }
+#tinymce.lime.it .components:before {
+  content: "componenti";
+  width: 73px; }
+#tinymce.lime.it .concept:before {
+  content: "concetto";
+  width: 61px; }
+#tinymce.lime.it .conclusions:before {
+  content: "conclusioni";
+  width: 79px; }
+#tinymce.lime.it .container:before {
+  content: "contenitore";
+  width: 79px; }
+#tinymce.lime.it .courtType:before {
+  content: "tipo-corte";
+  width: 73px; }
+#tinymce.lime.it .coverPage:before {
+  content: "copertina";
+  width: 67px; }
+#tinymce.lime.it .date:before {
+  content: "data";
+  width: 37px; }
+#tinymce.lime.it .debateBody:before {
+  content: "corpo";
+  width: 43px; }
+#tinymce.lime.it .debateSection:before {
+  content: "sezione-report";
+  width: 97px; }
+#tinymce.lime.it .decision:before {
+  content: "decisione";
+  width: 67px; }
+#tinymce.lime.it .declarationOfVote:before {
+  content: "dichiarazione-voto";
+  width: 121px; }
+#tinymce.lime.it .decoration:before {
+  content: "decorazione";
+  width: 79px; }
+#tinymce.lime.it .def:before {
+  content: "definizione";
+  width: 79px; }
+#tinymce.lime.it .del:before {
+  content: "cancella";
+  width: 61px; }
+#tinymce.lime.it .division:before {
+  content: "divisione";
+  width: 67px; }
+#tinymce.lime.it .docCommittee:before {
+  content: "commissione";
+  width: 79px; }
+#tinymce.lime.it .docDate:before {
+  content: "data-doc";
+  width: 61px; }
+#tinymce.lime.it .docIntroducer:before {
+  content: "introduttore";
+  width: 85px; }
+#tinymce.lime.it .docJurisdiction:before {
+  content: "commissione";
+  width: 79px; }
+#tinymce.lime.it .docketNumber:before {
+  content: "numero-pratica";
+  width: 97px; }
+#tinymce.lime.it .docNumber:before {
+  content: "numero-doc";
+  width: 73px; }
+#tinymce.lime.it .docProponent:before {
+  content: "proponente";
+  width: 73px; }
+#tinymce.lime.it .docPurpose:before {
+  content: "finalita";
+  width: 61px; }
+#tinymce.lime.it .docStage:before {
+  content: "fase";
+  width: 37px; }
+#tinymce.lime.it .docStatus:before {
+  content: "stato-doc";
+  width: 67px; }
+#tinymce.lime.it .docTitle:before {
+  content: "titolo-doc";
+  width: 73px; }
+#tinymce.lime.it .docType:before {
+  content: "tipo-doc";
+  width: 61px; }
+#tinymce.lime.it .documentRef:before {
+  content: "link-doc";
+  width: 61px; }
+#tinymce.lime.it .entity:before {
+  content: "entita";
+  width: 49px; }
+#tinymce.lime.it .eol:before {
+  content: "fine-linea";
+  width: 73px; }
+#tinymce.lime.it .eop:before {
+  content: "fine-pagina";
+  width: 79px; }
+#tinymce.lime.it .event:before {
+  content: "evento";
+  width: 49px; }
+#tinymce.lime.it .extractStructure:before {
+  content: "estratto-struttura";
+  width: 121px; }
+#tinymce.lime.it .extractText:before {
+  content: "estratto-testo";
+  width: 97px; }
+#tinymce.lime.it .fillIn:before {
+  content: "campo-form";
+  width: 73px; }
+#tinymce.lime.it .foreign:before {
+  content: "inclusione-esterna";
+  width: 121px; }
+#tinymce.lime.it .formula:before {
+  content: "formula";
+  width: 55px; }
+#tinymce.lime.it .fragmentBody:before {
+  content: "frammento-corpo";
+  width: 103px; }
+#tinymce.lime.it .from:before {
+  content: "da";
+  width: 25px; }
+#tinymce.lime.it .hcontainer:before {
+  content: "gerarchico-generico";
+  width: 127px; }
+#tinymce.lime.it .header:before {
+  content: "intestazione-sentenza";
+  width: 139px; }
+#tinymce.lime.it .heading:before {
+  content: "rubrica";
+  width: 55px; }
+#tinymce.lime.it .indent:before {
+  content: "indentato";
+  width: 67px; }
+#tinymce.lime.it .inline:before {
+  content: "inline";
+  width: 49px; }
+#tinymce.lime.it .ins:before {
+  content: "inserimento";
+  width: 79px; }
+#tinymce.lime.it .interstitial:before {
+  content: "interstizio";
+  width: 79px; }
+#tinymce.lime.it .intro:before {
+  content: "intro-lista";
+  width: 79px; }
+#tinymce.lime.it .introduction:before {
+  content: "intro-lista";
+  width: 79px; }
+#tinymce.lime.it .item:before {
+  content: "punto";
+  width: 43px; }
+#tinymce.lime.it .judge:before {
+  content: "giudice";
+  width: 55px; }
+#tinymce.lime.it .legislature:before {
+  content: "legislatura";
+  width: 79px; }
+#tinymce.lime.it .list:before {
+  content: "list-gerarchica";
+  width: 103px; }
+#tinymce.lime.it .listConclusion:before {
+  content: "conclusione-lista";
+  width: 115px; }
+#tinymce.lime.it .listIntroduction:before {
+  content: "intro-liste";
+  width: 79px; }
+#tinymce.lime.it .location:before {
+  content: "luogo";
+  width: 43px; }
+#tinymce.lime.it .longTitle:before {
+  content: "titolo-lungo";
+  width: 85px; }
+#tinymce.lime.it .mainBody:before {
+  content: "corpo-doc";
+  width: 67px; }
+#tinymce.lime.it .marker:before {
+  content: "marker";
+  width: 49px; }
+#tinymce.lime.it .ministerialStatements:before {
+  content: "dic-ministerale";
+  width: 103px; }
+#tinymce.lime.it .mmod:before {
+  content: "mmod";
+  width: 37px; }
+#tinymce.lime.it .mod:before {
+  content: "modifica";
+  width: 61px; }
+#tinymce.lime.it .motivation:before {
+  content: "motivazione";
+  width: 79px; }
+#tinymce.lime.it .mref:before {
+  content: "rif-multipli";
+  width: 85px; }
+#tinymce.lime.it .narrative:before {
+  content: "narrazione";
+  width: 73px; }
+#tinymce.lime.it .nationalInterest:before {
+  content: "dich-nazionale";
+  width: 97px; }
+#tinymce.lime.it .neutralCitation:before {
+  content: "cod-sentenza";
+  width: 85px; }
+#tinymce.lime.it .noteRef:before {
+  content: "rif-nota";
+  width: 61px; }
+#tinymce.lime.it .noticesOfMotion:before {
+  content: "mozione";
+  width: 55px; }
+#tinymce.lime.it .num:before {
+  content: "numero";
+  width: 49px; }
+#tinymce.lime.it .object:before {
+  content: "oggetto";
+  width: 55px; }
+#tinymce.lime.it .omissis:before {
+  content: "omissis";
+  width: 55px; }
+#tinymce.lime.it .opinion:before {
+  content: "opinione";
+  width: 61px; }
+#tinymce.lime.it .oralStatements:before {
+  content: "dich-orale";
+  width: 73px; }
+#tinymce.lime.it .organization:before {
+  content: "organizzazione";
+  width: 97px; }
+#tinymce.lime.it .other:before {
+  content: "altro";
+  width: 43px; }
+#tinymce.lime.it .outcome:before {
+  content: "risultato";
+  width: 67px; }
+#tinymce.lime.it .papers:before {
+  content: "articoli";
+  width: 61px; }
+#tinymce.lime.it .paragraph:before {
+  content: "comma";
+  width: 43px; }
+#tinymce.lime.it .part:before {
+  content: "parte";
+  width: 43px; }
+#tinymce.lime.it .party:before {
+  content: "parte";
+  width: 43px; }
+#tinymce.lime.it .person:before {
+  content: "persona";
+  width: 55px; }
+#tinymce.lime.it .personalStatements:before {
+  content: "dich-personale";
+  width: 97px; }
+#tinymce.lime.it .petitions:before {
+  content: "petizione";
+  width: 67px; }
+#tinymce.lime.it .placeholder:before {
+  content: "termine";
+  width: 55px; }
+#tinymce.lime.it .point:before {
+  content: "punto";
+  width: 43px; }
+#tinymce.lime.it .pointOfOrder:before {
+  content: "punto-ordine";
+  width: 85px; }
+#tinymce.lime.it .preamble:before {
+  content: "preambolo";
+  width: 67px; }
+#tinymce.lime.it .preface:before {
+  content: "intestazione";
+  width: 85px; }
+#tinymce.lime.it .proceduralMotions:before {
+  content: "rich-mozione";
+  width: 85px; }
+#tinymce.lime.it .process:before {
+  content: "processo";
+  width: 61px; }
+#tinymce.lime.it .proviso:before {
+  content: "disposizione";
+  width: 85px; }
+#tinymce.lime.it .quantity:before {
+  content: "quantita";
+  width: 61px; }
+#tinymce.lime.it .question:before {
+  content: "quesito";
+  width: 55px; }
+#tinymce.lime.it .questions:before {
+  content: "quesiti";
+  width: 55px; }
+#tinymce.lime.it .quotedStructure:before {
+  content: "novella-strutturata";
+  width: 127px; }
+#tinymce.lime.it .quotedText:before {
+  content: "novella-testo";
+  width: 91px; }
+#tinymce.lime.it .recital:before {
+  content: "giustificazione";
+  width: 103px; }
+#tinymce.lime.it .recitals:before {
+  content: "giustificazioni";
+  width: 103px; }
+#tinymce.lime.it .ref:before {
+  content: "riferimento";
+  width: 79px; }
+#tinymce.lime.it .relatedDocument:before {
+  content: "doc-collegato";
+  width: 91px; }
+#tinymce.lime.it .remark:before {
+  content: "remark";
+  width: 49px; }
+#tinymce.lime.it .resolutions:before {
+  content: "risluzione";
+  width: 73px; }
+#tinymce.lime.it .rmod:before {
+  content: "intervallo-mod";
+  width: 97px; }
+#tinymce.lime.it .role:before {
+  content: "ruolo";
+  width: 43px; }
+#tinymce.lime.it .rollCall:before {
+  content: "atto-votazione";
+  width: 97px; }
+#tinymce.lime.it .rref:before {
+  content: "intervallo-rif";
+  width: 97px; }
+#tinymce.lime.it .rule:before {
+  content: "regola";
+  width: 49px; }
+#tinymce.lime.it .scene:before {
+  content: "scene";
+  width: 43px; }
+#tinymce.lime.it .section:before {
+  content: "sezione";
+  width: 55px; }
+#tinymce.lime.it .session:before {
+  content: "sessione";
+  width: 61px; }
+#tinymce.lime.it .shortTitle:before {
+  content: "titolo-breve";
+  width: 85px; }
+#tinymce.lime.it .signature:before {
+  content: "firma";
+  width: 43px; }
+#tinymce.lime.it .speech:before {
+  content: "discorso";
+  width: 61px; }
+#tinymce.lime.it .speechGroup:before {
+  content: "gruppo-discorsi";
+  width: 103px; }
+#tinymce.lime.it .subchapter:before {
+  content: "sotto-capitolo";
+  width: 97px; }
+#tinymce.lime.it .subclause:before {
+  content: "sotto-clausola";
+  width: 97px; }
+#tinymce.lime.it .subdivision:before {
+  content: "sotto-divisione";
+  width: 103px; }
+#tinymce.lime.it .subFlow:before {
+  content: "subFlow";
+  width: 55px; }
+#tinymce.lime.it .subheading:before {
+  content: "sotto-rubrica";
+  width: 91px; }
+#tinymce.lime.it .sublist:before {
+  content: "sotto-lista";
+  width: 79px; }
+#tinymce.lime.it .subparagraph:before {
+  content: "sotto-paragrafo";
+  width: 103px; }
+#tinymce.lime.it .subpart:before {
+  content: "sotto-parte";
+  width: 79px; }
+#tinymce.lime.it .subrule:before {
+  content: "sotto-regola";
+  width: 85px; }
+#tinymce.lime.it .subsection:before {
+  content: "sotto-sezione";
+  width: 91px; }
+#tinymce.lime.it .subtitle:before {
+  content: "sotto-titolo";
+  width: 85px; }
+#tinymce.lime.it .tblock:before {
+  content: "tblock";
+  width: 49px; }
+#tinymce.lime.it .term:before {
+  content: "termine";
+  width: 55px; }
+#tinymce.lime.it .time:before {
+  content: "tempo";
+  width: 43px; }
+#tinymce.lime.it .title:before {
+  content: "titolo";
+  width: 49px; }
+#tinymce.lime.it .toc:before {
+  content: "indice";
+  width: 49px; }
+#tinymce.lime.it .tocItem:before {
+  content: "elemento-indice";
+  width: 103px; }
+#tinymce.lime.it .tome:before {
+  content: "tomo";
+  width: 37px; }
+#tinymce.lime.it .transitional:before {
+  content: "transitorio";
+  width: 79px; }
+#tinymce.lime.it .vote:before {
+  content: "voto";
+  width: 37px; }
+#tinymce.lime.it .wrap:before {
+  content: "coda";
+  width: 37px; }
+#tinymce.lime.it .writtenStatements:before {
+  content: "dich-scritta";
+  width: 85px; }
+#tinymce.lime.it .content:before {
+  content: "content";
+  width: 55px; }
+#tinymce.lime.it .remedies:before {
+  content: "rimedi";
+  width: 49px; }
+#tinymce.lime.it .hierarchicalStructure:before {
+  content: "Strutture gerarchiche";
+  width: 139px; }
+#tinymce.lime.it .genericElement:before {
+  content: "Elementi generici";
+  width: 115px; }
+#tinymce.lime.it .externalFragment:before {
+  content: "Frammenti di testo esterno";
+  width: 169px; }
+#tinymce.lime.it .commonsInline:before {
+  content: "Elementi inline";
+  width: 103px; }
+#tinymce.lime.it .contentInline:before {
+  content: "Inline di contenuto";
+  width: 127px; }
+#tinymce.lime.it .commonElement:before {
+  content: "Elementi comuni";
+  width: 103px; }
+#tinymce.lime.it .commonReference:before {
+  content: "Riferimenti";
+  width: 79px; }
+#tinymce.lime.it .commonJudgement:before {
+  content: "Judgement";
+  width: 67px; }
+#tinymce.lime.it .commonReport:before {
+  content: "debateReport/report";
+  width: 127px; }
+#tinymce.lime.it .structureNotes:before {
+  content: "Note";
+  width: 37px; }
 
 #tinymce {
   font-size: .9em;
@@ -1892,6 +2405,7 @@
     font-family: 'FontAwesome', sans-serif;
     color: white;
     font-size: 13px;
-    line-height: 15px; }
+    line-height: 15px;
+    vertical-align: text-bottom; }
 
 /*# sourceMappingURL=content.css.map */
