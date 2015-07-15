@@ -2060,9 +2060,6 @@
 #tinymce.lime.it .indent:before {
   content: "indentato";
   width: 67px; }
-#tinymce.lime.it .inline:before {
-  content: "inline";
-  width: 49px; }
 #tinymce.lime.it .ins:before {
   content: "inserimento";
   width: 79px; }
