@@ -48,12 +48,12 @@
 
 var config = require('../languagesPlugins/akoma3.0/interface/default/it/markupMenu.json');
 
-
+const patterns = new Set(['inline', 'block', 'hcontainer', 'container', 'marker']);
 console.log('#tinymce.lime.it {');
 Object.keys(config)
-      .filter(key => ['inline'].indexOf(key) == -1)
+      .filter(key => !patterns.has(key))
       .forEach(key => {
           var value = config[key].shortLabel || config[key].label;
-          console.log(`    .${key} { @include Label('${value}')}\n`);
+          console.log(`    .${key} { @include Label('${value}') }`);
       });
 console.log('}');

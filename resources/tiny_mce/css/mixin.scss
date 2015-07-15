@@ -10,6 +10,12 @@
     }
 }
 
+@mixin NoLabel {
+    &:before {
+        display: none;
+    }
+}
+
 @mixin Icon ($code) {
     &:before {
         content: $code;

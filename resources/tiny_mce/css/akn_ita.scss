@@ -31,8 +31,6 @@
 
     .background { @include Label('fatto')}
 
-    .block { @include Label('blocco')}
-
     .blockContainer { @include Label('contenitore-blocchi')}
 
     .blockList { @include Label('lista')}
@@ -62,8 +60,6 @@
     .concept { @include Label('concetto')}
 
     .conclusions { @include Label('conclusioni')}
-
-    .container { @include Label('contenitore')}
 
     .courtType { @include Label('tipo-corte')}
 
@@ -135,8 +131,6 @@
 
     .from { @include Label('da')}
 
-    .hcontainer { @include Label('gerarchico-generico')}
-
     .header { @include Label('intestazione-sentenza')}
 
     .heading { @include Label('rubrica')}
@@ -168,8 +162,6 @@
     .longTitle { @include Label('titolo-lungo')}
 
     .mainBody { @include Label('corpo-doc')}
-
-    .marker { @include Label('marker')}
 
     .ministerialStatements { @include Label('dic-ministerale')}
 

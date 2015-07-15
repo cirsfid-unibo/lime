@@ -1148,11 +1148,15 @@
     font: 2em 'FontAwesome'; }
 #tinymce.lime .num {
   font-size: 1.5em; }
+  #tinymce.lime .num:before {
+    display: none; }
 #tinymce.lime .heading {
   font-size: 1.2em;
   max-width: 65%;
   vertical-align: sub;
   font-style: italic; }
+  #tinymce.lime .heading:before {
+    display: none; }
 #tinymce.lime .docNumber {
   display: inline;
   padding-right: 5px;
@@ -1356,6 +1360,8 @@
   margin: 0 4px;
   padding: 0 4px;
   border-left: 1px dotted #555; }
+  #tinymce.lime .p:before {
+    display: none; }
 #tinymce.lime .hcontainer {
   border-color: #8a9550; }
   #tinymce.lime .hcontainer:before {
@@ -1892,9 +1898,6 @@
 #tinymce.lime.it .background:before {
   content: "fatto";
   width: 43px; }
-#tinymce.lime.it .block:before {
-  content: "blocco";
-  width: 49px; }
 #tinymce.lime.it .blockContainer:before {
   content: "contenitore-blocchi";
   width: 127px; }
@@ -1939,9 +1942,6 @@
   width: 61px; }
 #tinymce.lime.it .conclusions:before {
   content: "conclusioni";
-  width: 79px; }
-#tinymce.lime.it .container:before {
-  content: "contenitore";
   width: 79px; }
 #tinymce.lime.it .courtType:before {
   content: "tipo-corte";
@@ -2048,9 +2048,6 @@
 #tinymce.lime.it .from:before {
   content: "da";
   width: 25px; }
-#tinymce.lime.it .hcontainer:before {
-  content: "gerarchico-generico";
-  width: 127px; }
 #tinymce.lime.it .header:before {
   content: "intestazione-sentenza";
   width: 139px; }
@@ -2099,9 +2096,6 @@
 #tinymce.lime.it .mainBody:before {
   content: "corpo-doc";
   width: 67px; }
-#tinymce.lime.it .marker:before {
-  content: "marker";
-  width: 49px; }
 #tinymce.lime.it .ministerialStatements:before {
   content: "dic-ministerale";
   width: 103px; }

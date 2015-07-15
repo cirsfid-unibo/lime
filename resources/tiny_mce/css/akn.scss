@@ -104,15 +104,12 @@
     }
 
     .quotedStructure {
+        @include NoLabel;
         margin: 5px 0;
         padding: 15px;
         box-shadow: 3px 3px 15px black;
         background-color: #FFFCEF;
         position: relative;
-
-        &:before {
-            display: none;
-        }
         &:after {
             content: '\f02e';
             position: absolute;
@@ -127,8 +124,12 @@
     // ------------
     // -- Inline --
     // ------------
-    .num { font-size: 1.5em; }
+    .num {
+        @include NoLabel;
+        font-size: 1.5em;
+    }
     .heading {
+        @include NoLabel;
         // @include Inline(206, 'heading');
         font-size: 1.2em;
         max-width: 65%;
@@ -201,6 +202,7 @@
     // Popup
     // Other
     .p {
+        @include NoLabel;
         margin: 0 4px;
         padding: 0 4px;
         border-left: 1px dotted #555;
