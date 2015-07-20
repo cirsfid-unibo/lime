@@ -1,337 +1,6 @@
 @charset "UTF-8";
-/*
- * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
- * Computer Science and Engineering of the University of Bologna
- *
- * Authors:
- * Monica Palmirani ÔÇô CIRSFID of the University of Bologna
- * Fabio Vitali ÔÇô Department of Computer Science and Engineering of the University of Bologna
- * Luca Cervone ÔÇô CIRSFID of the University of Bologna
- *
- * Permission is hereby granted to any person obtaining a copy of this
- * software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The Software can be used by anyone for purposes without commercial gain,
- * including scientific, individual, and charity purposes. If it is used
- * for purposes having commercial gains, an agreement with the copyright
- * holders is required. The above copyright notice and this permission
- * notice shall be included in all copies or substantial portions of the
- * Software.
- *
- * Except as contained in this notice, the name(s) of the above copyright
- * holders and authors shall not be used in advertising or otherwise to
- * promote the sale, use or other dealings in this Software without prior
- * written authorization.
- *
- * The end-user documentation included with the redistribution, if any,
- * must include the following acknowledgment: "This product includes
- * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani,
- * Fabio Vitali, Luca Cervone)", in the same place and form as other
- * third-party acknowledgments. Alternatively, this acknowledgment may
- * appear in the software itself, in the same form and location as other
- * such third-party acknowledgments.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
 @import "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css";
 @import url(http://fonts.googleapis.com/css?family=Libre+Baskerville);
-.aknVisualizer {
-  padding: 20px 50px;
-  background-color: white; }
-  .aknVisualizer .akomaNtoso {
-    max-width: 1240px;
-    margin: auto;
-    font: 14px/20px 'Libre Baskerville', serif;
-    color: #333;
-    text-align: justify; }
-  .aknVisualizer .meta {
-    display: none; }
-  .aknVisualizer .preamble {
-    position: relative;
-    margin: 10px 0;
-    padding: 0 10px;
-    border-left: 4px solid #8ba9c1;
-    padding: 25px 10px 0;
-    margin: 20px 0 10px;
-    border-color: #476a85; }
-    .aknVisualizer .preamble > .num {
-      position: relative;
-      color: #666666;
-      margin: 8px 0 15px;
-      font-size: 25px;
-      font-weight: bold;
-      display: inline-block; }
-    .aknVisualizer .preamble > .heading {
-      position: relative;
-      color: #666666;
-      margin-left: 15px;
-      font-size: 13px;
-      font-style: italic;
-      display: inline-block; }
-    .aknVisualizer .preamble:before {
-      content: "preamble";
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      font: 13px/15px 'Titillium Web', sans-serif;
-      display: inline-block;
-      padding: 1px 6px 0;
-      border-top-right-radius: 4px;
-      border-bottom-right-radius: 4px;
-      color: white;
-      background-color: #476a85; }
-  .aknVisualizer .preface {
-    position: relative;
-    margin: 10px 0;
-    padding: 0 10px;
-    border-left: 4px solid #8ba9c1;
-    padding: 25px 10px 0;
-    margin: 20px 0 10px;
-    border-color: #476a85; }
-    .aknVisualizer .preface > .num {
-      position: relative;
-      color: #666666;
-      margin: 8px 0 15px;
-      font-size: 25px;
-      font-weight: bold;
-      display: inline-block; }
-    .aknVisualizer .preface > .heading {
-      position: relative;
-      color: #666666;
-      margin-left: 15px;
-      font-size: 13px;
-      font-style: italic;
-      display: inline-block; }
-    .aknVisualizer .preface:before {
-      content: "preface";
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      font: 13px/15px 'Titillium Web', sans-serif;
-      display: inline-block;
-      padding: 1px 6px 0;
-      border-top-right-radius: 4px;
-      border-bottom-right-radius: 4px;
-      color: white;
-      background-color: #476a85; }
-  .aknVisualizer .conclusions {
-    position: relative;
-    margin: 10px 0;
-    padding: 0 10px;
-    border-left: 4px solid #8ba9c1;
-    padding: 25px 10px 0;
-    margin: 20px 0 10px;
-    border-color: #476a85; }
-    .aknVisualizer .conclusions > .num {
-      position: relative;
-      color: #666666;
-      margin: 8px 0 15px;
-      font-size: 25px;
-      font-weight: bold;
-      display: inline-block; }
-    .aknVisualizer .conclusions > .heading {
-      position: relative;
-      color: #666666;
-      margin-left: 15px;
-      font-size: 13px;
-      font-style: italic;
-      display: inline-block; }
-    .aknVisualizer .conclusions:before {
-      content: "conclusions";
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      font: 13px/15px 'Titillium Web', sans-serif;
-      display: inline-block;
-      padding: 1px 6px 0;
-      border-top-right-radius: 4px;
-      border-bottom-right-radius: 4px;
-      color: white;
-      background-color: #476a85; }
-  .aknVisualizer .body {
-    position: relative;
-    margin: 10px 0;
-    padding: 0 10px;
-    border-left: 4px solid #c1b88b;
-    padding: 25px 10px 0;
-    margin: 20px 0 10px;
-    border-color: #857a47; }
-    .aknVisualizer .body > .num {
-      position: relative;
-      color: #666666;
-      margin: 8px 0 15px;
-      font-size: 25px;
-      font-weight: bold;
-      display: inline-block; }
-    .aknVisualizer .body > .heading {
-      position: relative;
-      color: #666666;
-      margin-left: 15px;
-      font-size: 13px;
-      font-style: italic;
-      display: inline-block; }
-    .aknVisualizer .body:before {
-      content: "body";
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      font: 13px/15px 'Titillium Web', sans-serif;
-      display: inline-block;
-      padding: 1px 6px 0;
-      border-top-right-radius: 4px;
-      border-bottom-right-radius: 4px;
-      color: white;
-      background-color: #857a47; }
-  .aknVisualizer .title {
-    position: relative;
-    margin: 10px 0;
-    padding: 0 10px;
-    border-left: 4px solid #b8c18b; }
-    .aknVisualizer .title > .num {
-      position: relative;
-      color: #666666;
-      margin: 8px 0 15px;
-      font-size: 25px;
-      font-weight: bold;
-      display: inline-block; }
-    .aknVisualizer .title > .heading {
-      position: relative;
-      color: #666666;
-      margin-left: 15px;
-      font-size: 13px;
-      font-style: italic;
-      display: inline-block; }
-  .aknVisualizer .section {
-    position: relative;
-    margin: 10px 0;
-    padding: 0 10px;
-    border-left: 4px solid #a6c18b; }
-    .aknVisualizer .section > .num {
-      position: relative;
-      color: #666666;
-      margin: 8px 0 15px;
-      font-size: 25px;
-      font-weight: bold;
-      display: inline-block; }
-    .aknVisualizer .section > .heading {
-      position: relative;
-      color: #666666;
-      margin-left: 15px;
-      font-size: 13px;
-      font-style: italic;
-      display: inline-block; }
-  .aknVisualizer .article {
-    position: relative;
-    margin: 10px 0;
-    padding: 0 10px;
-    border-left: 4px solid #94c18b; }
-    .aknVisualizer .article > .num {
-      position: relative;
-      color: #666666;
-      margin: 8px 0 15px;
-      font-size: 25px;
-      font-weight: bold;
-      display: inline-block; }
-    .aknVisualizer .article > .heading {
-      position: relative;
-      color: #666666;
-      margin-left: 15px;
-      font-size: 13px;
-      font-style: italic;
-      display: inline-block; }
-  .aknVisualizer .chapter {
-    position: relative;
-    margin: 10px 0;
-    padding: 0 10px;
-    border-left: 4px solid #8bc194; }
-    .aknVisualizer .chapter > .num {
-      position: relative;
-      color: #666666;
-      margin: 8px 0 15px;
-      font-size: 25px;
-      font-weight: bold;
-      display: inline-block; }
-    .aknVisualizer .chapter > .heading {
-      position: relative;
-      color: #666666;
-      margin-left: 15px;
-      font-size: 13px;
-      font-style: italic;
-      display: inline-block; }
-  .aknVisualizer .clause {
-    position: relative;
-    margin: 10px 0;
-    padding: 0 10px;
-    border-left: 4px solid #8bc1a6; }
-    .aknVisualizer .clause > .num {
-      position: relative;
-      color: #666666;
-      margin: 8px 0 15px;
-      font-size: 25px;
-      font-weight: bold;
-      display: inline-block; }
-    .aknVisualizer .clause > .heading {
-      position: relative;
-      color: #666666;
-      margin-left: 15px;
-      font-size: 13px;
-      font-style: italic;
-      display: inline-block; }
-  .aknVisualizer .list > .point, .aknVisualizer .list > .item, .aknVisualizer .blockList > .point, .aknVisualizer .blockList > .item {
-    margin-top: 15px;
-    position: relative;
-    min-height: 30px; }
-    .aknVisualizer .list > .point > .num, .aknVisualizer .list > .item > .num, .aknVisualizer .blockList > .point > .num, .aknVisualizer .blockList > .item > .num {
-      position: absolute;
-      top: 0px;
-      left: 5px;
-      font-size: 17px;
-      font-weight: bold; }
-    .aknVisualizer .list > .point > .content, .aknVisualizer .list > .point > .list, .aknVisualizer .list > .point > .num ~ .p, .aknVisualizer .list > .item > .content, .aknVisualizer .list > .item > .list, .aknVisualizer .list > .item > .num ~ .p, .aknVisualizer .blockList > .point > .content, .aknVisualizer .blockList > .point > .list, .aknVisualizer .blockList > .point > .num ~ .p, .aknVisualizer .blockList > .item > .content, .aknVisualizer .blockList > .item > .list, .aknVisualizer .blockList > .item > .num ~ .p {
-      margin-left: 60px;
-      display: inline-block; }
-  .aknVisualizer .list > .intro, .aknVisualizer .list > .listIntroduction, .aknVisualizer .blockList > .intro, .aknVisualizer .blockList > .listIntroduction {
-    font-style: italic; }
-  .aknVisualizer .ins {
-    display: inline-block; }
-  .aknVisualizer .omissis {
-    border-bottom: 1px solid #8ba9c1;
-    display: inline-block;
-    position: relative;
-    margin: 5px 0 3px;
-    padding-right: 80px; }
-    .aknVisualizer .omissis:before {
-      content: "omissis";
-      width: 60px;
-      text-align: center;
-      font: 13px/16px 'Titillium Web', sans-serif;
-      position: absolute;
-      right: 0px;
-      bottom: 0px;
-      padding: 0px 4px;
-      border-top-right-radius: 4px;
-      border-top-left-radius: 4px;
-      color: white;
-      background-color: #8ba9c1; }
-  .aknVisualizer .def {
-    display: inline-block;
-    font-style: inline; }
-  .aknVisualizer .ref {
-    display: inline;
-    color: #0091ff;
-    text-decoration: underline; }
-
 #tinymce.lime .preamble {
   position: relative;
   margin: 10px 0;
@@ -344,14 +13,12 @@
   #tinymce.lime .preamble > .num {
     position: relative;
     margin: 8px 0 15px;
-    font-weight: bold;
-    display: inline-block; }
+    font-weight: bold; }
   #tinymce.lime .preamble > .heading {
     position: relative;
     margin-left: 15px;
     font-size: 13px;
-    font-style: italic;
-    display: inline-block; }
+    font-style: italic; }
   #tinymce.lime .preamble:before {
     background-color: #958a50; }
   #tinymce.lime .preamble > .heading, #tinymce.lime .preamble > .num {
@@ -379,14 +46,12 @@
   #tinymce.lime .preface > .num {
     position: relative;
     margin: 8px 0 15px;
-    font-weight: bold;
-    display: inline-block; }
+    font-weight: bold; }
   #tinymce.lime .preface > .heading {
     position: relative;
     margin-left: 15px;
     font-size: 13px;
-    font-style: italic;
-    display: inline-block; }
+    font-style: italic; }
   #tinymce.lime .preface:before {
     background-color: #958a50; }
   #tinymce.lime .preface > .heading, #tinymce.lime .preface > .num {
@@ -424,8 +89,7 @@
   #tinymce.lime .debateBody > .num {
     position: relative;
     margin: 8px 0 15px;
-    font-weight: bold;
-    display: inline-block; }
+    font-weight: bold; }
   #tinymce.lime .body > .heading,
   #tinymce.lime .mainBody > .heading,
   #tinymce.lime .amendmentBody > .heading,
@@ -435,8 +99,7 @@
     position: relative;
     margin-left: 15px;
     font-size: 13px;
-    font-style: italic;
-    display: inline-block; }
+    font-style: italic; }
   #tinymce.lime .body:before,
   #tinymce.lime .mainBody:before,
   #tinymce.lime .amendmentBody:before,
@@ -499,14 +162,12 @@
   #tinymce.lime .conclusions > .num {
     position: relative;
     margin: 8px 0 15px;
-    font-weight: bold;
-    display: inline-block; }
+    font-weight: bold; }
   #tinymce.lime .conclusions > .heading {
     position: relative;
     margin-left: 15px;
     font-size: 13px;
-    font-style: italic;
-    display: inline-block; }
+    font-style: italic; }
   #tinymce.lime .conclusions:before {
     background-color: #958a50; }
   #tinymce.lime .conclusions > .heading, #tinymce.lime .conclusions > .num {
@@ -608,7 +269,8 @@
   border-color: #958a50;
   padding: 25px 5px 0;
   margin: 20px 0 10px;
-  border-left: 2px solid #eee; }
+  border-left-width: 2px;
+  border-left-style: solid; }
   #tinymce.lime .administrationOfOath > .num,
   #tinymce.lime .amendmentContent > .num,
   #tinymce.lime .amendmentHeading > .num,
@@ -690,8 +352,7 @@
   #tinymce.lime .writtenStatements > .num {
     position: relative;
     margin: 8px 0 15px;
-    font-weight: bold;
-    display: inline-block; }
+    font-weight: bold; }
   #tinymce.lime .administrationOfOath > .heading,
   #tinymce.lime .amendmentContent > .heading,
   #tinymce.lime .amendmentHeading > .heading,
@@ -774,8 +435,7 @@
     position: relative;
     margin-left: 15px;
     font-size: 13px;
-    font-style: italic;
-    display: inline-block; }
+    font-style: italic; }
   #tinymce.lime .administrationOfOath:before,
   #tinymce.lime .amendmentContent:before,
   #tinymce.lime .amendmentHeading:before,
@@ -1107,19 +767,18 @@
   border-color: #958a50;
   padding: 25px 5px 0;
   margin: 20px 0 10px;
-  border-left: 2px solid #eee;
+  border-left-width: 2px;
+  border-left-style: solid;
   font-style: italic; }
   #tinymce.lime .intro > .num {
     position: relative;
     margin: 8px 0 15px;
-    font-weight: bold;
-    display: inline-block; }
+    font-weight: bold; }
   #tinymce.lime .intro > .heading {
     position: relative;
     margin-left: 15px;
     font-size: 13px;
-    font-style: italic;
-    display: inline-block; }
+    font-style: italic; }
   #tinymce.lime .intro:before {
     background-color: #958a50; }
   #tinymce.lime .intro > .heading, #tinymce.lime .intro > .num {
@@ -1147,10 +806,12 @@
     right: 15px;
     font: 2em 'FontAwesome'; }
 #tinymce.lime .num {
+  display: block;
   font-size: 1.5em; }
   #tinymce.lime .num:before {
     display: none; }
 #tinymce.lime .heading {
+  display: block;
   font-size: 1.2em;
   max-width: 65%;
   vertical-align: sub;
@@ -1176,9 +837,10 @@
     border-radius: 0 5px 0 5px;
     padding: 0 5px 0 5px;
     margin-right: 5px; }
-  #tinymce.lime .docNumber:before {
+  #tinymce.lime .docNumber.inline.inline:before {
     content: "";
-    padding: 0 6px; }
+    padding: 0 6px;
+    width: inherit; }
 #tinymce.lime .docType {
   display: inline;
   padding-right: 5px;
@@ -1198,9 +860,10 @@
     border-radius: 0 5px 0 5px;
     padding: 0 5px 0 5px;
     margin-right: 5px; }
-  #tinymce.lime .docType:before {
+  #tinymce.lime .docType.inline.inline:before {
     content: "";
-    padding: 0 6px; }
+    padding: 0 6px;
+    width: inherit; }
 #tinymce.lime .mref, #tinymce.lime .ref, #tinymce.lime .rref {
   display: inline;
   padding-right: 5px;
@@ -1220,9 +883,10 @@
     border-radius: 0 5px 0 5px;
     padding: 0 5px 0 5px;
     margin-right: 5px; }
-  #tinymce.lime .mref:before, #tinymce.lime .ref:before, #tinymce.lime .rref:before {
+  #tinymce.lime .mref.inline.inline:before, #tinymce.lime .ref.inline.inline:before, #tinymce.lime .rref.inline.inline:before {
     content: "";
-    padding: 0 6px; }
+    padding: 0 6px;
+    width: inherit; }
 #tinymce.lime .affectedDocument,
 #tinymce.lime .argument,
 #tinymce.lime .change,

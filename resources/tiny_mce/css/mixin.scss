@@ -17,9 +17,12 @@
 }
 
 @mixin Icon ($code) {
-    &:before {
-        content: $code;
-        padding: 0 6px;
+    &.inline.inline {
+        &:before {
+            content: $code;
+            padding: 0 6px;
+            width: inherit;
+        }
     }
 }
 
@@ -84,7 +87,8 @@
 
 @mixin Container() {
     @include MainPart;
-    border-left: 2px solid #eee;
+    border-left-width: 2px;
+    border-left-style: solid;
 }
 
 @mixin Hcontainer() {
@@ -96,9 +100,7 @@
     >.num {
         position: relative;
         margin: 8px 0 15px;
-        // font-size: 25px;
         font-weight: bold;
-        display: inline-block;
     }
 
     >.heading {
@@ -106,6 +108,5 @@
         margin-left: 15px;
         font-size: 13px;
         font-style: italic;
-        display: inline-block;
     }
 }

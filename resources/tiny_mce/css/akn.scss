@@ -96,7 +96,10 @@
     .mmod,
     .authorialNote,
     .point,
-    .writtenStatements   { @include Container; }
+    .writtenStatements   {
+        // @include Color(120);
+        @include Container;
+    }
 
     .intro {
         @include Container;
@@ -126,10 +129,12 @@
     // ------------
     .num {
         @include NoLabel;
+        display: block;
         font-size: 1.5em;
     }
     .heading {
         @include NoLabel;
+        display: block;
         // @include Inline(206, 'heading');
         font-size: 1.2em;
         max-width: 65%;
