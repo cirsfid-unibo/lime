@@ -45,6 +45,7 @@
 */
 
 // This view implements a URI viewer of the document.
+// Actually this can display either the URI or the Path.
 Ext.define('LIME.components.uri.Uri', {
     extend: 'Ext.Component',
     alias: 'widget.mainEditorUri',
@@ -55,11 +56,18 @@ Ext.define('LIME.components.uri.Uri', {
 
     tpl: new Ext.XTemplate(
         '<div class="inner">',
-            '<tpl for="." between="/">',
+            '<tpl for="components" between="/">',
                 '<a path="{id}" class="uriSelector" href="javascript:;">',
                     '{text}',
                 '</a>',
             '</tpl>',
+            '<a class="switch" href="#">',
+                '<tpl if="isUri">',
+                    '<i class="fa fa-toggle-on"></i>Uri',
+                '<tpl else>',
+                    '<i class="fa fa-toggle-off"></i>Path',
+                '</tpl>',
+            '</a>',
         '</div>'
     ),
 
@@ -68,25 +76,47 @@ Ext.define('LIME.components.uri.Uri', {
     baseCls: 'mainEditorUri',
     height: 30,
 
-    setUri: function(uri) {
-        var data = uri
+    setUri: function (uri) {
+        this.setData({
+            components: this.getComponents(uri),
+            isUri: true
+        });
+    },
+
+    setPath: function (path) {
+        this.setData({
+            components: this.getComponents(path),
+            isUri: false
+        });
+    },
+
+    // Translate a uri or path to an array of objects with a name and
+    // the path to that element.
+    getComponents: function (path) {
+        return path
         .split('/')
         .map(function (text, index, array) {
             return {
                 text: text,
                 id: array.slice(0, index).join('/')
-            }
+            };
         });
-        this.setData(data);
     },
 
-    listeners: {
-        el: {
-            delegate: '.uriSelector',
-            click: function (ev, a) {
-                var uri = a.getAttribute('path');
-                Ext.getCmp(this.id).fireEvent('itemClicked', uri);
-            },
+    listeners: [{
+        element: 'el',
+        delegate: '.uriSelector',
+        click: function (ev, a) {
+            var uri = a.getAttribute('path');
+            Ext.getCmp(this.id).fireEvent('itemClicked', uri);
         }
-    }
+    }, {
+        element: 'el',
+        delegate: '.switch',
+        click: function (ev, el) {
+            var cmp = Ext.getCmp(this.id),
+                displayUri = !cmp.getData().isUri;
+            cmp.fireEvent('pathSwitcherChanged', displayUri);
+        }
+    }]
 });

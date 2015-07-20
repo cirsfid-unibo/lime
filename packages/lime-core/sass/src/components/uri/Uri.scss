@@ -21,4 +21,19 @@
             margin-left: 3px;
         }
     }
+
+    .switch {
+        color: white;
+        cursor: pointer;
+        font-weight: normal;
+        font-size: 13px;
+        text-decoration: none;
+        i {
+            font-size: 15px;
+            margin: 0 5px 0 10px;
+        }
+        &:hover {
+            color: #eee;
+        }
+    }
 }

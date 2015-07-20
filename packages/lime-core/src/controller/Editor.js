@@ -70,8 +70,7 @@ Ext.define('LIME.controller.Editor', {
 		{ ref: 'markingMenu',      selector: 'markingMenu' },
 		{ ref: 'mainToolbar',      selector: 'mainToolbar' },
 		{ ref: 'codemirror',       selector: 'codemirror' },
-		{ ref: 'uri',              selector: 'mainEditorUri' },
-		{ ref: 'uriPathSwitcher',  selector: '[itemId=uriPathSwitcher]' }
+		{ ref: 'uri',              selector: 'mainEditorUri' }
 	],
 
 	constructor: function(){
@@ -238,13 +237,11 @@ Ext.define('LIME.controller.Editor', {
 		return range;
 	},
 
-    showDocumentIdentifier: function() {
-		var switcher = this.getUriPathSwitcher(),
-	        showUri = switcher ? switcher.state : true,
-            valueToShow = (showUri) ? this.getDocumentUri() : this.getDocumentPath();
+    showDocumentIdentifier: function(isUri) {
+		var valueToShow = (isUri !== false) ? this.getDocumentUri() : this.getDocumentPath();
 
 		valueToShow = (valueToShow && valueToShow.replace(/%3A/g, ':')) || Locale.getString("newDocument");
-	    this.setEditorHeader(valueToShow);
+	    this.setEditorHeader(valueToShow, isUri);
     },
 
     getDocumentUri: function() {
@@ -260,9 +257,12 @@ Ext.define('LIME.controller.Editor', {
         return DocProperties.documentInfo.docId;
     },
 
-    setEditorHeader: function(value) {
+    setEditorHeader: function(value, isUri) {
         this.getMainEditorTab().tab.setTooltip(value);
-        this.getUri().setUri(value);
+		if (isUri)
+        	this.getUri().setUri(value);
+		else
+			this.getUri().setPath(value);
     },
 
 	/**
@@ -1654,9 +1654,6 @@ Ext.define('LIME.controller.Editor', {
                     var editor2 = Ext.fly(this.getEditor(this.getSecondEditor()).getBody());
                     editor2.addCls('secondEditor');
 				}
-            },
-            '[itemId=uriPathSwitcher]' : {
-                change: me.showDocumentIdentifier.bind(me)
             }
 		});
 	},
@@ -1670,6 +1667,10 @@ Ext.define('LIME.controller.Editor', {
 		component: {
 			mainEditorPath: {
 				pathItemClicked: 'onPathItemClicked'
+			},
+			mainEditorUri: {
+				// This shouldn't be done by this controller: use stores instead
+				pathSwitcherChanged: 'showDocumentIdentifier'
 			}
 		}
 	},
