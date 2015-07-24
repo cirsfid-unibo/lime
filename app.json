@@ -2,7 +2,7 @@
     "name": "LIME",
     "requires": [
         "ext-theme-lime",
-        
+
         "ext-ux",
         "lime-core",
         "default-validation",
@@ -12,7 +12,7 @@
         "akn-tab-visualizer",
         "extra-toggleslide",
         "default-import",
-        "default-nir",
+
         "akn-main"
     ],
     "framework": "ext",
