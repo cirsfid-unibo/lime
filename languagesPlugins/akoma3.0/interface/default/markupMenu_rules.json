@@ -1,5 +1,5 @@
 {
-	"rootElements": ["coverPage", "preface", "preamble", "body", "mainBody", "amendmentBody", "debateBody", "fragmentBody", "collectionBody", "conclusions", "attachments", "components"],
+	"rootElements": ["coverPage", "preface", "preamble", "body", "mainBody", "amendmentBody", "debateBody", "fragmentBody", "collectionBody", "conclusions", "attachments", "components", "commonReference"],
 	"commonElements": ["commonElement", "hierarchicalStructure",  "genericElement", "externalFragment", "commonsInline",  "contentInline", "commonReference", "commonJudgement", "commonReport", "argument", "header", "declarationOfVote",  "writtenStatements", "speech", "speechGroup", "remark", "rollCall", "resolutions", "questions",  "pointOfOrder", "proceduralMotions", "personalStatements", "petitions", "party", "ministerialStatements", "judge", "change", "narrative", "nationalInterest", "neutralCitation", "papers", "opinion", "oralStatements", "scene", "noticesOfMotion", "foreign", "address", "administrationOfOath"],
 
 	"newDocumentTemplate": [],
@@ -95,7 +95,7 @@
 		"chapter": {
 			"children": ["num", "heading", "subheading", "subchapter", "p"]
 		},
-		
+
 		"speech": {
 			"children": ["from"]
 		},
@@ -105,11 +105,11 @@
 		"conclusions": {
 			"children": ["p", "date", "location", "blockContainer", "signature"]
 		},
-		
+
 		"signature": {
 			"children": ["role", "person"]
 		},
-		
+
 		"date": {
 			"askFor": {
 				"date1": {
@@ -153,7 +153,7 @@
 		"preface": {
 			"children": ["p", "toc", "docType", "docNumber", "docDate", "docTitle", "docAuthority", "docProponent", "docStage", "docStatus", "docCommittee", "docIntroducer", "docJurisdiction", "docketNumber","shortTitle", "longTitle", "citations", "legislature"]
 		},
-		
+
 		"attachments": {
 			"children": ["toc", "attachment"]
 		},
@@ -163,7 +163,7 @@
 		"recitals": {
 			"children": ["recital"]
 		},
-		
+
 		"subclause": {
 			"children": ["num", "heading", "subheading", "p"]
 		},

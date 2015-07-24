@@ -1,7 +1,7 @@
 {
-	"rootElements": ["coverPage", "preface", "preamble", "body", "conclusions", "attachments", "components"],
+	"rootElements": ["coverPage", "preface", "preamble", "body", "conclusions", "attachments", "components", "commonReference"],
 	"commonElements": ["commonElement", "hierarchicalStructure",  "genericElement", "externalFragment", "commonsInline", "contentInline", "commonReference", "remark",  "foreign"],
-	
+
 	"elements": {
 		"hierarchicalStructure": {
 			"children": ["sublist", "indent", "division", "part", "proviso", "book", "rule", "tome", "blockList", "transitional", "subdivision", "fillIn", "alinea"]
