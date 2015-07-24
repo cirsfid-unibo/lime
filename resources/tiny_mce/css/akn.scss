@@ -142,7 +142,6 @@
         font-style: italic;
     }
     .docNumber         { @include Inline; @include Icon('\f02d'); }
-    .docType           { @include Inline; @include Icon('\f0e3'); }
     .mref, .ref, .rref { @include Inline; @include Icon('\f0c1'); }
 
     .affectedDocument,
@@ -165,6 +164,7 @@
     .docStage,
     .docStatus,
     .docTitle,
+    .docType,
     .documentRef,
     .entity,
     .event,
