@@ -89,8 +89,7 @@ Ext.define('DefaultAutoimportOpen.controller.CustomOpenButton', {
                 else if (extension == 'xml') {
                     Server.getDocument(path, function (content) {
                         console.log(content);
-
-                        if(NirUtils && NirUtils.isNirContent(content))
+                        if(typeof NirUtils !== 'undefined' && NirUtils.isNirContent(content))
                             me.onNirSelected(path, content);
                         else {
                             console.log('expecting akn');
