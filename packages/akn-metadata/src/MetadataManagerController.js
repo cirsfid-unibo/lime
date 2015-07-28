@@ -49,6 +49,10 @@ Ext.define('AknMetadata.MetadataManagerController', {
 
     views : ["AknMetadata.MetaGrid", "AknMetadata.MetadataManagerTabPanel"],
 
+    requires: [
+        'AknMain.Uri'
+    ],
+
     refs : [{
         selector : 'appViewport',
         ref : 'appViewport'
@@ -105,6 +109,7 @@ Ext.define('AknMetadata.MetadataManagerController', {
 		var cmp = Ext.widget("metaManagerPanel", Ext.merge({
 			name: "metaManagerPanel",
 			autoDestroy: false,
+            itemId: conf.name,
 			groupName: this.getPluginName()
 		}, conf));
     	this.application.fireEvent(Statics.eventsNames.addContextPanelTab, cmp);
@@ -366,6 +371,11 @@ Ext.define('AknMetadata.MetadataManagerController', {
             //     items.push(me.createMetaGrid("Children", values, {}));
             // }
         }
+        // console.warn('add meta filedset', name);
+        items.forEach(function (item) {
+            item.itemId = item.name;
+            // console.info('item.itemId', item.itemId);
+        });
   		return me.addTab({
   			name: name,
   			title: Ext.String.capitalize(Locale.getString(name, me.getPluginName())),
@@ -531,7 +541,9 @@ Ext.define('AknMetadata.MetadataManagerController', {
         Ext.defer(this.addMetadataFields, 200, this);
     },
 
-    updateMetadata: function(cmp, data, conf) {
+    updateMetadata: function(cmp, data, conf, enablePropagation) {
+        if (enablePropagation)
+            this.propagationInterceptor(cmp, data, conf);
     	var me = this, editor = me.getController("Editor"),
     		tab = cmp.up("metaManagerPanel"),
     		tabMap = me.tabMetaMap[tab.name],
@@ -545,7 +557,7 @@ Ext.define('AknMetadata.MetadataManagerController', {
     	       var groups = {};
     	       Ext.each(data, function(obj) {
     	           var type = obj.type;
-    	           if(type != undefined) {
+    	           if(type !== undefined) {
     	               delete obj.type;
     	               groups[type] = groups[type] || [];
     	               groups[type].push(obj);
@@ -580,28 +592,28 @@ Ext.define('AknMetadata.MetadataManagerController', {
             } else {
                 path += (tab.name != name) ? tab.name + "/" + name : tab.name;
                 //move this to a controller
-                if (path == "identification/FRBRWork/FRBRthis") {
-                    var manifestation =
-                        editor.getDocumentMetadata().originalMetadata.metaDom
-                        .querySelector('[class="FRBRManifestation"] [class="FRBRthis"]').getAttribute('value');
-                    var manifestationList = manifestation.split('/');
-                    // console.log(data);
-                    var workList = data.value.split('/');
-                    // console.log('manifestation before', manifestation);
-                    for (var i = 0; i < workList.length -1; i++) {
-                        manifestationList[i] = workList[i];
-                    }
-                    manifestation = manifestationList.join('/');
-                    // console.log('manifestation after', manifestation);
-                    DocProperties.updateMetadata(Ext.merge({
-                        metadata : editor.getDocumentMetadata(),
-                        path : "identification/FRBRManifestation/FRBRthis",
-                        data : { value: manifestation },
-                        isAttr: data.source ? true : false,
-                        overwrite: data.source ? false : true
-                    }, conf));
-
-                }
+                // if (path == "identification/FRBRWork/FRBRthis") {
+                //     var manifestation =
+                //         editor.getDocumentMetadata().originalMetadata.metaDom
+                //         .querySelector('[class="FRBRManifestation"] [class="FRBRthis"]').getAttribute('value');
+                //     var manifestationList = manifestation.split('/');
+                //     // console.log(data);
+                //     var workList = data.value.split('/');
+                //     // console.log('manifestation before', manifestation);
+                //     for (var i = 0; i < workList.length -1; i++) {
+                //         manifestationList[i] = workList[i];
+                //     }
+                //     manifestation = manifestationList.join('/');
+                //     // console.log('manifestation after', manifestation);
+                //     DocProperties.updateMetadata(Ext.merge({
+                //         metadata : editor.getDocumentMetadata(),
+                //         path : "identification/FRBRManifestation/FRBRthis",
+                //         data : { value: manifestation },
+                //         isAttr: data.source ? true : false,
+                //         overwrite: data.source ? false : true
+                //     }, conf));
+                //
+                // }
                 var result = DocProperties.updateMetadata(Ext.merge({
                     metadata : editor.getDocumentMetadata(),
                     path : path,
@@ -620,6 +632,61 @@ Ext.define('AknMetadata.MetadataManagerController', {
         editor.showDocumentIdentifier();
     },
 
+    // Alert: very crappy hack is coming.
+    // Some metadata changes need to be propagated (Eg. a change in the
+    // doc date should result in a change in all the URIs as well, etc.)
+    // Since LIME's metadata "management" is complicated, duplicated in many files
+    // and hard to hook with, we'll do this: on a component change, detect what changed
+    // and update the other connected widgets.
+    // A wonderful hack for a wonderful editor.
+    propagationInterceptor: function (cmp, data, conf) {
+        console.log(cmp, data, conf);
+        var editor = this.getController('Editor'),
+            tab = cmp.up("metaManagerPanel"),
+            section = tab.name,
+            widget = cmp.name;
+
+        // We know better than the Law of Demeter.
+        var oldUriStr = editor.getDocumentMetadata().originalMetadata.metaDom.querySelector('[class="FRBRManifestation"] [class="FRBRthis"]').getAttribute('value'),
+            uri = AknMain.Uri.parse(oldUriStr),
+            oldGeneratedUri = uri.manifestation();
+
+        console.info(section, widget, data);
+        if (section == 'FRBRWork' && widget == 'FRBRdate') uri.date = data.date;
+
+        // TODO: do it even for url to properties. Parse it again and Object.keys iterate it?
+
+        function superUpdate(level, item, prop, value) {
+            var selector = '#'+level+' #'+item+' field';
+            tab.ownerCt.down(selector).setRawValue(value);
+            var request = {
+                metadata : editor.getDocumentMetadata(),
+                path : 'identification/'+level+'/'+item,
+                data : {},
+                isAttr: true,
+                overwrite: true
+            };
+            request.data[prop] = value;
+
+            DocProperties.updateMetadata(request);
+        }
+        if(oldGeneratedUri != uri.manifestation()) {
+            console.info(uri.work());
+            console.info(uri.expression());
+            console.info(uri.manifestation());
+            superUpdate('FRBRWork', 'FRBRthis', 'value', uri.work());
+            superUpdate('FRBRExpression', 'FRBRthis', 'value', uri.expression());
+            superUpdate('FRBRManifestation', 'FRBRthis', 'value', uri.manifestation());
+            superUpdate('FRBRManifestation', 'FRBRdate', 'date', uri.date);
+
+            // Update FRBRdate
+            // Update FRBRauthor
+            // ...
+        }
+    },
+    uri: undefined,
+
+
     init : function() {
         var me = this;
         me.application.on(Statics.eventsNames.afterLoad, me.docLoaded, me);
@@ -633,7 +700,9 @@ Ext.define('AknMetadata.MetadataManagerController', {
         		change: function(cmp, newValue, oldValue) {
         			if(!cmp.up("metaGrid")) {
         				var form = cmp.up("form");
-        				me.updateMetadata(form, form.getValues());
+                        if (!!oldValue)
+                            console.warn(oldValue, newValue, 'asd');
+        				me.updateMetadata(form, form.getValues(), undefined, !!oldValue);
         			}
         		}
         	},
@@ -643,6 +712,7 @@ Ext.define('AknMetadata.MetadataManagerController', {
                 	var records = {};
                 	Ext.each(grid.columnsNames, function(name) {
                 		records[name] = name;
+                        // what is record?
                 	});
                 	me.addRecord(grid, records);
                 }
