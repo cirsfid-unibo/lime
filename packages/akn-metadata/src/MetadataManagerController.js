@@ -44,10 +44,10 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('LIME.controller.MetadataManagerController', {
+Ext.define('AknMetadata.MetadataManagerController', {
     extend : 'Ext.app.Controller',
 
-    views : ["LIME.ux.metadataManager.MetaGrid", "LIME.ux.metadataManager.MetadataManagerTabPanel"],
+    views : ["AknMetadata.MetaGrid", "AknMetadata.MetadataManagerTabPanel"],
 
     refs : [{
         selector : 'appViewport',
@@ -64,7 +64,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
     }],
 
     config : {
-        pluginName : "metadataManager",
+        pluginName : "akn-metadata",
         btnCls : "editorTabButton openMetadataBtn"
     },
 
@@ -110,12 +110,6 @@ Ext.define('LIME.controller.MetadataManagerController', {
     	this.application.fireEvent(Statics.eventsNames.addContextPanelTab, cmp);
     	return cmp;
 	},
-
-    onInitPlugin : function() {
-    	//this.application.on(Statics.eventsNames.afterLoad, this.onDocumentLoaded, this);
-        this.addMetadataButton();
-        //this.addTab();
-    },
 
     onRemoveController : function() {
         this.removeMetadataButton();
@@ -163,12 +157,12 @@ Ext.define('LIME.controller.MetadataManagerController', {
         xtype: 'button',
         text: Locale.getString("saveDocumentButtonLabel"),
         handler: function(cmp) {
-            var label = cmp.up().down('component');  
+            var label = cmp.up().down('component');
             setTimeout(function () {
                 label.show();
                 setTimeout(function () { label.hide(); }, 5000);
             }, 300);
-        }    
+        }
     }],
 
     // Add lifecycle tab
@@ -398,8 +392,8 @@ Ext.define('LIME.controller.MetadataManagerController', {
               return {
                 xtype: (attr == "date") ? "datefield" : "textfield",
                 format: (attr == "date") ? "Y-m-d" : "",
-                fieldLabel: (values[0] == 'source') ? 
-                    Locale.getString("provenance", me.getPluginName()) : 
+                fieldLabel: (values[0] == 'source') ?
+                    Locale.getString("provenance", me.getPluginName()) :
                     Locale.getString(attr.replace("akn_", ""),me.getPluginName()),
                 labelAlign : 'right',
                 anchor: '30%',
@@ -587,7 +581,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
                 path += (tab.name != name) ? tab.name + "/" + name : tab.name;
                 //move this to a controller
                 if (path == "identification/FRBRWork/FRBRthis") {
-                    var manifestation = 
+                    var manifestation =
                         editor.getDocumentMetadata().originalMetadata.metaDom
                         .querySelector('[class="FRBRManifestation"] [class="FRBRthis"]').getAttribute('value');
                     var manifestationList = manifestation.split('/');
@@ -629,6 +623,7 @@ Ext.define('LIME.controller.MetadataManagerController', {
     init : function() {
         var me = this;
         me.application.on(Statics.eventsNames.afterLoad, me.docLoaded, me);
+        me.application.on(Statics.eventsNames.afterLoad, me.addMetadataButton, me);
         me.application.on(Statics.eventsNames.afterSave, me.afterSave, me);
         me.control({
         	'metaManagerPanel': {

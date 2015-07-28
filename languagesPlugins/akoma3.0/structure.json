@@ -5,7 +5,6 @@
 		"documentCollection",
 		"modsMarker",
 		"notesManager",
-		"metadataManager",
         "widgetManager",
         "tocGenerator"
     ],

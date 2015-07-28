@@ -4,16 +4,19 @@
         "ext-theme-lime",
 
         "ext-ux",
+        "extra-toggleslide",
+
         "lime-core",
+
+        "default-import",
+        "default-autoimport-open",
         "default-validation",
         "default-diff",
-        "default-autoimport-open",
-        "akn-tab-xml-preview",
-        "akn-tab-visualizer",
-        "extra-toggleslide",
-        "default-import",
 
-        "akn-main"
+        "akn-main",
+        "akn-metadata",
+        "akn-tab-xml-preview",
+        "akn-tab-visualizer"
     ],
     "framework": "ext",
     "css": [

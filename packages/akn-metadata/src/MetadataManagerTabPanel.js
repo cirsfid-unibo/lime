@@ -44,57 +44,20 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-Ext.define('LIME.ux.metadataManager.MetadataPanel', {
-    extend : 'LIME.ux.metadataManager.GenericMetadataPanel',
+Ext.define('AknMetadata.MetadataManagerTabPanel', {
 
-    tabs: [
-        {
-            title: 'FRBRWork',
-            items: [
-                {
-                    xtype: 'metadataTextField',
-                    name: 'FRBRThis',
-                    attributeId: 'FRBRWork:FRBRThis',
-                    item: '/meta/identification/FRBRWork/FRBRThis',
-                    attr: '@value'
-                },
-                {
-                    xtype: 'metadataGridListField', // Multiple
-                    name: 'FRBRUri',
-                    xpath: '/meta/identification/FRBRWork/FRBRUri',
-                    columns: [
-                        { name: 'Value', attr: '@value' }
-                    ]
-                },
-                {
-                    xtype: 'metadataGridListField', // Multiple
-                    name: 'FRBRAlias',
-                    xpath: '/meta/identification/FRBRWork/FRBRAlias',
-                    columns: [
-                        { name: 'Value', attr: '@value' },
-                        { name: 'Name', attr: '@name' }
-                    ]
-                },
-                {
-                    xtype: 'metadataMultiField',
-                    name: 'FRBRDate',
-                    xpath: '/meta/identification/FRBRWork/FRBRDate',
-                    columns: [
-                        { name: 'Value', attr: '@value', type: 'date' },
-                        { name: 'Name', attr: '@name' }
-                    ]
-                },
-                {
-                    xtype: 'metadataMultiField',
-                    name: 'FRBRAuthor',
-                    xpath: '/meta/identification/FRBRWork/FRBRAuthor',
-                    columns: [
-                        { name: 'Href', attr: '@href' },
-                        { name: 'As', attr: '@as' }
-                    ]
-                },
-            ]
-        },
-    ]
+    extend : 'Ext.panel.Panel',
 
-}
+    alias : 'widget.metaManagerPanel',
+
+    config : {
+        pluginName : "akn-metadata"
+    },
+
+    autoScroll: true,
+
+    initComponent: function() {
+    	this.title = this.title || Locale.getString("title", this.getPluginName());
+    	this.callParent(arguments);
+    }
+});
