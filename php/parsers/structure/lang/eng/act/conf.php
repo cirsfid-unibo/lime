@@ -45,10 +45,19 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 $rules = Array(
+    "preambleInitList" => Array("LEGISLATIVE COUNSEL",
+    	                        "Legislative Counsel",
+    	                        "Legislative counsel",
+    	                        "An Act"),
 
-    "preambleInitList" => Array(""),
-    "preambleEndList" => Array(""),
-    "conclusionsInitList" => Array("Approved[\s\w\d,]+")
+    "preambleEndList" => Array("The people of", "do enact as follows",
+    	                       "as follows:?",
+    	                       "(BE IT ENACTED|Be it enacted) by the Parliament of (the Republic of)?",
+    	                       "Be it enacted by the Senate and House of Representatives of\s+the United States of America in Congress assembled,\s+Americas Cup\s+Act of 2011\."
+    	                       ),
+
+    "conclusionsInitList" => Array("Approved[\s\w\d,]+\.")
+
 );
 
 ?>

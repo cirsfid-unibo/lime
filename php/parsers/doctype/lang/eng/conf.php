@@ -46,7 +46,7 @@
  */
 
  $rules = Array(
-	"doctype" => Array("Bill")
+	"doctype" => Array("Bill","PUBLIC LAW")
 );
 
 ?>
