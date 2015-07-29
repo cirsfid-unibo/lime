@@ -101,7 +101,7 @@ Ext.define('LIME.view.Main', {
                 region: 'south',
                 xtype: 'mainEditorPath'
             },{
-            	xtype: 'contextPanel',
+                xtype: 'contextPanel',
                 region: 'south'
             }, {
                 xtype: 'outliner',

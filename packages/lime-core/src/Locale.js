@@ -48,18 +48,18 @@ Ext.define('LIME.Locale', {
     singleton : true,
     alternateClassName : 'Locale',
 
-	config: {
-		lang : 'it',
-		defaultLang: 'en'
-	},
-	
-	strings: {},
-	pStrings: {},
+    config: {
+        lang : 'it',
+        defaultLang: 'en'
+    },
+    
+    strings: {},
+    pStrings: {},
 
     constructor: function() {
-		this.detectLanguage();
+        this.detectLanguage();
         this.initConfig();
-		this.loadLanguage();
+        this.loadLanguage();
     },
     
     setPluginStrings: function(name, strings) {

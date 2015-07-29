@@ -193,11 +193,11 @@ Ext.define('LIME.view.modal.Uploader', {
             }
         },
         afterrender: function(cmp) {
-        	var uploadButton = cmp.down('uploadbutton');
-        	// Positioning the hidden uploader button
-        	Ext.defer(function() {
-            	uploadButton.uploader.uploader.refresh();
-	        }, 300, this);
+            var uploadButton = cmp.down('uploadbutton');
+            // Positioning the hidden uploader button
+            Ext.defer(function() {
+                uploadButton.uploader.uploader.refresh();
+            }, 300, this);
         }
     }
 

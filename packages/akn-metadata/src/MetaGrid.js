@@ -48,21 +48,21 @@ Ext.define('AknMetadata.MetaGrid', {
 
     extend : 'Ext.grid.Panel',
 
-	requires : ['Ext.grid.plugin.CellEditing'],
+    requires : ['Ext.grid.plugin.CellEditing'],
 
     alias : 'widget.metaGrid',
 
     config : {
         pluginName : "akn-metadata",
         genericColumn: {
-	        resizable : false,
-	        hideable : false,
-	        menuDisabled : true,
-	        editor : {
-	            selectOnFocus : true,
-	            allowBlank : false
-	        }
-	    }
+            resizable : false,
+            hideable : false,
+            menuDisabled : true,
+            editor : {
+                selectOnFocus : true,
+                allowBlank : false
+            }
+        }
     },
     columns : [],
     plugins : [{
@@ -84,17 +84,17 @@ Ext.define('AknMetadata.MetaGrid', {
         cmp.toolEl.setStyle("backgroundImage", 'url("resources/images/icons/add.png")');
     },
     initComponent: function() {
-    	var me = this, templateColumn = me.getGenericColumn();
-	    me.columns = [];
-	    Ext.each(me.columnsNames, function(name) {
-	        var column = Ext.merge(Ext.clone(templateColumn), {
+        var me = this, templateColumn = me.getGenericColumn();
+        me.columns = [];
+        Ext.each(me.columnsNames, function(name) {
+            var column = Ext.merge(Ext.clone(templateColumn), {
                     text: Ext.String.capitalize(Locale.getString(name.replace("akn_", ""), me.getPluginName())),
                     dataIndex: name,
                     flex: 1
             });
-	        if(me.customColumns && Ext.isArray(me.customColumns[name])) {
-	            column.editor.xtype = "combo";
-	            var store = Ext.create('Ext.data.Store', {
+            if(me.customColumns && Ext.isArray(me.customColumns[name])) {
+                column.editor.xtype = "combo";
+                var store = Ext.create('Ext.data.Store', {
                     fields: ["type"],
                     data : me.customColumns[name].map(function(el) {return {"type": el};})
                 });
@@ -102,28 +102,28 @@ Ext.define('AknMetadata.MetaGrid', {
                 column.editor.queryMode = 'local';
                 column.editor.displayField = 'type';
                 column.editor.valueField = 'type';
-	        }
-	        me.columns.push(column);
+            }
+            me.columns.push(column);
 
-	    });
+        });
 
-	    me.columns.push({
-	        xtype : 'actioncolumn',
-	        width : 30,
-	        sortable : false,
-	        menuDisabled : true,
-	        items : [{
-	            icon : 'resources/images/icons/delete.png',
-	            tooltip : Locale.getString("removeComponent", me.getPluginName()),
-	            scope : me,
-	            handler : function(grid, rowIndex) {
-	                grid.getStore().removeAt(rowIndex);
-	            }
-	        }]
-	    });
+        me.columns.push({
+            xtype : 'actioncolumn',
+            width : 30,
+            sortable : false,
+            menuDisabled : true,
+            items : [{
+                icon : 'resources/images/icons/delete.png',
+                tooltip : Locale.getString("removeComponent", me.getPluginName()),
+                scope : me,
+                handler : function(grid, rowIndex) {
+                    grid.getStore().removeAt(rowIndex);
+                }
+            }]
+        });
 
-	    me.store.grid = me;
+        me.store.grid = me;
 
-    	me.callParent(arguments);
+        me.callParent(arguments);
     }
 });

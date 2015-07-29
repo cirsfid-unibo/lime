@@ -401,12 +401,12 @@ Ext.define('LIME.controller.Language', {
             }
 
             if (params.docText) {
-            	// IE exception
-            	try {
-	                docDom = parser.parseFromString(params.docText, "application/xml");
-	                if (!(docDom.documentElement.tagName == "parsererror" || docDom.documentElement.querySelector("parseerror") || docDom.documentElement.querySelector("parsererror"))) {
-	                    params.docDom = docDom;
-	                }
+                // IE exception
+                try {
+                    docDom = parser.parseFromString(params.docText, "application/xml");
+                    if (!(docDom.documentElement.tagName == "parsererror" || docDom.documentElement.querySelector("parseerror") || docDom.documentElement.querySelector("parsererror"))) {
+                        params.docDom = docDom;
+                    }
                 } catch(e) {
                     console.log(e);
                 }

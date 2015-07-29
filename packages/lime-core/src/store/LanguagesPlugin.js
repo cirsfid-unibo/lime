@@ -99,7 +99,7 @@ Ext.define('LIME.store.LanguagesPlugin', {
             'markupMenu' : 'custom_buttons.json',
             'patterns' : 'custom_patterns.json'
         },{
-        	'viewConfigs' : 'viewConfigs.json'
+            'viewConfigs' : 'viewConfigs.json'
         },{
             'semanticRules' : 'semantic/semantic_rules.json'
         }]
@@ -124,8 +124,8 @@ Ext.define('LIME.store.LanguagesPlugin', {
                     var fileName = reqUrls[id].name,
                         level = reqUrls[id].level;
                     if (fileName == "viewConfigs") {
-                    	//Just replace the content don't merge as others
-                    	this.dataObjects[fileName] = records[0].raw;
+                        //Just replace the content don't merge as others
+                        this.dataObjects[fileName] = records[0].raw;
                     } else {
                         if (!this.dataObjects[level]) {
                             this.dataObjects[level] = {};
@@ -207,7 +207,7 @@ Ext.define('LIME.store.LanguagesPlugin', {
         var pluginsFiles = this.requiredFiles['plugins'];
         var globalDir = this.baseDirectories['global'];
         for (var file in globalFiles) {
-        	var reqUrl = globalDir + '/' + globalFiles[file];
+            var reqUrl = globalDir + '/' + globalFiles[file];
             var reqObject = {
                 name : file,
                 url : reqUrl,

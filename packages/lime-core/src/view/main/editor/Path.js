@@ -48,11 +48,11 @@
  * This view implements a path viewer of the document.
  */
 Ext.define('LIME.view.main.editor.Path', {
-	extend: 'Ext.Panel',
-	alias : 'widget.mainEditorPath',
+    extend: 'Ext.Panel',
+    alias : 'widget.mainEditorPath',
 
     width: '100%',
-	// padding: 3,
+    // padding: 3,
     separator:'<span style="padding:0 2 0 2"> > </span>',
     selectorsInitId: 'pathSelector_',
     elementLinkTemplate : '<a path="%id" class="pathSelectors" style="color:black;text;text-decoration:none;" href="javascript:;">%el</a>',
@@ -62,52 +62,52 @@ Ext.define('LIME.view.main.editor.Path', {
      * This function builds a path from elements and set it to the view.
      * @param {Object[]} elements
      */
-	setPath:function(elements){
-		var new_html = "";
-		var counter=0;
-		for(var i = (elements.length-1);i>=0;i--){
-			var elementName = elements[i].name;
-			var elementId = this.selectorsInitId+counter;
-			var info = DomUtils.getNodeExtraInfo(elements[i].node,"hcontainer");
-			if (info)
-				elementName+=" "+info+"";
-			if (elements[i].node) {
-				new_html += this.elementLinkTemplate.replace("%el",elementName).replace("%id",elementId);
-			} else {
-				new_html += this.elementTemplate.replace("%el",elementName);
-			}
+    setPath:function(elements){
+        var new_html = "";
+        var counter=0;
+        for(var i = (elements.length-1);i>=0;i--){
+            var elementName = elements[i].name;
+            var elementId = this.selectorsInitId+counter;
+            var info = DomUtils.getNodeExtraInfo(elements[i].node,"hcontainer");
+            if (info)
+                elementName+=" "+info+"";
+            if (elements[i].node) {
+                new_html += this.elementLinkTemplate.replace("%el",elementName).replace("%id",elementId);
+            } else {
+                new_html += this.elementTemplate.replace("%el",elementName);
+            }
 
-			if (i !== 0){
-				new_html+= this.separator;
-			}
-			if (!this.elements) this.elements = {};
-			this.elements[elementId] =  elements[i].node;
-			counter++;
-		}
-		var pathView = this;
-		this.setTitle(this.initialPath+new_html,false,function(){pathView.fireEvent("update");});
-	},
+            if (i !== 0){
+                new_html+= this.separator;
+            }
+            if (!this.elements) this.elements = {};
+            this.elements[elementId] =  elements[i].node;
+            counter++;
+        }
+        var pathView = this;
+        this.setTitle(this.initialPath+new_html,false,function(){pathView.fireEvent("update");});
+    },
 
-	initComponent: function(){
+    initComponent: function(){
         this.initialPath = Locale.strings.mainEditorPath +': ';
         this.callParent(arguments);
     },
 
-	// On click, focus the node in the editor.
-	// NOTE: This view shoulddn't access the main Editor controller, but it's still
-	// better than having Editor adding Dom listeners to this view and accessing
-	// our private variables.
-	// Btw. I believe this should be a Ext.toolbar.BreadcrumbView and we should use
-	// an Ext.data.TreeStoreView, shared with the new OutlinerTreePanel.
+    // On click, focus the node in the editor.
+    // NOTE: This view shoulddn't access the main Editor controller, but it's still
+    // better than having Editor adding Dom listeners to this view and accessing
+    // our private variables.
+    // Btw. I believe this should be a Ext.toolbar.BreadcrumbView and we should use
+    // an Ext.data.TreeStoreView, shared with the new OutlinerTreePanel.
     listeners: {
         el: {
             delegate: '.pathSelectors',
             click: function (ev, a) {
-				var cmp = Ext.getCmp(this.id),
-					id = a.getAttribute("path"),
-					node = cmp.elements[id];
-				if (node)
-	                cmp.fireEvent('pathItemClicked', node);
+                var cmp = Ext.getCmp(this.id),
+                    id = a.getAttribute("path"),
+                    node = cmp.elements[id];
+                if (node)
+                    cmp.fireEvent('pathItemClicked', node);
             }
         }
     },

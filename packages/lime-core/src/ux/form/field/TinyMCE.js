@@ -85,7 +85,7 @@ Ext.define("Ext.ux.form.field.TinyMCE", {
             //me.lastHeight = height;
 
             if (!me.editor)
-                	me.initEditor();
+                    me.initEditor();
             else
                 me.setEditorSize(me.lastWidth, me.lastHeight);
 
@@ -160,14 +160,14 @@ Ext.define("Ext.ux.form.field.TinyMCE", {
             });*/
 
             //CIRSFID @Marco: Load custom setup
-			try {
-				me.tinymceConfig.mysetup(editor);
-			} catch(e){
-				// nothing
-			}
+            try {
+                me.tinymceConfig.mysetup(editor);
+            } catch(e){
+                // nothing
+            }
         };
 
-		window.tinymce.dom.Event.domLoaded = true;
+        window.tinymce.dom.Event.domLoaded = true;
         tinymce.init(me.tinymceConfig);
     },
 

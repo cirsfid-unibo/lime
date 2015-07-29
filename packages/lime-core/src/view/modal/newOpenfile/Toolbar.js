@@ -48,24 +48,24 @@
  *Open file window's toolbar 
  */
 Ext.define('LIME.view.modal.newOpenfile.Toolbar', {
-	// extends the viewport
-	extend : 'Ext.Toolbar',
+    // extends the viewport
+    extend : 'Ext.Toolbar',
 
-	// set the alias
-	alias : 'widget.newOpenfileToolbar',
+    // set the alias
+    alias : 'widget.newOpenfileToolbar',
 
-	requires : ['LIME.view.modal.newOpenfile.toolbar.CancelButton', 'LIME.view.modal.newOpenfile.toolbar.OpenButton'],
+    requires : ['LIME.view.modal.newOpenfile.toolbar.CancelButton', 'LIME.view.modal.newOpenfile.toolbar.OpenButton'],
 
-	// add the toolbar items
-	items : ['->', {
-		xtype : 'tbspacer'
-	}, {
-		xtype : 'newOpenfileToolbarCancelButton'
-	}, {
-		xtype : 'tbseparator'
-	}, {
-		xtype : 'tbspacer'
-	}, {
-		xtype : 'newOpenfileToolbarOpenButton'
-	}]
+    // add the toolbar items
+    items : ['->', {
+        xtype : 'tbspacer'
+    }, {
+        xtype : 'newOpenfileToolbarCancelButton'
+    }, {
+        xtype : 'tbseparator'
+    }, {
+        xtype : 'tbspacer'
+    }, {
+        xtype : 'newOpenfileToolbarOpenButton'
+    }]
 }); 

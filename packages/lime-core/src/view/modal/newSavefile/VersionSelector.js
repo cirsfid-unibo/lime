@@ -49,16 +49,16 @@
  * This view is used for version selection
  */
 Ext.define('LIME.view.modal.newSavefile.VersionSelector', {
-	extend : 'Ext.form.FieldContainer',
-	alias : 'widget.docVersionSelector',
-	mixins: {
+    extend : 'Ext.form.FieldContainer',
+    alias : 'widget.docVersionSelector',
+    mixins: {
         field: 'Ext.form.field.Field'
     },
-	name : 'docVersion',
-	layout: 'hbox',
-	width: 250,
-	combineErrors: true,
-	msgTarget: 'side',
+    name : 'docVersion',
+    layout: 'hbox',
+    width: 250,
+    combineErrors: true,
+    msgTarget: 'side',
     allowBlank : false,
     
     

@@ -48,28 +48,28 @@
  *Open file window's toolbar 
  */
 Ext.define('LIME.view.modal.newSavefile.Toolbar', {
-	// extends the viewport
-	extend : 'Ext.Toolbar',
+    // extends the viewport
+    extend : 'Ext.Toolbar',
 
-	// set the alias
-	alias : 'widget.newSavefileToolbar',
+    // set the alias
+    alias : 'widget.newSavefileToolbar',
 
-	requires : ['LIME.view.modal.newSavefile.toolbar.ContextualButton', 'LIME.view.modal.newSavefile.toolbar.CancelButton', 'LIME.view.modal.newSavefile.toolbar.SaveButton'],
+    requires : ['LIME.view.modal.newSavefile.toolbar.ContextualButton', 'LIME.view.modal.newSavefile.toolbar.CancelButton', 'LIME.view.modal.newSavefile.toolbar.SaveButton'],
 
-	// add the toolbar items
-	items : [{
+    // add the toolbar items
+    items : [{
         xtype : 'newSavefileToolbarContextualButton',
         minWidth: 150,
         flex: 0.5
     },'->', {
-		xtype : 'tbspacer'
-	}, {
-		xtype : 'newSavefileToolbarCancelButton'
-	}, {
-		xtype : 'tbseparator'
-	}, {
-		xtype : 'tbspacer'
-	}, {
-		xtype : 'newSavefileToolbarOpenButton'
-	}]
+        xtype : 'tbspacer'
+    }, {
+        xtype : 'newSavefileToolbarCancelButton'
+    }, {
+        xtype : 'tbseparator'
+    }, {
+        xtype : 'tbspacer'
+    }, {
+        xtype : 'newSavefileToolbarOpenButton'
+    }]
 }); 

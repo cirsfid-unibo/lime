@@ -49,14 +49,14 @@
  */
 Ext.define('LIME.model.OpenFile', {
 
-	// this extends the ext data model
-	extend : 'Ext.data.Model',
+    // this extends the ext data model
+    extend : 'Ext.data.Model',
 
-	// the fields that can be fuond in the XML of the files
-	proxy: {
+    // the fields that can be fuond in the XML of the files
+    proxy: {
             type: 'ajax',
             reader: 'xml'
     },
-	fields : ['path', 'id', 'text', 'cls', 'leaf', 'name', 'namespace', 'mime', 'relPath', 'originalName']
+    fields : ['path', 'id', 'text', 'cls', 'leaf', 'name', 'namespace', 'mime', 'relPath', 'originalName']
 
 });

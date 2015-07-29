@@ -50,109 +50,109 @@
  * but that is extremely useful in the development process.
  */
 Ext.define('LIME.Utilities', {
-	/* Since this is merely a utility class define it as a singleton (static members by default) */
-	singleton : true,
-	alternateClassName : 'Utilities',	
-	
+    /* Since this is merely a utility class define it as a singleton (static members by default) */
+    singleton : true,
+    alternateClassName : 'Utilities',   
+    
     requires: [
         'Server'
     ],
 
-	/**
-	 * @property {String} buttonFieldDefault
-	 * TODO
-	 */
-	buttonFieldDefault : 'behavior',
-	
-	/**
-	 * @property {String} buttonIdSeparator
-	 * Needed to separate the id of a marked element from the id of the button
-	 * that was used to mark it.
-	 */
-	buttonIdSeparator : '-',
-	
-	/**
-	 * @property {Object} wrapperClassPatterns
-	 * A small set of helper functions that retrieve
-	 * the name of the pattern and the name of the element from a given configuration object
-	 */
-	wrapperClassPatterns : {
-		patternName : function(config) {
-			return (config.patternName);
-		},
-		elementName : function(config) {
-			return (config.elName);
-		}
-	},
-	
-	/**
-	 * Return a well formed url that contains the given arguments
-	 * properly encoded (to be set into the url).
-	 * @param {Array} params The parameters to be set into the url
-	 * @returns {String} The final url 
-	 */
-	getAjaxUrl : function(params) {
-		// get the url for the requested service
-		var requestedServiceUrl = Server.phpServer + 'Services.php?';
+    /**
+     * @property {String} buttonFieldDefault
+     * TODO
+     */
+    buttonFieldDefault : 'behavior',
+    
+    /**
+     * @property {String} buttonIdSeparator
+     * Needed to separate the id of a marked element from the id of the button
+     * that was used to mark it.
+     */
+    buttonIdSeparator : '-',
+    
+    /**
+     * @property {Object} wrapperClassPatterns
+     * A small set of helper functions that retrieve
+     * the name of the pattern and the name of the element from a given configuration object
+     */
+    wrapperClassPatterns : {
+        patternName : function(config) {
+            return (config.patternName);
+        },
+        elementName : function(config) {
+            return (config.elName);
+        }
+    },
+    
+    /**
+     * Return a well formed url that contains the given arguments
+     * properly encoded (to be set into the url).
+     * @param {Array} params The parameters to be set into the url
+     * @returns {String} The final url 
+     */
+    getAjaxUrl : function(params) {
+        // get the url for the requested service
+        var requestedServiceUrl = Server.phpServer + 'Services.php?';
 
-		// itereate through the params
-		for (param in params) {
-			// create the request url
-			requestedServiceUrl = requestedServiceUrl + param + '=' + encodeURI(params[param]) + '&';
-		}
+        // itereate through the params
+        for (param in params) {
+            // create the request url
+            requestedServiceUrl = requestedServiceUrl + param + '=' + encodeURI(params[param]) + '&';
+        }
 
-		// cut the last & character of the string
-		requestedServiceUrl = requestedServiceUrl.substring(0, requestedServiceUrl.length - 1);
+        // cut the last & character of the string
+        requestedServiceUrl = requestedServiceUrl.substring(0, requestedServiceUrl.length - 1);
 
-		// return the url
-		return requestedServiceUrl;
-	},
-	
-	/**
-	 * This function returns type of an object
-	 * @param {Object} obj The object
-	 * return {String} The type of the object
-	 */
-	toType : function(obj) {
-		return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
-	},
-	
-	/**
-	 * This function merges two json objects passed as arguments.
-	 * Greater priority is given to the second object
-	 * @param {Object} object1 The first object
-	 * @param {Object} object2 The second object
-	 * @param {Function} callBefore 
-	 * A function that can be called before merging the objects 
-	 * (a clone of the first object and a reference to the second object are given as arguments)
-	 * @returns {Object} The merged json object
-	 */
-	mergeJson : function(object1, object2, callBefore) {
-		if (!object1)
-			return object2;
-		if (!object2)
-			return object1;
-		var objectResult = Ext.clone(object1);
-		if (callBefore) {
-			var res = callBefore(objectResult, object2);
-			objectResult = res.obj1;
-			object2 = res.obj2;
-		}
-		if (Ext.isObject(object2)) {
-			for (var i in object2) {
-				if (objectResult[i]) {
-					objectResult[i] = this.mergeJson(objectResult[i], object2[i], callBefore);
-				} else {
-					objectResult[i] = object2[i];
-				}
-			}
+        // return the url
+        return requestedServiceUrl;
+    },
+    
+    /**
+     * This function returns type of an object
+     * @param {Object} obj The object
+     * return {String} The type of the object
+     */
+    toType : function(obj) {
+        return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
+    },
+    
+    /**
+     * This function merges two json objects passed as arguments.
+     * Greater priority is given to the second object
+     * @param {Object} object1 The first object
+     * @param {Object} object2 The second object
+     * @param {Function} callBefore 
+     * A function that can be called before merging the objects 
+     * (a clone of the first object and a reference to the second object are given as arguments)
+     * @returns {Object} The merged json object
+     */
+    mergeJson : function(object1, object2, callBefore) {
+        if (!object1)
+            return object2;
+        if (!object2)
+            return object1;
+        var objectResult = Ext.clone(object1);
+        if (callBefore) {
+            var res = callBefore(objectResult, object2);
+            objectResult = res.obj1;
+            object2 = res.obj2;
+        }
+        if (Ext.isObject(object2)) {
+            for (var i in object2) {
+                if (objectResult[i]) {
+                    objectResult[i] = this.mergeJson(objectResult[i], object2[i], callBefore);
+                } else {
+                    objectResult[i] = object2[i];
+                }
+            }
 
-		} else
-			objectResult = object2;
-		return objectResult;
-	},
-	
-	beforeMerge: function(obj1, obj2) {
+        } else
+            objectResult = object2;
+        return objectResult;
+    },
+    
+    beforeMerge: function(obj1, obj2) {
             if (Ext.isObject(obj2) && !Ext.isObject(obj1)) {
                 var tmp = obj1;
                 obj1 = {};
@@ -163,181 +163,181 @@ Ext.define('LIME.Utilities', {
                 obj2 : obj2
             };
     },
-	
+    
 
-	/**
-	 * This function converts a Date object to an ISO compliant string
-	 * taking care about the problems related to GMT.
-	 * @param {Date} d The Date object (see MDN by Mozilla)
-	 * @returns {String} The stringified date
-	 */
-	toISOString : function(d) {
-		function pad(n) {
-			return n < 10 ? '0' + n : n
-		}
-		if(d.getFullYear){
-			return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) + 'Z'
-		}
-		return "";
-	},
+    /**
+     * This function converts a Date object to an ISO compliant string
+     * taking care about the problems related to GMT.
+     * @param {Date} d The Date object (see MDN by Mozilla)
+     * @returns {String} The stringified date
+     */
+    toISOString : function(d) {
+        function pad(n) {
+            return n < 10 ? '0' + n : n
+        }
+        if(d.getFullYear){
+            return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) + 'Z'
+        }
+        return "";
+    },
 
-	/**
-	 * This function convert a css string to a json object
-	 * @param {String} css The css string made of property-value pairs
-	 * @returns {Object} The css object
-	 */
-	cssToJson : function(css) {
-		var styleObj = {};
-		if (css && css != "") {
-			var styles = css.split(";");
-			for (var i in styles) {
-				var style = styles[i];
-				if (style != "") {
-					var separator = style.indexOf(":");
-					var name = Ext.String.trim(style.substring(0, separator));
-					var value = Ext.String.trim(style.substring(separator + 1));
-					/*if(callback){
-					 callback(args,name,value);
-					 }*/
+    /**
+     * This function convert a css string to a json object
+     * @param {String} css The css string made of property-value pairs
+     * @returns {Object} The css object
+     */
+    cssToJson : function(css) {
+        var styleObj = {};
+        if (css && css != "") {
+            var styles = css.split(";");
+            for (var i in styles) {
+                var style = styles[i];
+                if (style != "") {
+                    var separator = style.indexOf(":");
+                    var name = Ext.String.trim(style.substring(0, separator));
+                    var value = Ext.String.trim(style.substring(separator + 1));
+                    /*if(callback){
+                     callback(args,name,value);
+                     }*/
 
-					styleObj[name] = value;
-				}
-			}
-		}
-		return styleObj;
-	},
+                    styleObj[name] = value;
+                }
+            }
+        }
+        return styleObj;
+    },
 
-	/**
-	 * This function convert a style object to a css string
-	 * @param {Object} styleJson The css object
-	 * @returns {String} The css string
-	 */
-	jsonToCss : function(styleJson) {
-		return Ext.encode(styleJson).replace(/}/g, '').replace(/{/g, '').replace(/"/g, '').replace(/,/g, ';');
-	},
-	/**
-	 * This function returns the index of array item if it contains the input string.
-	 * Case insensitive search.
-	 * @param {String[]} array
-	 * @param {String} str
-	 * @returns {Number} The index of array item or -1
-	 */
-	arrayIndexOfContains : function(array, str){
-		str = str.toLowerCase();
-		for(var i=0;i<array.length;i++){
-			if(array[i].toLowerCase().indexOf(str)!=-1){
-				return i;
-			}
-		}
-		return -1;
-	},
-	
-	
-	/**
-	 * This serialize an array of objects
-	 * @param {Object[]} array
-	 * @param {String[]} needEl Names of need elements to serialize
-	 * @param {Object} [config] Configuration object 
-	 * @returns {String}
-	 */
-	serializeObjArray : function(array, needEl, config){
-		var res = [],
-			str = "";
-		Ext.each(array,function(obj){
-			Ext.each(needEl,function(el){
-				if(Ext.isString(obj[el])){
-					res.push(obj[el]);
-				}else if(Ext.isArray(obj[el])){
-					Ext.each(obj[el],function(ch){
-						res.push(ch);	
-					});
-				}
-			},this);
-		},this);
-		if(config && config.sort){
-			res = res.sort();
-			if(config.reverse){
-				res = res.reverse()
-			}
-		}
-		Ext.each(res,function(element){
-			if(config.capitalize){
-				element = Ext.String.capitalize(element);
-			}
-			str+=element+"|"		
-		},this);
-		return str.substr(0,str.length-1);
-	},
-	
-	reMatch : function(re,str,flags){
-		var matches = [],
-			match;
-		if(Ext.isString(re)){
-			re = new RegExp(re,flags);
-		} 
-		while(match = re.exec(str)){
-			matches.push(match);
-		}	
-		return matches;		
-	},
-	
-	reGroupExec : function(reObj, flags, str) {
-		var res = [],
-			matches = this.reMatch(reObj.re, str, flags);
-		Ext.each(matches, function(match){
-			var resObj = {}, group, groupMatch;
-			resObj.match = match[0];
-			resObj.groups = {};
-			for (var i=1; i<match.length; i++) {
-				group = reObj.groups[i - 1];
-				groupMatch = match[i];
-				if(groupMatch) {
-					resObj.groups[group] = groupMatch;
-				}
-			}
-			res.push(resObj);
-		}, this);
-		
-		return res;
-	},
-	
-	execRe : function(reObj, str){
-		var matches = this.reMatch(reObj.re,str,'ig');
-		
-		Ext.each(matches,function(res){
-			var resObj = {},
-				count = 0;
-			resObj.matches = {match:res[0]};
-			resObj.matchGroups = res;
-			
-			for(var i=1; i<res.length; i++){
-				var group = reObj.groups[i-1],
-					match = res[i];
-				if(match){
-					resObj.matches[group] = {match:match};
-				}
-			}
-		},this);
-	},
-	
-	/**
-	 * Change the editor's language.
-	 * The current implementation refreshes the whole DOM with
-	 * a different language code.
-	 * @param {String} languageCode The ISO code of the language (e.g. it, en, etc.). 
-	 */
-	changeLanguage : function(languageCode){
-	    // Keep the current parameters
-	    var params = Ext.Object.fromQueryString(window.location.search);
+    /**
+     * This function convert a style object to a css string
+     * @param {Object} styleJson The css object
+     * @returns {String} The css string
+     */
+    jsonToCss : function(styleJson) {
+        return Ext.encode(styleJson).replace(/}/g, '').replace(/{/g, '').replace(/"/g, '').replace(/,/g, ';');
+    },
+    /**
+     * This function returns the index of array item if it contains the input string.
+     * Case insensitive search.
+     * @param {String[]} array
+     * @param {String} str
+     * @returns {Number} The index of array item or -1
+     */
+    arrayIndexOfContains : function(array, str){
+        str = str.toLowerCase();
+        for(var i=0;i<array.length;i++){
+            if(array[i].toLowerCase().indexOf(str)!=-1){
+                return i;
+            }
+        }
+        return -1;
+    },
+    
+    
+    /**
+     * This serialize an array of objects
+     * @param {Object[]} array
+     * @param {String[]} needEl Names of need elements to serialize
+     * @param {Object} [config] Configuration object 
+     * @returns {String}
+     */
+    serializeObjArray : function(array, needEl, config){
+        var res = [],
+            str = "";
+        Ext.each(array,function(obj){
+            Ext.each(needEl,function(el){
+                if(Ext.isString(obj[el])){
+                    res.push(obj[el]);
+                }else if(Ext.isArray(obj[el])){
+                    Ext.each(obj[el],function(ch){
+                        res.push(ch);   
+                    });
+                }
+            },this);
+        },this);
+        if(config && config.sort){
+            res = res.sort();
+            if(config.reverse){
+                res = res.reverse()
+            }
+        }
+        Ext.each(res,function(element){
+            if(config.capitalize){
+                element = Ext.String.capitalize(element);
+            }
+            str+=element+"|"        
+        },this);
+        return str.substr(0,str.length-1);
+    },
+    
+    reMatch : function(re,str,flags){
+        var matches = [],
+            match;
+        if(Ext.isString(re)){
+            re = new RegExp(re,flags);
+        } 
+        while(match = re.exec(str)){
+            matches.push(match);
+        }   
+        return matches;     
+    },
+    
+    reGroupExec : function(reObj, flags, str) {
+        var res = [],
+            matches = this.reMatch(reObj.re, str, flags);
+        Ext.each(matches, function(match){
+            var resObj = {}, group, groupMatch;
+            resObj.match = match[0];
+            resObj.groups = {};
+            for (var i=1; i<match.length; i++) {
+                group = reObj.groups[i - 1];
+                groupMatch = match[i];
+                if(groupMatch) {
+                    resObj.groups[group] = groupMatch;
+                }
+            }
+            res.push(resObj);
+        }, this);
+        
+        return res;
+    },
+    
+    execRe : function(reObj, str){
+        var matches = this.reMatch(reObj.re,str,'ig');
+        
+        Ext.each(matches,function(res){
+            var resObj = {},
+                count = 0;
+            resObj.matches = {match:res[0]};
+            resObj.matchGroups = res;
+            
+            for(var i=1; i<res.length; i++){
+                var group = reObj.groups[i-1],
+                    match = res[i];
+                if(match){
+                    resObj.matches[group] = {match:match};
+                }
+            }
+        },this);
+    },
+    
+    /**
+     * Change the editor's language.
+     * The current implementation refreshes the whole DOM with
+     * a different language code.
+     * @param {String} languageCode The ISO code of the language (e.g. it, en, etc.). 
+     */
+    changeLanguage : function(languageCode){
+        // Keep the current parameters
+        var params = Ext.Object.fromQueryString(window.location.search);
                             
         // Replace language
         params.lang = languageCode;
         
         // Refresh
         window.location.search = Ext.Object.toQueryString(params);
-	},
-	
-	
+    },
+    
+    
     /**
      * Convert a JSON into HTML DOM node.
      * Each element's name represents the class of a div.

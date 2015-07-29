@@ -48,5 +48,5 @@
  * This is a generic model for parsing JSON.
  */
 Ext.define('LIME.model.Json', {
-	extend : 'Ext.data.Model'
+    extend : 'Ext.data.Model'
 });

@@ -55,157 +55,157 @@
  */
 Ext.define('LIME.controller.Editor', {
 
-	extend : 'Ext.app.Controller',
-	views : ['main.Editor', 'main.editor.Path', 'modal.NewDocument'],
+    extend : 'Ext.app.Controller',
+    views : ['main.Editor', 'main.editor.Path', 'modal.NewDocument'],
 
-	refs: [
-		{ ref: 'mainEditorTab',    selector: '#mainEditor #mainEditorTab' },
-		{ ref: 'mainEditor',       selector: '#mainEditor mainEditor' },
-		{ ref: 'secondEditor',     selector: '#secondEditor mainEditor' },
-		{ ref: 'main',             selector: 'main' },
-		{ ref: 'contextMenu',      selector: 'contextMenu' },
-		{ ref: 'contextMenuItems', selector: 'menuitem[cls=editor]' },
-		{ ref: 'explorer',         selector: 'explorer' },
-		{ ref: 'mainEditorPath',   selector: 'mainEditorPath' },
-		{ ref: 'markingMenu',      selector: 'markingMenu' },
-		{ ref: 'mainToolbar',      selector: 'mainToolbar' },
-		{ ref: 'codemirror',       selector: 'codemirror' },
-		{ ref: 'uri',              selector: 'mainEditorUri' }
-	],
+    refs: [
+        { ref: 'mainEditorTab',    selector: '#mainEditor #mainEditorTab' },
+        { ref: 'mainEditor',       selector: '#mainEditor mainEditor' },
+        { ref: 'secondEditor',     selector: '#secondEditor mainEditor' },
+        { ref: 'main',             selector: 'main' },
+        { ref: 'contextMenu',      selector: 'contextMenu' },
+        { ref: 'contextMenuItems', selector: 'menuitem[cls=editor]' },
+        { ref: 'explorer',         selector: 'explorer' },
+        { ref: 'mainEditorPath',   selector: 'mainEditorPath' },
+        { ref: 'markingMenu',      selector: 'markingMenu' },
+        { ref: 'mainToolbar',      selector: 'mainToolbar' },
+        { ref: 'codemirror',       selector: 'codemirror' },
+        { ref: 'uri',              selector: 'mainEditorUri' }
+    ],
 
-	constructor: function(){
-		/**
-		 * @property {HTMLElement} lastFocused The last focused element
-		 */
-		this.lastFocused = null;
+    constructor: function(){
+        /**
+         * @property {HTMLElement} lastFocused The last focused element
+         */
+        this.lastFocused = null;
 
-		/**
-		 * @property {Object} defaultElement
-		 * The default element that wraps the content of the editor (compatible with Ext.DomHelper)
-		 */
-		this.defaultElement = {
-			tag : 'div'
-		};
+        /**
+         * @property {Object} defaultElement
+         * The default element that wraps the content of the editor (compatible with Ext.DomHelper)
+         */
+        this.defaultElement = {
+            tag : 'div'
+        };
 
-		this.callParent(arguments);
-	},
+        this.callParent(arguments);
+    },
 
     documentTempConfig: {},
 
-	/**
-	 * Returns a reference to the ExtJS component
-	 * that contains the editor plugin.
-	 * @returns {LIME.view.main.Editor} The component that contains the editor
-	 */
-	getEditorComponent: function(cmp) {
-		cmp = cmp || this.getMainEditor();
-		// return cmp.down('tinymcefield');
-		// TODO: this function is completely useless, remove it.
-		return cmp;
-	},
+    /**
+     * Returns a reference to the ExtJS component
+     * that contains the editor plugin.
+     * @returns {LIME.view.main.Editor} The component that contains the editor
+     */
+    getEditorComponent: function(cmp) {
+        cmp = cmp || this.getMainEditor();
+        // return cmp.down('tinymcefield');
+        // TODO: this function is completely useless, remove it.
+        return cmp;
+    },
 
-	/**
-	 * Returns a reference to the active editor object that allows to
-	 * use its own interface (that depends on what editor is currently installed e.g. tinyMCE).
-	 * @returns {Object} A reference to the editor object
-	 */
-	getEditor: function(cmp) {
-		return this.getEditorComponent(cmp).getEditor();
-	},
+    /**
+     * Returns a reference to the active editor object that allows to
+     * use its own interface (that depends on what editor is currently installed e.g. tinyMCE).
+     * @returns {Object} A reference to the editor object
+     */
+    getEditor: function(cmp) {
+        return this.getEditorComponent(cmp).getEditor();
+    },
 
-	/**
-	 * Returns the editor iframe container. Useful for positioning.
-	 * **Warning**: this method only works with those editor which support an
-	 * independent DOM and thus are forced to include an iframe in the main DOM.
-	 * @returns {HTMLElement} The iframe element
-	 */
-	getIframe: function(){
-		return this.getEditorComponent().iframeEl;
-	},
+    /**
+     * Returns the editor iframe container. Useful for positioning.
+     * **Warning**: this method only works with those editor which support an
+     * independent DOM and thus are forced to include an iframe in the main DOM.
+     * @returns {HTMLElement} The iframe element
+     */
+    getIframe: function(){
+        return this.getEditorComponent().iframeEl;
+    },
 
-	/**
-	 * Returns the real height of the editor body.
-	 * @returns {Number} The height
-	 */
-	getHeight: function(){
-		return this.getIframe().getHeight();
-	},
+    /**
+     * Returns the real height of the editor body.
+     * @returns {Number} The height
+     */
+    getHeight: function(){
+        return this.getIframe().getHeight();
+    },
 
-	/**
-	 * Returns the real height of the editor body.
-	 * @returns {Number} The width
-	 */
-	getWidth: function(){
-		return this.getIframe().getWidth();
-	},
+    /**
+     * Returns the real height of the editor body.
+     * @returns {Number} The width
+     */
+    getWidth: function(){
+        return this.getIframe().getWidth();
+    },
 
     /**
      * Enables/Disables boxes, color and custom typography in the editor.
      */
     updateStyle: function(displayBox, displayColor, displayStyle) {
-		[this.getMainEditor(), this.getSecondEditor()]
-		.map(function (editor) {
-			return Ext.fly(this.getEditor(editor).getBody())
-		}, this)
-		.forEach(function (el) {
-			function setCls(name, enabled) {
-		        if (enabled) el.addCls(name);
-		        else el.removeCls(name);
-			}
-			setCls('lime', displayBox);
-			setCls('colors', displayColor);
-			setCls('pdf', displayStyle);
-		});
+        [this.getMainEditor(), this.getSecondEditor()]
+        .map(function (editor) {
+            return Ext.fly(this.getEditor(editor).getBody())
+        }, this)
+        .forEach(function (el) {
+            function setCls(name, enabled) {
+                if (enabled) el.addCls(name);
+                else el.removeCls(name);
+            }
+            setCls('lime', displayBox);
+            setCls('colors', displayColor);
+            setCls('pdf', displayStyle);
+        });
     },
 
-	/**
-	 * Returns the editor DOM position inside the whole page (main DOM).
-	 * @returns {Array} The coordinates of the position as an array (i.e. [x,y])
-	 */
-	getPosition: function(){
-		var cmp = this.getEditorComponent();
-		return [cmp.getX(), cmp.getY()+cmp.edToolbar.getHeight()];
-	},
+    /**
+     * Returns the editor DOM position inside the whole page (main DOM).
+     * @returns {Array} The coordinates of the position as an array (i.e. [x,y])
+     */
+    getPosition: function(){
+        var cmp = this.getEditorComponent();
+        return [cmp.getX(), cmp.getY()+cmp.edToolbar.getHeight()];
+    },
 
-	/**
-	 * Returns a reference to the internal parser of the editor.
-	 * **Warning**: this method heavily relies on what kind of editor is used (only tested with tinyMCE).
-	 * @returns {Object} The intenal parser (its type varies depending on what editor is used)
-	 */
-	getParser: function() {
-		return new tinymce.html.DomParser({
-			validate : true
-		}, tinymce.html.schema);
-	},
+    /**
+     * Returns a reference to the internal parser of the editor.
+     * **Warning**: this method heavily relies on what kind of editor is used (only tested with tinyMCE).
+     * @returns {Object} The intenal parser (its type varies depending on what editor is used)
+     */
+    getParser: function() {
+        return new tinymce.html.DomParser({
+            validate : true
+        }, tinymce.html.schema);
+    },
 
-	/**
-	 * Returns a reference to the internal serializer of the editor.
-	 * It's necessary to make some computation on dom elements.
-	 * **Warning**: this method heavily relies on what kind of editor is used (only tested with tinyMCE).
-	 * @returns {Object} The serializer (its type varies depending on what editor is used)
-	 */
-	getSerializer: function() {
-		//Return the serializer of active editor instead a new serializer
-		return tinymce.activeEditor.serializer;
-	},
+    /**
+     * Returns a reference to the internal serializer of the editor.
+     * It's necessary to make some computation on dom elements.
+     * **Warning**: this method heavily relies on what kind of editor is used (only tested with tinyMCE).
+     * @returns {Object} The serializer (its type varies depending on what editor is used)
+     */
+    getSerializer: function() {
+        //Return the serializer of active editor instead a new serializer
+        return tinymce.activeEditor.serializer;
+    },
 
-	/**
-	 * Returns the serialized string of passed HTMLElement
-	 * @param {HTMLElement} element to serialize
-	 * @returns {String}
-	 */
-	serialize: function(dom){
-		return this.getSerializer().serialize(dom);
-	},
+    /**
+     * Returns the serialized string of passed HTMLElement
+     * @param {HTMLElement} element to serialize
+     * @returns {String}
+     */
+    serialize: function(dom){
+        return this.getSerializer().serialize(dom);
+    },
 
-	/**
-	 * This function returns a bookmark to store the current cursor position.
-	 * @returns {Object} The bookmark object
-	 */
-	getBookmark: function() {
+    /**
+     * This function returns a bookmark to store the current cursor position.
+     * @returns {Object} The bookmark object
+     */
+    getBookmark: function() {
         var selection  = this.getEditor().selection;
         return selection.getBookmark.apply(selection, arguments);
-	},
+    },
 
     removeBookmarks: function(invisible) {
         var body = this.getBody(),
@@ -218,30 +218,30 @@ Ext.define('LIME.controller.Editor', {
         });
     },
 
-	/**
-	 * This function reset the cursor to the given bookmark.
-	 * @param {Object} bookmark A reference to a bookmark instance
-	 */
-	restoreBookmark: function(bookmark) {
-		this.getEditor().selection.moveToBookmark(bookmark);
-	},
+    /**
+     * This function reset the cursor to the given bookmark.
+     * @param {Object} bookmark A reference to a bookmark instance
+     */
+    restoreBookmark: function(bookmark) {
+        this.getEditor().selection.moveToBookmark(bookmark);
+    },
 
-	/**
-	 * Returns the selection range expressed in characters. For example if the
-	 * selection starts at the character i and ends
-	 * after j characters from the beginning of the row the range will be [i,j]
-	 * @returns {Number[]} [start, end] The array containing the start and end of the range
-	 */
-	getSelectionRange: function() {
-		var ed = this.getEditor(), rng = ed.selection.getRng(), range = [rng.startOffset, rng.endOffset];
-		return range;
-	},
+    /**
+     * Returns the selection range expressed in characters. For example if the
+     * selection starts at the character i and ends
+     * after j characters from the beginning of the row the range will be [i,j]
+     * @returns {Number[]} [start, end] The array containing the start and end of the range
+     */
+    getSelectionRange: function() {
+        var ed = this.getEditor(), rng = ed.selection.getRng(), range = [rng.startOffset, rng.endOffset];
+        return range;
+    },
 
     showDocumentIdentifier: function(isUri) {
-		var valueToShow = (isUri !== false) ? this.getDocumentUri() : this.getDocumentPath();
+        var valueToShow = (isUri !== false) ? this.getDocumentUri() : this.getDocumentPath();
 
-		valueToShow = (valueToShow && valueToShow.replace(/%3A/g, ':')) || Locale.getString("newDocument");
-	    this.setEditorHeader(valueToShow, isUri);
+        valueToShow = (valueToShow && valueToShow.replace(/%3A/g, ':')) || Locale.getString("newDocument");
+        this.setEditorHeader(valueToShow, isUri);
     },
 
     getDocumentUri: function() {
@@ -259,95 +259,95 @@ Ext.define('LIME.controller.Editor', {
 
     setEditorHeader: function(value, isUri) {
         this.getMainEditorTab().tab.setTooltip(value);
-		if (isUri)
-        	this.getUri().setUri(value);
-		else
-			this.getUri().setPath(value);
+        if (isUri)
+            this.getUri().setUri(value);
+        else
+            this.getUri().setPath(value);
     },
 
-	/**
-	 * Allows to apply the given pattern
-	 * to the whole selection. Be careful when used with non-inline patterns
-	 * or you could easily destroy the whole document structure!
-	 * Returns an array containing the marked elements.
-	 * **Warning**: this method heavily relies on what editor is used
-	 * @param {String} patternName The name of the pattern to be used (e.g. span, div etc.)
-	 * @param {Object} [patternProperties] Some optional properties for the pattern
-	 * @returns {Array} The array of the nodes which the pattern was applied to
-	 */
-	applyPattern: function(patternName, patternProperties) {
-		tinymce.activeEditor.formatter.register(patternName, patternProperties);
-		tinymce.activeEditor.formatter.apply(patternName);
-		var searchRoot = this.getBody();
-		var marked = searchRoot.querySelectorAll('span[class*="' + patternProperties.classes + '"]');
-		return marked;
-	},
+    /**
+     * Allows to apply the given pattern
+     * to the whole selection. Be careful when used with non-inline patterns
+     * or you could easily destroy the whole document structure!
+     * Returns an array containing the marked elements.
+     * **Warning**: this method heavily relies on what editor is used
+     * @param {String} patternName The name of the pattern to be used (e.g. span, div etc.)
+     * @param {Object} [patternProperties] Some optional properties for the pattern
+     * @returns {Array} The array of the nodes which the pattern was applied to
+     */
+    applyPattern: function(patternName, patternProperties) {
+        tinymce.activeEditor.formatter.register(patternName, patternProperties);
+        tinymce.activeEditor.formatter.apply(patternName);
+        var searchRoot = this.getBody();
+        var marked = searchRoot.querySelectorAll('span[class*="' + patternProperties.classes + '"]');
+        return marked;
+    },
 
-	/**
-	 * Dispatcher for the focus events. It distinguishes
-	 * between a single node and an array of them.
-	 * If the given argument is an array of HTMLElement only on the last one
-	 * all the actions are applied (this avoids a waste of resources to repeat
-	 * the same actions even on the other nodes without a useful result).
-	 * @param {HTMLElement/HTMLElement[]/String} nodes The node(s) to focus
-	 * @param {Object} actions The actions that have to be performed on the node(s), e.g. click, scroll, select and
-	 */
-	focus: function(nodes, actions, config){
-			var markedAscendant,
-				lastNode;
-			if (Ext.isString(nodes)){
-				//This means that "nodes" is an node id
-				nodes = this.getBody().querySelectorAll('#'+nodes);
-			}else if(!Ext.isArray(nodes)){
-				// Uniform to a single type
-				nodes = [nodes];
-			}
-			// If nodes is empty do not continue
-			if (nodes.length == 0){
-				return null;
-			}
-			lastNode = nodes[nodes.length-1];
-			markedAscendant = DomUtils.getFirstMarkedAncestor(lastNode.parentNode);
+    /**
+     * Dispatcher for the focus events. It distinguishes
+     * between a single node and an array of them.
+     * If the given argument is an array of HTMLElement only on the last one
+     * all the actions are applied (this avoids a waste of resources to repeat
+     * the same actions even on the other nodes without a useful result).
+     * @param {HTMLElement/HTMLElement[]/String} nodes The node(s) to focus
+     * @param {Object} actions The actions that have to be performed on the node(s), e.g. click, scroll, select and
+     */
+    focus: function(nodes, actions, config){
+            var markedAscendant,
+                lastNode;
+            if (Ext.isString(nodes)){
+                //This means that "nodes" is an node id
+                nodes = this.getBody().querySelectorAll('#'+nodes);
+            }else if(!Ext.isArray(nodes)){
+                // Uniform to a single type
+                nodes = [nodes];
+            }
+            // If nodes is empty do not continue
+            if (nodes.length == 0){
+                return null;
+            }
+            lastNode = nodes[nodes.length-1];
+            markedAscendant = DomUtils.getFirstMarkedAncestor(lastNode.parentNode);
 
             // If we've selected the same node don't do anything
             if (lastNode === this.lastFocused){
                 actions.click = false;
             }
             try {
-    			if (nodes.length > 1 && markedAscendant){
-    				this.focusNode(markedAscendant, actions, config);
-    				this.lastFocused = markedAscendant;
-    			} else {
-    				this.focusNode(lastNode, actions, config);
-    				this.lastFocused = lastNode;
-    			}
+                if (nodes.length > 1 && markedAscendant){
+                    this.focusNode(markedAscendant, actions, config);
+                    this.lastFocused = markedAscendant;
+                } else {
+                    this.focusNode(lastNode, actions, config);
+                    this.lastFocused = lastNode;
+                }
             } catch(e) {
             }
-	},
+    },
 
-	/**
-	 * This function focuses the given node and performs the given actions on it.
-	 * There's a big difference with the focus method since this one only applies on a
-	 * single node and performs all the given actions on it, while the second
-	 * uses this method to apply all the actions only on the last node given in the array.
-	 * The actions that can be performed are:
-	 *
-	 * * click: simulate a click event on the given node
-	 * * select: highlight the node in the view
-	 * * change: state that the focused node has changed in some way (value, attributes etc.)
-	 * * scroll: scroll the view to the given node
-	 *
-	 * An example of actions object is the following:
-	 *
-	 *  {
-	 *  	// Set to true only the ones to perform
-	 * 		click : true,
-	 * 		select : true
-	 *  }
-	 *
-	 * @param {HTMLElement} node The dom node to focus
-	 * @param {Object} actions The actions to perform
-	 */
+    /**
+     * This function focuses the given node and performs the given actions on it.
+     * There's a big difference with the focus method since this one only applies on a
+     * single node and performs all the given actions on it, while the second
+     * uses this method to apply all the actions only on the last node given in the array.
+     * The actions that can be performed are:
+     *
+     * * click: simulate a click event on the given node
+     * * select: highlight the node in the view
+     * * change: state that the focused node has changed in some way (value, attributes etc.)
+     * * scroll: scroll the view to the given node
+     *
+     * An example of actions object is the following:
+     *
+     *  {
+     *      // Set to true only the ones to perform
+     *         click : true,
+     *         select : true
+     *  }
+     *
+     * @param {HTMLElement} node The dom node to focus
+     * @param {Object} actions The actions to perform
+     */
     focusNode: function(node, actions, config) {
         var me = this;
         if (!node)
@@ -372,35 +372,35 @@ Ext.define('LIME.controller.Editor', {
         }
         if (actions.click) {
             me.application.fireEvent('editorDomNodeFocused', node, actions);
-			var path = DomUtils.getElementIdPath(node);
-			Ext.GlobalEvents.fireEvent('contentFocused', path);
+            var path = DomUtils.getElementIdPath(node);
+            Ext.GlobalEvents.fireEvent('contentFocused', path);
         }
         if (actions.select) {
             me.selectNode(node);
         }
     },
 
-	// Change the editor selection to surround node
-	selectNode: function(node) {
+    // Change the editor selection to surround node
+    selectNode: function(node) {
         // We want to select the span.breaking before and after the given node
         var range = node.ownerDocument.createRange();
         range.setStartBefore((DomUtils.isBreakingNode(node.previousSibling) && node.previousSibling) || node);
         range.setEndAfter((DomUtils.isBreakingNode(node.nextSibling) && node.nextSibling) || node);
         this.getEditor().selection.setRng(range);
         this.lastSelectionRange = range;
-	},
+    },
 
-	setCursorLocation: function(node, offset) {
-	    this.getEditor().selection.setCursorLocation(node, offset);
-	},
+    setCursorLocation: function(node, offset) {
+        this.getEditor().selection.setCursorLocation(node, offset);
+    },
 
-	/**
-	 * Replace the content of the selected text with the text given
-	 * @param {String} text The substitute text
-	 */
-	setSelectionContent: function(text) {
-		this.getEditor().selection.setContent(text);
-	},
+    /**
+     * Replace the content of the selected text with the text given
+     * @param {String} text The substitute text
+     */
+    setSelectionContent: function(text) {
+        this.getEditor().selection.setContent(text);
+    },
 
 
     /**
@@ -769,7 +769,7 @@ Ext.define('LIME.controller.Editor', {
 
     initDocument: function(config, me) {
         me = me || this;
-		var app = me.application, docType;
+        var app = me.application, docType;
         if (!config.docType || !config.docLang || !config.docLocale) {
             var newDocumentWindow = Ext.widget('newDocument');
             // TODO: temporary solution
@@ -1100,18 +1100,18 @@ Ext.define('LIME.controller.Editor', {
         this.getMain().down('mainEditorPath').setPath(elements);
     },
 
-	addScrollHandler: function () {
-		var doc = this.getEditorComponent().iframeEl.dom.contentDocument;
-		doc.addEventListener('scroll', DomUtils.delayedExec(500, this.onScroll.bind(this)));
-	},
+    addScrollHandler: function () {
+        var doc = this.getEditorComponent().iframeEl.dom.contentDocument;
+        doc.addEventListener('scroll', DomUtils.delayedExec(500, this.onScroll.bind(this)));
+    },
 
-	// On scroll, update the path breadcrumb toolbar
-	onScroll: function () {
-		var dom = this.getEditorComponent().iframeEl.dom,
-			document = dom.contentDocument,
-			el = document.elementFromPoint(150, 0);
-		this.setPath(el);
-	},
+    // On scroll, update the path breadcrumb toolbar
+    onScroll: function () {
+        var dom = this.getEditorComponent().iframeEl.dom,
+            document = dom.contentDocument,
+            el = document.elementFromPoint(150, 0);
+        this.setPath(el);
+    },
 
     onNodeClick: function(selectedNode) {
         this.unFocusNodes();
@@ -1167,7 +1167,7 @@ Ext.define('LIME.controller.Editor', {
                 content_css : 'resources/tiny_mce/css/content.css',
 
                 // the editor mode
-				mode : 'textareas',
+                mode : 'textareas',
                 body_class: 'lime ' + Locale.getLang(),
 
                 entity_encoding : 'raw',
@@ -1493,26 +1493,26 @@ Ext.define('LIME.controller.Editor', {
 
         me.initEventsCounter();
 
-		var markerController = this.getController('Marker');
-		this.control({
+        var markerController = this.getController('Marker');
+        this.control({
 
 
-			// Handle the viewable events on the editor (click, contextmenu etc.)
-			'#mainEditor mainEditor' : {
-				click : me.onClickHandler,
-				change: function(ed, e) {
+            // Handle the viewable events on the editor (click, contextmenu etc.)
+            '#mainEditor mainEditor' : {
+                click : me.onClickHandler,
+                change: function(ed, e) {
                     me.ensureContentWrapper(ed);
-					/* Warn of the change */
-					this.changed = true;
+                    /* Warn of the change */
+                    this.changed = true;
                     me.changeEventsCounter.change++;
-				},
-				setcontent: function(ed, e) {
-					if(!DocProperties.getDocType()) return;
-					me.ensureContentWrapper(ed);
-					/* Warn of the change */
-					this.changed = true;
+                },
+                setcontent: function(ed, e) {
+                    if(!DocProperties.getDocType()) return;
+                    me.ensureContentWrapper(ed);
+                    /* Warn of the change */
+                    this.changed = true;
                     me.changeEventsCounter.setcontent++;
-				},
+                },
 
                 contextmenu: function(ed, e) {
                     var coordinates = [],
@@ -1526,29 +1526,29 @@ Ext.define('LIME.controller.Editor', {
                     this.application.fireEvent(Statics.eventsNames.showContextMenu, coordinates);
                 },
 
-				beforerender: function(cmp) {
+                beforerender: function(cmp) {
                     var me = this,
-                    	editorView = cmp,
-                    	tinyView = me.getEditorComponent(cmp),
-                    	tinyConfig = me.getTinyMceConfig();
+                        editorView = cmp,
+                        tinyView = me.getEditorComponent(cmp),
+                        tinyConfig = me.getTinyMceConfig();
 
-					tinyConfig = Ext.merge(tinyConfig, {
+                    tinyConfig = Ext.merge(tinyConfig, {
 
-	                    // Events and callbacks
-	                    mysetup: function(editor) {
+                        // Events and callbacks
+                        mysetup: function(editor) {
                             me.initUndoManager(editor);
 
                             editor.on('init', function(e) {
                                 me.tinyInit();
                             });
 
-	                        editor.on('change', function(e) {
-	                            editorView.fireEvent('change', editor, e);
-	                        });
+                            editor.on('change', function(e) {
+                                editorView.fireEvent('change', editor, e);
+                            });
 
-	                        editor.on('setcontent', function(e) {
-	                            editorView.fireEvent('setcontent', editor, e);
-	                        });
+                            editor.on('setcontent', function(e) {
+                                editorView.fireEvent('setcontent', editor, e);
+                            });
 
                             editor.on('BeforeExecCommand', function(e) {
                                 if(e.value && Ext.isFunction(e.value.indexOf) && e.value.indexOf('<table>') != -1) {
@@ -1600,15 +1600,15 @@ Ext.define('LIME.controller.Editor', {
                                 return false;
                             });
 
-							editor.on('init', me.addScrollHandler.bind(me));
-	                    }});
+                            editor.on('init', me.addScrollHandler.bind(me));
+                        }});
 
                     tinyConfig.menubar = false;
 
-					/* Set the editor custom configuration */
+                    /* Set the editor custom configuration */
                     Ext.apply(tinyView, {tinymceConfig: tinyConfig});
-				}
-			},
+                }
+            },
             '#secondEditor': {
                 added: function(cmp) {
                     me.setOnlyEditorTabMode(true);
@@ -1617,8 +1617,8 @@ Ext.define('LIME.controller.Editor', {
                     me.setOnlyEditorTabMode(false);
                 }
             },
-			'#secondEditor mainEditor' : {
-				beforerender: function(cmp) {
+            '#secondEditor mainEditor' : {
+                beforerender: function(cmp) {
                     var me = this,
                         tinyView = me.getEditorComponent(cmp),
                         tinyConfig = me.getTinyMceConfig();
@@ -1653,41 +1653,41 @@ Ext.define('LIME.controller.Editor', {
                 editorcreated: function(tinyEditor) {
                     var editor2 = Ext.fly(this.getEditor(this.getSecondEditor()).getBody());
                     editor2.addCls('secondEditor');
-				}
+                }
             }
-		});
-	},
+        });
+    },
 
-	listen: {
-		controller: {
-			outliner: {
-				elementFocused: 'onOutlinerClick'
-			}
-		},
-		component: {
-			mainEditorPath: {
-				pathItemClicked: 'onPathItemClicked'
-			},
-			mainEditorUri: {
-				// This shouldn't be done by this controller: use stores instead
-				pathSwitcherChanged: 'showDocumentIdentifier'
-			}
-		}
-	},
+    listen: {
+        controller: {
+            outliner: {
+                elementFocused: 'onOutlinerClick'
+            }
+        },
+        component: {
+            mainEditorPath: {
+                pathItemClicked: 'onPathItemClicked'
+            },
+            mainEditorUri: {
+                // This shouldn't be done by this controller: use stores instead
+                pathSwitcherChanged: 'showDocumentIdentifier'
+            }
+        }
+    },
 
-	onOutlinerClick: function (id) {
-		var node = DomUtils.getElementById(id, this.getDom());
-		if (node) {
-			this.selectNode(node);
-			node.scrollIntoView();
-		}
-	},
+    onOutlinerClick: function (id) {
+        var node = DomUtils.getElementById(id, this.getDom());
+        if (node) {
+            this.selectNode(node);
+            node.scrollIntoView();
+        }
+    },
 
-	onPathItemClicked: function (node) {
-		this.focusNode(node, {
-			select: true,
-			scroll: true,
-			click: true
-		});
-	}
+    onPathItemClicked: function (node) {
+        this.focusNode(node, {
+            select: true,
+            scroll: true,
+            click: true
+        });
+    }
 });

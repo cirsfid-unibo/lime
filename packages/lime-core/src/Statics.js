@@ -49,62 +49,62 @@
  * Static configuration, only constants.
  */
 Ext.define('LIME.Statics', {
-	/* Since this is merely a utility class define it as a singleton (static members by default) */
-	singleton : true,
-	alternateClassName : 'Statics',
+    /* Since this is merely a utility class define it as a singleton (static members by default) */
+    singleton : true,
+    alternateClassName : 'Statics',
 
-	/**
-	 * @property {String} globalPatternsFile
-	 * The path of global pattern configuration file
-	 */
-	globalPatternsFile : "config/Patterns.json",
+    /**
+     * @property {String} globalPatternsFile
+     * The path of global pattern configuration file
+     */
+    globalPatternsFile : "config/Patterns.json",
 
-	/**
-	 * Static values for metadata
-	 * @property {Object} metadata
-	 */
-	metadata : {
-	    containerClass : 'metadata',
-	    frbrClass : 'frbr',
-	    internalClass : 'internalMetadata'
-	},
+    /**
+     * Static values for metadata
+     * @property {Object} metadata
+     */
+    metadata : {
+        containerClass : 'metadata',
+        frbrClass : 'frbr',
+        internalClass : 'internalMetadata'
+    },
 
-	/**
-	 * @property {Object} widgetTypePatterns
-	 * Object used as dictionary for translation of widget type in ext xtypes
-	 */
-	widgetTypePatterns : {
-		text : "textfield",
-		date : "datefield",
-		number: 'numberfield',
-		doctype: 'docTypeSelector',
-		nationality: 'nationalitySelector',
-		list: 'combo'
-	},
+    /**
+     * @property {Object} widgetTypePatterns
+     * Object used as dictionary for translation of widget type in ext xtypes
+     */
+    widgetTypePatterns : {
+        text : "textfield",
+        date : "datefield",
+        number: 'numberfield',
+        doctype: 'docTypeSelector',
+        nationality: 'nationalitySelector',
+        list: 'combo'
+    },
 
-	/**
-	 * @property {String} defaultContentLang
-	 */
-	defaultContentLang: 'esp',
+    /**
+     * @property {String} defaultContentLang
+     */
+    defaultContentLang: 'esp',
 
-	/**
-	 * @property {Number} extraInfoLimit
-	 */
-	extraInfoLimit: 13,
+    /**
+     * @property {Number} extraInfoLimit
+     */
+    extraInfoLimit: 13,
 
 
     eventsNames: {
-	     translateRequest: "translateRequest",
-	     progressStart: "progressStart",
-	     progressUpdate: "progressUpdate",
-	     progressEnd: "progressEnd",
-	     loadDocument: "loadDocument",
-	     beforeSave : 'beforeSave',
-	     afterSave : 'afterSave',
-	     saveDocument : 'saveDocument',
-	     frbrChanged: 'frbrChanged',
-	     beforeLoad: 'beforeLoad',
-	     afterLoad: 'afterLoad',
+         translateRequest: "translateRequest",
+         progressStart: "progressStart",
+         progressUpdate: "progressUpdate",
+         progressEnd: "progressEnd",
+         loadDocument: "loadDocument",
+         beforeSave : 'beforeSave',
+         afterSave : 'afterSave',
+         saveDocument : 'saveDocument',
+         frbrChanged: 'frbrChanged',
+         beforeLoad: 'beforeLoad',
+         afterLoad: 'afterLoad',
          documentLoaded: 'documentLoaded',
          disableEditing: 'disableEditing',
          enableEditing: 'enableEditing',
@@ -132,27 +132,27 @@ Ext.define('LIME.Statics', {
          enableDualEditorMode: "enableDualEditorMode",
          markingMenuLoaded: "markingMenuLoaded",
          getDocumentHtml: "getDocumentHtml"
-	 },
+     },
 
-	 services: {
-	     htmlToPdf: 'HTML_TO_PDF',
-	     pdfExport: 'HTML_TO_PDF_DOWNLOAD',
-	     xmlExport: 'AKN_TO_XML_DOWNLOAD',
-	     htmlExport: 'AKN_TO_HTML_DOWNLOAD',
-	     aknToEpub: 'AKN_TO_EPUB',
-	     aknToPdf: 'AKN_TO_PDF',
-	     aknToFile: 'AKN_TO_FILE',
-	     xsltTrasform: 'XSLT_TRANSFORM',
-	     getFileContent: 'GET_FILE_CONTENT',
-	     getFileMetadata: 'GET_FILE_METADATA',
-	     saveAs : 'SAVE_FILE',
-	     listFiles: 'LIST_FILES',
-	     fileToHtml: 'FILE_TO_HTML',
-	     userManager: 'USER_MANAGER',
-	     userPreferences: 'USER_PREFERENCES',
-	     createDocumentCollection: 'CREATE_DOCUMENT_COLLECTION',
-	     filterUrls: 'FILTER_URLS',
+     services: {
+         htmlToPdf: 'HTML_TO_PDF',
+         pdfExport: 'HTML_TO_PDF_DOWNLOAD',
+         xmlExport: 'AKN_TO_XML_DOWNLOAD',
+         htmlExport: 'AKN_TO_HTML_DOWNLOAD',
+         aknToEpub: 'AKN_TO_EPUB',
+         aknToPdf: 'AKN_TO_PDF',
+         aknToFile: 'AKN_TO_FILE',
+         xsltTrasform: 'XSLT_TRANSFORM',
+         getFileContent: 'GET_FILE_CONTENT',
+         getFileMetadata: 'GET_FILE_METADATA',
+         saveAs : 'SAVE_FILE',
+         listFiles: 'LIST_FILES',
+         fileToHtml: 'FILE_TO_HTML',
+         userManager: 'USER_MANAGER',
+         userPreferences: 'USER_PREFERENCES',
+         createDocumentCollection: 'CREATE_DOCUMENT_COLLECTION',
+         filterUrls: 'FILTER_URLS',
          publishDocument: 'PUBLISH_DOCUMENT'
-	 }
+     }
 
 });

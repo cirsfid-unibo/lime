@@ -50,11 +50,11 @@
 Ext.define('LIME.view.maintoolbar.SaveDocumentButton', {
     extend : 'Ext.menu.Item',
 
-	// set the alias
-	alias : 'widget.saveDocumentButton',
+    // set the alias
+    alias : 'widget.saveDocumentButton',
 
-	// set the icon
-	icon : 'resources/images/icons/page_save.png',
+    // set the icon
+    icon : 'resources/images/icons/page_save.png',
     
     initComponent: function(){
         this.text = Locale.strings.saveDocumentButtonLabel;

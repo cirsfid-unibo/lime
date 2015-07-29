@@ -57,7 +57,7 @@ Ext.define('AknMetadata.MetadataManagerTabPanel', {
     autoScroll: true,
 
     initComponent: function() {
-    	this.title = this.title || Locale.getString("title", this.getPluginName());
-    	this.callParent(arguments);
+        this.title = this.title || Locale.getString("title", this.getPluginName());
+        this.callParent(arguments);
     }
 });

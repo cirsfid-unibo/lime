@@ -48,8 +48,8 @@
  * Is a dummy store just for get working the Explorer. 
  */
 Ext.define('LIME.store.Outliner', {
-	extend : 'Ext.data.TreeStore',
-	autoLoad : true,
+    extend : 'Ext.data.TreeStore',
+    autoLoad : true,
     proxy: {
         type: 'memory'
     },

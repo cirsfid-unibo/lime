@@ -49,11 +49,11 @@
 Ext.define('LIME.view.maintoolbar.OpenDocumentButton', {
     extend : 'Ext.menu.Item',
 
-	// set the alias
-	alias : 'widget.openDocumentButton',
+    // set the alias
+    alias : 'widget.openDocumentButton',
 
-	// set the icon
-	icon : 'resources/images/icons/folder_page.png',
+    // set the icon
+    icon : 'resources/images/icons/folder_page.png',
     
     initComponent: function(){
         this.text = Locale.strings.openDocumentButtonLabel;

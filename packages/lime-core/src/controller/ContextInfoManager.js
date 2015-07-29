@@ -52,8 +52,8 @@ Ext.define('LIME.controller.ContextInfoManager', {
         selector: 'contextPanel',
         ref: 'contextPanel'
     }, {
-    	selector: 'mainEditorPath tool[type="up"]',
-    	ref: 'cxtPanelUpDownTool'
+        selector: 'mainEditorPath tool[type="up"]',
+        ref: 'cxtPanelUpDownTool'
     }],
 
     tabGroups: {},
@@ -69,10 +69,10 @@ Ext.define('LIME.controller.ContextInfoManager', {
      * */
 
     openContextPanel: function(height) {
-    	var tool = this.getCxtPanelUpDownTool(),
-    		contextPanel= this.getContextPanel(),
-    		activatedTab, firstTab,
-    		groupCmp = this.getGroupCmp();
+        var tool = this.getCxtPanelUpDownTool(),
+            contextPanel= this.getContextPanel(),
+            activatedTab, firstTab,
+            groupCmp = this.getGroupCmp();
 
         if(groupCmp) {
             activatedTab = groupCmp.getActiveTab();
@@ -84,24 +84,24 @@ Ext.define('LIME.controller.ContextInfoManager', {
             contextPanel.setHeight(height);
         }
 
-    	contextPanel.show();
-		tool.setType("down");
+        contextPanel.show();
+        tool.setType("down");
 
-		if(activatedTab) {
-			groupCmp.setActiveTab(activatedTab);
-			activatedTab.fireEvent("activate", activatedTab);
-		} else if(firstTab) {
-			groupCmp.setActiveTab(firstTab);
-			firstTab.fireEvent("activate", firstTab);
-		}
+        if(activatedTab) {
+            groupCmp.setActiveTab(activatedTab);
+            activatedTab.fireEvent("activate", activatedTab);
+        } else if(firstTab) {
+            groupCmp.setActiveTab(firstTab);
+            firstTab.fireEvent("activate", firstTab);
+        }
     },
 
     closeContextPanel: function() {
-    	var tool = this.getCxtPanelUpDownTool(),
-    		contextPanel= this.getContextPanel();
+        var tool = this.getCxtPanelUpDownTool(),
+            contextPanel= this.getContextPanel();
 
-    	contextPanel.hide();
-		tool.setType("up");
+        contextPanel.hide();
+        tool.setType("up");
     },
 
     openTabGroup: function(groupToEnable) {
@@ -132,20 +132,20 @@ Ext.define('LIME.controller.ContextInfoManager', {
      * string - if passed "lastHeight" it doesn't change the height
      * */
     openCloseContextPanel: function(open, groupToEnable, height) {
-    	var me = this, contextPanel= me.getContextPanel();
+        var me = this, contextPanel= me.getContextPanel();
 
-    	open = (Ext.isBoolean(open)) ? open : ((contextPanel.isVisible()) ? false : true);
+        open = (Ext.isBoolean(open)) ? open : ((contextPanel.isVisible()) ? false : true);
 
-		if(open) {
+        if(open) {
             me.openTabGroup(groupToEnable);
-    		me.openContextPanel(height);
-    	} else {
-    		me.closeContextPanel();
-    	}
+            me.openContextPanel(height);
+        } else {
+            me.closeContextPanel();
+        }
     },
 
     addTab: function(cmp) {
-    	var me = this, newCmp = me.tabGroups[cmp.groupName],
+        var me = this, newCmp = me.tabGroups[cmp.groupName],
             contextPanel= this.getContextPanel(),
             existingCmp, index;
 
@@ -198,21 +198,21 @@ Ext.define('LIME.controller.ContextInfoManager', {
         me.application.on(Statics.eventsNames.addContextPanelTab, me.addTab, me);
 
         me.control({
-        	"mainEditorPath": {
-        		afterrender: function(cmp) {
-        			cmp.addTool({
-				        // xtype:"tool",
-				        type: 'up',
-				        callback: function() {
-				            me.openCloseContextPanel(null, null, "lastHeight");
-				        }
-				    });
-        		}
-        	},
-        	"contextPanel": {
-        		afterrender: function(cmp) {
-        		}
-        	}
+            "mainEditorPath": {
+                afterrender: function(cmp) {
+                    cmp.addTool({
+                        // xtype:"tool",
+                        type: 'up',
+                        callback: function() {
+                            me.openCloseContextPanel(null, null, "lastHeight");
+                        }
+                    });
+                }
+            },
+            "contextPanel": {
+                afterrender: function(cmp) {
+                }
+            }
         });
     }
 });

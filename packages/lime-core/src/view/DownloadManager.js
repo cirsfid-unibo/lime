@@ -50,10 +50,10 @@
  */
 
 Ext.define('LIME.view.DownloadManager', {
-	extend : 'Ext.Panel',
+    extend : 'Ext.Panel',
     requires : ['Ext.ux.DownloadManager'],
-	alias : 'widget.downloadManager',
-	/**
+    alias : 'widget.downloadManager',
+    /**
      *@property {String}  eventActivate The name of event to fire for downloading request
      */
     eventActivate: 'activateDownload',

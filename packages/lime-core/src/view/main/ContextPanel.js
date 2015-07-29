@@ -45,23 +45,23 @@
  */
 
 Ext.define('LIME.view.main.ContextPanel', {
-	extend : 'Ext.panel.Panel',
+    extend : 'Ext.panel.Panel',
 
-	alias : 'widget.contextPanel',
-	
-	border : 0,
-	padding: 0,
-	resizable : true,
-	hidden : true,
-	height : 280,
-	maxHeight : 300,
-	frame : true,
-	autoScroll : true,
-	header : false,
-	layout:'fit',
-	style : {
-		borderRadius : "0px",
-		margin : "0px",
-		border : '0px'
-	}
+    alias : 'widget.contextPanel',
+    
+    border : 0,
+    padding: 0,
+    resizable : true,
+    hidden : true,
+    height : 280,
+    maxHeight : 300,
+    frame : true,
+    autoScroll : true,
+    header : false,
+    layout:'fit',
+    style : {
+        borderRadius : "0px",
+        margin : "0px",
+        border : '0px'
+    }
 });

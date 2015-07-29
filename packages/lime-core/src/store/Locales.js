@@ -53,6 +53,6 @@
  * supported locales.
  */
 Ext.define('LIME.store.Locales', {
-	extend : 'Ext.data.Store',
-	fields: ['name']
+    extend : 'Ext.data.Store',
+    fields: ['name']
 }); 

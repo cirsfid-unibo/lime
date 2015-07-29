@@ -45,13 +45,13 @@
  */
 
 Ext.define('LIME.components.breadcrumb.Breadcrumb', {
-	extend: 'Ext.toolbar.Breadcrumb',
-	alias: 'widget.editorBreadcrumb',
+    extend: 'Ext.toolbar.Breadcrumb',
+    alias: 'widget.editorBreadcrumb',
 
-	controller: 'editorBreadcrumb',
+    controller: 'editorBreadcrumb',
 
-	requires: [
-		'LIME.components.breadcrumb.BreadcrumbController'
-	],
+    requires: [
+        'LIME.components.breadcrumb.BreadcrumbController'
+    ],
 
 });
