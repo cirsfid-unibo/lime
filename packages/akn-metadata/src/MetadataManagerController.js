@@ -542,8 +542,8 @@ Ext.define('AknMetadata.MetadataManagerController', {
     },
 
     updateMetadata: function(cmp, data, conf, enablePropagation) {
-        if (enablePropagation)
-            this.propagationInterceptor(cmp, data, conf);
+        // if (enablePropagation)
+        //     this.propagationInterceptor(cmp, data, conf);
         var me = this, editor = me.getController("Editor"),
             tab = cmp.up("metaManagerPanel"),
             tabMap = me.tabMetaMap[tab.name],
