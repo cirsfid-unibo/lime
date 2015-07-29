@@ -60,11 +60,11 @@ Ext.define('AknMetadata.MetadataManagerController', {
         selector : 'main tabbar',
         ref : 'mainToolbar'
     }, {
-    	selector: 'metaManagerPanel',
-    	ref: 'metaManagerPanel'
+        selector: 'metaManagerPanel',
+        ref: 'metaManagerPanel'
     }, {
-    	selector: 'contextPanel',
-    	ref: 'contextPanel'
+        selector: 'contextPanel',
+        ref: 'contextPanel'
     }],
 
     config : {
@@ -77,7 +77,7 @@ Ext.define('AknMetadata.MetadataManagerController', {
     addMetadataButton : function() {
         var me = this, toolbar = me.getMainToolbar();
         if (!toolbar.down("[cls='" + me.getBtnCls() + "']")) {
-        	toolbar.add({xtype: 'tbfill'});
+            toolbar.add({xtype: 'tbfill'});
             toolbar.add({
                 xtype: 'button',
                 enableToggle: true,
@@ -93,7 +93,7 @@ Ext.define('AknMetadata.MetadataManagerController', {
 
     removeMetadataButton : function() {
         var me = this, toolbar = me.getMainToolbar(),
-        	btn = toolbar.down("[cls='" + me.getBtnCls() + "']");
+            btn = toolbar.down("[cls='" + me.getBtnCls() + "']");
         if (btn) {
             toolbar.remove(btn);
         }
@@ -104,46 +104,46 @@ Ext.define('AknMetadata.MetadataManagerController', {
                                     btn.pressed, this.getPluginName());
     },
 
-	addTab: function(conf) {
-		conf = conf || {};
-		var cmp = Ext.widget("metaManagerPanel", Ext.merge({
-			name: "metaManagerPanel",
-			autoDestroy: false,
+    addTab: function(conf) {
+        conf = conf || {};
+        var cmp = Ext.widget("metaManagerPanel", Ext.merge({
+            name: "metaManagerPanel",
+            autoDestroy: false,
             itemId: conf.name,
-			groupName: this.getPluginName()
-		}, conf));
-    	this.application.fireEvent(Statics.eventsNames.addContextPanelTab, cmp);
-    	return cmp;
-	},
+            groupName: this.getPluginName()
+        }, conf));
+        this.application.fireEvent(Statics.eventsNames.addContextPanelTab, cmp);
+        return cmp;
+    },
 
     onRemoveController : function() {
         this.removeMetadataButton();
     },
 
     addMetadataFields: function() {
-    	var me = this,
-    		metaTemplate = Config.getLanguageConfig().metaTemplate,
+        var me = this,
+            metaTemplate = Config.getLanguageConfig().metaTemplate,
             newTab;
 
-    	Ext.Object.each(metaTemplate, function(key, value) {
-    		if(key == "identification") {
-    			var frbrFieldsets = Ext.Object.getKeys(value).filter(function(name) {
-		    		return name.charAt(0) != "@";
-		    	});
-		    	Ext.each(frbrFieldsets, function(name) {
-		    		newTab = me.addMetaFRBRFieldset(name, value[name]);
-		    		me.tabMetaMap[name] = {
-		    			tab: newTab,
-		    			metaParent: key
-		    		};
-		    	});
-    		} else {
-    			newTab = me.addMetaFieldset(key, value);
+        Ext.Object.each(metaTemplate, function(key, value) {
+            if(key == "identification") {
+                var frbrFieldsets = Ext.Object.getKeys(value).filter(function(name) {
+                    return name.charAt(0) != "@";
+                });
+                Ext.each(frbrFieldsets, function(name) {
+                    newTab = me.addMetaFRBRFieldset(name, value[name]);
+                    me.tabMetaMap[name] = {
+                        tab: newTab,
+                        metaParent: key
+                    };
+                });
+            } else {
+                newTab = me.addMetaFieldset(key, value);
                 me.tabMetaMap[key] = {
                     tab: newTab
                 };
-    		}
-    	});
+            }
+        });
 
         me.addLifecycle();
         me.addWorkflow();
@@ -337,24 +337,24 @@ Ext.define('AknMetadata.MetadataManagerController', {
     },
 
     addMetaFRBRFieldset: function(name, conf) {
-    	var me = this,
-    		items = [];
-    	Ext.Object.each(conf, function(key) {
-    		var values = me.getValuesFromObj(conf[key]);
-    		if(key == "FRBRuri" || key == "FRBRalias") {
-    			items.push(me.createMetaGrid(key, values));
-    		} else {
-    			items.push(me.createFieldsetItem(key, values));
-    		}
-    	});
-    	return me.addMetaFieldset(name, conf, items);
+        var me = this,
+            items = [];
+        Ext.Object.each(conf, function(key) {
+            var values = me.getValuesFromObj(conf[key]);
+            if(key == "FRBRuri" || key == "FRBRalias") {
+                items.push(me.createMetaGrid(key, values));
+            } else {
+                items.push(me.createFieldsetItem(key, values));
+            }
+        });
+        return me.addMetaFieldset(name, conf, items);
     },
 
     addMetaFieldset: function(name, conf, items) {
-    	var me = this,
-    		tab = me.getMetaManagerPanel(),
-    		possibleChildren = conf["!possibleChildren"],
-    		values;
+        var me = this,
+            tab = me.getMetaManagerPanel(),
+            possibleChildren = conf["!possibleChildren"],
+            values;
 
       if(!Ext.isArray(items)) {
         items = [me.createFieldsetItem(name, me.getValuesFromObj(conf))];
@@ -376,17 +376,17 @@ Ext.define('AknMetadata.MetadataManagerController', {
             item.itemId = item.name;
             // console.info('item.itemId', item.itemId);
         });
-  		return me.addTab({
-  			name: name,
-  			title: Ext.String.capitalize(Locale.getString(name, me.getPluginName())),
-  			items: items,
+          return me.addTab({
+              name: name,
+              title: Ext.String.capitalize(Locale.getString(name, me.getPluginName())),
+              items: items,
             bbar: me.fakeSavingToolbar
-  		});
+          });
     },
 
     createFieldsetItem: function(name, values) {
         var me = this;
-    	return {
+        return {
             xtype: "form",
             width: "98%",
             name: name,
@@ -429,7 +429,7 @@ Ext.define('AknMetadata.MetadataManagerController', {
 
     // TODO: update every time
     fillMetadataFields: function(tab, filled) {
-    	var me = this, editor = me.getController("Editor"),
+        var me = this, editor = me.getController("Editor"),
             metadata = editor.getDocumentMetadata(),
             tabMap = me.tabMetaMap[tab.name];
 
@@ -446,10 +446,10 @@ Ext.define('AknMetadata.MetadataManagerController', {
                 sourceField.setValue(source);
             }
 
-        	Ext.each(metadata[tab.name].children, function(el) {
-        		var cmpToFill = tabMap.tab.down("*[name='"+el.attr.class+"']");
+            Ext.each(metadata[tab.name].children, function(el) {
+                var cmpToFill = tabMap.tab.down("*[name='" + el.attr["class"] + "']");
 
-        		if(tabMap.tab.down("*[name='children']")) {
+                if(tabMap.tab.down("*[name='children']")) {
                     cmpToFill = tabMap.tab.down("*[name='children']");
                     el.attr["type"] = el.attr["class"];
                 }
@@ -472,39 +472,39 @@ Ext.define('AknMetadata.MetadataManagerController', {
                     el.attr["content"] = el.el.innerHTML;
                 }
 
-        		if(cmpToFill) {
-					if(cmpToFill.xtype == "metaGrid") {
-						me.fillGridFields(cmpToFill, el);
-					} else {
-						me.fillFormFields(cmpToFill, el);
-					}
-        		} else {
-        		}
-        	});
+                if(cmpToFill) {
+                    if(cmpToFill.xtype == "metaGrid") {
+                        me.fillGridFields(cmpToFill, el);
+                    } else {
+                        me.fillFormFields(cmpToFill, el);
+                    }
+                } else {
+                }
+            });
         }
 
         tabMap.filled = true;
     },
 
     fillGridFields: function(grid, data) {
-    	this.addRecord(grid, data.attr, false, true);
+        this.addRecord(grid, data.attr, false, true);
     },
 
     fillFormFields: function(form, data) {
-    	Ext.Object.each(data.attr, function(attr, val) {
-    		var field = form.down("*[name='"+attr+"']");
-    		if(field) {
-    		    if(Ext.isEmpty(val)) {
+        Ext.Object.each(data.attr, function(attr, val) {
+            var field = form.down("*[name='"+attr+"']");
+            if(field) {
+                if(Ext.isEmpty(val)) {
                     field.reset();
-    		    } else {
-    		      field.setValue(val);
-    		    }
-    		}
-    	});
+                } else {
+                  field.setValue(val);
+                }
+            }
+        });
     },
 
     tabActivated: function(tab) {
-    	this.fillMetadataFields(tab);
+        this.fillMetadataFields(tab);
     },
 
     addRecord : function(grid, record, index, noEdit) {
@@ -513,24 +513,24 @@ Ext.define('AknMetadata.MetadataManagerController', {
         index = index || store.getCount();
         store.insert(index, [record]);
         if(!noEdit) {
-        	plugin.startEdit(index, 0);
+            plugin.startEdit(index, 0);
         }
     },
 
     /*resetFields: function() {
-    	var me = this;
-    	Ext.Object.each(me.tabMetaMap, function(el, obj) {
-    		obj.filled = false;
-    		if(obj.tab) {
-    			Ext.each(obj.tab.query("textfield"), function(cmp) {
-    				cmp.reset();
-    			});
-    			Ext.each(obj.tab.query("metaGrid"), function(cmp) {
-    				cmp.getStore().removeAll(true);
-    			});
-    		}
-    	});
-    	this.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
+        var me = this;
+        Ext.Object.each(me.tabMetaMap, function(el, obj) {
+            obj.filled = false;
+            if(obj.tab) {
+                Ext.each(obj.tab.query("textfield"), function(cmp) {
+                    cmp.reset();
+                });
+                Ext.each(obj.tab.query("metaGrid"), function(cmp) {
+                    cmp.getStore().removeAll(true);
+                });
+            }
+        });
+        this.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
                                     false, this.getPluginName());
     },
     */
@@ -544,27 +544,27 @@ Ext.define('AknMetadata.MetadataManagerController', {
     updateMetadata: function(cmp, data, conf, enablePropagation) {
         if (enablePropagation)
             this.propagationInterceptor(cmp, data, conf);
-    	var me = this, editor = me.getController("Editor"),
-    		tab = cmp.up("metaManagerPanel"),
-    		tabMap = me.tabMetaMap[tab.name],
-    		name = cmp.name,
-    		path = "";
-    	conf = conf || {};
+        var me = this, editor = me.getController("Editor"),
+            tab = cmp.up("metaManagerPanel"),
+            tabMap = me.tabMetaMap[tab.name],
+            name = cmp.name,
+            path = "";
+        conf = conf || {};
 
-    	if(tabMap && cmp) {
-    	    path = (tabMap.metaParent) ? tabMap.metaParent + "/" : "";
-    	    if(name == "children") {
-    	       var groups = {};
-    	       Ext.each(data, function(obj) {
-    	           var type = obj.type;
-    	           if(type !== undefined) {
-    	               delete obj.type;
-    	               groups[type] = groups[type] || [];
-    	               groups[type].push(obj);
-    	           }
-    	       });
-    	       Ext.Object.each(groups, function(group, gData) {
-    	           var result = DocProperties.updateMetadata(Ext.merge({
+        if(tabMap && cmp) {
+            path = (tabMap.metaParent) ? tabMap.metaParent + "/" : "";
+            if(name == "children") {
+               var groups = {};
+               Ext.each(data, function(obj) {
+                   var type = obj.type;
+                   if(type !== undefined) {
+                       delete obj.type;
+                       groups[type] = groups[type] || [];
+                       groups[type].push(obj);
+                   }
+               });
+               Ext.Object.each(groups, function(group, gData) {
+                   var result = DocProperties.updateMetadata(Ext.merge({
                         metadata : editor.getDocumentMetadata(),
                         path : path+tab.name+"/"+group,
                         data : gData
@@ -575,8 +575,8 @@ Ext.define('AknMetadata.MetadataManagerController', {
                         //remove this
                         editor.changed = true;
                     }
-    	       });
-    	    } else if (name == "lifecycle" || name == "workflow" || name == "classification") {
+               });
+            } else if (name == "lifecycle" || name == "workflow" || name == "classification") {
                 var result = DocProperties.updateMetadata(Ext.merge({
                     metadata : editor.getDocumentMetadata(),
                     path : cmp.customPath,
@@ -627,8 +627,8 @@ Ext.define('AknMetadata.MetadataManagerController', {
                     //remove this
                     editor.changed = true;
                 }
-    	    }
-    	}
+            }
+        }
         editor.showDocumentIdentifier();
     },
 
@@ -693,28 +693,28 @@ Ext.define('AknMetadata.MetadataManagerController', {
         me.application.on(Statics.eventsNames.afterLoad, me.addMetadataButton, me);
         me.application.on(Statics.eventsNames.afterSave, me.afterSave, me);
         me.control({
-        	'metaManagerPanel': {
-        		activate: me.tabActivated
-        	},
-        	'metaManagerPanel textfield': {
-        		change: function(cmp, newValue, oldValue) {
-        			if(!cmp.up("metaGrid")) {
-        				var form = cmp.up("form");
+            'metaManagerPanel': {
+                activate: me.tabActivated
+            },
+            'metaManagerPanel textfield': {
+                change: function(cmp, newValue, oldValue) {
+                    if(!cmp.up("metaGrid")) {
+                        var form = cmp.up("form");
                         if (!!oldValue)
                             console.warn(oldValue, newValue, 'asd');
-        				me.updateMetadata(form, form.getValues(), undefined, !!oldValue);
-        			}
-        		}
-        	},
+                        me.updateMetadata(form, form.getValues(), undefined, !!oldValue);
+                    }
+                }
+            },
             'metaGrid tool' : {
                 click : function(cmp) {
-                	var grid = cmp.up("metaGrid");
-                	var records = {};
-                	Ext.each(grid.columnsNames, function(name) {
-                		records[name] = name;
+                    var grid = cmp.up("metaGrid");
+                    var records = {};
+                    Ext.each(grid.columnsNames, function(name) {
+                        records[name] = name;
                         // what is record?
-                	});
-                	me.addRecord(grid, records);
+                    });
+                    me.addRecord(grid, records);
                 }
             }
         });
