@@ -47,10 +47,13 @@
  
 $rules = Array(
 
+#"Be it enacted by the Senate and House of Representatives of\s+the United States of America in Congress assembled,\s+Americas Cup\s+Act of 2011\."
+
+
 	"main" => "/{{enactingFormula}}/i",
 	"enactingFormula" => "{{init}}.+{{ending}}:?",
-	"init" => Array("be +it +enacted"),
-	"ending" => Array("as +follows")
+	"init" => Array("[Bb]e it enacted"),
+	"ending" => Array("as follows","Americas Cup\s+Act of 2011\.")
 );
 
 ?>

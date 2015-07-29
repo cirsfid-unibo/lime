@@ -47,7 +47,7 @@
 $rules = Array(
     "preambleInitList" => Array("LEGISLATIVE COUNSEL",
     	                        "Legislative Counsel",
-    	                        "Legislative counsel",,
+    	                        "Legislative counsel",
     	                        "An Act"),
 
     "preambleEndList" => Array("The people of", "do enact as follows",
@@ -56,8 +56,7 @@ $rules = Array(
     	                       "Be it enacted by the Senate and House of Representatives of\s+the United States of America in Congress assembled,\s+Americas Cup\s+Act of 2011\."
     	                       ),
 
-    "conclusionsInitList" => Array("Approved[\s\w\d,]+",
-    	                           "VerDate Nov 24 2008")
+    "conclusionsInitList" => Array("Approved[\s\w\d,]+\.")
 
 );
 

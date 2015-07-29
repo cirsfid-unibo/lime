@@ -45,18 +45,18 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 $monthsNames = array(
-	"january",
-	"february",
-	"march",
-	"april",
+	"january|jan\.?",
+	"february|feb\.?",
+	"march|mar\.?",
+	"april|apr\.?",
 	"may",
-	"june",
-	"july",
-	"august",
-	"september",
-	"october|oct.",
-	"november",
-	"december"
+	"june|jun\.?",
+	"july|jul\.?",
+	"august|aug\.?",
+	"september|sep\.?",
+	"october|oct\.?",
+	"november|nov\.?",
+	"december|dec\.?"
 );
 
 
