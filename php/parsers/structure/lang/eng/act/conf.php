@@ -46,8 +46,8 @@
  */
 $rules = Array(
 
-    "preambleInitList" => Array("An Act"),
-    "preambleEndList" => Array("Be it enacted"),
+    "preambleInitList" => Array(""),
+    "preambleEndList" => Array(""),
     "conclusionsInitList" => Array("Approved[\s\w\d,]+")
 );
 

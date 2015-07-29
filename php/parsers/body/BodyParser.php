@@ -46,6 +46,7 @@
  */
 
 require_once(dirname(__FILE__)."/../utils.php");
+error_reporting(E_ERROR | E_PARSE);
 
 class BodyParser {
     
