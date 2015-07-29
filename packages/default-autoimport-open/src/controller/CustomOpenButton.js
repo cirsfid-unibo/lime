@@ -84,11 +84,11 @@ Ext.define('DefaultAutoimportOpen.controller.CustomOpenButton', {
                 var extension = path.substring(path.length - 3);
                 if(extension == 'pdf')
                     me.onPdfSelected(path);
-                else if(extension == 'doc' || path.substring(path.length - 4) == 'docx')
+                else if(extension == 'doc')
                     me.onDocSelected(path);
-                else if (extension == 'xml') {
+                else {
                     Server.getDocument(path, function (content) {
-                        console.log(content);
+                        // console.log(content);
                         if(typeof NirUtils !== 'undefined' && NirUtils.isNirContent(content))
                             me.onNirSelected(path, content);
                         else {
@@ -96,8 +96,6 @@ Ext.define('DefaultAutoimportOpen.controller.CustomOpenButton', {
                             me.onAknSelected(path);
                         }
                     });
-                } else {
-                    Ext.Msg.alert('Unknown extension');
                 }
             }
         });
