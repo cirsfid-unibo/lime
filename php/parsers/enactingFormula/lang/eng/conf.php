@@ -53,7 +53,7 @@ $rules = Array(
 	"main" => "/{{enactingFormula}}/i",
 	"enactingFormula" => "{{init}}.+{{ending}}:?",
 	"init" => Array("[Bb]e it enacted"),
-	"ending" => Array("as follows","the United States of America in Congress assembled")
+	"ending" => Array("as follows","the United States of America in Congress assembled,")
 );
 
 ?>

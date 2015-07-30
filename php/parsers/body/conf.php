@@ -47,7 +47,7 @@
  
 $rules = Array(
     //"roman" => "(M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3}))",
-    "roman" => "\b[IVXLCDM]+\b",
+    "roman" => "\b[IVX]+\b",
     "number" => "\d+|{{roman}}+|(U|Ú)NICO",
     "book" => "/(?<![\w\.\,] )(?P<num>({{bookList}})\s*({{number}}\s*[º°\.]*))/",
     "title" => "/(?<![\w\.\,] )(?P<num>({{titleList}})\s*({{number}}))/",
@@ -58,10 +58,10 @@ $rules = Array(
     "heading" => "\([A-Z].+\)\.?",
 
     "paragraph" => "/(?<![\w\.\,] ){{numparagraph}} +{{bodyitem}}/u",
-    "numparagraph" => "\b\d{1,2}[\)\.\-]",
+    "numparagraph" => "\(*\b\d{1,2}[\)\.\-]",
 
     "item" => "/(?<![\w\.\,] ){{numitem}} +{{bodyitem}}/u",
-    "numitem" => "\b[A-Za-z]{1,2}[\)\.\-]",
+    "numitem" => "\(*\b[A-Za-z]{1,2}[\)\.\-]",
     #"numitem" => "\b([A-Za-z-]+|\d+|{{roman}})\)|\b(\d+\s*\.)",
     "bodyitem" => "[\p{L}\p{N}\p{P}\p{S} ]+[\.;]?",
     
