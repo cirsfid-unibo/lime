@@ -1418,8 +1418,14 @@ Ext.define('LIME.controller.Editor', {
                 undoRequest: true
             }, function(config) {
                 editor.setContent(config.docText);
-                app.fireEvent('editorDomChange', editor.getBody());
+                var editorBody = editor.getBody();
+                app.fireEvent('editorDomChange', editorBody);
                 cmp.setLoading(false);
+
+                // I added these because outliner and other things broke
+                // after undo. Is this correct? - Matteo
+                me.linkNotes(editor.getBody());
+                me.searchAndManageMarkedElements(editor.getBody(), cmp);
             });
         }, 50);
     },

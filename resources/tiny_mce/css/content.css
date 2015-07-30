@@ -814,6 +814,7 @@
   display: block;
   font-size: 1.2em;
   max-width: 65%;
+  margin-bottom: 10px;
   vertical-align: sub;
   font-style: italic; }
   #tinymce.lime .heading:before {
@@ -839,29 +840,6 @@
     margin-right: 5px; }
   #tinymce.lime .docNumber.inline.inline:before {
     content: "";
-    padding: 0 6px;
-    width: inherit; }
-#tinymce.lime .docType {
-  display: inline;
-  padding-right: 5px;
-  line-height: 1.5em;
-  background-color: #f2f8fd;
-  border-radius: 5px;
-  margin: 0 3px;
-  border-bottom: 2px solid #1a8de6; }
-  #tinymce.lime .docType:before {
-    box-shadow: 2px 1px 3px -2px #333333;
-    background-color: #1a8de6;
-    display: inline-block;
-    position: relative;
-    top: 1px;
-    line-height: 150%;
-    text-align: center;
-    border-radius: 0 5px 0 5px;
-    padding: 0 5px 0 5px;
-    margin-right: 5px; }
-  #tinymce.lime .docType.inline.inline:before {
-    content: "";
     padding: 0 6px;
     width: inherit; }
 #tinymce.lime .mref, #tinymce.lime .ref, #tinymce.lime .rref {
@@ -907,6 +885,7 @@
 #tinymce.lime .docStage,
 #tinymce.lime .docStatus,
 #tinymce.lime .docTitle,
+#tinymce.lime .docType,
 #tinymce.lime .documentRef,
 #tinymce.lime .entity,
 #tinymce.lime .event,
@@ -972,6 +951,7 @@
   #tinymce.lime .docStage:before,
   #tinymce.lime .docStatus:before,
   #tinymce.lime .docTitle:before,
+  #tinymce.lime .docType:before,
   #tinymce.lime .documentRef:before,
   #tinymce.lime .entity:before,
   #tinymce.lime .event:before,
@@ -1513,6 +1493,21 @@
 #tinymce.lime .quotedStructure:before {
   content: "quotedStructure";
   width: 103px; }
+#tinymce.lime .docNumber:before {
+  content: "docNumber";
+  width: 67px; }
+#tinymce.lime .docType:before {
+  content: "docType";
+  width: 55px; }
+#tinymce.lime .mref:before {
+  content: "mref";
+  width: 37px; }
+#tinymce.lime .ref:before {
+  content: "ref";
+  width: 31px; }
+#tinymce.lime .rref:before {
+  content: "rref";
+  width: 37px; }
 
 #tinymce.lime.it .address:before {
   content: "indirizzo";
