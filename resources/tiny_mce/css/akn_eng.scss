@@ -39,7 +39,6 @@
     .speech                 { @include Label('speech'); }
     .speechGroup            { @include Label('speechGroup'); }
     .tblock                 { @include Label('tblock'); }
-    .toc                    { @include Label('toc'); }
     .wrap                   { @include Label('wrap'); }
     .content                { @include Label('content'); }
     .remedies               { @include Label('remedies'); }
@@ -144,12 +143,11 @@
     .subheading       { @include Label('subheading'); }
     .term             { @include Label('term'); }
     .time             { @include Label('time'); }
-    .tocItem          { @include Label('tocItem'); }
     .vote             { @include Label('vote'); }
     .quotedText       { @include Label('quotedText'); }
     .authorialNote    { @include Label('authorialNote'); }
     .quotedStructure  { @include Label('quotedStructure'); }
-    
+
     .docNumber        { @include Label('docNumber'); }
     .docType          { @include Label('docType'); }
     .mref             { @include Label('mref'); }

@@ -305,10 +305,6 @@
 
     .title { @include Label('titolo')}
 
-    .toc { @include Label('indice')}
-
-    .tocItem { @include Label('elemento-indice')}
-
     .tome { @include Label('tomo')}
 
     .transitional { @include Label('transitorio')}

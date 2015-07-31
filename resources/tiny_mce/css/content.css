@@ -921,7 +921,6 @@
 #tinymce.lime .subheading,
 #tinymce.lime .term,
 #tinymce.lime .time,
-#tinymce.lime .tocItem,
 #tinymce.lime .vote,
 #tinymce.lime .quotedText {
   display: inline;
@@ -987,7 +986,6 @@
   #tinymce.lime .subheading:before,
   #tinymce.lime .term:before,
   #tinymce.lime .time:before,
-  #tinymce.lime .tocItem:before,
   #tinymce.lime .vote:before,
   #tinymce.lime .quotedText:before {
     box-shadow: 2px 1px 3px -2px #333333;
@@ -1000,6 +998,18 @@
     border-radius: 0 5px 0 5px;
     padding: 0 5px 0 5px;
     margin-right: 5px; }
+#tinymce.lime .tocItem {
+  display: block;
+  margin: 2px;
+  color: #444; }
+  #tinymce.lime .tocItem[akn_level="1"] {
+    margin-left: 10px; }
+  #tinymce.lime .tocItem[akn_level="2"] {
+    margin-left: 20px; }
+  #tinymce.lime .tocItem[akn_level="3"] {
+    margin-left: 30px; }
+  #tinymce.lime .tocItem[akn_level="4"] {
+    margin-left: 40px; }
 #tinymce.lime .p {
   margin: 0 4px;
   padding: 0 4px;
@@ -1163,9 +1173,6 @@
 #tinymce.lime .tblock:before {
   content: "tblock";
   width: 49px; }
-#tinymce.lime .toc:before {
-  content: "toc";
-  width: 31px; }
 #tinymce.lime .wrap:before {
   content: "wrap";
   width: 37px; }
@@ -1478,9 +1485,6 @@
 #tinymce.lime .time:before {
   content: "time";
   width: 37px; }
-#tinymce.lime .tocItem:before {
-  content: "tocItem";
-  width: 55px; }
 #tinymce.lime .vote:before {
   content: "vote";
   width: 37px; }
@@ -1968,12 +1972,6 @@
 #tinymce.lime.it .title:before {
   content: "titolo";
   width: 49px; }
-#tinymce.lime.it .toc:before {
-  content: "indice";
-  width: 49px; }
-#tinymce.lime.it .tocItem:before {
-  content: "elemento-indice";
-  width: 103px; }
 #tinymce.lime.it .tome:before {
   content: "tomo";
   width: 37px; }

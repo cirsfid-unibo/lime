@@ -201,9 +201,36 @@
     .subheading,
     .term,
     .time,
-    .tocItem,
     .vote,
     .quotedText { @include Inline; }
+
+
+    .tocItem {
+        display: block;
+        margin: 5px 0;
+        color: #444;
+        &[akn_level="1"] {
+            margin-left: 10px;
+        }
+        &[akn_level="2"] {
+            margin-left: 20px;
+        }
+        &[akn_level="3"] {
+            margin-left: 30px;
+        }
+        &[akn_level="4"] {
+            margin-left: 40px;
+        }
+        &[akn_level="5"] {
+            margin-left: 50px;
+        }
+        &[akn_level="6"] {
+            margin-left: 60px;
+        }
+        &[akn_level="7"] {
+            margin-left: 70px;
+        }
+    }
 
     // Popup
     // Other
