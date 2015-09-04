@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -52,8 +52,8 @@
 Ext.define('LIME.Utilities', {
     /* Since this is merely a utility class define it as a singleton (static members by default) */
     singleton : true,
-    alternateClassName : 'Utilities',   
-    
+    alternateClassName : 'Utilities',
+
     requires: [
         'Server'
     ],
@@ -63,14 +63,14 @@ Ext.define('LIME.Utilities', {
      * TODO
      */
     buttonFieldDefault : 'behavior',
-    
+
     /**
      * @property {String} buttonIdSeparator
      * Needed to separate the id of a marked element from the id of the button
      * that was used to mark it.
      */
     buttonIdSeparator : '-',
-    
+
     /**
      * @property {Object} wrapperClassPatterns
      * A small set of helper functions that retrieve
@@ -84,12 +84,12 @@ Ext.define('LIME.Utilities', {
             return (config.elName);
         }
     },
-    
+
     /**
      * Return a well formed url that contains the given arguments
      * properly encoded (to be set into the url).
      * @param {Array} params The parameters to be set into the url
-     * @returns {String} The final url 
+     * @returns {String} The final url
      */
     getAjaxUrl : function(params) {
         // get the url for the requested service
@@ -107,7 +107,7 @@ Ext.define('LIME.Utilities', {
         // return the url
         return requestedServiceUrl;
     },
-    
+
     /**
      * This function returns type of an object
      * @param {Object} obj The object
@@ -116,14 +116,14 @@ Ext.define('LIME.Utilities', {
     toType : function(obj) {
         return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
     },
-    
+
     /**
      * This function merges two json objects passed as arguments.
      * Greater priority is given to the second object
      * @param {Object} object1 The first object
      * @param {Object} object2 The second object
-     * @param {Function} callBefore 
-     * A function that can be called before merging the objects 
+     * @param {Function} callBefore
+     * A function that can be called before merging the objects
      * (a clone of the first object and a reference to the second object are given as arguments)
      * @returns {Object} The merged json object
      */
@@ -151,7 +151,7 @@ Ext.define('LIME.Utilities', {
             objectResult = object2;
         return objectResult;
     },
-    
+
     beforeMerge: function(obj1, obj2) {
             if (Ext.isObject(obj2) && !Ext.isObject(obj1)) {
                 var tmp = obj1;
@@ -163,7 +163,7 @@ Ext.define('LIME.Utilities', {
                 obj2 : obj2
             };
     },
-    
+
 
     /**
      * This function converts a Date object to an ISO compliant string
@@ -231,13 +231,13 @@ Ext.define('LIME.Utilities', {
         }
         return -1;
     },
-    
-    
+
+
     /**
      * This serialize an array of objects
      * @param {Object[]} array
      * @param {String[]} needEl Names of need elements to serialize
-     * @param {Object} [config] Configuration object 
+     * @param {Object} [config] Configuration object
      * @returns {String}
      */
     serializeObjArray : function(array, needEl, config){
@@ -249,7 +249,7 @@ Ext.define('LIME.Utilities', {
                     res.push(obj[el]);
                 }else if(Ext.isArray(obj[el])){
                     Ext.each(obj[el],function(ch){
-                        res.push(ch);   
+                        res.push(ch);
                     });
                 }
             },this);
@@ -264,23 +264,23 @@ Ext.define('LIME.Utilities', {
             if(config.capitalize){
                 element = Ext.String.capitalize(element);
             }
-            str+=element+"|"        
+            str+=element+"|"
         },this);
         return str.substr(0,str.length-1);
     },
-    
+
     reMatch : function(re,str,flags){
         var matches = [],
             match;
         if(Ext.isString(re)){
             re = new RegExp(re,flags);
-        } 
+        }
         while(match = re.exec(str)){
             matches.push(match);
-        }   
-        return matches;     
+        }
+        return matches;
     },
-    
+
     reGroupExec : function(reObj, flags, str) {
         var res = [],
             matches = this.reMatch(reObj.re, str, flags);
@@ -297,19 +297,19 @@ Ext.define('LIME.Utilities', {
             }
             res.push(resObj);
         }, this);
-        
+
         return res;
     },
-    
+
     execRe : function(reObj, str){
         var matches = this.reMatch(reObj.re,str,'ig');
-        
+
         Ext.each(matches,function(res){
             var resObj = {},
                 count = 0;
             resObj.matches = {match:res[0]};
             resObj.matchGroups = res;
-            
+
             for(var i=1; i<res.length; i++){
                 var group = reObj.groups[i-1],
                     match = res[i];
@@ -319,41 +319,41 @@ Ext.define('LIME.Utilities', {
             }
         },this);
     },
-    
+
     /**
      * Change the editor's language.
      * The current implementation refreshes the whole DOM with
      * a different language code.
-     * @param {String} languageCode The ISO code of the language (e.g. it, en, etc.). 
+     * @param {String} languageCode The ISO code of the language (e.g. it, en, etc.).
      */
     changeLanguage : function(languageCode){
         // Keep the current parameters
         var params = Ext.Object.fromQueryString(window.location.search);
-                            
+
         // Replace language
         params.lang = languageCode;
-        
+
         // Refresh
         window.location.search = Ext.Object.toQueryString(params);
     },
-    
-    
+
+
     /**
      * Convert a JSON into HTML DOM node.
      * Each element's name represents the class of a div.
      * Elements starting with @ represents attributes.
      */
     jsonToHtml : function(json){
-        
+
         if (!json) return null;
-        
+
         // Create the div for the current object
         var root = document.createElement('div'),
             current,
             currentDom;
-            
+
         root.removeAttribute('class');
-        
+
         for (var obj in json){
             current = json[obj];
             if (obj.indexOf('@') == 0){
@@ -377,22 +377,22 @@ Ext.define('LIME.Utilities', {
         }
         return root;
     },
-    
+
     /**
      * Convert a JSON into XML FRBR DOM node.
      * Each element's name represents the class of a div.
      * Elements starting with @ represents attributes.
      */
     jsonToFrbr : function(json, noroot){
-        
+
         if (!json) return null;
-        
+
         // Create the div for the current object
         var root = document.createElement('meta'),
             current,
             currentDom,
             currentChild;
-        
+
         for (var obj in json){
             current = json[obj];
             if (obj.indexOf('@') == 0){
@@ -409,16 +409,16 @@ Ext.define('LIME.Utilities', {
                 }
             }
         }
-        
+
         return root;
     },
-    
+
     globalIndexOf: function(substring, string) {
         var a=[],i=-1;
         while((i=string.indexOf(substring,i+1)) >= 0) a.push(i);
         return a;
     },
-    
+
     removeNodeByQuery: function(root, query) {
         var node = root.querySelector(query);
         if(node && node.parentNode) {
@@ -426,7 +426,7 @@ Ext.define('LIME.Utilities', {
         }
         return node;
     },
-    
+
     replaceChildByQuery: function(root, query, newChild) {
         var oldChild = root.querySelector(query);
         if (oldChild && oldChild.parentNode) {
@@ -434,7 +434,7 @@ Ext.define('LIME.Utilities', {
         }
         return oldChild;
     },
-    
+
     createWidget: function(name, config) {
         var widget;
         try {
@@ -445,7 +445,7 @@ Ext.define('LIME.Utilities', {
         }
         return widget;
     },
-    
+
     pushOrValue: function(target, element) {
         var result = target;
         if(Ext.isArray(target)) {
@@ -458,11 +458,11 @@ Ext.define('LIME.Utilities', {
         }
         return result;
     },
-    
+
     getLastItem: function(array) {
         return array[array.length-1];
     },
-    
+
     filterUrls: function(reqUrls, content, success, failure, scope) {
         console.warn('Utilities.filterUrls is deprecated, use Server.filterUrls');
         return Server.filterUrls(reqUrls, content, success, failure, scope);
@@ -472,7 +472,7 @@ Ext.define('LIME.Utilities', {
         date = (Ext.isDate(date)) ? date : new Date(date);
         return !isNaN(date.getTime());
     },
-    
+
     detectMarkingLang: function(xmlString) {
         var name ;
         for(var i = 0; i < Config.languages.length; i++) {
@@ -480,6 +480,25 @@ Ext.define('LIME.Utilities', {
             var config = Config.getLanguageConfig(name);
             if ( config && config.schemaRegex && xmlString.match(config.schemaRegex) ) {
                 return name;
+            }
+        }
+    },
+
+    // Debug utilities
+    debug: {
+        // Find difference between two strings
+        diff: function (a, b, errorLength) {
+            errorLength = errorLength || 40;
+            if (a !== b) {
+                var maxLength = Math.max(a.length, b.length);
+                for (var i = 0; i < maxLength; i++)
+                    if (a[i] !== b[i])
+                        break;
+                console.log('Found difference after character', i)
+                console.log(a.substr(i, errorLength));
+                console.log(b.substr(i, errorLength));
+            } else {
+                console.log('No difference found');
             }
         }
     }

@@ -51,5 +51,5 @@ Ext.define('LIME.view.main.Editor', {
     extend : 'Ext.ux.form.field.TinyMCE',
     alias : 'widget.mainEditor',
     requires: ['Ext.ux.form.field.TinyMCE'],
-    hideBorder: true,
+    hideBorder: true
 });

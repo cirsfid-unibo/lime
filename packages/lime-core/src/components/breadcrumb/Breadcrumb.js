@@ -52,6 +52,6 @@ Ext.define('LIME.components.breadcrumb.Breadcrumb', {
 
     requires: [
         'LIME.components.breadcrumb.BreadcrumbController'
-    ],
+    ]
 
 });

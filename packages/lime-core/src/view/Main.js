@@ -96,7 +96,7 @@ Ext.define('LIME.view.Main', {
                 // bbar: [{
                 //     xtype: 'mainEditorPath'
                 // }]
-                margin: '0 3',
+                margin: '0 3'
             }, {
                 region: 'south',
                 xtype: 'mainEditorPath'

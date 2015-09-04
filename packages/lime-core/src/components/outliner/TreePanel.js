@@ -97,11 +97,11 @@ Ext.define('LIME.components.outliner.TreePanel', {
             data.root = store.getRoot();
         // data.root = this.getStore().getRoot();
         return data;
-    },
+    }
 
     // Todo: implent ensureVisible:
     // A) Reimplement copying part of it from TreePanel
-    // B) Always read all of them (?) 
+    // B) Always read all of them (?)
     // ensureVisible: function(path, options) {
     // },
 });

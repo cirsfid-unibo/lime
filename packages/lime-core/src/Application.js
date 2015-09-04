@@ -81,6 +81,7 @@ Ext.define('LIME.Application', {
         'LIME.controller.ContextMenu',
         'LIME.controller.ContextInfoManager',
         'LIME.controller.WidgetManager',
+        'LIME.controller.UndoManager',
 
         'LIME.store.Outliner',
         'LIME.store.Languages',
@@ -109,6 +110,7 @@ Ext.define('LIME.Application', {
         'Notification',
         'ContextMenu',
         'ContextInfoManager',
+        'UndoManager',
         'WidgetManager'
     ],
 

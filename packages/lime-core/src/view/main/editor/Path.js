@@ -110,5 +110,5 @@ Ext.define('LIME.view.main.editor.Path', {
                     cmp.fireEvent('pathItemClicked', node);
             }
         }
-    },
+    }
 });
