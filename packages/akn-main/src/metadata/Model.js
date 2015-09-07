@@ -47,8 +47,17 @@
 // Metadata model for AkomaNtoso.
 // This is the generic model, to use/modify the metadata of the document
 // use the default metadata store.
+
+Ext.define('AknMain.metadata.Base', {
+     extend: 'Ext.data.Model',
+
+     schema: {
+         namespace: 'AknMain.metadata'
+     }
+ });
+
 Ext.define('AknMain.metadata.Document', {
-    extend: 'Ext.data.Model',
+    extend: 'AknMain.metadata.Base',
 
     fields: [
         // Identification                       Example:
@@ -95,18 +104,18 @@ Ext.define('AknMain.metadata.Document', {
 });
 
 Ext.define('AknMain.metadata.Alias', {
-    extend: 'Ext.data.Model',
-    belongsTo: 'AknMain.metadata.Document',
+    extend: 'AknMain.metadata.Base',
     fields: [
+        { name: 'documentId', reference: 'Document' },
         { name: 'name', type: 'string' },
         { name: 'value', type: 'string' }
     ]
 });
 
 Ext.define('AknMain.metadata.Reference', {
-    extend: 'Ext.data.Model',
-    belongsTo: 'AknMain.metadata.Document',
+    extend: 'AknMain.metadata.Base',
     fields: [
+        { name: 'documentId', reference: 'Document' },
         { name: 'eid', type: 'string' },
         { name: 'type', type: 'string' },
         { name: 'href', type: 'string' },
@@ -130,12 +139,12 @@ Ext.define('AknMain.metadata.Reference', {
 });
 
 Ext.define('AknMain.metadata.LifecycleEvent', {
-    extend: 'Ext.data.Model',
-    belongsTo: 'AknMain.metadata.Document',
+    extend: 'AknMain.metadata.Base',
     fields: [
+        { name: 'documentId', reference: 'Document' },
         { name: 'eid', type: 'string' },
         { name: 'date', type: 'date' },
-        { name: 'source', reference: 'AknMain.metadata.Reference' },
+        { name: 'source', reference: 'Reference' },
         { name: 'refers', type: 'string' },
         { name: 'original', type: 'boolean' },
         { name: 'type', type: 'string' }
@@ -146,22 +155,22 @@ Ext.define('AknMain.metadata.LifecycleEvent', {
 });
 
 Ext.define('AknMain.metadata.WorkflowStep', {
-    extend: 'Ext.data.Model',
-    belongsTo: 'AknMain.metadata.Document',
+    extend: 'AknMain.metadata.Base',
     fields: [
+        { name: 'documentId', reference: 'Document' },
         { name: 'eid', type: 'string' },
         { name: 'date', type: 'date' },
-        { name: 'actor', reference: 'AknMain.metadata.Reference' },
-        { name: 'role', reference: 'AknMain.metadata.Reference' },
+        { name: 'actor', reference: 'Reference' },
+        { name: 'role', reference: 'Reference' },
         { name: 'href', type: 'string' },
-        { name: 'outcome', reference: 'AknMain.metadata.Reference' }
+        { name: 'outcome', reference: 'Reference' }
     ]
 });
 
 Ext.define('AknMain.metadata.ClassificationKeyword', {
-    extend: 'Ext.data.Model',
-    belongsTo: 'AknMain.metadata.Document',
+    extend: 'AknMain.metadata.Base',
     fields: [
+        { name: 'documentId', reference: 'Document' },
         { name: 'value', type: 'string' },
         { name: 'showAs', type: 'string' },
         { name: 'dictionary', type: 'string' },
