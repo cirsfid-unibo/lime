@@ -111,7 +111,7 @@ Ext.define('DefaultAutoimportOpen.controller.CustomOpenButton', {
         Server.fileToHtml(path, function (html, lang) {
             console.log('html', html, lang);
             // Load the resulting Htmltoso document
-            me.application.fireEvent(Statics.eventsNames.loadDocument, {
+            Ext.GlobalEvents.fireEvent(Statics.eventsNames.loadDocument, {
                 docText: html,
                 docMarkingLanguage: 'akoma3.0',
                 docLang: lang
@@ -130,7 +130,7 @@ Ext.define('DefaultAutoimportOpen.controller.CustomOpenButton', {
         //NirUtils.confirmAknTranslation(function () {
             NirUtils.nirToHtml(content, function(html) {
             // Load the resulting Htmltoso document
-                me.application.fireEvent(Statics.eventsNames.loadDocument, {
+                Ext.GlobalEvents.fireEvent(Statics.eventsNames.loadDocument, {
                     docText: html,
                     docMarkingLanguage: 'akoma3.0'
                 });

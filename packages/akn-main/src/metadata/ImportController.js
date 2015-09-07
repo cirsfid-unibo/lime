@@ -44,29 +44,25 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Use this store to modify the metadata of AkomaNtoso documents.
-// Example:
-// var meta = Ext.getStore('metadata').getMainDocument();
-// meta.set('language', 'ita');
-// meta.aliases().add({name: 'nir', value: 'nir: ...'});
-Ext.define('AknMain.metadata.Store', {
-    extend: 'Ext.data.Store',
-    model: 'AknMain.metadata.Document',
-    requires: ['AknMain.metadata.Document'],
-    storeId: 'metadata',
-    data: [
-        {}
-    ],
+// This controller loads in the metadata store the right values every time
+// a new document is loaded in LIME.
+Ext.define('AknMain.metadata.ImportController', {
+    extend: 'Ext.app.Controller',
 
-    // Get the main Document metadata record
-    getMainDocument: function () {
-        return this.first();
+    listen: {
+        global:  {
+            loadDocument: 'onLoadDocument'
+        }
     },
 
-    // Create and return a new Document metadata record
-    newMainDocument: function () {
-        this.removeAt(0);
-        this.add({});
-        return this.first();
+    parser: new DOMParser(),
+
+    // On the loadDocument event, load metadata from the original xml document.
+    // No HtmlToso, no XSLTs, just plain and simple AkomaNtoso. KISS. <3
+    onLoadDocument: function (config) {
+        var akn = this.parser.parseFromString(config.originalXml, "text/xml"),
+            store = Ext.getStore('metadata').newMainDocument();
+
+        console.info('arguments', originalXml);
     }
 });

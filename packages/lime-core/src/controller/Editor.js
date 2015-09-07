@@ -1381,7 +1381,6 @@ Ext.define('LIME.controller.Editor', {
             editorDomChange: this.onNodeChange,
             scope : this
         });
-        this.application.on(Statics.eventsNames.loadDocument, this.beforeLoadDocument, this);
         this.application.on(Statics.eventsNames.disableEditing, this.disableEditor, this);
         this.application.on(Statics.eventsNames.enableEditing, this.enableEditor, this);
         this.application.on(Statics.eventsNames.afterSave, this.afterSave, this);
@@ -1548,6 +1547,9 @@ Ext.define('LIME.controller.Editor', {
     },
 
     listen: {
+        global: {
+            loadDocument: 'beforeLoadDocument'
+        },
         controller: {
             '#Outliner': {
                 elementFocused: 'onOutlinerClick'

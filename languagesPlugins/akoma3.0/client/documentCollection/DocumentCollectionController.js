@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -59,7 +59,7 @@ Ext.define('LIME.controller.DocumentCollectionController', {
         selector: 'markingMenu',
         ref: 'markingMenu'
     }],
-    
+
     config: {
         pluginName: "documentCollection",
         colModSuffix: "-mod",
@@ -67,9 +67,9 @@ Ext.define('LIME.controller.DocumentCollectionController', {
     },
 
     originalBeforeTranslate: false,
-    
+
     onDocumentLoaded : function(docConfig) {
-        var me = this, app = me.application, docsType = Config.getDocTypesName(), 
+        var me = this, app = me.application, docsType = Config.getDocTypesName(),
             menu, beforeTranslate = TranslatePlugin.beforeTranslate,
             collTab = me.getDocCollectionTab(), tabPanel = collTab.up();
 
@@ -96,15 +96,15 @@ Ext.define('LIME.controller.DocumentCollectionController', {
             } else {
                 // Wrap beforeTrasnalte for customizate it
                 TranslatePlugin.beforeTranslate = function(params) {
-                    me.originalBeforeTranslate = me.originalBeforeTranslate || 
+                    me.originalBeforeTranslate = me.originalBeforeTranslate ||
                                                 Ext.Function.bind(beforeTranslate, TranslatePlugin);
                     var newParams = me.originalBeforeTranslate(params) || params;
                     return me.docCollectionBeforeTranslate(newParams);
                 };
             }
         }
-        
-        if (docConfig.docType == "documentCollection" && !docConfig.colectionMod) { 
+
+        if (docConfig.docType == "documentCollection" && !docConfig.colectionMod) {
             tabPanel.setActiveTab(collTab);
             tabPanel.getTabBar().items.items[0].disable();
             tabPanel.getTabBar().items.items[1].enable();
@@ -114,10 +114,10 @@ Ext.define('LIME.controller.DocumentCollectionController', {
             tabPanel.getTabBar().items.items[0].enable();
             app.fireEvent(Statics.eventsNames.enableEditing);
         }
-       
+
         me.selectActiveDocument(docConfig.treeDocId, true);
     },
-    
+
     newDocumentCollection : function(modify) {
         var newWindow = Ext.widget('newDocumentCollection'),
             grid = newWindow.down("*[cls=dropArea] grid");
@@ -130,11 +130,11 @@ Ext.define('LIME.controller.DocumentCollectionController', {
         newWindow.onAddColumn = Ext.bind(this.onAddColumn, this);
         newWindow.show();
     },
-    
+
     docCollectionBeforeTranslate: function(params) {
-        var me = this, dom = params.docDom, metaConf = DocProperties.docsMeta, 
+        var me = this, dom = params.docDom, metaConf = DocProperties.docsMeta,
             documents, snapshot, tmpDom, rootEl;
-            
+
         // Checking if the request is before saving the document
         if (params.complete && me.completeEditorSnapshot) {
             snapshot = me.updateEditorSnapshot(me.completeEditorSnapshot);
@@ -149,22 +149,22 @@ Ext.define('LIME.controller.DocumentCollectionController', {
             Ext.each(documents, function(doc, index) {
                 var docId = doc.getAttribute(DocProperties.docIdAttribute),
                     metaDom;
-                /* The first document is processed by the editor 
-                 * here we process the documents inside the first document 
+                /* The first document is processed by the editor
+                 * here we process the documents inside the first document
                  * e.g. documentCollection */
                 docId = (docId!=undefined) ? parseInt(docId) : undefined;
                 if (docId != 0 && metaConf[docId] && metaConf[docId].metaDom) {
                     metaDom = Ext.clone(metaConf[docId].metaDom);
                     metaDom.setAttribute("class", "meta");
                     if ( doc.firstChild && !Ext.fly(doc.firstChild).is('.meta') ) {
-                        doc.insertBefore(metaDom, doc.firstChild);    
+                        doc.insertBefore(metaDom, doc.firstChild);
                     }
                 }
-            }, this);       
+            }, this);
         }
         if (me.completeEditorSnapshot && me.completeEditorSnapshot.dom) {
             rootEl = me.completeEditorSnapshot.dom.querySelector("*["+DocProperties.markingLanguageAttribute+"]");
-            tmpDom = dom.querySelector("*["+DocProperties.markingLanguageAttribute+"]");    
+            tmpDom = dom.querySelector("*["+DocProperties.markingLanguageAttribute+"]");
             if(!tmpDom && rootEl) {
                 Ext.each(rootEl.attributes, function(el) {
                     dom.setAttribute(el.nodeName, el.nodeValue);
@@ -175,7 +175,7 @@ Ext.define('LIME.controller.DocumentCollectionController', {
         params.docDom = dom;
         return params;
     },
-    
+
     createEditorSnapshot: function(config) {
         var editor = this.getController('Editor'),
             newSnapshot = {
@@ -184,7 +184,7 @@ Ext.define('LIME.controller.DocumentCollectionController', {
         newSnapshot.dom = DomUtils.parseFromString(newSnapshot.content);
         return newSnapshot;
     },
-    
+
     updateEditorSnapshot: function(snapshot) {
         var me = this, editor = me.getController('Editor'),
             newSnapshot = me.createEditorSnapshot(),
@@ -205,7 +205,7 @@ Ext.define('LIME.controller.DocumentCollectionController', {
         }
         return Ext.merge(snapshot, {editorDocId: editorDocId});
     },
-    
+
     isDocColMod: function(doc) {
         var colMod = parseInt(doc.getAttribute("colmod"));
         if(isNaN(colMod)) {
@@ -213,7 +213,7 @@ Ext.define('LIME.controller.DocumentCollectionController', {
         }
         return (colMod) ? true : false;
     },
-    
+
     docToTreeData: function(doc, dom, textSufix, qtip) {
         var res = {}, collBody, children, docChildren = [],
             languageController = this.getController("Language"),
@@ -221,7 +221,7 @@ Ext.define('LIME.controller.DocumentCollectionController', {
         if (doc) {
             if(Ext.DomQuery.is(doc, "[class~=documentCollection]")) {
                 docChildren.push({text: doc.getAttribute(langPrefix+"name") || "collection",
-                   leaf: true, 
+                   leaf: true,
                    id: doc.getAttribute("docid")+this.getColModSuffix(),
                    qtip: "collection"});
             }
@@ -237,48 +237,48 @@ Ext.define('LIME.controller.DocumentCollectionController', {
                         var docRef = cmpDoc.getAttribute(langPrefix+"href");
                         docRef = (docRef) ? docRef.substr(1) : ""; //Removing the '#'
                         if (docRef) {
-                            chDoc = dom.querySelector("*[class~='components'] *["+langPrefix+Language.getElementIdAttribute()+"="+docRef+"] *[class*="+DocProperties.documentBaseClass+"]") 
+                            chDoc = dom.querySelector("*[class~='components'] *["+langPrefix+Language.getElementIdAttribute()+"="+docRef+"] *[class*="+DocProperties.documentBaseClass+"]")
                                     || dom.querySelector("*[class~='components'] *["+langPrefix+Language.getElementIdAttribute().toLowerCase()+"="+docRef+"] *[class*="+DocProperties.documentBaseClass+"]");
                             if (chDoc) {
-                                docChildren.push(this.docToTreeData(chDoc, dom, '#'+docRef, cmpDoc.getAttribute(langPrefix+"showAs")));    
+                                docChildren.push(this.docToTreeData(chDoc, dom, '#'+docRef, cmpDoc.getAttribute(langPrefix+"showAs")));
                             }
                         }
                     } else if(cmpDoc.getAttribute("class").indexOf(DocProperties.documentBaseClass) != -1) {
                         docChildren.push(this.docToTreeData(cmpDoc, dom));
                     }
                 }
-                
+
             }
             res = {text:DomUtils.getDocTypeByNode(doc) + ((textSufix) ? " "+ textSufix : ""),
-                   children: docChildren, 
-                   leaf: (docChildren.length == 0), 
+                   children: docChildren,
+                   leaf: (docChildren.length == 0),
                    expanded : (docChildren.length != 0),
                    id: parseInt(doc.getAttribute("docid")),
                    qtip: qtip};
         }
         return res;
     },
-    
+
     selectActiveDocument: function(docId, persistent) {
         var openedDocumentsStore = this.getStore('OpenedDocuments'),
             treePanel = this.getDocCollectionTab().down("treepanel"),
             node;
-        
+
         docId = (docId == -1) ? this.selectedDocId : docId;
         node = (docId) ? openedDocumentsStore.getNodeById(docId) : openedDocumentsStore.getRootNode().firstChild;
 
         if (node) {
-            treePanel.getSelectionModel().select(node, false, true);    
+            treePanel.getSelectionModel().select(node, false, true);
         }
         if (persistent) {
             this.selectedDocId = docId;
         }
     },
-    
+
     setDocumentTreeData: function(docConfig) {
-        var openedDocumentsStore = this.getStore('OpenedDocuments'), treeData = [];  
+        var openedDocumentsStore = this.getStore('OpenedDocuments'), treeData = [];
         if (docConfig.docDom && docConfig.docType == "documentCollection") {
-            var currentDocument = docConfig.docDom.querySelector("*[class*="+docConfig.docType+"]"); 
+            var currentDocument = docConfig.docDom.querySelector("*[class*="+docConfig.docType+"]");
             treeData.push(this.docToTreeData(currentDocument, docConfig.docDom));
         }
         openedDocumentsStore.setRootNode({children: treeData, expanded: true});
@@ -301,7 +301,7 @@ Ext.define('LIME.controller.DocumentCollectionController', {
         }
         return config;
     },
-    
+
     createDocumentCollection: function(config, componentsUri) {
         var serializedUri = "";
         if (componentsUri.length > 0) {
@@ -310,10 +310,10 @@ Ext.define('LIME.controller.DocumentCollectionController', {
             this.makeDocumentCollectionRequest(config, {docs: serializedUri});
         }
     },
-    
+
     makeDocumentCollectionRequest: function(config, params) {
         var loginManager = this.getController('LoginManager'),
-            userInfo = loginManager.getUserInfo(), app = this.application,
+            userInfo = loginManager.getUserInfo(),
             newParams = Ext.merge({
                 requestedService : Statics.services.createDocumentCollection,
                 docCollectionName : "",
@@ -332,10 +332,10 @@ Ext.define('LIME.controller.DocumentCollectionController', {
             params : newParams,
             scope : this,
             success : function(result, request) {
-                app.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(config, {
+                Ext.GlobalEvents.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(config, {
                     docText : result.responseText
                 }));
-                
+
                 if (Ext.isFunction(config.success)) {
                     config.success();
                 }
@@ -347,7 +347,7 @@ Ext.define('LIME.controller.DocumentCollectionController', {
             }
         });
     },
-    
+
     modifyDocumentCollection: function(config, components, classes) {
         var me = this, serializedUri = "", serializedCls = "",
             params = {};
@@ -357,7 +357,7 @@ Ext.define('LIME.controller.DocumentCollectionController', {
             serializedCls = classes.join(";");
             params = {
                 modify: true,
-                docs: serializedUri, 
+                docs: serializedUri,
                 cls: serializedCls
             };
             // Saving mode to translate content from the snapshot
@@ -366,16 +366,16 @@ Ext.define('LIME.controller.DocumentCollectionController', {
             }, {complete: true});
         }
     },
-    
+
     switchDoc: function(config) {
-        var me = this, app = me.application, editor = me.getController('Editor'),
+        var me = this, editor = me.getController('Editor'),
             docId = Ext.isString(config.id) ? parseInt(config.id) : config.id,
             docMeta = DocProperties.docsMeta[docId],
             colMod = Ext.isString(config.id) ? (config.id.indexOf(me.getColModSuffix()) != -1) : false;
             snapshot = me.completeEditorSnapshot, prevColMod = 0;
 
         if (snapshot && snapshot.dom) {
-            /* Before loading a new document we need to update 
+            /* Before loading a new document we need to update
              * the snapshot with new content from the editor
              */
             newSnapshot = me.updateEditorSnapshot(snapshot);
@@ -392,18 +392,18 @@ Ext.define('LIME.controller.DocumentCollectionController', {
                 if(docEl) {
                     docEl.setAttribute("colmod", (colMod) ? 1 : 0);
                 }
-                app.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(docMeta, {
+                Ext.GlobalEvents.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(docMeta, {
                     docMarkingLanguage: Config.getLanguage(),
                     docText : DomUtils.serializeToString(doc),
                     alternateDocType: (colMod) ? me.getDocColAlternateType() : null,
                     lightLoad : true,
                     treeDocId : config.id,
                     colectionMod : colMod
-                })); 
+                }));
             }
         }
     },
-    
+
     snapshotToDocColMod: function(snapshot, docId) {
         // Create a temporary copy of the snapshot, don't modify it directly!
         var breakingElement, completeSnapshotDom = DomUtils.parseFromString(snapshot.content),
@@ -416,25 +416,25 @@ Ext.define('LIME.controller.DocumentCollectionController', {
             //Utilities.removeNodeByQuery(docCol, "[class*=collectionBody]");
             if(colBody) {
                 // Add breaking element to be able to insert text
-                Ext.DomHelper.insertHtml('beforeBegin', colBody, "<span class=\""+DomUtils.breakingElementClass+"\"></span>");    
+                Ext.DomHelper.insertHtml('beforeBegin', colBody, "<span class=\""+DomUtils.breakingElementClass+"\"></span>");
             }
         }
         return doc;
     },
-    
+
     docColModToSnapshot: function(doc, docId, snapshot) {
         var completeSnapshotDom = DomUtils.parseFromString(snapshot.content), oldDoc, collectionBody;
         if (completeSnapshotDom) {
             /*oldDoc = completeSnapshotDom.querySelector("["+DocProperties.docIdAttribute+"='" + docId + "']");
             if (oldDoc) {
                 collectionBody = oldDoc.querySelector("[class*=collectionBody]");
-                doc.appendChild(collectionBody);    
+                doc.appendChild(collectionBody);
             }*/
-            Utilities.replaceChildByQuery(completeSnapshotDom, "["+DocProperties.docIdAttribute+"='" + docId + "']", doc);    
+            Utilities.replaceChildByQuery(completeSnapshotDom, "["+DocProperties.docIdAttribute+"='" + docId + "']", doc);
         }
         return completeSnapshotDom;
     },
-    
+
     getDocumentsFromSnapshot: function(snapshot) {
         var domDocs, documents = [], metaConf = DocProperties.docsMeta;
         if (snapshot && snapshot.dom) {
@@ -443,7 +443,7 @@ Ext.define('LIME.controller.DocumentCollectionController', {
                 var docId = doc.getAttribute(DocProperties.docIdAttribute),
                     metaDom, uri;
                 docId = (docId!=undefined) ? parseInt(docId) : undefined;
-                // Document with id '0' is the collection 
+                // Document with id '0' is the collection
                 if (docId != 0 && metaConf[docId] && metaConf[docId].metaDom) {
                     metaDom = metaConf[docId].metaDom;
                     uri = metaDom.querySelector("*[class=FRBRManifestation]>*[class=FRBRthis]");
@@ -459,17 +459,17 @@ Ext.define('LIME.controller.DocumentCollectionController', {
         }
         return documents;
     },
-    
+
     onRemoveController: function() {
         var me = this;
         me.application.removeListener(Statics.eventsNames.afterLoad, me.onDocumentLoaded, me);
     },
-    
+
     onInitPlugin: function() {
         var me = this;
         me.application.on(Statics.eventsNames.afterLoad, me.onDocumentLoaded, me);
     },
-    
+
     init: function() {
         var me = this;
         me.control({
@@ -484,11 +484,11 @@ Ext.define('LIME.controller.DocumentCollectionController', {
                 },
                 afterrender: function() {
                     me.selectActiveDocument(-1);
-                }     
+                }
             },
             'newDocumentCollection': {
                 afterrender: function(cmp) {
-                    var collectionGrid = cmp.down("*[cls=dropArea] grid"), 
+                    var collectionGrid = cmp.down("*[cls=dropArea] grid"),
                     config, gridStore, components = [];
                     if (!cmp.isModify) return;
                     components = this.getDocumentsFromSnapshot(me.completeEditorSnapshot);
@@ -500,7 +500,7 @@ Ext.define('LIME.controller.DocumentCollectionController', {
             },
             'newDocumentCollection button[cls=createDocumentCollection]' : {
                 click : function(cmp) {
-                    var relatedWindow = cmp.up('window'), collectionGrid = relatedWindow.down("*[cls=dropArea] grid"), config, 
+                    var relatedWindow = cmp.up('window'), collectionGrid = relatedWindow.down("*[cls=dropArea] grid"), config,
                         gridStore, components = [], languageController = this.getController("Language"),
                         classes = [];
                     if (collectionGrid) {
@@ -521,7 +521,7 @@ Ext.define('LIME.controller.DocumentCollectionController', {
                     if(relatedWindow.isModify) {
                         me.modifyDocumentCollection(Ext.Object.merge(config, relatedWindow.getData()), components, classes);
                     } else {
-                        me.createDocumentCollection(Ext.Object.merge(config, relatedWindow.getData()), components);    
+                        me.createDocumentCollection(Ext.Object.merge(config, relatedWindow.getData()), components);
                     }
                 }
             },

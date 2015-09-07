@@ -39,7 +39,8 @@
         { "path": "lib/plupload/js/plupload.html4.js" },
         { "path": "lib/plupload/js/plupload.html5.js" },
         { "path": "lib/plupload/js/plupload.flash.js" },
-        { "path": "lib/plupload/js/plupload.silverlight.js" }
+        { "path": "lib/plupload/js/plupload.silverlight.js" },
+        { "path": "lib/wgxpath/wgxpath.js" }
     ],
     "resources": [
         "lib",

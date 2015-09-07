@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -47,7 +47,7 @@
 /**
  * This controller takes care of handling interaction with the main toolbar which
  * is responsible for letting the user open, save and delete a document or change the language
- * of the application. 
+ * of the application.
  */
 Ext.define('LIME.controller.MainToolbar', {
 
@@ -110,27 +110,26 @@ Ext.define('LIME.controller.MainToolbar', {
 
     // set up the views
     views: [
-        'MainToolbar', 
+        'MainToolbar',
         'Main',
-        'maintoolbar.OpenDocumentButton', 
-        'maintoolbar.LocaleSelector', 
-        'maintoolbar.LanguageSelectionBox', 
+        'maintoolbar.OpenDocumentButton',
+        'maintoolbar.LocaleSelector',
+        'maintoolbar.LanguageSelectionBox',
         'maintoolbar.LanguageSelectionMenu',
         'modal.newOpenfile.Main',
         'modal.newSavefile.Main',
-        'maintoolbar.FileMenuButton', 
+        'maintoolbar.FileMenuButton',
         'maintoolbar.DocumentMenuButton',
         'maintoolbar.WindowMenuButton',
         'modal.NewDocument'
     ],
-               
+
     /**
      * Create a new document by performing all the necessary
-     * operations (replace editor's content and document's id) 
+     * operations (replace editor's content and document's id)
      */
     createNewDocument : function(params){
-       var app = this.application,
-           documentId = DocProperties.currentEditorFile.id,
+       var documentId = DocProperties.currentEditorFile.id,
            config = {
                docText: '<div> &nbsp; </div>'
            };
@@ -140,10 +139,10 @@ Ext.define('LIME.controller.MainToolbar', {
            // TODO Dialog for save as
        }
        // Load an empty document with empty id
-       app.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(config, params));
+       Ext.GlobalEvents.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(config, params));
     },
-    
-    
+
+
     /**
      * Highlight file menu
      * TODO Generalize for different buttons
@@ -151,13 +150,13 @@ Ext.define('LIME.controller.MainToolbar', {
     highlightFileMenu : function(){
         var fileMenuButton = this.getFileMenuButton(),
             domEl = fileMenuButton.getEl();
-            
+
         return setInterval(function(){
             domEl.frame("#ff0000", 1, { duration: 1000 });
         }, 1000);
     },
-    
-    
+
+
     /**
      * This function is called on selection of a language in the menu
      * @param {Ext.menu.Menu} item, the clicked menu item
@@ -173,8 +172,8 @@ Ext.define('LIME.controller.MainToolbar', {
         // Set the new language in the user's preferences
         User.setPreference('defaultLanguage', langCode, callback);
     },
-    
-    
+
+
     /**
      * This function is called on selection of a locale in the menu
      * @param {Ext.menu.Menu} item, the clicked menu item
@@ -191,7 +190,7 @@ Ext.define('LIME.controller.MainToolbar', {
         // Set the new language in the user's preferences
         User.setPreference('defaultLocale', selectedLocale, callback);
     },
-    
+
     /**
      * Add a tab to the main view and thick the related
      * item in the menu.
@@ -208,7 +207,7 @@ Ext.define('LIME.controller.MainToolbar', {
             }
         }
     },
- 
+
      setAllowedViews : function() {
         var mainMenu = this.getWindowMenuButton(),
             viewsMenu = mainMenu.menu.down("*[id=showViews]"),
@@ -242,9 +241,9 @@ Ext.define('LIME.controller.MainToolbar', {
                 }
             });
             viewsMenu.setMenu(menu);
-        } 
+        }
     },
-    
+
     onLanguageLoaded: function() {
         var me = this, main = me.getMain(),
             customViews = Config.getLanguageConfig().customViews,
@@ -257,7 +256,7 @@ Ext.define('LIME.controller.MainToolbar', {
             this.addTab(openViews[i]);
         }
     },
-    
+
     addMenuItem: function(config, menuConfig) {
         if(this.getMainToolbar()) {
             this.addMenuItemRaw(config, menuConfig);
@@ -287,12 +286,12 @@ Ext.define('LIME.controller.MainToolbar', {
                 posIndex = (posIndex != -1) ? posIndex : (refItemIndex+((config.before) ? 0 : 1));
                 if (posIndex != -1) {
                     menu.move(newMenu, posIndex);
-                } 
+                }
             }
 
         }
     },
-    
+
     removeMainTabFromPreferences: function(xtype) {
         var openViews = User.preferences.views,
             result = openViews.filter(function (el) { return el != xtype; });
@@ -303,10 +302,10 @@ Ext.define('LIME.controller.MainToolbar', {
     init : function() {
         // save a reference to the controller
         var me = this;
-        
+
         this.application.on(Statics.eventsNames.languageLoaded, this.onLanguageLoaded, this);
         // console.warn('WOW')
-        
+
         // set up the control
         // console.info('INIT')
         // if (window.asdasdasd)
@@ -333,10 +332,10 @@ Ext.define('LIME.controller.MainToolbar', {
                     fn : function(cb, records) {
                         // get the store record of the language
                         var langCode = records[0].get("code");
-                        
+
                         // Change the language
                         Utilities.changeLanguage(langCode);
-                            
+
                     }
                 }
             },
@@ -384,9 +383,9 @@ Ext.define('LIME.controller.MainToolbar', {
                     }, this);
                     cmp.setMenu(menu);
                 }
-                
+
             },
-            
+
             'logoutButton': {
                 click: function() {
                     var loginManager = this.getController('LoginManager');
@@ -415,36 +414,36 @@ Ext.define('LIME.controller.MainToolbar', {
                             User.setPreference('views', openViews.concat([xtype]));
                         }
                 },
-                
+
                 close : function(cmp){
                     var menu = this.getWindowMenuButton();
                     //By convention openElement is the xtype of the element to open
                     menu.setCheckIcon(menu.menu.down('*[openElement='+cmp.xtype+']'), true);
                 },
-                
+
                 removed : function(cmp){
                     me.removeMainTabFromPreferences(cmp.getXType());
                 }
             },
-            
+
             'newDocumentButton' : {
                 click : function(cmp){
                     var newDocumentWindow = Ext.widget('newDocument');
                     newDocumentWindow.show();
                 }
-                
+
             },
-            
+
             'docMarkingLanguageSelector[cls=syncType]': {
                 change: function(cmp, value) {
                     var typeSelector, typeStore, types;
                     if (cmp.up('window').onlyLanguage) {
-                        return;    
+                        return;
                     }
                     typeSelector = cmp.up('window').down('docTypeSelector'),
                     typeStore = this.getStore('DocumentTypes'),
                     types = Config.getDocTypesByLang(value);
-                    
+
                     if (types) {
                         typeStore.loadData(types);
                         typeSelector.allowBlank = false;
@@ -456,7 +455,7 @@ Ext.define('LIME.controller.MainToolbar', {
                     }
                 }
             },
-            
+
             // Selector used on creation of document collection
             'docMarkingLanguageSelector[cls=syncTypeCollection]': {
                 change: function(cmp, value) {
@@ -482,7 +481,7 @@ Ext.define('LIME.controller.MainToolbar', {
                     }
                 }
             },
-            
+
             'docTypeSelector[cls=syncLocale]': {
                 change: function(cmp, value) {
                     var newDocWindow = cmp.up('window'),
@@ -490,7 +489,7 @@ Ext.define('LIME.controller.MainToolbar', {
                         localeStore = this.getStore('Locales'),
                         lang = newDocWindow.down('docMarkingLanguageSelector').getValue(),
                         locales = Config.getLocaleByDocType(lang, value);
-                    
+
                     if (locales) {
                         localeStore.loadData(locales);
                         localeSelector.allowBlank = false;
@@ -502,7 +501,7 @@ Ext.define('LIME.controller.MainToolbar', {
                     }
                 }
             },
-            
+
             'newDocument button': {
                 click: function(cmp) {
                     var newWindow = cmp.up('newDocument'),
@@ -523,10 +522,10 @@ Ext.define('LIME.controller.MainToolbar', {
                afterrender: function(cmp) {
                     var newWindow = cmp,
                         config = newWindow.tmpConfig;
-                    
+
                     // Setting the first language as default selected
                     newWindow.down("docMarkingLanguageSelector").setValue((Config.languages[0]) ? Config.languages[0].name : "");
-                    
+
                     if(config) {
                         if(config.docMarkingLanguage && !cmp.onlyLanguage) {
                             newWindow.down("docMarkingLanguageSelector").setValue(config.docMarkingLanguage);
@@ -541,7 +540,7 @@ Ext.define('LIME.controller.MainToolbar', {
                             newWindow.down("docLocaleSelector").setValue(config.docLocale);
                         }
                     }
-                    
+
                     if (cmp.onlyLanguage) {
                         newWindow.down("docTypeSelector").hide();
                         newWindow.down("docTypeSelector").allowBlank = true;
@@ -551,30 +550,30 @@ Ext.define('LIME.controller.MainToolbar', {
                         newWindow.down("docLocaleSelector").allowBlank = true;
                     }
                 }
-            },            
+            },
             'saveDocumentButton' : {
                 click: function() {
-                    if(!DocProperties.documentInfo.docId || 
+                    if(!DocProperties.documentInfo.docId ||
                         DocProperties.documentInfo.docId.match("/autosave/")) {
                         Ext.widget('newSavefileMain').show();
                     } else {
-                        this.getController("Editor").autoSaveContent(true);    
+                        this.getController("Editor").autoSaveContent(true);
                     }
                 }
             },
-            
+
             'windowMenuButton *[id=showViews]' : {
                 beforerender: function() {
                     this.setAllowedViews();
                 }
             },
-            
+
             'windowMenuButton *[id=showViews] menuitem': {
                 click: function(cmp) {
                     var main = this.getMain(),
                         menu = this.getWindowMenuButton(),
                         tab = main.down(cmp.openElement);
-                    
+
                     if (tab) {
                         tab.close();
                     } else {
@@ -593,7 +592,7 @@ Ext.define('LIME.controller.MainToolbar', {
                     editor.updateStyle(displayBox, displayColor, displayStyle);
                 }
             },
-            
+
             'saveAsDocumentButton': {
                 click: function() {
                     Ext.widget('newSavefileMain').show();
@@ -604,7 +603,7 @@ Ext.define('LIME.controller.MainToolbar', {
                     // Hide buttons with no items in the menu
                     if(cmp.menu && !cmp.menu.items.getCount()) {
                         cmp.hide();
-                    }           
+                    }
                 }
             },
             'mainToolbar button menu': {

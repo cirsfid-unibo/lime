@@ -80,20 +80,20 @@ Ext.define('LIME.controller.chImportController', {
             after : "importSeparator"
         }, menu);
     },
-    
+
     uploadFinished: function(content, request) {
-        var app = this.application, docMLang, docLang;
+        var docMLang, docLang;
         if(request.response) {
             docMLang = request.response[DocProperties.markingLanguageAttribute] || "";
-            docLang = request.response[DocProperties.languageAttribute] || ""; 
+            docLang = request.response[DocProperties.languageAttribute] || "";
         }
-        
+
         // Upload the editor's content
-        app.fireEvent(Statics.eventsNames.loadDocument, {
-                        docText: content, 
-                        docId: new Date().getTime(),
-                        docMarkingLanguage: docMLang,
-                        docLang: docLang
+        Ext.GlobalEvents.fireEvent(Statics.eventsNames.loadDocument, {
+            docText: content,
+            docId: new Date().getTime(),
+            docMarkingLanguage: docMLang,
+            docLang: docLang
         });
     },
 
@@ -116,20 +116,20 @@ Ext.define('LIME.controller.chImportController', {
             });
         uploaderView.show();
     },
-    
+
     finalCleaning: function(node) {
         var parsers = this.getController("ParsersController");
-        
+
         Ext.each(node.querySelectorAll('ol'), function(el) {
             Ext.fly(el).addCls('toMark');
         });
-        
+
         parsers.markOlBlockList(node);
-        
+
         Ext.each(node.querySelectorAll('.formula'), function(el) {
             el.setAttribute(Language.getAttributePrefix()+'name', 'enactingFormula');
         });
-        
+
         Ext.each(node.querySelectorAll('p'), function(el) {
             Ext.fly(el).insertHtml('afterBegin', '<br>');
             Ext.fly(el).insertHtml('beforeEnd', '<br>');
@@ -138,10 +138,10 @@ Ext.define('LIME.controller.chImportController', {
             };
             el.parentNode.removeChild(el);
         });
-        
+
         Ext.each(node.querySelectorAll('span > span'), function(el) {
             var parent = el.parentNode;
-            
+
             if ( !parent.getAttribute('class') ) {
                 while(parent.firstChild) {
                     parent.parentNode.insertBefore(parent.firstChild, parent);
@@ -161,7 +161,7 @@ Ext.define('LIME.controller.chImportController', {
                 });
             }
         });
-        
+
         parsers.addChildWrapper(node.querySelectorAll('.container'));
         parsers.normalizeNodes(node);
     },
@@ -170,21 +170,21 @@ Ext.define('LIME.controller.chImportController', {
         var me = this, parsers = this.getController("ParsersController"),
             editor = me.getController("Editor"),
             content = editor.getContent('text');
-            
+
         parsers.callReferenceParser(callback, content);
     },
-    
+
     normalizeDocDates: function() {
         var me = this, editor = me.getController("Editor"),
             body = editor.getBody();
         var parsers = this.getController("ParsersController");
         var preface = body.querySelector('.preface');
-        
+
         if (preface) {
             var dates = preface.querySelectorAll('.docDate');
             var contentToParse = Ext.fly(preface).getHtml();
             var button = DomUtils.getButtonByElement(preface);
-    
+
             parsers.callParser("docDate", contentToParse, function(result) {
                 var jsonData = Ext.decode(result.responseText, true);
                 if (jsonData && !Ext.Object.isEmpty(jsonData.response.dates)) {
@@ -196,10 +196,10 @@ Ext.define('LIME.controller.chImportController', {
             }, function() {});
         }
     },
-    
+
     parseDocument: function() {
         var me = this,
-            parsers = me.getController("ParsersController"), 
+            parsers = me.getController("ParsersController"),
             editor = me.getController("Editor");
 
         me.application.fireEvent(Statics.eventsNames.progressStart, null, {
@@ -227,17 +227,17 @@ Ext.define('LIME.controller.chImportController', {
                             me.application.fireEvent(Statics.eventsNames.progressEnd);
                         });
                     });
-                    
+
                 } else {
                     me.application.fireEvent(Statics.eventsNames.progressEnd);
                 }
-            });    
+            });
         } catch(e) {
             console.log(e);
             me.application.fireEvent(Statics.eventsNames.progressEnd);
         }
     },
-    
+
     getElementsToMarkGeneric: function(node, type, config) {
         var me = this,
             button = DocProperties.getFirstButtonByName(type);
@@ -246,7 +246,7 @@ Ext.define('LIME.controller.chImportController', {
             me.addElementToConfig(config, button.id, node);
         }
     },
-    
+
     getElementsToMarkPartitionHeader: function(node, type, config) {
         var me = this,
             orderButtons = ["num", "heading"];
@@ -260,15 +260,15 @@ Ext.define('LIME.controller.chImportController', {
             }
         });
     },
-    
+
     addElementToConfig: function(config, id, element) {
         config[id] = config[id] || [];
         config[id].push(element);
     },
-    
+
     detectHcontainerNumsToMark: function() {
         var me = this, editor = me.getController("Editor"),
-            body = editor.getBody(), 
+            body = editor.getBody(),
             hcontainers = Array.prototype.slice.call(body.querySelectorAll(".hcontainer")).filter(function(el) {
                 return !el.querySelector(".num");
             }), button,
@@ -286,7 +286,7 @@ Ext.define('LIME.controller.chImportController', {
                 nodesToMark.push(maybeNumNode);
             }
         });
-        
+
         if(nodesToMark.length) {
             button = DocProperties.getFirstButtonByName("num");
             me.application.fireEvent('markingRequest', button, {silent:true, nodes:nodesToMark});
@@ -297,9 +297,9 @@ Ext.define('LIME.controller.chImportController', {
         var me = this,
             parsers = me.getController("ParsersController"),
             partitions = body.querySelectorAll("[class='"+cls+"']"),
-            button = DocProperties.getFirstButtonByName(type), 
+            button = DocProperties.getFirstButtonByName(type),
             nodes = [];
-        
+
         if(button) {
             partitions = Array.prototype.slice.call(partitions);
             Ext.each(partitions, function(partition) {
@@ -336,7 +336,7 @@ Ext.define('LIME.controller.chImportController', {
         }
         return type;
     },
-    
+
     wrapPartitionsRicorsive: function(node, config) {
         var me = this, partition = node.querySelector(".partitionHeader"),
             cls, type, nodes;
@@ -347,11 +347,11 @@ Ext.define('LIME.controller.chImportController', {
                 nodes = me.wrapBodyPars(node, type, cls, config);
                 Ext.each(nodes, function(nd) {
                     me.wrapPartitionsRicorsive(nd, config);
-                });    
+                });
             }
         }
     },
-    
+
     detectBodyParts: function(body, config, callback) {
         if (!body) {
             Ext.callback(callback, this);
@@ -361,13 +361,13 @@ Ext.define('LIME.controller.chImportController', {
             parsers = me.getController("ParsersController"),
             nums = body.querySelectorAll(".num"),
             contentToParse = "";
-        
+
         Ext.each(nums, function(node) {
             contentToParse+= "<span>"+DomUtils.getTextOfNode(node)+ "</span>";
         });
-        
+
         me.wrapPartitionsRicorsive(body, config);
-        
+
         Ext.each(body.querySelectorAll('.article'), function(node) {
             me.detectArticleParts(node, config);
         });
@@ -380,16 +380,16 @@ Ext.define('LIME.controller.chImportController', {
             parsers = me.getController("ParsersController"),
             blockListButton = DocProperties.getChildConfigByName(DocProperties.getFirstButtonByName("article"), 'blockList')
                                 || DocProperties.getFirstButtonByName('blockList'),
-            itemButton = DocProperties.getChildConfigByName(blockListButton, 'item') 
+            itemButton = DocProperties.getChildConfigByName(blockListButton, 'item')
                             || DocProperties.getFirstButtonByName('item'),
-            numButton = DocProperties.getChildConfigByName(itemButton, 'num') 
+            numButton = DocProperties.getChildConfigByName(itemButton, 'num')
                         || DocProperties.getFirstButtonByName('num');
 
         Ext.each(node.querySelectorAll('p, .paragraph'), function(paraNode) {
             var numNode = paraNode.firstChild;
 
             // Check if this p may be an item
-            if ( numNode && numNode.textContent.trim() && 
+            if ( numNode && numNode.textContent.trim() &&
                     ( me.checkNumReg.test(numNode.textContent) || me.checkLetterReg.test(numNode.textContent) ) ) {
 
                 var wrapNode = me.createAndInsertWrapper(paraNode);
@@ -407,11 +407,11 @@ Ext.define('LIME.controller.chImportController', {
 
         if (items.length ) {
             me.wrapItemsBlockLists(items, nums, config, blockListButton);
-        } 
+        }
     },
 
     wrapItemsBlockLists: function(items, nums, config, button) {
-        var me = this, 
+        var me = this,
             parsers = me.getController("ParsersController"),
             itemsToInsert = Ext.Array.clone(items);
 
@@ -423,8 +423,8 @@ Ext.define('LIME.controller.chImportController', {
                 if ( itemsToInsert.length != Ext.Array.remove(itemsToInsert, node).length) {
                     return false;
                 }
-                if ( node.nodeType == DomUtils.nodeType.ELEMENT &&  
-                            (node.nodeName.toLowerCase() == "br") || 
+                if ( node.nodeType == DomUtils.nodeType.ELEMENT &&
+                            (node.nodeName.toLowerCase() == "br") ||
                              Ext.fly(node).hasCls(DomUtils.breakingElementClass)) {
                     return false;
                 } else if ( Ext.isEmpty(node.textContent.trim()) ) {
@@ -440,13 +440,13 @@ Ext.define('LIME.controller.chImportController', {
     },
 
     nestListsByCmpNums: function(nums, config, listButton) {
-        var me = this, 
+        var me = this,
             parsers = me.getController("ParsersController");
 
         var prevNum = nums[0];
         Ext.each(nums.splice(1), function(numNode) {
-            if ( me.checkNumReg.test(prevNum.textContent) && 
-                    me.checkLetterReg.test(numNode.textContent) && 
+            if ( me.checkNumReg.test(prevNum.textContent) &&
+                    me.checkLetterReg.test(numNode.textContent) &&
                     Ext.String.endsWith(prevNum.parentNode.textContent.trim(), ':') ) {
 
                 var wrapNode = me.createAndInsertWrapper(numNode.parentNode);
@@ -472,7 +472,7 @@ Ext.define('LIME.controller.chImportController', {
         targetNode.parentNode.insertBefore(wrapNode, targetNode);
         return wrapNode;
     },
-    
+
     detectBody: function(node, config) {
         var me = this, partition = node.querySelector(".partitionHeader"),
             parsers = me.getController("ParsersController"), bodyEl,
@@ -484,15 +484,15 @@ Ext.define('LIME.controller.chImportController', {
             bodyEl.setAttribute("class", DomUtils.tempParsingClass+" "+button.name);
             me.addElementToConfig(config, button.id, bodyEl);
         }
-        
+
         return bodyEl;
     },
-    
+
     detectPreamble: function(editorBody, bodyEl, config) {
         var me = this, preamble = editorBody.querySelector(".preamble"),
             parsers = me.getController("ParsersController"), sibling, preambleEl,
             button = DocProperties.getFirstButtonByName("preamble"), cls;
-        
+
         if (preamble) {
             preambleEl = parsers.wrapPartNode(preamble, preamble.parentNode);
             DomUtils.moveChildrenNodes(preamble, preambleEl, true);
@@ -506,7 +506,7 @@ Ext.define('LIME.controller.chImportController', {
                     sibling = preambleEl.nextSibling;
                 }
             }
-            
+
             if(preambleEl.previousSibling) {
                 sibling = preambleEl.previousSibling;
                 cls = sibling.getAttribute("class") || "";
@@ -515,7 +515,7 @@ Ext.define('LIME.controller.chImportController', {
                 }
             }
         }
-        
+
         if(preambleEl) {
             config[button.id] = [preambleEl];
             Ext.each(preambleEl.querySelectorAll('span:not(class)'), function(span) {
@@ -524,14 +524,14 @@ Ext.define('LIME.controller.chImportController', {
                 }
             });
         }
-        
+
         return preambleEl;
     },
-    
+
     detectPreface: function(editorBody, limitNode, config) {
         var me = this, parsers = me.getController("ParsersController"), sibling, prefaceEl,
             button = DocProperties.getFirstButtonByName("preface");
-            
+
         if(limitNode && limitNode.previousSibling) {
             prefaceEl = parsers.wrapPartNode(limitNode.previousSibling, limitNode.previousSibling.parentNode);
             prefaceEl.setAttribute("class", DomUtils.tempParsingClass+" "+button.name);
@@ -542,11 +542,11 @@ Ext.define('LIME.controller.chImportController', {
                 sibling = prefaceEl.previousSibling;
             }
         }
-        
+
         /*if ( prefaceEl ) {
             parsers.parseInsidePreface(prefaceEl, button);
         }*/
-        
+
         return prefaceEl;
     },
 
@@ -570,7 +570,7 @@ Ext.define('LIME.controller.chImportController', {
             bodyEl = me.detectBody(body, markingConfigs);
             preambleEl = me.detectPreamble(body, bodyEl, markingConfigs) || bodyEl;
             me.detectPreface(body, preambleEl, markingConfigs);
-            
+
 
             me.detectBodyParts(bodyEl, markingConfigs, function() {
                 Ext.each(Ext.Object.getKeys(markingConfigs), function(buttonId) {
@@ -598,13 +598,13 @@ Ext.define('LIME.controller.chImportController', {
             Ext.callback(callback, me, [result]);
         }
     },
-    
+
     getMarkingTypeByNode: function(node) {
         var cls = node.getAttribute("class") || "",
             clses = cls.split(" ");
         return clses[1];
     },
-    
+
     onInitPlugin : function() {
         var me = this;
         me.initMenu();
@@ -613,7 +613,7 @@ Ext.define('LIME.controller.chImportController', {
 
     init : function() {
         var me = this;
-        
+
         __CH = me;
         this.control({
             'menu [name=chImportDocument]' : {
