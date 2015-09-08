@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -146,11 +146,11 @@ Ext.define('LIME.controller.ParsersController', {
             icon : 'resources/images/icons/lightbulb.png',
             name : 'parseDocument',
             handler : function() {
-                if ( !me.parserActivated ) {
+                // if ( !me.parserActivated ) {
                     me.activateParsers();
-                } else {
-                    Ext.MessageBox.alert(Locale.getString("markedAlready", me.getPluginName()), Locale.getString("documentAllMarked", me.getPluginName()));
-                }
+                // } else {
+                    // Ext.MessageBox.alert(Locale.getString("markedAlready", me.getPluginName()), Locale.getString("documentAllMarked", me.getPluginName()));
+                // }
             }
         };
         me.application.fireEvent("addMenuItem", me, {
@@ -184,7 +184,7 @@ Ext.define('LIME.controller.ParsersController', {
                           button.name == 'formula' ||
                           button.name == 'conclusions')) {
                 var pButton = DocProperties.getChildConfigByName(button, 'p') || DocProperties.getFirstButtonByName("p", "common");
-                
+
                 var textGroups = me.getTextChildrenGroups(node);
 
                 if ( textGroups.length ) {
@@ -211,7 +211,7 @@ Ext.define('LIME.controller.ParsersController', {
                     silent : true,
                     noEvent : true,
                     nodes : el.node
-                });    
+                });
             });
         }
     },
@@ -246,7 +246,7 @@ Ext.define('LIME.controller.ParsersController', {
                     headingNode = null;
                 }
                 continue;
-            } 
+            }
             var fly = Ext.fly(child);
 
             if ( Ext.isFunction(isTextNodeFn) ) {
@@ -257,9 +257,9 @@ Ext.define('LIME.controller.ParsersController', {
                     group = [];
                 }
             } else {
-                if ( child.nodeType == DomUtils.nodeType.TEXT || 
+                if ( child.nodeType == DomUtils.nodeType.TEXT ||
                     groupElementsName.indexOf(child.nodeName.toLowerCase()) != -1 ||
-                    (child.nodeName.toLowerCase() == 'span' && 
+                    (child.nodeName.toLowerCase() == 'span' &&
                     !fly.is('.num') && !fly.is('.heading') && !fly.is('.subheading') ) ) {
 
                     group.push(child);
@@ -292,7 +292,7 @@ Ext.define('LIME.controller.ParsersController', {
                 case 'preamble':
                     me.parseInsidePreamble(node, button, callback, body.querySelector('.docType'));
                     break;
-                case 'conclusions':                     
+                case 'conclusions':
                     me.parseInsideConclusions(node, button, callback);
                     break;
                 case 'body':
@@ -364,7 +364,7 @@ Ext.define('LIME.controller.ParsersController', {
 
     parseDocTitle: function(node, button) {
         var me = this,
-            markButton = DocProperties.getChildConfigByName(button,"docTitle") || 
+            markButton = DocProperties.getChildConfigByName(button,"docTitle") ||
                          DocProperties.getFirstButtonByName("docTitle");
 
         var initNodes = node.querySelectorAll('.docNumber, .docDate, .docType');
@@ -401,7 +401,7 @@ Ext.define('LIME.controller.ParsersController', {
 
         var callTitle = function() {
             // Temporary only for italian documents
-            if ( DocProperties.documentInfo.docLocale == 'it' && 
+            if ( DocProperties.documentInfo.docLocale == 'it' &&
                     DocProperties.documentInfo.docLang == 'ita') {
                 me.parseDocTitle(node, button);
             }
@@ -492,7 +492,7 @@ Ext.define('LIME.controller.ParsersController', {
             var jsonData = Ext.decode(result.responseText, true);
             if (jsonData) {
                 try {
-                    me.parseBodyParts(jsonData, node, button);    
+                    me.parseBodyParts(jsonData, node, button);
                 } catch(e) {
                     Ext.log({level: "error"}, e);
                 };
@@ -503,14 +503,14 @@ Ext.define('LIME.controller.ParsersController', {
 
     parseInsideList: function(node, button, callback) {
         var me = this,
-            markButton = DocProperties.getChildConfigByName(button,"item") || 
-                         DocProperties.getChildConfigByName(button, "point") || 
+            markButton = DocProperties.getChildConfigByName(button,"item") ||
+                         DocProperties.getChildConfigByName(button, "point") ||
                          DocProperties.getFirstButtonByName("item");
 
         var nodesToMark = me.getTextChildrenGroups(node, [], function(child, fly) {
             if ( child.nodeType != DomUtils.nodeType.TEXT &&
                  ((child.nodeName.toLowerCase() == 'br') ||
-                (child.nodeName.toLowerCase() == 'span' && 
+                (child.nodeName.toLowerCase() == 'span' &&
                 fly.is('.'+DomUtils.breakingElementClass) ) ) ) {
 
                     return false;
@@ -532,7 +532,7 @@ Ext.define('LIME.controller.ParsersController', {
 
         Ext.callback(callback);
     },
-    
+
     isHeadingElement: function(node) {
         var heading = false;
         if ( node && node.getAttribute ) {
@@ -576,10 +576,10 @@ Ext.define('LIME.controller.ParsersController', {
      * @param {Object} button A reference to the button used for marking
      */
     parseDocDate : function(data, node, button, noLimit) {
-        var me = this, dates = data.response.dates, app = me.application, 
-            editor = me.getController("Editor"), 
-            markButton = DocProperties.getChildConfigByName(button,"docDate") || 
-                         DocProperties.getChildConfigByName(button, "date") || 
+        var me = this, dates = data.response.dates, app = me.application,
+            editor = me.getController("Editor"),
+            markButton = DocProperties.getChildConfigByName(button,"docDate") ||
+                         DocProperties.getChildConfigByName(button, "date") ||
                          DocProperties.getFirstButtonByName("date"),
             attributeName = markButton.rules.askFor.date1.insert.attribute.name,
         config = {
@@ -635,7 +635,7 @@ Ext.define('LIME.controller.ParsersController', {
             me.addChildWrapper(nodes);
         }
     },
-    
+
     parseLocation: function(data, node, button) {
         var me = this, locations = data.response,
             markButton = DocProperties.getChildConfigByName(button, "location"),
@@ -714,15 +714,15 @@ Ext.define('LIME.controller.ParsersController', {
     },
 
     parseAuthorityElements: function(data, node, button) {
-        var me = this, signatures = data.response, 
+        var me = this, signatures = data.response,
         sigButton = DocProperties.getChildConfigByName(button, "signature"),
             roleNodes = [], personNodes = [];
-        
+
         if( !Ext.isArray(signatures) ) return;
 
         signatures = signatures.filter(function(obj, index, arr) {
             var itemLikeMe = arr.filter(function(item) {
-                return ((item.value == obj.value) 
+                return ((item.value == obj.value)
                     && ( obj.start >= item.start && obj.end <= item.end ));
             })[0];
 
@@ -755,7 +755,7 @@ Ext.define('LIME.controller.ParsersController', {
                     });
                 } else if ( wrapper ) {
                     wrapper.removeAttribute('class');
-                } 
+                }
             }
             return wrapper;
         };
@@ -776,7 +776,7 @@ Ext.define('LIME.controller.ParsersController', {
                     });
                 } else if ( wrapper ) {
                     wrapper.removeAttribute('class');
-                } 
+                }
             }
             return wrapper;
         };
@@ -822,7 +822,7 @@ Ext.define('LIME.controller.ParsersController', {
         if( parent ) {
             var metaNode = this.objToDom(metaDom.ownerDocument, config),
                 id = metaNode.getAttribute('eId');
-            
+
             if ( !id || !parent.querySelector('[eId="'+id+'"]') ) {
                 parent.appendChild(metaNode);
             }
@@ -850,7 +850,7 @@ Ext.define('LIME.controller.ParsersController', {
                 }]
             });
         });
-    }, 
+    },
 
     addOrganizationMetadata: function(nodes) {
         var me = this, prefix = Language.getAttributePrefix(),
@@ -873,7 +873,7 @@ Ext.define('LIME.controller.ParsersController', {
                 }]
             });
         });
-    }, 
+    },
 
     addPersonMetadata: function(nodes) {
         var me = this, prefix = Language.getAttributePrefix(),
@@ -929,7 +929,7 @@ Ext.define('LIME.controller.ParsersController', {
             }
             firstNode = firstNode || secondNode;
             secondNode = secondNode || firstNode;
-            if(firstNode.parentNode && secondNode.parentNode && 
+            if(firstNode.parentNode && secondNode.parentNode &&
                         firstNode.parentNode == secondNode.parentNode) {
                 var newWrapper = Ext.DomHelper.createDom({
                     tag : 'span'
@@ -961,9 +961,9 @@ Ext.define('LIME.controller.ParsersController', {
     },
 
     parseOrganization : function(data, node, button) {
-        var me = this, items = data.response, app = me.application, 
-            editor = me.getController("Editor"), 
-            markButton = DocProperties.getChildConfigByName(button,"organization") || 
+        var me = this, items = data.response, app = me.application,
+            editor = me.getController("Editor"),
+            markButton = DocProperties.getChildConfigByName(button,"organization") ||
                          DocProperties.getFirstButtonByName("organization");
         if (items) {
             var nodesToMark = [];
@@ -993,7 +993,7 @@ Ext.define('LIME.controller.ParsersController', {
         var nodeToMark = null;
         //console.log(matchStr, resList);
         Ext.each(resList, function(res) {
-            if ( nodeToMark || (res[0] && res[0].node.nodeType != DomUtils.nodeType.TEXT && 
+            if ( nodeToMark || (res[0] && res[0].node.nodeType != DomUtils.nodeType.TEXT &&
                                 DomUtils.nodeHasClass(res[0].node, DomUtils.tempParsingClass)) ) return;
             var textNodes = [];
             Ext.each(res, function(obj) {
@@ -1078,21 +1078,21 @@ Ext.define('LIME.controller.ParsersController', {
             });
             if(!Ext.isEmpty(obj.text)) {
                 childNode = doc.createTextNode(obj.text);
-                node.appendChild(childNode);               
+                node.appendChild(childNode);
             } else {
                 Ext.each(obj.children, function(child) {
                     childNode = me.objToDom(doc, child);
                     if(childNode) {
                         node.appendChild(childNode);
                     }
-                });    
+                });
             }
         }
         return node;
     },
-    
+
     parseDocTypes : function(docTypes, node) {
-        var me = this, app = me.application, 
+        var me = this, app = me.application,
             editor = me.getController("Editor"),
              markButton = DocProperties.getFirstButtonByName('docType');
         config = {
@@ -1105,14 +1105,14 @@ Ext.define('LIME.controller.ParsersController', {
                     config.marker = {
                         silent : true
                     };
-                    me.searchInlinesToMark(node, docString, config);    
+                    me.searchInlinesToMark(node, docString, config);
                 }
             }, me);
         }
     },
-    
+
     parseDocNum : function(data, node, button) {
-        var me = this, response = data.response, markButton = DocProperties.getChildConfigByName(button, 'docNumber'), 
+        var me = this, response = data.response, markButton = DocProperties.getChildConfigByName(button, 'docNumber'),
             app = me.application, editor = me.getController("Editor"), config = {
                 markButton : markButton,
                 marker : {
@@ -1208,7 +1208,7 @@ Ext.define('LIME.controller.ParsersController', {
         }
         return nodesToMark;
     },
-    
+
     wrapPartNodeSibling : function(wrapNode, guardFunction, isLastNodeFunction) {
         var sibling = wrapNode.nextSibling;
         while (sibling) {
@@ -1236,7 +1236,7 @@ Ext.define('LIME.controller.ParsersController', {
             partNode = partNode.parentNode;
         }
         if(partNode.parentNode) {
-            partNode.parentNode.insertBefore(newWrapper, partNode);    
+            partNode.parentNode.insertBefore(newWrapper, partNode);
         }
         newWrapper.appendChild(partNode);
         return newWrapper;
@@ -1250,7 +1250,7 @@ Ext.define('LIME.controller.ParsersController', {
             introButton = DocProperties.getChildConfigByName(blockButton, 'listIntroduction'),
             config = {
                 marker: {},
-                markButton: itemButton 
+                markButton: itemButton
             }, items = [], nums = [];
         Ext.each(parts, function(element) {
             if(!element.value.trim()) return;
@@ -1282,7 +1282,7 @@ Ext.define('LIME.controller.ParsersController', {
                     tag : 'div',
                     cls : DomUtils.tempParsingClass
                 });
-                
+
                 itemsToInsert[0].parentNode.insertBefore(wrapNode, itemsToInsert[0]);
 
                 // List introduction
@@ -1310,11 +1310,11 @@ Ext.define('LIME.controller.ParsersController', {
                     if ( itemsToInsert.length != Ext.Array.remove(itemsToInsert, node).length) {
                         return false;
                     }
-                    if ( node.nodeType == DomUtils.nodeType.ELEMENT &&  
-                                (node.nodeName.toLowerCase() == "br") || 
+                    if ( node.nodeType == DomUtils.nodeType.ELEMENT &&
+                                (node.nodeName.toLowerCase() == "br") ||
                                 DomUtils.nodeHasClass(node, DomUtils.breakingElementClass)) {
                         return false;
-                    } else if ( node.nodeType == DomUtils.nodeType.TEXT && 
+                    } else if ( node.nodeType == DomUtils.nodeType.TEXT &&
                                 Ext.isEmpty(node.data.trim()) ) {
                         return false;
                     }
@@ -1322,7 +1322,7 @@ Ext.define('LIME.controller.ParsersController', {
                 });
                 wrapBlocks.push(wrapNode);
             }
-            
+
             me.requestMarkup(blockButton, {
                 silent : true,
                 noEvent : true,
@@ -1454,9 +1454,9 @@ Ext.define('LIME.controller.ParsersController', {
     },
 
     wrapBodyParts : function(partName, parts, node, button) {
-        var me = this, app = me.application, 
+        var me = this, app = me.application,
             markButton, numButton, nodesToMark = [], numsToMark = [], headingsToMark = [],
-            markButton = DocProperties.getChildConfigByName(button, partName) || DocProperties.getFirstButtonByName(partName), 
+            markButton = DocProperties.getChildConfigByName(button, partName) || DocProperties.getFirstButtonByName(partName),
             numButton = DocProperties.getChildConfigByName(markButton,"num"),
             headingButton = DocProperties.getChildConfigByName(markButton,"heading");
 
@@ -1476,7 +1476,7 @@ Ext.define('LIME.controller.ParsersController', {
         }
 
         Ext.each(parts, function(element) {
-            if(!element.value.trim()) return; 
+            if(!element.value.trim()) return;
             var numVal = (element.num && element.num.value) || element.value;
             var headingVal = (element.heading && element.heading.value),
                 parent, partNode;
@@ -1552,7 +1552,7 @@ Ext.define('LIME.controller.ParsersController', {
             var contains = element.contains, containsPartName = Ext.Object.getKeys(contains)[0];
             if (containsPartName && contains[containsPartName]) {
                 try {
-                    me.wrapBodyParts(containsPartName, contains[containsPartName], element.wrapper, button);    
+                    me.wrapBodyParts(containsPartName, contains[containsPartName], element.wrapper, button);
                 } catch (e) {
                     Ext.log({level: "error"}, "WrapBodyParts"+e);
                 }
@@ -1573,8 +1573,8 @@ Ext.define('LIME.controller.ParsersController', {
     },
 
     wrapStructurePart : function(name, delimiter, prevPartNode) {
-        var me = this, app = me.application, editor = me.getController("Editor"), 
-            body = editor.getBody(), partNode, wrapNode, 
+        var me = this, app = me.application, editor = me.getController("Editor"),
+            body = editor.getBody(), partNode, wrapNode,
             iterNode = body.querySelector('*[class="'+DocProperties.getDocClassList()+'"]');
 
         if (!prevPartNode) {
@@ -1617,9 +1617,9 @@ Ext.define('LIME.controller.ParsersController', {
                         if (textNodes.length > 0) {
                             return true;
                         }
-                        return false;    
+                        return false;
                     }
-                    
+
                 });
 
             } else {
@@ -1628,9 +1628,9 @@ Ext.define('LIME.controller.ParsersController', {
         }
         return wrapNode;
     },
-    
+
     parseQuotes : function(data) {
-        var me = this, app = me.application, 
+        var me = this, app = me.application,
             editor = me.getController("Editor"),
              markButton = DocProperties.getFirstButtonByName('quotedText'),
              markButtonStructure = DocProperties.getFirstButtonByName('quotedStructure'),
@@ -1678,10 +1678,10 @@ Ext.define('LIME.controller.ParsersController', {
                         } catch(e) {
                             console.log(e);
                         }
-                    }   
+                    }
                 }
             }, me);
-            
+
             if ( structureToMark.length ) {
                 me.requestMarkup(markButtonStructure, {
                     nodes : structureToMark,
@@ -1762,7 +1762,7 @@ Ext.define('LIME.controller.ParsersController', {
 
 
     parseStructure : function(data, callback) {
-        var me = this, app = me.application, structure = data.structure, prevPartNode = null, 
+        var me = this, app = me.application, structure = data.structure, prevPartNode = null,
             markButton, siblings;
         if (structure && structure.length && data.success) {
             var nums = structure.length,
@@ -1776,7 +1776,7 @@ Ext.define('LIME.controller.ParsersController', {
 
             var next = function(index) {
                 var name = structure[index];
-                if ((!Ext.isEmpty(data[name]) || prevPartNode) && 
+                if ((!Ext.isEmpty(data[name]) || prevPartNode) &&
                         !DomUtils.allNodesHaveClass(DomUtils.getSiblingsFromNode(prevPartNode), DomUtils.breakingElementClass)) {
                     prevPartNode = me.wrapStructurePart(name, data[name], prevPartNode);
 
@@ -1822,14 +1822,14 @@ Ext.define('LIME.controller.ParsersController', {
             }
         }
     },
-    
+
     parseReference: function(data, callback) {
         var me = this, editor = me.getController("Editor"), attrs = [],
             body = editor.getBody(), nodesToMark = [], button = DocProperties.getFirstButtonByName('ref');
         // Filter the result and remove repeating elements
         data = data.filter(function(obj) {
             var itemsLikeMe = data.filter(function(item) {
-                return ((item != obj) && (item.ref.indexOf(obj.ref) != -1) 
+                return ((item != obj) && (item.ref.indexOf(obj.ref) != -1)
                     //&& ( obj.start >= item.start && obj.end <= item.end )
                     );
             });
@@ -1932,7 +1932,7 @@ Ext.define('LIME.controller.ParsersController', {
     },
 
     parseAttachments: function(attachments) {
-        var me = this, editor = me.getController("Editor"), 
+        var me = this, editor = me.getController("Editor"),
             body = editor.getBody(),
             attachmentsButton = DocProperties.getFirstButtonByName('attachments'),
             attachmentButton = DocProperties.getFirstButtonByName('attachment'),
@@ -2001,9 +2001,9 @@ Ext.define('LIME.controller.ParsersController', {
                         select : true,
                         scroll : true,
                         click : true
-                    });    
+                    });
                 }
-            }  
+            }
         };
 
         if ( !Ext.isEmpty(response) && Ext.isArray(response) ) {
@@ -2041,13 +2041,13 @@ Ext.define('LIME.controller.ParsersController', {
                 var p = Ext.DomHelper.createDom({
                     tag : 'div'
                 });
-                
+
                 notesContainer.appendChild(p);
                 notesContainer.setAttribute('akn_name', 'notesContainer');
                 nodesToMark[0].parentNode.insertBefore(notesContainer, nodesToMark[0]);
                 var supLinkTemplate = new Ext.Template('<sup><a class="linker" href="#">{markerNumber}</a></sup>');
                 var isArtRef = /(articolo|art\.)(\s)+([ae\d\-\–\, ]+)/;
-                
+
                 Ext.each(nodesToMark, function(note, index) {
                     var noteMarker = index+1;
                     var noteId = 'note_'+noteMarker;
@@ -2141,7 +2141,7 @@ Ext.define('LIME.controller.ParsersController', {
             }
         }
     },
-    
+
     /* This function decides if a node can pass by parent class or id
      * @param {HTMLElement} node
      * @param {String} parentButtonId if this is equal to parent's button id the function returns false
@@ -2267,7 +2267,7 @@ Ext.define('LIME.controller.ParsersController', {
 
     restoreQuotes: function(node, callback) {
         var me = this, finalQuotes,
-             markButton = DocProperties.getFirstButtonByName('body') || 
+             markButton = DocProperties.getFirstButtonByName('body') ||
                           DocProperties.getFirstButtonByName('mainBody'),
              markStructureButton = DocProperties.getFirstButtonByName('quotedStructure'),
              quotedTextLimit = 50;
@@ -2275,7 +2275,7 @@ Ext.define('LIME.controller.ParsersController', {
         Ext.each(me.quotedElements, function(quote, index) {
             var tmpEl  = node.querySelector("[poslist='"+index+"']");
             if(tmpEl) {
-                tmpEl.parentNode.replaceChild(quote, tmpEl);    
+                tmpEl.parentNode.replaceChild(quote, tmpEl);
             }
         });
         me.quotedElements = [];
@@ -2319,13 +2319,13 @@ Ext.define('LIME.controller.ParsersController', {
                                 noEvent: true,
                                 onFinish: function(nodes) {
                                     try {
-                                        me.parseBodyParts(jsonData, nodes[0], markButton);    
-                                    } catch(e) {};  
+                                        me.parseBodyParts(jsonData, nodes[0], markButton);
+                                    } catch(e) {};
                                 }
                             });
                         } else {
                             try {
-                                me.parseBodyParts(jsonData, nodeToParse, markButton);    
+                                me.parseBodyParts(jsonData, nodeToParse, markButton);
                             } catch(e) {};
                         }
                     }
@@ -2340,7 +2340,7 @@ Ext.define('LIME.controller.ParsersController', {
             Ext.callback(callback);
         }
     },
-    
+
     saveQuotes: function(node) {
         var me = this;
         me.quotedElements = node.querySelectorAll("[class~=quotedText], [class~=quotedStructure]");
@@ -2379,7 +2379,7 @@ Ext.define('LIME.controller.ParsersController', {
                     subHeadingNode.appendChild(iterNode.nextSibling);
                 }
             }
-            if ( !Ext.isEmpty(DomUtils.getTextOfNode(headingNode).trim()) ) {    
+            if ( !Ext.isEmpty(DomUtils.getTextOfNode(headingNode).trim()) ) {
                 Ext.fly(headingNode).insertAfter(searchAfter);
                 if ( !Ext.isEmpty(DomUtils.getTextOfNode(subHeadingNode).trim()) ) {
                     Ext.fly(subHeadingNode).insertAfter(headingNode);
@@ -2399,7 +2399,7 @@ Ext.define('LIME.controller.ParsersController', {
             Ext.each(nodes, function(node) {
                 if ( node.getAttribute(DomUtils.elementIdAttribute) ) return;
                 var parentButton = DomUtils.getButtonByElement(DomUtils.getFirstMarkedAncestor(node)),
-                    headingButton = DocProperties.getChildConfigByName(parentButton, name) || 
+                    headingButton = DocProperties.getChildConfigByName(parentButton, name) ||
                                     DocProperties.getFirstButtonByName(name);
                 me.requestMarkup(headingButton, {
                     silent : true,
@@ -2414,7 +2414,7 @@ Ext.define('LIME.controller.ParsersController', {
     },
 
     addHcontainerHeadings: function(node) {
-        var me = this, 
+        var me = this,
             elements = Ext.Array.unique(
                 Ext.Array.toArray(
                     node.querySelectorAll('.hcontainer > .hcontainer')
@@ -2457,8 +2457,8 @@ Ext.define('LIME.controller.ParsersController', {
                 while ( wrapper.previousSibling ) {
                     var prevSib = wrapper.previousSibling;
                     if ( (DomUtils.getNodeNameLower(prevSib) == 'br' &&
-                         DomUtils.getNodeNameLower(prevSib.previousSibling) == 'br' && 
-                         brEndPar.indexOf(prevSib) != -1 ) || 
+                         DomUtils.getNodeNameLower(prevSib.previousSibling) == 'br' &&
+                         brEndPar.indexOf(prevSib) != -1 ) ||
                         ( nodesToMark.indexOf(prevSib) != -1 ) || me.isHeadingElement(prevSib) ) {
                         break;
                     }
@@ -2471,7 +2471,7 @@ Ext.define('LIME.controller.ParsersController', {
 
         var textGroups = me.getTextChildrenGroups(node, ["table"]).filter(function(group) {
             var beakingSpans = group.filter(function(el) {
-                return ( el.nodeType == DomUtils.nodeType.ELEMENT && 
+                return ( el.nodeType == DomUtils.nodeType.ELEMENT &&
                         ( DomUtils.nodeHasClass(el, DomUtils.breakingElementClass) ||
                         DomUtils.getNodeNameLower(el) == 'br' ) );
             });
@@ -2493,8 +2493,8 @@ Ext.define('LIME.controller.ParsersController', {
             }
 
             /*if ( hContainerChild ) {
-                while ( wrapper.firstChild && (( wrapper.firstChild.nodeType == DomUtils.nodeType.TEXT ) || 
-                                ( wrapper.firstChild.nodeType == DomUtils.nodeType.ELEMENT && 
+                while ( wrapper.firstChild && (( wrapper.firstChild.nodeType == DomUtils.nodeType.TEXT ) ||
+                                ( wrapper.firstChild.nodeType == DomUtils.nodeType.ELEMENT &&
                                 !wrapper.firstChild.getAttribute(DomUtils.elementIdAttribute) )) ) {
                     wrapper.parentNode.insertBefore(wrapper.firstChild, wrapper);
                 }
@@ -2531,7 +2531,7 @@ Ext.define('LIME.controller.ParsersController', {
     },
 
     normalizeNodes: function(node) {
-        var me = this, 
+        var me = this,
             uselessNodes = node.querySelectorAll('br, .breaking+br, .breaking+.breaking, .hcontainer > br, .container > br');
 
         // Remove double breaking nodes
@@ -2541,7 +2541,7 @@ Ext.define('LIME.controller.ParsersController', {
                 var prev = el.previousSibling;
                 if ( (next && next.nodeType == DomUtils.nodeType.ELEMENT && next.nodeName.toLowerCase() == 'br') ||
                      (prev && prev.nodeType == DomUtils.nodeType.ELEMENT && prev.nodeName.toLowerCase() == 'br') ||
-                     (!Ext.fly(el.parentNode).is('.inline') && !Ext.fly(el.parentNode).is('.block') && 
+                     (!Ext.fly(el.parentNode).is('.inline') && !Ext.fly(el.parentNode).is('.block') &&
                       (el.parentNode.nodeName.toLowerCase() != 'span')) ) {
                     el.parentNode.removeChild(el);
                 }
@@ -2563,13 +2563,13 @@ Ext.define('LIME.controller.ParsersController', {
             if ( textGroups.length ) {
                 Ext.each(textGroups, function(group) {
                     var breakingEls = group.filter(function(el) {
-                        return ( (el.nodeType == DomUtils.nodeType.ELEMENT && 
-                                DomUtils.nodeHasClass(el, DomUtils.breakingElementClass)) || 
+                        return ( (el.nodeType == DomUtils.nodeType.ELEMENT &&
+                                DomUtils.nodeHasClass(el, DomUtils.breakingElementClass)) ||
                                 (el.nodeType == DomUtils.nodeType.TEXT && Ext.isEmpty(el.data.trim()) ) );
                     });
                     var headingElements = group.filter(function(el) {
-                        return (DomUtils.nodeHasClass(el, 'num') || 
-                                DomUtils.nodeHasClass(el,'heading') || 
+                        return (DomUtils.nodeHasClass(el, 'num') ||
+                                DomUtils.nodeHasClass(el,'heading') ||
                                 DomUtils.nodeHasClass(el, 'subheading') );
                     });
                     if ( !headingElements.length && breakingEls.length != group.length ) {
@@ -2645,9 +2645,9 @@ Ext.define('LIME.controller.ParsersController', {
             DomUtils.unwrapNode(tmp);
         });
     },
-    
+
     callReferenceParser: function(callback, content) {
-        var me = this, editor = me.getController("Editor"), 
+        var me = this, editor = me.getController("Editor"),
             app = me.application, buttonName;
         content = content || editor.getContent();
         app.fireEvent(Statics.eventsNames.progressUpdate, Locale.getString("referenceParser", me.getPluginName()));
@@ -2662,7 +2662,7 @@ Ext.define('LIME.controller.ParsersController', {
     },
 
     activateParsers : function() {
-        var me = this, editor = me.getController("Editor"), 
+        var me = this, editor = me.getController("Editor"),
             app = me.application, buttonName;
 
         if (!DocProperties.getLang()) {
@@ -2682,7 +2682,7 @@ Ext.define('LIME.controller.ParsersController', {
 
         Ext.defer(function() {
             app.fireEvent(Statics.eventsNames.progressUpdate, Locale.getString("parsing", me.getPluginName()));
-            
+
             var endParsing = function() {
                 me.positionateNotesMarker(body);
                 me.markOlBlockList(body);
@@ -2700,7 +2700,7 @@ Ext.define('LIME.controller.ParsersController', {
                             callback: function() {
                                 app.fireEvent(Statics.eventsNames.progressEnd);
                             }
-                        });    
+                        });
                     }, 100);
                 }, 5);
             };
@@ -2756,7 +2756,7 @@ Ext.define('LIME.controller.ParsersController', {
                     });
                 });
             };
-            
+
             var callReferenceParser = function() {
                 me.callReferenceParser(endParsing);
             };
@@ -2770,7 +2770,7 @@ Ext.define('LIME.controller.ParsersController', {
                     callQuoteParser();
                 }, callQuoteParser);
             };
-            
+
             callNoteParser();
 
         }, 5, me);
