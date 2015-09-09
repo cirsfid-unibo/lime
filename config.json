@@ -1,4 +1,4 @@
 {
-    "nodeServer": "http://localhost/node/aknservices",
+    "nodeServer": "http://localhost:9006",
     "phpServer": "php/"
 }

@@ -44,29 +44,18 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Load config.json and then launch Lime
-Ext.Ajax.request({
-    url: 'config.json',
-    success: function (response) {
-        window.LimeConfig = JSON.parse(response.responseText);
-        launchLime();
-    }
-});
+Ext.require('LIME.Application', function () {
+    Ext.application({
+        name: 'LIME',
+        extend: 'LIME.Application',
 
-function launchLime () {
-    Ext.require('LIME.Application', function () {
-        Ext.application({
-            name: 'LIME',
-            extend: 'LIME.Application',
+        launch : function() {
+            // First call the parent launch method
+            this.callParent();
 
-            launch : function() {
-                // First call the parent launch method
-                this.callParent();
-
-                // Remove the loading icon
-                var loadingDiv = document.querySelector("#loading");
-                loadingDiv.parentNode.removeChild(loadingDiv);
-            }
-        });
+            // Remove the loading icon
+            var loadingDiv = document.querySelector("#loading");
+            loadingDiv.parentNode.removeChild(loadingDiv);
+        }
     });
-}
+});

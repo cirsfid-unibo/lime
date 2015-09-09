@@ -55,7 +55,7 @@ Ext.define('LIME.Utilities', {
     alternateClassName : 'Utilities',
 
     requires: [
-        'Server'
+        // 'Server'
     ],
 
     /**
@@ -481,6 +481,21 @@ Ext.define('LIME.Utilities', {
             if ( config && config.schemaRegex && xmlString.match(config.schemaRegex) ) {
                 return name;
             }
+        }
+    },
+
+    // Events related utilities
+    events: {
+        // Execute action once, when check returns true.
+        // Polling every 100ms.
+        delayUntil: function (check, action) {
+            function fn () {
+                if (check())
+                    action();
+                else
+                    setTimeout(fn, 100);
+            };
+            fn();
         }
     },
 

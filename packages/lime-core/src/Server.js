@@ -48,17 +48,40 @@
 Ext.define('LIME.Server', {
     singleton: true,
     alternateClassName: 'Server',
-    requires: ['Statics'],
+    requires: [
+        'Statics',
+        'Utilities'
+    ],
 
+    isReady: false,
     nodeServer: null,
     phpServer: null,
 
     constructor: function () {
-        // This is loaded on application launch
-        // I suppose we could find a better solution.
-        this.nodeServer = window.LimeConfig.nodeServer;
-        this.phpServer = window.LimeConfig.phpServer;
-        this.callParent(arguments);
+        var me = this;
+        Ext.Ajax.request({
+            url: 'config.json',
+            success: function (response) {
+                var config = JSON.parse(response.responseText);
+                me.phpServer = config.phpServer;
+                me.nodeServer = config.nodeServer;
+                me.isReady = true;
+            }
+        });
+        return this.callParent(arguments);
+    },
+
+    // Like Ext.Ajax.request, but delayed until we've loaded server config.
+    // Replaces {nodeServer} and {phpServer} in config.url
+    request: function (config) {
+        var me = this;
+        Utilities.events.delayUntil(function () {
+            return me.isReady;
+        }, function () {
+            config.url = config.url.replace('{nodeServer}', me.nodeServer);
+            config.url = config.url.replace('{phpServer}', me.phpServer);
+            Ext.Ajax.request(config);
+        });
     },
 
     // ====================
@@ -68,9 +91,9 @@ Ext.define('LIME.Server', {
     // Try logging in.
     // Calls success with user object
     login: function (username, password, success, failure) {
-        Ext.Ajax.request({
+        this.request({
             method: 'GET',
-            url: this.nodeServer + '/documentsdb/Users/' + encodeURI(username),
+            url: '{nodeServer}/documentsdb/Users/' + encodeURI(username),
             headers: {
                 Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password)
             },
@@ -81,9 +104,9 @@ Ext.define('LIME.Server', {
 
     // Register user.
     register: function (user, success, failure) {
-        Ext.Ajax.request({
+        this.request({
             method: 'POST',
-            url: this.nodeServer + '/documentsdb/Users',
+            url: '{nodeServer}/documentsdb/Users',
             jsonData: user,
             success: success,
             failure: failure
@@ -95,9 +118,9 @@ Ext.define('LIME.Server', {
         var username = user.username,
             password = user.password;
         console.log('username', user.username, user.password);
-        Ext.Ajax.request({
+        this.request({
             method: 'PUT',
-            url: this.nodeServer + '/documentsdb/Users/' + encodeURI(username),
+            url: '{nodeServer}/documentsdb/Users/' + encodeURI(username),
             headers: {
                 Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password)
             },
@@ -112,9 +135,9 @@ Ext.define('LIME.Server', {
         var username = User.username,
             password = User.password;
 
-        Ext.Ajax.request({
+        this.request({
             method: 'GET',
-            url: this.nodeServer + '/documentsdb/Documents' + path,
+            url: '{nodeServer}/documentsdb/Documents' + path,
             headers: {
                 Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password)
             },
@@ -130,9 +153,9 @@ Ext.define('LIME.Server', {
         var username = User.username,
             password = User.password;
 
-        Ext.Ajax.request({
+        this.request({
             method: 'GET',
-            url: this.nodeServer + '/documentsdb/Documents' + path,
+            url: '{nodeServer}/documentsdb/Documents' + path,
             headers: {
                 Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password),
                 Accept: 'text/html'
@@ -152,10 +175,10 @@ Ext.define('LIME.Server', {
         var username = User.username,
             password = User.password;
 
-        Ext.Ajax.request({
+        this.request({
             method: 'PUT',
             rawData: content,
-            url: this.nodeServer + '/documentsdb/Documents' + path,
+            url: '{nodeServer}/documentsdb/Documents' + path,
             headers: {
                 Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password)
             },
@@ -176,8 +199,8 @@ Ext.define('LIME.Server', {
 
     // Transform XML in content with the given xslt path
     applyXslt: function (content, xslt, success, failure, extraConfig) {
-        Ext.Ajax.request({
-            url: this.phpServer+'Services.php',
+        this.request({
+            url: '{phpServer}Services.php',
             method: 'POST',
             params: Ext.merge({
                 requestedService: Statics.services.xsltTrasform,
@@ -205,8 +228,8 @@ Ext.define('LIME.Server', {
             params['doc' + (i+1)] = path;
         });
 
-        Ext.Ajax.request({
-            url: this.phpServer+'Services.php',
+        this.request({
+            url: '{phpServer}Services.php',
             method: 'POST',
             params: params,
             scope: this,
@@ -243,7 +266,7 @@ Ext.define('LIME.Server', {
         if(content) {
             params = Ext.merge(params, {content: true});
         }
-        Ext.Ajax.request({
+        this.request({
             // the url of the web service
             url: this.phpServer+'Services.php',
             method: 'POST',
