@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -58,9 +58,9 @@ Ext.define('LIME.store.LanguagesPlugin', {
         plugins : Config.pluginBaseDir,
         global : "config"
     },
-    
+
     styleFile: 'content.css',
-    
+
     /**
      * @property {Object} lastConfiguration
      * This object contains the last configuration of plugins
@@ -81,10 +81,10 @@ Ext.define('LIME.store.LanguagesPlugin', {
             language : Locale.getLang()
         }
     },
-    
+
     languagePluginDefault : {
         languageRoot : new Ext.Template('{lang}/interface/default'),
-        language : Locale.getLang() 
+        language : Locale.getLang()
     },
 
     /* File names */
@@ -107,7 +107,7 @@ Ext.define('LIME.store.LanguagesPlugin', {
 
     /* Initially empty, loaded dinamically */
     dataObjects : {},
-    
+
     /**
      * Loader for requests events.
      * WARNING: ensure that the scope of this function is "this" (the controller that implements it)
@@ -120,6 +120,7 @@ Ext.define('LIME.store.LanguagesPlugin', {
             scope : this,
             callback : function(records, operation, success) {
                 var evtPrefix = 'makeRequest';
+                console.info(records, operation, success);
                 if (success && (operation.response.responseText != "")) {
                     var fileName = reqUrls[id].name,
                         level = reqUrls[id].level;
@@ -150,7 +151,7 @@ Ext.define('LIME.store.LanguagesPlugin', {
             }
         });
     },
-    
+
     requestSyncLoader: function(reqObjects) {
         var me = this, app = this.app;
         Ext.each(reqObjects, function(obj) {
@@ -169,7 +170,7 @@ Ext.define('LIME.store.LanguagesPlugin', {
                 }
             }
         });
-            
+
         me.fireEvent('filesloaded', me.dataObjects, me.styleUrls.map(function(el) {return el.url;}));
         me.lastConfiguration.loaded = true;
         app.fireEvent(Statics.eventsNames.progressUpdate, Locale.strings.progressBar.configurationFiles);
@@ -186,14 +187,14 @@ Ext.define('LIME.store.LanguagesPlugin', {
     loadPluginData : function(app, docType, docLocale) {
         var me = this;
         /**
-         * If the last loaded configuration is the same of the passed configuration 
+         * If the last loaded configuration is the same of the passed configuration
          * all files is already loaded
          */
         if (this.lastConfiguration.markingLanguage == Config.getLanguage() && this.lastConfiguration.loaded && this.lastConfiguration.docType == docType && this.lastConfiguration.docLocale == docLocale) {
             this.fireEvent('filesloaded', this.dataObjects);
             return;
         }
-        
+
         /* For each directory retrieve all the needed json files starting from the languageRoot */
         var languagesPlugins = this;
         var directoriesList = this.languagePlugin.subDirs;
@@ -224,9 +225,9 @@ Ext.define('LIME.store.LanguagesPlugin', {
             loaded : false,
             markingLanguage: Config.getLanguage()
         };
-        
+
         var styleUrls = [];
-        
+
         for (var directory in directoriesListDefault) {
             var newDir = directoriesListDefault[directory];
             currentDirectoryDefault += '/' + newDir;
@@ -243,7 +244,7 @@ Ext.define('LIME.store.LanguagesPlugin', {
                 }
             }
         }
-        
+
         for (var directory in directoriesList) {
             var newDir = directoriesList[directory];
             if (directory == "locale") {
@@ -268,7 +269,7 @@ Ext.define('LIME.store.LanguagesPlugin', {
         me.reqUrls = reqUrls;
         Server.filterUrls(styleUrls, false, me.setStyleAndRequestFiles, me.setStyleAndRequestFiles, me);
     },
-    
+
     setStyleAndRequestFiles: function(styleUrls) {
         var me = this;
         me.styleUrls = styleUrls;
@@ -278,15 +279,15 @@ Ext.define('LIME.store.LanguagesPlugin', {
                 var eventName = 'makeRequest' + objIndex;
                 me.addListener(eventName, me.requestLoader, me);
             }
-            
+
             /* Start the requests from the first file */
             me.fireEvent('makeRequest0', 0, reqUrls);
         }, me);
     },
 
     // Get the new empty document template for the current configuration.
-    // This implementation is obviously buggy and incomplete: 
-    // everything will be a div, etc. 
+    // This implementation is obviously buggy and incomplete:
+    // everything will be a div, etc.
     buildEmptyDocumentTemplate: function () {
         var dataObjects = this.getConfigData();
         var template = '';
@@ -308,7 +309,7 @@ Ext.define('LIME.store.LanguagesPlugin', {
         template += '</div>';
         return template;
     },
-    
+
     /**
      * This function returns the already retrieved data in a raw format.
      * NOTICE: This function DOES NOT check if the data is already available in the store!

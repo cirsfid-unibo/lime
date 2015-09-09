@@ -51,7 +51,7 @@ Ext.define('AknMain.metadata.ImportController', {
 
     listen: {
         global:  {
-            loadDocument: 'onLoadDocument'
+            // loadDocument: 'onLoadDocument'
         }
     },
 
@@ -63,6 +63,6 @@ Ext.define('AknMain.metadata.ImportController', {
         var akn = this.parser.parseFromString(config.originalXml, "text/xml"),
             store = Ext.getStore('metadata').newMainDocument();
 
-        console.info('arguments', originalXml);
+        console.info('arguments', akn);
     }
 });
