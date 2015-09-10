@@ -27,6 +27,7 @@ This new release of Lime offers many new features and improved performance.
     - Set the MongoDb url/port in `mongodb.url`
     - Set the filesystem path for storing xml files in `filesystem.documents`
     - Set the exist host (`exist.host`), port (`exist.port`) and credentials (`exist.auth`)
+- Run `npm install`
 - Run the server `node server.js`
     - Consider using the script in `aknservices/start.sh`, which sure only one instance of the server is running, logs errors in log.txt, and redirect output.
 
