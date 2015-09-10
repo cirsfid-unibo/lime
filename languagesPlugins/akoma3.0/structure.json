@@ -2,7 +2,6 @@
 	"plugins": [
 		"consolidation",
 		"parsers",
-		"documentCollection",
 		"modsMarker",
 		"notesManager",
         "widgetManager",

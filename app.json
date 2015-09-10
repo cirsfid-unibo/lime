@@ -15,6 +15,7 @@
 
         "akn-main",
         "akn-metadata",
+        "akn-collection",
         "akn-tab-xml-preview",
         "akn-tab-visualizer"
     ],
