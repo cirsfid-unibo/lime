@@ -100,11 +100,11 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
     getDocsUrl : function(tab, selector) {
         var me = this;
         tab.setLoading();
-        function failureCb () {
+        var failureCb = function () {
             Ext.Msg.alert(Locale.strings.error, Locale.strings.serverFailure);
-        }
-        Server.export(selector.firstDoc.id, function (url1) {
-            Server.export(selector.secondDoc.id, function (url2) {
+        };
+        Server.exportDocument(selector.firstDoc.id, function (url1) {
+            Server.exportDocument(selector.secondDoc.id, function (url2) {
                 selector.firstDoc.url = url1;
                 selector.secondDoc.url = url2;
                 me.getDiff(tab, selector);

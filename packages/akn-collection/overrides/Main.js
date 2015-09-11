@@ -51,10 +51,10 @@ Ext.define('AknCollection.Main', {
     constructor: function () {
         var pluginName = "akn-collection",
             oldXtype = this.markingMenu.xtype;
-        this.markingMenu.xtype = 'tabpanel',
+        this.markingMenu.xtype = 'tabpanel';
         this.markingMenu.title = Locale.getString("tools", pluginName);
         this.markingMenu.items = [{
-            xtype: oldXtype,
+            xtype: oldXtype
         }, {
             xtype: 'panel',
             title: Locale.getString("documentCollectionTabTitle", pluginName),
@@ -75,4 +75,4 @@ Ext.define('AknCollection.Main', {
 
         this.callParent(arguments);
     }
-})
+});

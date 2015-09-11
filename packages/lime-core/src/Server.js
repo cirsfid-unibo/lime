@@ -191,7 +191,7 @@ Ext.define('LIME.Server', {
     },
 
     // Export a document to a url accessible to everyone
-    export: function (path, success, failure) {
+    exportDocument: function (path, success, failure) {
         var me = this;
         this.authRequest({
             method: 'POST',
