@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -46,42 +46,43 @@
 
 Ext.define('DefaultDiff.controller.XmlDiff', {
     extend: 'Ext.app.Controller',
-    
+
     views: [
         'DefaultDiff.view.AmendingDiffMainTab',
         'DefaultDiff.view.ConsolidatingDiffMainTab'
     ],
 
     refs: [
-        { ref: 'appViewport', selector : 'appViewport' }, 
-        { ref: 'editButton', selector: 'amendingDiffMainTab *[cls=editButton]' }, 
-        { ref: 'editButtonScenarioB', selector: 'consolidatingDiffMainTab *[cls=editButton]' }, 
-        { ref: 'mainEditor', selector : '#mainEditor mainEditor' }, 
+        { ref: 'appViewport', selector : 'appViewport' },
+        { ref: 'editButton', selector: 'amendingDiffMainTab *[cls=editButton]' },
+        { ref: 'editButtonScenarioB', selector: 'consolidatingDiffMainTab *[cls=editButton]' },
+        { ref: 'mainEditor', selector : '#mainEditor mainEditor' },
         { ref: 'secondEditor', selector: '#secondEditor mainEditor' },
         { ref: 'outliner', selector: 'outliner' },
-        { ref: 'mainToolbar', selector: 'mainToolbar' }, 
-        { ref: 'main', selector: 'main' }, 
-        { ref: 'markingMenuContainer', selector : '[cls=markingMenuContainer]' }, 
+        { ref: 'mainToolbar', selector: 'mainToolbar' },
+        { ref: 'main', selector: 'main' },
+        { ref: 'markingMenuContainer', selector : '[cls=markingMenuContainer]' },
         { ref: 'mainToolbar', selector: 'mainToolbar' }
     ],
 
     config: {
-        diffXmlServiceUrl : "php/diff/index.php",
-        diffServiceUrl : "php/AKNDiff/index.php",
-        initDiffPage: "php/AKNDiff/data/empty.html"
+        diffXmlServiceUrl : "diff/index.php",
+        diffServiceUrl : "AKNDiff/index.php",
+        initDiffPage: "AKNDiff/data/empty.html"
     },
 
     // Set the iframe source of the current tab to either the Akomantoso diff
-    // or the generic XML diff, depending on which tab is active. 
+    // or the generic XML diff, depending on which tab is active.
     getDiff: function(tab, selector) {
         var format = tab.down("*[cls=diffContainer]").getActiveTab().format || 'text',
             baseUrl = (format=="xml") ? this.getDiffXmlServiceUrl() : this.getDiffServiceUrl(),
-            url = baseUrl + '?' + Ext.urlEncode({
+            url = Server.phpServer + baseUrl + '?' + Ext.urlEncode({
                 from: selector.firstDoc.url,
                 to: selector.secondDoc.url,
                 format: format,
                 edit: true
             });
+        console.info(url);
         tab.setIframeSource(url, function(doc) {
             selector.enableEditButton();
             var newDoc = doc.querySelector(".newDocVersion");
@@ -96,34 +97,22 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
 
     // Call EXPORT_FILES service and get an url where the diff
     // can access the two files.
-    getDocsUrl : function(tab, selector) {        
+    getDocsUrl : function(tab, selector) {
+        var me = this;
         tab.setLoading();
-        Ext.Ajax.request({
-            url : Utilities.getAjaxUrl(),
-            method : 'POST',
-            params : {
-                requestedService: 'EXPORT_FILES',
-                doc1: selector.firstDoc.id,
-                doc2: selector.secondDoc.id
-            },
-            scope : this,
-            success : function(result, request) {
-                var jsonData = Ext.decode(result.responseText, true);
-                if (jsonData && jsonData.docsUrl) {
-                    selector.firstDoc.url = jsonData.docsUrl.doc1;
-                    selector.secondDoc.url = jsonData.docsUrl.doc2;
-                    this.getDiff(tab, selector);
-                } else {
-                    Ext.Msg.alert(Locale.strings.error, Locale.strings.serverFailure);
-                }
-            },
-            failure : function() {
-                Ext.Msg.alert(Locale.strings.error, Locale.strings.serverFailure);
-            }
-        });
+        function failureCb () {
+            Ext.Msg.alert(Locale.strings.error, Locale.strings.serverFailure);
+        }
+        Server.export(selector.firstDoc.id, function (url1) {
+            Server.export(selector.secondDoc.id, function (url2) {
+                selector.firstDoc.url = url1;
+                selector.secondDoc.url = url2;
+                me.getDiff(tab, selector);
+            }, failureCb);
+        }, failureCb);
     },
 
-    
+
     enableEditMode: function(cmp) {
         if(cmp.firstDoc.id && cmp.secondDoc.id) {
             var newer = cmp.firstDoc['new'] ? cmp.firstDoc : cmp.secondDoc,
@@ -132,7 +121,7 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
                 diffTab: cmp.up('diffTab'),
                 editableDoc: newer.id,
                 notEditableDoc: older.id
-            });      
+            });
         }
     },
 
@@ -143,7 +132,7 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
             this.enableDualEditorMode(cmp.up('diffTab'), {
                 editableDoc: newer.id,
                 notEditableDoc: older.id
-            });    
+            });
         }
     },
 
@@ -281,9 +270,9 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
         mainTabPanel.setActiveTab(editorTab);
 
         if(xmlDiff) {
-            xmlDiff.tab.hide();  
+            xmlDiff.tab.hide();
         }
-        
+
         editorController.setEditorReadonly(true);
 
         editorController.defaultActions = {
@@ -325,11 +314,11 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
 
         // Bug: this causes the first editor to disappear
         // if(markingMenu) {
-        //     markingMenu.placeholder.getEl().on('mouseenter', function(){ 
+        //     markingMenu.placeholder.getEl().on('mouseenter', function(){
         //         markingMenu.floatCollapsedPanel();
         //     });
         // }
-        
+
         secondEditor = me.createSecondEditor();
         me.secondEditor = secondEditor;
 
@@ -369,8 +358,8 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
                     };
                     storage.openDocument(dualConfig.editableDoc);
                 }, true);
-            });    
-        }, 100);       
+            });
+        }, 100);
     },
 
     afterDocumentLoaded: function() {
@@ -387,13 +376,13 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
         }
         this.markingMenuMenuLoad = null;
     },
-    
+
     init: function() {
         var me = this;
-        
+
         me.application.on(Statics.eventsNames.afterLoad, me.afterDocumentLoaded, me);
         me.application.on(Statics.eventsNames.markingMenuLoaded, me.onMarkingMenuLoaded, me);
-        
+
         this.control({
             'diffTab doubleDocSelector': {
                 afterrender: function (cmp) {
@@ -401,7 +390,7 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
                 },
 
                 docsDeselected: function (selector) {
-                    selector.up('diffTab').setIframeSource(me.getInitDiffPage());
+                    selector.up('diffTab').setIframeSource(Server.phpServer + me.getInitDiffPage());
                 },
 
                 docsSelected: function (selector) {

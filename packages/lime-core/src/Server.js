@@ -84,6 +84,14 @@ Ext.define('LIME.Server', {
         });
     },
 
+    // Request with authorization headers
+    authRequest: function (config) {
+        var auth = Ext.util.Base64.encode(User.username + ':' + User.password);
+        config.headers = config.headers || {};
+        config.headers.Authorization = 'Basic ' + auth;
+        this.request(config);
+    },
+
     // ====================
     // ====== NODE ========
     // ====================
@@ -118,12 +126,9 @@ Ext.define('LIME.Server', {
         var username = user.username,
             password = user.password;
         console.log('username', user.username, user.password);
-        this.request({
+        this.authRequest({
             method: 'PUT',
             url: '{nodeServer}/documentsdb/Users/' + encodeURI(username),
-            headers: {
-                Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password)
-            },
             jsonData: user,
             success: success,
             failure: failure
@@ -135,12 +140,9 @@ Ext.define('LIME.Server', {
         var username = User.username,
             password = User.password;
 
-        this.request({
+        this.authRequest({
             method: 'GET',
             url: '{nodeServer}/documentsdb/Documents' + path,
-            headers: {
-                Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password)
-            },
             success: function (response) {
                 success(response.responseText);
             },
@@ -153,11 +155,10 @@ Ext.define('LIME.Server', {
         var username = User.username,
             password = User.password;
 
-        this.request({
+        this.authRequest({
             method: 'GET',
             url: '{nodeServer}/documentsdb/Documents' + path,
             headers: {
-                Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password),
                 Accept: 'text/html'
             },
             success: function (response) {
@@ -165,7 +166,7 @@ Ext.define('LIME.Server', {
                 Server.applyXslt(DomUtils.convertNbsp(response.responseText), xslt, function(html, lang) {
                     html = DomUtils.normalizeBr(DomUtils.riconvertNbsp(html));
                     success(html, lang);
-                }, failure)
+                }, failure);
             },
             failure: failure
         });
@@ -175,13 +176,10 @@ Ext.define('LIME.Server', {
         var username = User.username,
             password = User.password;
 
-        this.request({
+        this.authRequest({
             method: 'PUT',
             rawData: content,
             url: '{nodeServer}/documentsdb/Documents' + path,
-            headers: {
-                Authorization: 'Basic ' + Ext.util.Base64.encode(username + ':' + password)
-            },
             success: function (response) {
                 console.info('Saved', path);
                 success(response.responseText);
@@ -192,6 +190,29 @@ Ext.define('LIME.Server', {
         });
     },
 
+    // Export a document to a url accessible to everyone
+    export: function (path, success, failure) {
+        var me = this;
+        this.authRequest({
+            method: 'POST',
+            url: '{nodeServer}/documentsdb/Export?url=' + path,
+            success: function (response) {
+                var url;
+                try {
+                    url = JSON.parse(response.responseText).url;
+                    url = me.nodeServer + url.substring(url.indexOf('/documentsdb/'));
+                } catch (e) {
+                    console.warn('Error exporting file');
+                    console.warn(response.responseText);
+                    if (failure) failure();
+                }
+                if (url) success(url);
+            },
+            failure: failure || function (error) {
+                console.warn('Error exporting file', error);
+            }
+        });
+    },
 
     // ====================
     // ====== PHP =========
@@ -218,39 +239,6 @@ Ext.define('LIME.Server', {
         });
     },
 
-    // Export a document from Exist to a url
-    export: function (paths, success, failure) {
-        var params = {
-            requestedService: 'EXPORT_FILES'
-        };
-
-        paths.forEach(function (path, i) {
-            params['doc' + (i+1)] = path;
-        });
-
-        this.request({
-            url: '{phpServer}Services.php',
-            method: 'POST',
-            params: params,
-            scope: this,
-            success: function (result) {
-                var jsonData = Ext.decode(result.responseText, true);
-                if (jsonData && jsonData.docsUrl) {
-                    var urls = [];
-                    for (url in jsonData.docsUrl) {
-                        urls.push(jsonData.docsUrl[url]);
-                    }
-                    success(urls)
-                } else {
-                    console.warn('Error exporting files (Decode error)', result.responseText);
-                    if (failure) failure();
-                }
-            },
-            failure: failure || function (error) {
-                console.warn('Error exporting files', error);
-            }
-        });
-    },
 
     // Given a list of urls, return the ones which exist.
     // Parameters:
