@@ -303,13 +303,23 @@ Ext.define('AknCollection.DocumentCollectionController', {
         return config;
     },
 
-    createDocumentCollection: function(config, componentsUri) {
-        var serializedUri = "";
-        if (componentsUri.length > 0) {
-            // serialize the array to pass to the service
-            serializedUri = componentsUri.join(";");
-            this.makeDocumentCollectionRequest(config, {docs: serializedUri});
-        }
+    // Create a new document collection with `documents` and load it in the editor.
+    // Call `callback` when done.
+    createDocumentCollection: function(documents, callback) {
+        // Download the linked documents and use AknMain.xml.DocumentCollection
+        // to create the document collection.
+        Server.getAllDocuments(documents, function (xmls) {
+            var collection = new AknMain.xml.DocumentCollection ({
+                linkedDocuments: xmls,
+                docLang: DocProperties.documentInfo.docLang,
+                docLocale: DocProperties.documentInfo.docLocale
+            });
+            collection.toHtmlToso(function (html) {
+                Ext.GlobalEvents.fireEvent(Statics.eventsNames.loadDocument, {
+                    docText: html
+                });
+            });
+        });
     },
 
     makeDocumentCollectionRequest: function(config, params) {
@@ -513,7 +523,10 @@ Ext.define('AknCollection.DocumentCollectionController', {
                     if(relatedWindow.isModify) {
                         me.modifyDocumentCollection(Ext.Object.merge(config, relatedWindow.getData()), components, classes);
                     } else {
-                        me.createDocumentCollection(Ext.Object.merge(config, relatedWindow.getData()), components);
+                        me.createDocumentCollection(components, function () {
+                            relatedWindow.close();
+                        });
+                        // me.createDocumentCollection(Ext.Object.merge(config, relatedWindow.getData()), components);
                     }
                 }
             },

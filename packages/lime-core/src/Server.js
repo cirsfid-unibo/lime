@@ -150,6 +150,26 @@ Ext.define('LIME.Server', {
         });
     },
 
+    // Call Server.getDocument on every document in the list.
+    getAllDocuments: function (paths, success, failure) {
+        failure = failure || function () {
+            console.warn('Could not get documents', paths);
+        };
+        var results = [];
+        paths.forEach(function (path) {
+            Server.getDocument(path, function (result) {
+                results.push(result);
+                if (results.length == paths.length) {
+                    success(paths.map(function (path) {
+                        return results[path];
+                    }));
+                }
+            }, function () {
+                failure();
+            });
+        });
+    },
+
     // Convert PDF and Doc files to html
     fileToHtml: function (path, success, failure) {
         var username = User.username,
