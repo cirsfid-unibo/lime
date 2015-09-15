@@ -49,16 +49,15 @@ Ext.define('AknCollection.DocumentCollectionController', {
 
     views : ['AknCollection.NewDocumentCollection'],
 
-    refs : [{
-        selector : 'appViewport',
-        ref : 'appViewport'
-    },{
-        selector: '*[cls=docCollectionTab]',
-        ref: 'docCollectionTab'
-    },{
-        selector: 'markingMenu',
-        ref: 'markingMenu'
-    }],
+    requires: [
+        'AknMain.xml.DocumentCollection'
+    ],
+
+    refs : [
+        { ref: 'appViewport', selector: 'appViewport'},
+        { ref: 'docCollectionTab', selector: '*[cls=docCollectionTab]'},
+        { ref: 'markingMenu', selector: 'markingMenu'}
+    ],
 
     config: {
         pluginName: "akn-collection",

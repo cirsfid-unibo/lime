@@ -44,63 +44,39 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Utility functions for creating and handling document collections
-// This class, like the others in this folder, work directly on AkomaNtoso xml,
-// do not need XSLT and are generic.
-Ext.define('AknMain.xml.DocumentCollection', {
-    requires: [
-        'AknMain.metadata.Document',
-        'AknMain.metadata.XmlSerializer'
-    ],
+// Xml serializer for meta.
+// Eg. AknMain.metadata.XmlSerializer.serialize(model)
+// -> "<meta><identificat ... </meta>"
+Ext.define('AknMain.metadata.XmlSerializer', {
+    singleton: true,
 
-    config: {
-        linkedDocuments: [],
-        docLang: 'en',
-        docLocale: 'eng'
+    template: new Ext.XTemplate([
+        '<meta>',
+        '   <identification source="#{source.eid}">',
+        '       <FRBRWork>',
+        '           <FRBRthis value="/akn/{country}/{type}/{date}"/>',
+        '           <FRBRuri value="/akn/{country}/{type}/{date}"/>',
+        '           <FRBRdate date="{date}" name=""/>',
+        '           <FRBRcountry value="{country}"/>',
+        '       </FRBRWork>',
+        '   </identification>',
+        '</meta>'
+    ].join('\n'), {
+    }),
+
+    serialize: function (model) {
+        var data = model.getData();
+        data.date = this.normalizeDate(data.date);
+
+        return this.template.apply(data);
     },
 
-    constructor: function (config) {
-        this.initConfig(config);
-        return this;
-    },
-
-    toHtmlToso: function (callback) {
-        var content = generateXml();
-        // Detect the right XSLT for HTMLToso conversion
-        var lang = Utilities.detectMarkingLang(content);
-        var xslt = Config.getLanguageTransformationFile("languageToLIME", lang);
-        Server.applyXslt(content, xslt, function (content) {
-            console.info('htmltoso', content, lang);
-            callback(content, lang);
-        });
-    },
-
-    generateXml: function () {
-        var meta = this.generateMeta();
-        var str = AknMain.metadata.XmlSerializer.serialize(meta);
-        console.info(meta);
-        console.info(str);
-    },
-
-    generateMeta: function () {
-        var meta = new AknMain.metadata.Document();
-        meta.set('country', this.getDocLang());
-        meta.set('type', 'documentCollection');
-        meta.set('date', new Date());
-        meta.set('language', this.getDocLocale());
-        meta.set('media', 'main.xml');
-        meta.set('pubblicationDate', new Date());
-        meta.set('source', {
-            document: meta,
-            eid: 'source',
-            type: 'TLCPerson',
-            href: '/ontology/person/' + this.getDocLang() + '/somebody',
-            showAs: 'Somebody'
-        });
-        meta.aliases().add({name: 'nir', value: 'nir: ...'});
-
-        return meta;
+    normalizeDate: function (date) {
+        function padding (n) { return n >= 10 ? 10 : '0' + n; }
+        return [
+            date.getFullYear(),
+            padding(date.getMonth()),
+            padding(date.getDate())
+        ].join('-');
     }
-
-    // Private
-});
+ });

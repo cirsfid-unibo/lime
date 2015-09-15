@@ -49,11 +49,11 @@
 // use the default metadata store.
 
 Ext.define('AknMain.metadata.Base', {
-     extend: 'Ext.data.Model',
+    extend: 'Ext.data.Model',
 
-     schema: {
-         namespace: 'AknMain.metadata'
-     }
+    schema: {
+        namespace: 'AknMain.metadata'
+    }
  });
 
 Ext.define('AknMain.metadata.Document', {
@@ -73,6 +73,8 @@ Ext.define('AknMain.metadata.Document', {
         { name: 'generation', type: 'date' },   // '2015-03-12'
         { name: 'media', type: 'string' },      // 'xml'
         { name: 'path', type: 'string' },       // 'http://sinatra ... xml'
+
+        { name: 'source', reference: 'Reference' },
 
         // Pubblication
         { name: 'pubblicationName', type: 'string' },
