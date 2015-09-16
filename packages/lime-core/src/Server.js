@@ -155,11 +155,11 @@ Ext.define('LIME.Server', {
         failure = failure || function () {
             console.warn('Could not get documents', paths);
         };
-        var results = [];
+        var results = {};
         paths.forEach(function (path) {
             Server.getDocument(path, function (result) {
-                results.push(result);
-                if (results.length == paths.length) {
+                results[path] = result;
+                if (Object.keys(results).length == paths.length) {
                     success(paths.map(function (path) {
                         return results[path];
                     }));

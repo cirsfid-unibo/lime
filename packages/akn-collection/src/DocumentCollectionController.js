@@ -308,6 +308,7 @@ Ext.define('AknCollection.DocumentCollectionController', {
         // Download the linked documents and use AknMain.xml.DocumentCollection
         // to create the document collection.
         Server.getAllDocuments(documents, function (xmls) {
+            console.warn(xmls);
             var collection = new AknMain.xml.DocumentCollection ({
                 linkedDocuments: xmls,
                 docLang: DocProperties.documentInfo.docLang,
@@ -317,44 +318,8 @@ Ext.define('AknCollection.DocumentCollectionController', {
                 Ext.GlobalEvents.fireEvent(Statics.eventsNames.loadDocument, {
                     docText: html
                 });
+                if (callback) callback();
             });
-        });
-    },
-
-    makeDocumentCollectionRequest: function(config, params) {
-        var loginManager = this.getController('LoginManager'),
-            userInfo = loginManager.getUserInfo(),
-            newParams = Ext.merge({
-                requestedService : Statics.services.createDocumentCollection,
-                docCollectionName : "",
-                userName : userInfo.username,
-                userPassword : userInfo.password,
-                docLang: config.docLang,
-                docLocale: config.docLocale,
-                markingLanguage: config.docMarkingLanguage
-            }, params);
-
-        Ext.Ajax.request({
-            // the url of the web service
-            url : Utilities.getAjaxUrl(),
-            method : 'POST',
-            // send the content in XML format
-            params : newParams,
-            scope : this,
-            success : function(result, request) {
-                Ext.GlobalEvents.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(config, {
-                    docText : result.responseText
-                }));
-
-                if (Ext.isFunction(config.success)) {
-                    config.success();
-                }
-            },
-            failure: function() {
-                if (Ext.isFunction(config.failure)) {
-                    config.failure();
-                }
-            }
         });
     },
 

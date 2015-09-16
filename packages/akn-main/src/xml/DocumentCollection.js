@@ -66,11 +66,7 @@ Ext.define('AknMain.xml.DocumentCollection', {
     },
 
     template: [
-        '<akomaNtoso',
-        '   xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD09"',
-        '   xmlns:html="http://www.w3.org/1999/xhtml"',
-        '   xmlns:uy="http://uruguay/propetary.xsd">',
-        '   ',
+        '<akomaNtoso xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD13">',
         '   <documentCollection name="documentCollection">',
         '      {[this.indent(values.meta, 6)]}',
         '      <collectionBody>',
@@ -90,12 +86,11 @@ Ext.define('AknMain.xml.DocumentCollection', {
     ],
 
     toHtmlToso: function (callback) {
-        var content = generateXml();
+        var content = this.generateXml();
         // Detect the right XSLT for HTMLToso conversion
         var lang = Utilities.detectMarkingLang(content);
         var xslt = Config.getLanguageTransformationFile("languageToLIME", lang);
         Server.applyXslt(content, xslt, function (content) {
-            console.info('htmltoso', content, lang);
             callback(content, lang);
         });
     },
@@ -104,10 +99,10 @@ Ext.define('AknMain.xml.DocumentCollection', {
         var meta = this.generateMeta();
         var data = {
             meta: AknMain.metadata.XmlSerializer.serialize(meta),
-            documents: this.getLinkedDocuments()
+            documents: this.getComponents()
         };
         var template = new AknMain.utilities.Template(this.template);
-        console.info(template.apply(data));
+        return template.apply(data);
     },
 
     generateMeta: function () {
@@ -130,5 +125,27 @@ Ext.define('AknMain.xml.DocumentCollection', {
         meta.aliases().add({name: 'nir', value: 'nir: ...'});
 
         return meta;
+    },
+
+    // Extract and sanitize the main documnet components from the linked documents
+    getComponents: function () {
+        return this.getLinkedDocuments().map(function (xml) {
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(xml, "application/xml");
+
+            var xpathResult = document.evaluate(
+                '/*[local-name()="akomaNtoso"]/*',
+                doc,
+                null,//doc.createNSResolver(doc.documentElement),
+                XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+                null
+            );
+
+            var serializer = new XMLSerializer();
+            var result = '';
+            for (var i = 0; i < xpathResult.snapshotLength; i++)
+                result += serializer.serializeToString(xpathResult.snapshotItem(i));
+            return result;
+        });
     }
 });
