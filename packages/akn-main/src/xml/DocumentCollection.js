@@ -50,7 +50,8 @@
 Ext.define('AknMain.xml.DocumentCollection', {
     requires: [
         'AknMain.metadata.Document',
-        'AknMain.metadata.XmlSerializer'
+        'AknMain.metadata.XmlSerializer',
+        'AknMain.utilities.Template'
     ],
 
     config: {
@@ -63,6 +64,30 @@ Ext.define('AknMain.xml.DocumentCollection', {
         this.initConfig(config);
         return this;
     },
+
+    template: [
+        '<akomaNtoso',
+        '   xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD09"',
+        '   xmlns:html="http://www.w3.org/1999/xhtml"',
+        '   xmlns:uy="http://uruguay/propetary.xsd">',
+        '   ',
+        '   <documentCollection name="documentCollection">',
+        '      {[this.indent(values.meta, 6)]}',
+        '      <collectionBody>',
+        '<tpl for="documents">' +
+        '         <component eId="cmp_{#}"/>',
+        '</tpl>' +
+        '      </collectionBody>',
+        '   </documentCollection>',
+        '   <components>',
+        '<tpl for="documents">' +
+        '       <component eId="cmp_{#}">',
+        '           {[this.indent(values, 9)]}',
+        '       </component>',
+        '</tpl>' +
+        '   </components>',
+        '</akomaNtoso>'
+    ],
 
     toHtmlToso: function (callback) {
         var content = generateXml();
@@ -77,9 +102,12 @@ Ext.define('AknMain.xml.DocumentCollection', {
 
     generateXml: function () {
         var meta = this.generateMeta();
-        var str = AknMain.metadata.XmlSerializer.serialize(meta);
-        console.info(meta);
-        console.info(str);
+        var data = {
+            meta: AknMain.metadata.XmlSerializer.serialize(meta),
+            documents: this.getLinkedDocuments()
+        };
+        var template = new AknMain.utilities.Template(this.template);
+        console.info(template.apply(data));
     },
 
     generateMeta: function () {
@@ -103,6 +131,4 @@ Ext.define('AknMain.xml.DocumentCollection', {
 
         return meta;
     }
-
-    // Private
 });
