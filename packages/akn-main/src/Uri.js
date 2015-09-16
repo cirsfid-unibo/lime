@@ -62,7 +62,7 @@
 // uri.version     "2015-03-12"               |
 // uri.official    "official"      (optional) |
 // uri.generation  "2015-04-11"    (optional) |
-// uri.media       "xml"                      | Manifestation
+// uri.media       "main.xml"                 | Manifestation
 // uri.path        "http://sinatra ... xml"   | Item
 //
 // uri.work()          -> "/akn/it/act/legge/stato/2014-09-12/2"

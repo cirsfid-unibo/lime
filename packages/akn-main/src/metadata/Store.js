@@ -49,6 +49,7 @@
 // var meta = Ext.getStore('metadata').getMainDocument();
 // meta.set('language', 'ita');
 // meta.aliases().add({name: 'nir', value: 'nir: ...'});
+// meta.setSource(meta.references().add({...})[0]);
 Ext.define('AknMain.metadata.Store', {
     extend: 'Ext.data.Store',
     model: 'AknMain.metadata.Document',

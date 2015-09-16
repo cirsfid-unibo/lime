@@ -90,13 +90,15 @@ Ext.define('AknMain.xml.DocumentCollection', {
         meta.set('language', this.getDocLocale());
         meta.set('media', 'main.xml');
         meta.set('pubblicationDate', new Date());
-        meta.set('source', {
-            document: meta,
-            eid: 'source',
-            type: 'TLCPerson',
-            href: '/ontology/person/' + this.getDocLang() + '/somebody',
-            showAs: 'Somebody'
-        });
+
+        meta.setSource(
+            meta.references().add({
+                eid: 'source',
+                type: 'TLCPerson',
+                href: '/ontology/person/' + this.getDocLang() + '/somebody',
+                showAs: 'Somebody'
+            })[0]
+        );
         meta.aliases().add({name: 'nir', value: 'nir: ...'});
 
         return meta;

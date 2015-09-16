@@ -68,7 +68,7 @@ Ext.define('AknMain.metadata.Document', {
         { name: 'date', type: 'date' },         // '2014-09-12'
         { name: 'name', type: 'string' },       // '2' 'nomelegge'
         { name: 'language', type: 'string' },   // 'ita'
-        { name: 'version', type: 'string' },    // '2015-03-12'
+        { name: 'version', type: 'date' },      // '2015-03-12'
         { name: 'official', type: 'string' },   // 'official'
         { name: 'generation', type: 'date' },   // '2015-03-12'
         { name: 'media', type: 'string' },      // 'xml'
@@ -78,7 +78,7 @@ Ext.define('AknMain.metadata.Document', {
 
         // Pubblication
         { name: 'pubblicationName', type: 'string' },
-        { name: 'pubblicationDate', type: 'string' },
+        { name: 'pubblicationDate', type: 'date' },
         { name: 'pubblicationNumber', type: 'string' },
         { name: 'pubblicationShowAs', type: 'string' },
 
