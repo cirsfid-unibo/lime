@@ -120,6 +120,9 @@ Ext.define('LIME.controller.Language', {
 
             //Apply rules for all marked elements
             Ext.each(markedElements, function(element) {
+                // My manager forced me to write this "if brutto brutto". I'm sorry.
+                if (DocProperties.documentInfo.docType == 'documentCollection') return;
+
                 var intId = element.getAttribute(DomUtils.elementIdAttribute), newId,
                     hrefElements = tmpElement.querySelectorAll("*["+langPrefix+"href *= '#"+intId+"']");
 
