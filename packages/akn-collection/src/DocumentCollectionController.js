@@ -50,7 +50,8 @@ Ext.define('AknCollection.DocumentCollectionController', {
     views : ['AknCollection.NewDocumentCollection'],
 
     requires: [
-        'AknMain.xml.DocumentCollection'
+        'AknMain.xml.DocumentCollection',
+        'AknMain.xml.Document'
     ],
 
     refs : [
@@ -68,15 +69,17 @@ Ext.define('AknCollection.DocumentCollectionController', {
     originalBeforeTranslate: false,
 
     onDocumentLoaded: function(docConfig) {
-        console.info('onDocumentLoaded');
-        var me = this, app = me.application, docsType = Config.getDocTypesName(),
-            menu, beforeTranslate = TranslatePlugin.beforeTranslate,
-            collTab = me.getDocCollectionTab(), tabPanel = collTab.up();
+        var me = this,
+            app = me.application,
+            docsType = Config.getDocTypesName(),
+            beforeTranslate = TranslatePlugin.beforeTranslate,
+            collTab = me.getDocCollectionTab(),
+            tabPanel = collTab.up();
 
         // Create snapshot and documents tree only if the load is not light load but a complete one
         if (!docConfig.lightLoad) {
             if (Ext.Array.indexOf(docsType, "documentCollection") != -1) {
-                menu = {
+                var menu = {
                     text : Locale.getString("newCollectionText", me.getPluginName()),
                     icon : 'resources/images/icons/package_add.png',
                     name : 'newDocCollection',
@@ -215,6 +218,7 @@ Ext.define('AknCollection.DocumentCollectionController', {
     },
 
     docToTreeData: function(doc, dom, textSufix, qtip) {
+
         var res = {}, collBody, children, docChildren = [],
             languageController = this.getController("Language"),
             langPrefix = languageController.getLanguagePrefix(), chDoc, cmpDoc;
@@ -237,6 +241,8 @@ Ext.define('AknCollection.DocumentCollectionController', {
                         var docRef = cmpDoc.getAttribute(langPrefix+"href");
                         docRef = (docRef) ? docRef.substr(1) : ""; //Removing the '#'
                         if (docRef) {
+                            window.docs = window.docs || [];
+                            window.docs[window.counter = ((window.counter || 0) + 1 )] = dom;
                             chDoc = dom.querySelector("*[class~='components'] *["+langPrefix+Language.getElementIdAttribute()+"="+docRef+"] *[class*="+DocProperties.documentBaseClass+"]")
                                     || dom.querySelector("*[class~='components'] *["+langPrefix+Language.getElementIdAttribute().toLowerCase()+"="+docRef+"] *[class*="+DocProperties.documentBaseClass+"]");
                             if (chDoc) {
@@ -251,8 +257,8 @@ Ext.define('AknCollection.DocumentCollectionController', {
             }
             res = {text:DomUtils.getDocTypeByNode(doc) + ((textSufix) ? " "+ textSufix : ""),
                    children: docChildren,
-                   leaf: (docChildren.length == 0),
-                   expanded : (docChildren.length != 0),
+                   leaf: (docChildren.length === 0),
+                   expanded : (docChildren.length >= 0),
                    id: parseInt(doc.getAttribute("docid")),
                    qtip: qtip};
         }
@@ -303,12 +309,21 @@ Ext.define('AknCollection.DocumentCollectionController', {
     },
 
     // Create a new document collection with `documents` and load it in the editor.
+    // `documents` is a list of objects with `id` and `download` properties:
+    // Documents with download set to true will be downloaded from server,
+    // documents with download set to false will be read from the current file.
     // Call `callback` when done.
     createDocumentCollection: function(documents, callback) {
-        // Download the linked documents and use AknMain.xml.DocumentCollection
-        // to create the document collection.
-        Server.getAllDocuments(documents, function (xmls) {
-            console.warn(xmls);
+        var me = this;
+        var xmls = [];
+        function next() {
+            me.getDocumentXml(documents.shift(), function (xml) {
+                xmls.push(xml);
+                if(documents.length > 0) next();
+                else done();
+            });
+        }
+        function done() {
             var collection = new AknMain.xml.DocumentCollection ({
                 linkedDocuments: xmls,
                 docLang: DocProperties.documentInfo.docLang,
@@ -320,24 +335,28 @@ Ext.define('AknCollection.DocumentCollectionController', {
                 });
                 if (callback) callback();
             });
-        });
+        }
+        return next();
     },
 
-    modifyDocumentCollection: function(config, components, classes) {
-        var me = this, serializedUri = "", serializedCls = "",
-            params = {};
-        if (components.length > 0) {
-            // serialize the array to pass to the service
-            serializedUri = components.join(";");
-            serializedCls = classes.join(";");
-            params = {
-                modify: true,
-                docs: serializedUri,
-                cls: serializedCls
-            };
-            // Saving mode to translate content from the snapshot
+    getDocumentXml: function (document, callback) {
+        var me = this;
+        // TODO: the performance of this is awful: we should make requests in
+        // parallel and use only one translateRequest.
+        if (document.download) {
+            Server.getDocument(document.id, callback);
+        } else {
             me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
-                me.makeDocumentCollectionRequest(config, Ext.Object.merge(params, {source: xml}));
+                var el = AknMain.xml.Document.parse(xml).xpath(
+                    '//*[local-name()="component"]/*' +
+                    '[descendant::*[local-name()="FRBRthis" and ' +
+                                   '@value="' + document.id + '"]]'
+                );
+                if (el)
+                    callback('<akomaNtoso>' + el.serialize() + '</akomaNtoso>');
+                else {
+                    callback('');
+                }
             }, {complete: true});
         }
     },
@@ -466,32 +485,22 @@ Ext.define('AknCollection.DocumentCollectionController', {
             },
             'newDocumentCollection button[cls=createDocumentCollection]' : {
                 click : function(cmp) {
-                    var relatedWindow = cmp.up('window'), collectionGrid = relatedWindow.down("*[cls=dropArea] grid"), config,
-                        gridStore, components = [], languageController = this.getController("Language"),
-                        classes = [];
+                    var relatedWindow = cmp.up('window'),
+                        collectionGrid = relatedWindow.down("*[cls=dropArea] grid"),
+                        components = [],
+                        languageController = this.getController("Language");
                     if (collectionGrid) {
-                        gridStore = collectionGrid.getStore();
+                        var gridStore = collectionGrid.getStore();
                         gridStore.each(function(record) {
-                            components.push(record.get('id'));
-                            classes.push(record.get('cls'));
+                            components.push({
+                                id: record.get('id'),
+                                download: record.get('cls') !== 'xml'
+                            });
                         });
                     }
-                    config = {
-                        success : function() {
-                            relatedWindow.close();
-                        },
-                        failure : function() {
-                            Ext.Msg.alert('Error', 'Error');
-                        }
-                    };
-                    if(relatedWindow.isModify) {
-                        me.modifyDocumentCollection(Ext.Object.merge(config, relatedWindow.getData()), components, classes);
-                    } else {
-                        me.createDocumentCollection(components, function () {
-                            relatedWindow.close();
-                        });
-                        // me.createDocumentCollection(Ext.Object.merge(config, relatedWindow.getData()), components);
-                    }
+                    me.createDocumentCollection(components, function () {
+                        relatedWindow.close();
+                    });
                 }
             },
             'newDocumentCollection *[cls=dropArea] gridview' : {

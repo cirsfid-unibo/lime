@@ -71,13 +71,15 @@ Ext.define('AknMain.xml.DocumentCollection', {
         '      {[this.indent(values.meta, 6)]}',
         '      <collectionBody>',
         '<tpl for="documents">' +
-        '         <component eId="cmp_{#}"/>',
+        '         <component eId="cmp_{#}">',
+        '            <documentRef href="#doc{#}"/>',
+        '         </component>',
         '</tpl>' +
         '      </collectionBody>',
         '   </documentCollection>',
         '   <components>',
         '<tpl for="documents">' +
-        '       <component eId="cmp_{#}">',
+        '       <component eId="doc{#}">',
         '           {[this.indent(values, 9)]}',
         '       </component>',
         '</tpl>' +
