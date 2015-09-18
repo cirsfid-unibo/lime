@@ -56,41 +56,44 @@ Ext.define('AknCollection.NewDocumentCollectionDropGrid', {
     style : {
         border : '2px dashed #99BCE8'
     },
-    viewConfig : {
-        deferEmptyText : false,
-        emptyText : Locale.getString("dragCollectionDocuments", "akn-collection"),
-        /*
-         * The same plugin is included twice to provide drag and drop
-         * with other grid and in the same grid
-         * */
-        plugins : [{
-            ptype : 'gridviewdragdrop',
-            dragGroup : 'secondGridDDGroup',
-            dropGroup : 'secondGridDDGroup'
-        }]
-    },
     store : 'OpenFile',
     height : 200,
-    columns : [{
-        text : Locale.getString("addDocuments", "akn-collection"),
-        dataIndex : 'path',
-        sortable : true,
-        resizable : false,
-        hideable : false,
-        menuDisabled : true,
-        flex : 1
-    }, {
-        xtype : 'actioncolumn',
-        width : 30,
-        sortable : false,
-        menuDisabled : true,
-        items : [{
-            icon : 'resources/images/icons/delete.png',
-            tooltip : Locale.getString("removeComponent", "akn-collection"),
-            scope : this,
-            handler : function(grid, rowIndex) {
-                grid.getStore().removeAt(rowIndex);
-            }
-        }]
-    }]
+    initComponent: function () {
+        this.viewConfig = {
+            deferEmptyText : false,
+            emptyText : Locale.getString("dragCollectionDocuments", "akn-collection"),
+            /*
+             * The same plugin is included twice to provide drag and drop
+             * with other grid and in the same grid
+             * */
+            plugins : [{
+                ptype : 'gridviewdragdrop',
+                dragGroup : 'secondGridDDGroup',
+                dropGroup : 'secondGridDDGroup'
+            }]
+        };
+        this.columns = [{
+            text : Locale.getString("addDocuments", "akn-collection"),
+            dataIndex : 'path',
+            sortable : true,
+            resizable : false,
+            hideable : false,
+            menuDisabled : true,
+            flex : 1
+        }, {
+            xtype : 'actioncolumn',
+            width : 30,
+            sortable : false,
+            menuDisabled : true,
+            items : [{
+                icon : 'resources/images/icons/delete.png',
+                tooltip : Locale.getString("removeComponent", "akn-collection"),
+                scope : this,
+                handler : function(grid, rowIndex) {
+                    grid.getStore().removeAt(rowIndex);
+                }
+            }]
+        }];
+        this.callParent();
+    }
 });

@@ -71,8 +71,6 @@ Ext.define('AknCollection.NewDocumentCollection', {
 
     avoidTitleUpdate: true,
 
-    title : Locale.getString("newCollectionText", "documentCollection"),
-
     width : 605,
 
     /**
@@ -91,82 +89,88 @@ Ext.define('AknCollection.NewDocumentCollection', {
         form.setValues(data);
     },
 
-    items : [{
-        itemId : 'step1',
-        xtype : 'form',
-        frame : true,
-        padding : '10px',
-        layout : 'anchor',
-        defaults : {
-            anchor : '100%'
-        },
+    initComponent: function() {
+        this.title = Locale.getString("newCollectionText", "akn-collection"),
+        this.items = [{
 
-        // The fields
-        defaultType : 'textfield',
-        items : [{
-            xtype : 'docMarkingLanguageSelector',
-            cls : 'syncTypeCollection'
-        }, {
-            xtype : 'docTypeSelector',
-            hidden: true,
-            value: 'documentCollection'
-        }, {
-            xtype : 'docLocaleSelector',
-            hidden : true
-        }, {
-            xtype : 'docLangSelector'
-        }],
+            itemId : 'step1',
+            xtype : 'form',
+            frame : true,
+            padding : '10px',
+            layout : 'anchor',
+            defaults : {
+                anchor : '100%'
+            },
 
-        // The buttons
-        dockedItems : [{
-            xtype : 'toolbar',
-            dock : 'bottom',
-            ui : 'footer',
-
-            items : ['->', {
-                xtype : 'button',
-                cls: 'addDocuments',
-                minWidth : 100,
-                handler: function(cmp) {
-                    var activated = cmp.up('window').getLayout().setActiveItem('step2');
-                    if (activated) {
-                        // warn children about activation
-                        Ext.each(activated.items.items, function(cmp) {
-                            cmp.fireEvent("activated", cmp);
-                        });
-                    }
-                },
-                text : Locale.getString("addDocuments", "documentCollection")
-            }]
-        }]
-    }, {
-        itemId : 'step2',
-        xtype : 'panel',
-        frame : true,
-        items : [{
-            xtype : 'listFilesPanel',
-            margin : '0 0 5 0',
-            height : 200
-        },{
-            xtype : 'panel',
-            cls : 'dropArea',
-            minHeight : 150,
-            border : 0,
+            // The fields
+            defaultType : 'textfield',
             items : [{
-                xtype: 'newDocumentCollectionDropView'
+                xtype : 'docMarkingLanguageSelector',
+                cls : 'syncTypeCollection'
+            }, {
+                xtype : 'docTypeSelector',
+                hidden: true,
+                value: 'documentCollection'
+            }, {
+                xtype : 'docLocaleSelector',
+                hidden : true
+            }, {
+                xtype : 'docLangSelector'
+            }],
+
+            // The buttons
+            dockedItems : [{
+                xtype : 'toolbar',
+                dock : 'bottom',
+                ui : 'footer',
+
+                items : ['->', {
+                    xtype : 'button',
+                    cls: 'addDocuments',
+                    minWidth : 100,
+                    handler: function(cmp) {
+                        var activated = cmp.up('window').getLayout().setActiveItem('step2');
+                        if (activated) {
+                            // warn children about activation
+                            Ext.each(activated.items.items, function(cmp) {
+                                cmp.fireEvent("activated", cmp);
+                            });
+                        }
+                    },
+                    text : Locale.getString("addDocuments", "akn-collection")
+                }]
             }]
-        }],
-        // The buttons
-        dockedItems : [{
-            xtype : 'toolbar',
-            dock : 'bottom',
-            ui : 'footer',
-            items : ['->', {
-                xtype : 'button',
-                cls: 'createDocumentCollection',
-                minWidth : 100,
-                text : Locale.getString("ok")
+        }, {
+            itemId : 'step2',
+            xtype : 'panel',
+            frame : true,
+            items : [{
+                xtype : 'listFilesPanel',
+                margin : '0 0 5 0',
+                height : 200
+            },{
+                xtype : 'panel',
+                cls : 'dropArea',
+                minHeight : 150,
+                border : 0,
+                items : [{
+                    xtype: 'newDocumentCollectionDropView'
+                }]
+            }],
+            // The buttons
+            dockedItems : [{
+                xtype : 'toolbar',
+                dock : 'bottom',
+                ui : 'footer',
+                items : ['->', {
+                    xtype : 'button',
+                    cls: 'createDocumentCollection',
+                    minWidth : 100,
+                    text : Locale.getString("ok")
+                }]
             }]
-        }]
-    }]
+        }];
+
+        this.callParent();
+    }
 });
