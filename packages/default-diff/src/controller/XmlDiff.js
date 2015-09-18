@@ -84,7 +84,6 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
             });
         console.info(url);
         tab.setIframeSource(url, function(doc) {
-            selector.enableEditButton();
             var newDoc = doc.querySelector(".newDocVersion");
 
             if(newDoc) {
@@ -117,249 +116,71 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
         if(cmp.firstDoc.id && cmp.secondDoc.id) {
             var newer = cmp.firstDoc['new'] ? cmp.firstDoc : cmp.secondDoc,
                 older = cmp.firstDoc['new'] ? cmp.secondDoc : cmp.firstDoc;
+
             this.application.fireEvent(Statics.eventsNames.enableDualEditorMode, {
                 diffTab: cmp.up('diffTab'),
                 editableDoc: newer.id,
-                notEditableDoc: older.id
+                notEditableDoc: older.id,
+                startCallback: function () {},
+                stopCallback: function () {}
             });
         }
     },
 
     enableEditModeScenarioB: function(cmp) {
+        var me = this;
         if(cmp.firstDoc.id && cmp.secondDoc.id) {
             var newer = cmp.firstDoc['new'] ? cmp.firstDoc : cmp.secondDoc,
                 older = cmp.firstDoc['new'] ? cmp.secondDoc : cmp.firstDoc;
-            this.enableDualEditorMode(cmp.up('diffTab'), {
+
+            me.application.fireEvent(Statics.eventsNames.enableDualEditorMode, {
+                diffTab: cmp.up('diffTab'),
                 editableDoc: newer.id,
-                notEditableDoc: older.id
-            });
-        }
-    },
+                notEditableDoc: older.id,
 
-    createSecondEditor: function() {
-        var secondEditor = Ext.widget("main", {
-            id: 'secondEditor',
-            resizable : true,
-            region : 'west',
-            width: '48%',
-            margin : 2
-        });
-
-        this.getAppViewport().add(secondEditor);
-        return secondEditor;
-    },
-
-    finishEditingMode: function(editor, diff) {
-        var me = this,
-            mainTabPanel = me.getMain(),
-            viewport = me.getAppViewport(),
-            userInfo = this.getController('LoginManager').getUserInfo(),
-            editorTab = me.getMainEditor().up(),
-            newExplorer, language = me.getController("Language"),
-            markingMenuController = me.getController('MarkingMenu'),
-            editorController = me.getController("Editor");
-
-        editorController.autoSaveContent(true);
-        editorController.setEditorReadonly(false);
-
-        var structure = markingMenuController.getTreeButtonsStructure();
-
-        Ext.defer(function() {
-            structure.enable();
-        }, 100);
-
-        var commons = markingMenuController.getTreeButtonsCommons();
-
-        markingMenuController.clearTreeFilter(commons);
-        editorController.defaultActions = {};
-        DocProperties.documentState = '';
-
-        if(me.finishEditBtn) {
-            me.finishEditBtn.up().remove(me.finishEditBtn);
-        }
-        if(me.syncButton) {
-            if (me.syncButton.syncEnabled)
-                me.getController('DefaultDiff.controller.DualEditorSynchronizer').disable();
-            me.syncButton.up().remove(me.syncButton);
-        }
-
-        language.beforeTranslate(function(xml) {
-            xml = xml.replace('<?xml version="1.0" encoding="UTF-8"?>', '');
-            var params = {
-                userName : userInfo.username,
-                fileContent : xml,
-                metadata: DomUtils.serializeToString(me.secondDocumentConfig.metaDom)
-            };
-
-            var url = me.secondDocumentConfig.docId.replace("/diff/", "/diff_modified/");
-
-            me.application.fireEvent(Statics.eventsNames.saveDocument, url, params, function() {
-                if(diff) {
-                    diff.tab.show();
-                    diff.enforceReload = true;
-                    mainTabPanel.setActiveTab(diff);
-                }
-
-                editorTab.noChangeModeEvent = false;
-                viewport.remove(editor);
-
-                newExplorer = Ext.widget("outliner", {
-                    region : 'west',
-                    expandable : true,
-                    resizable : true,
-                    width : '15%',
-                    autoScroll : true,
-                    margin : 2
-                });
-                viewport.add(newExplorer);
-            });
-        }, {}, null, editor, me.secondDocumentConfig.metaDom);
-    },
-
-    addFinishEditingButton : function(cmp, xmlDiff) {
-        var me = this, toolbar = me.getMainToolbar();
-        if (!toolbar.down("[cls=finishEditingButton]")) {
-            me.finishEditBtn = toolbar.insert(6, {
-                cls : "finishEditingButton",
-                margin : "0 10 0 240",
-                text : "Finish editing",
-                listeners : {
-                    click : Ext.bind(me.finishEditingMode, me, [cmp, xmlDiff])
-                }
-            });
-            me.syncButton = toolbar.insert(7, {
-                margin : "0 10 0 20",
-                text : "Enable Synchronization",
-                enableToggle: true,
-                syncEnabled : false,
-                listeners : {
-                    click : function () {
-                        if (this.syncEnabled) {
-                            this.syncEnabled = false;
-                            this.setText('Enable Synchronization');
-                            me.getController('DefaultDiff.controller.DualEditorSynchronizer').disable();
-                        } else {
-                            this.syncEnabled = true;
-                            this.setText('Disable Synchronization');
-                            me.getController('DefaultDiff.controller.DualEditorSynchronizer').enable();
-                        }
-                    }
-                }
-            });
-
-        }
-    },
-
-    enableDualEditorMode: function(cmp, dualConfig) {
-        var me = this,
-            mainTabPanel = me.getMain(),
-            explorer = me.getOutliner(),
-            markingMenu = me.getMarkingMenuContainer(),
-            editorTab = me.getMainEditor().up(),
-            storage = me.getController("Storage"),
-            editorController = me.getController("Editor"),
-            language = me.getController("Language"),
-            xmlDiff = cmp,
-            markingMenuController = me.getController('MarkingMenu'),
-            xmlDiffController = me,
-            secondEditor;
-
-        editorTab.noChangeModeEvent = true;
-
-        // Set active the editor tab
-        mainTabPanel.setActiveTab(editorTab);
-
-        if(xmlDiff) {
-            xmlDiff.tab.hide();
-        }
-
-        editorController.setEditorReadonly(true);
-
-        editorController.defaultActions = {
-            noExpandButtons: true
-        };
-
-        me.markingMenuMenuLoad = function() {
-            var markingMenu = markingMenuController.getMarkingMenu();
-            var structure = markingMenuController.getTreeButtonsStructure();
-
-            Ext.defer(function() {
-                structure.disable();
-            }, 100);
-
-            var commons = markingMenuController.getTreeButtonsCommons();
-            markingMenu.setActiveTab(commons);
-            Ext.defer(function() {
-                markingMenuController.filterTreeByFn(commons, function( node ) {
-                    var path = node.getPath();
-                    if ( path.match(/passiveModifications\d+\/action\d+/)  && !path.match(/renumbering/) ) {
-                        return true;
-                    }
-                });
-            }, 1000);
-        };
-
-
-        /*Ext.each(tinyNode.querySelectorAll('div.mce-toolbar'), function( toolbar ) {
-            Ext.fly(toolbar).parent('.mce-first').hide();
-        });
-
-        Ext.Object.each(tinyEditor.controlManager.buttons, function(name) {
-            tinyEditor.controlManager.setDisabled(name, true);
-        });*/
-
-        DocProperties.documentState = 'diffEditingScenarioB';
-
-        explorer.up().remove(explorer);
-
-        // Bug: this causes the first editor to disappear
-        // if(markingMenu) {
-        //     markingMenu.placeholder.getEl().on('mouseenter', function(){
-        //         markingMenu.floatCollapsedPanel();
-        //     });
-        // }
-
-        secondEditor = me.createSecondEditor();
-        me.secondEditor = secondEditor;
-
-        me.addFinishEditingButton(secondEditor, xmlDiff);
-
-        Ext.defer(function() {
-            storage.openDocumentNoEditor(dualConfig.notEditableDoc, function(config) {
-                language.beforeLoad(config, function(newConfig) {
-                    me.secondDocumentConfig = newConfig;
-                    editorController.loadDocument(newConfig.docText, newConfig.docId, secondEditor, true);
-                    var body = editorController.getEditor(secondEditor).getBody();
-                    if(newConfig.metaDom) {
-                        secondEditor.metaConf = DomUtils.nodeToJson(newConfig.metaDom);
-                        var manifestationUri = newConfig.metaDom.querySelector("*[class=FRBRManifestation] *[class=FRBRuri]");
-                        if(manifestationUri) {
-                            secondEditor.down("mainEditorUri").setUri(manifestationUri.getAttribute("value"));
-                        }
-                    }
-                    me.manageAfterLoad = function(docConfig) {
-                        var newId = dualConfig.editableDoc.replace("/diff/", "/diff_modified/");
-                        DocProperties.documentInfo.docId = newId;
-                        Ext.each([xmlDiff.firstDoc, xmlDiff.secondDoc], function(doc, index) {
-                            var textFields = xmlDiff.query("textfield");
-                            var oldPath = doc.path;
-                            doc.path = doc.path.replace("/diff/", "/diff_modified/");
-                            doc.id = doc.id.replace("/diff/", "/diff_modified/");
-                            if(doc.id == dualConfig.editableDoc) {
-                                doc.id = newId;
-                                doc.path = doc.path.replace("/diff/", "/diff_modified/");
-                            }
-                            Ext.each(textFields, function(text) {
-                                if(text.getValue() == oldPath) {
-                                    text.setValue(doc.path);
+                startCallback: function () {
+                    // Special things to do for mode B
+                    me.getController('Editor').setEditorReadonly(true);
+                    me.getController('Editor').defaultActions = {
+                        noExpandButtons: true
+                    };
+                    me.markingMenuMenuLoad = function() {
+                        var markingMenuController = me.getController('MarkingMenu'),
+                            markingMenu = markingMenuController.getMarkingMenu(),
+                            structure = markingMenuController.getTreeButtonsStructure();
+                        Ext.defer(function() {
+                            structure.disable();
+                        }, 100);
+                        var commons = markingMenuController.getTreeButtonsCommons();
+                        markingMenu.setActiveTab(commons);
+                        Ext.defer(function() {
+                            markingMenuController.filterTreeByFn(commons, function( node ) {
+                                var path = node.getPath();
+                                if ( path.match(/passiveModifications\d+\/action\d+/)  && !path.match(/renumbering/) ) {
+                                    return true;
                                 }
                             });
-                        }, me);
+                        }, 1000);
                     };
-                    storage.openDocument(dualConfig.editableDoc);
-                }, true);
+
+                    DocProperties.documentState = 'diffEditingScenarioB';
+
+                },
+
+                stopCallback: function () {
+                    var markingMenuController = me.getController('MarkingMenu');
+                    me.getController('Editor').setEditorReadonly(false);
+                    var structure = markingMenuController.getTreeButtonsStructure();
+                    Ext.defer(function() {
+                        structure.enable();
+                    }, 100);
+                    var commons = markingMenuController.getTreeButtonsCommons();
+                    markingMenuController.clearTreeFilter(commons);
+                    me.getController('Editor').defaultActions = {};
+                    DocProperties.documentState = '';
+                }
             });
-        }, 100);
+        }
     },
 
     afterDocumentLoaded: function() {
@@ -394,6 +215,7 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
                 },
 
                 docsSelected: function (selector) {
+                    selector.enableEditButton();
                     me.getDocsUrl(selector.up('diffTab'), selector);
                 },
 

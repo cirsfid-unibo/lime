@@ -98,6 +98,9 @@ Ext.define('LIME.controller.Editor', {
      * @returns {LIME.view.main.Editor} The component that contains the editor
      */
     getEditorComponent: function(cmp) {
+        // if(cmp) {
+        //     console.warn('getEditorComponent', cmp);
+        // }
         cmp = cmp || this.getMainEditor();
         // return cmp.down('tinymcefield');
         // TODO: this function is completely useless, remove it.

@@ -59,25 +59,15 @@ Ext.define('LIME.controller.CustomizationManager', {
 
     customMenuItems: {},
 
-    refs : [{
-        selector: 'appViewport',
-        ref: 'appViewport'
-    }, {
-        selector: 'mainToolbar',
-        ref: 'mainToolbar'
-    }, {
-        selector: 'main',
-        ref: 'main'
-    }, {
-        selector: 'mainEditor',
-        ref: 'mainEditor'
-    }, {
-        selector: 'outliner',
-        ref: 'outliner'
-    }, {
-        selector : '[cls=markingMenuContainer]',
-        ref : 'markingMenuContainer'
-    }],
+    refs : [
+        { ref: 'appViewport', selector: 'appViewport' },
+        { ref: 'mainToolbar', selector: 'mainToolbar' },
+        { ref: 'main', selector: 'main' },
+        { ref: 'mainEditor', selector: 'mainEditor' },
+        { ref: 'outliner', selector: 'outliner' },
+        { ref: 'uri', selector: 'mainEditorUri' },
+        { ref: 'markingMenuContainer', selector: '[cls=markingMenuContainer]' }
+    ],
 
     onLanguageLoaded : function() {
         this.customCallbacks = {};
@@ -165,39 +155,35 @@ Ext.define('LIME.controller.CustomizationManager', {
         });
 
         this.getAppViewport().add(secondEditor);
-        return secondEditor;
+        return secondEditor.query('mainEditor')[0];
     },
 
     finishEditingMode: function(editor, diff) {
          var me = this,
             mainTabPanel = me.getMain(),
             viewport = me.getAppViewport(),
-            userInfo = this.getController('LoginManager').getUserInfo(),
             editorTab = me.getMainEditor().up(),
             newExplorer, language = me.getController("Language"),
             editorController = me.getController("Editor");
 
-        me.getController('Storage').saveDocument();
+        this.stopCallback();
+        editorController.autoSaveContent(true);
 
         if(me.finishEditBtn) {
             me.finishEditBtn.up().remove(me.finishEditBtn);
         }
         if(me.syncButton) {
             if (me.syncButton.syncEnabled)
-                me.getController('DefaultDiff.controller.DualEditorSynchronizer').disable();
+                me.getController('DualEditorSynchronizer').disable();
             me.syncButton.up().remove(me.syncButton);
         }
-        language.beforeTranslate(function(xml) {
+        var html = language.getHtmlToTranslate(null, editor, me.secondDocumentConfig.metaDom);
+        language.translateContent(html, function(xml) {
             xml = xml.replace('<?xml version="1.0" encoding="UTF-8"?>', '');
-            var params = {
-                userName : userInfo.username,
-                fileContent : xml,
-                metadata: DomUtils.serializeToString(me.secondDocumentConfig.metaDom)
-            };
 
             var url = me.secondDocumentConfig.docId.replace("/diff/", "/diff_modified/");
 
-            me.application.fireEvent(Statics.eventsNames.saveDocument, url, params, function() {
+            Server.saveDocument(url, xml, function() {
                 if(diff) {
                     diff.tab.show();
                     diff.enforceReload = true;
@@ -205,7 +191,7 @@ Ext.define('LIME.controller.CustomizationManager', {
                 }
 
                 editorTab.noChangeModeEvent = false;
-                viewport.remove(editor);
+                viewport.remove(editor.up('main'));
 
                 newExplorer = Ext.widget("outliner", {
                     region : 'west',
@@ -215,9 +201,9 @@ Ext.define('LIME.controller.CustomizationManager', {
                     autoScroll : true,
                     margin : 2
                 });
-                viewport.add(newExplorer);
+                viewport.down('mainEditor').up().add(newExplorer);
             });
-        }, {}, null, editor, me.secondDocumentConfig.metaDom);
+        });
     },
 
     addFinishEditingButton : function(cmp, xmlDiff) {
@@ -265,7 +251,8 @@ Ext.define('LIME.controller.CustomizationManager', {
             xmlDiff = dualConfig.diffTab,
             secondEditor;
 
-        //me.getAppViewport().setLoading(true);
+        dualConfig.startCallback();
+        this.stopCallback = dualConfig.stopCallback;
 
         editorTab.noChangeModeEvent = true;
 
@@ -276,10 +263,7 @@ Ext.define('LIME.controller.CustomizationManager', {
             xmlDiff.tab.hide();
         }
 
-        //explorer.setVisible(false);
-
         explorer.up().remove(explorer);
-
         secondEditor = me.createSecondEditor();
         me.secondEditor = secondEditor;
 
@@ -293,7 +277,7 @@ Ext.define('LIME.controller.CustomizationManager', {
                     if(newConfig.metaDom) {
                         var manifestationUri = newConfig.metaDom.querySelector("*[class=FRBRManifestation] *[class=FRBRuri]");
                         if(manifestationUri) {
-                            secondEditor.down("mainEditorUri").setUri(manifestationUri.getAttribute("value"));
+                            me.getUri().setUri(manifestationUri.getAttribute("value"));
                         }
                     }
                     me.manageAfterLoad = function() {
