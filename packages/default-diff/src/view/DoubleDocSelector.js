@@ -66,7 +66,7 @@ Ext.define('DefaultDiff.view.DoubleDocSelector', {
 
         firstButton.setText(this.firstDoc.id ? changeMsg : selectMsg);
         secondButton.setText(this.secondDoc.id ? changeMsg : selectMsg);
-        
+
         this.down('fieldset:first textfield').setValue(this.firstDoc.path);
         this.down('fieldset:last textfield').setValue(this.secondDoc.path);
 
@@ -132,7 +132,7 @@ Ext.define('DefaultDiff.view.DoubleDocSelector', {
             text: Locale.getString('resetDocument', this.getPluginName()),
             handler: function () {
                 this.up('doubleDocSelector').clearSelectedDocuments();
-            } 
+            }
         },{
             xtype: 'button',
             cls: 'editButton',
@@ -168,12 +168,12 @@ Ext.define('DefaultDiff.view.DoubleDocSelector', {
             cls: 'printDiffButton',
             text: 'Print',
             margin: "0px 0px 0px 5px",
-            handler: function () {
-                var url = cmp.up('doubleDocSelector').iframeSource;
+            handler: function (cmp) {
+                var url = cmp.up('diffTab').iframeSource;
                 if (url)
                     window.open(url);
             }
-        }]
+        }];
         this.callParent();
     }
 });
