@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -68,7 +68,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         ref: 'secondEditor',
         selector: '#secondEditor mainEditor'
     }],
-    
+
     config: {
         pluginName: "modsMarker",
         renumberingAttr: "renumbering",
@@ -131,11 +131,11 @@ Ext.define('LIME.controller.ModsMarkerController', {
         var selectedNode = DomUtils.getFirstMarkedAncestor(evt.target);
         Ext.callback(this.secondEditorClickHandlerCustom, this, [selectedNode, evt, editor]);
     },
-    
+
     onDocumentLoaded : function(docConfig) {
         var me = this, modPosChecked = Ext.bind(this.modPosChecked, this);
         this.addModificationButtons();
-        
+
         this.posMenu = {
             items : [{
                 type: "start"
@@ -151,36 +151,36 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 type: "unspecified"
             }]
         };
-        
+
         Ext.each(this.posMenu.items, function(item) {
             item.text = Locale.getString(item.type, me.getPluginName());
             item.checkHandler = modPosChecked;
             item.group = "modPos";
             item.checked = false;
         });
-        
+
         try {
-            this.detectExistingMods();    
+            this.detectExistingMods();
         } catch(e) {
             Ext.log({level: "error"}, e);
         }
     },
-    
+
     modPosChecked: function(cmp, checked) {
-        var me = this, language = me.getController("Language"), 
+        var me = this, language = me.getController("Language"),
             typesMenu = cmp.up("*[name=types]"),
             pos, destination;
         if(checked && typesMenu && typesMenu.textMod) {
             destination = typesMenu.textMod.querySelector('*[class="destination"]');
             if(destination) {
-                pos = language.nodeGetLanguageAttribute(destination, "pos");  
-                destination.setAttribute(pos.name, cmp.type);             
+                pos = language.nodeGetLanguageAttribute(destination, "pos");
+                destination.setAttribute(pos.name, cmp.type);
             }
         }
     },
-    
+
     detectExistingMods: function(noEffect) {
-        var me = this, editor = me.getController("Editor"), 
+        var me = this, editor = me.getController("Editor"),
             editorBody = editor.getBody(),
             docMeta = me.getDocumentMetadata(),
             langPrefix = docMeta.langPrefix,
@@ -190,7 +190,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             modsElements = editorBody.querySelectorAll("*[" + DomUtils.elementIdAttribute + "][class~='mod']"),
             returnMods = [],
             hrefAttr = langPrefix+"href";
-        
+
         Ext.each(modsElements, function(element) {
             var elId = language.nodeGetLanguageAttribute(element, "eId"),
                 intId = element.getAttribute(DomUtils.elementIdAttribute),
@@ -217,13 +217,13 @@ Ext.define('LIME.controller.ModsMarkerController', {
                         return cfg.modType == modType;
                     })[0];
                     if(buttonCfg && !noEffect) {
-                        me.setElementStyles([element], button, null, buttonCfg);   
+                        me.setElementStyles([element], button, null, buttonCfg);
                     }
                 }
             }
         });
-        
-        
+
+
         modsElements = metaDom.querySelectorAll("[class=passiveModifications] [class=textualMod]");
         Ext.each(modsElements, function(element) {
             var modEls = element.querySelectorAll("["+hrefAttr+"]");
@@ -263,7 +263,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         //TODO:passive mods
         return returnMods;
     },
-    
+
     beforeContextMenuShow: function(menu, node) {
         var me = this, elementName = DomUtils.getElementNameByNode(node),
             markedParent, language = me.getController("Language"),
@@ -287,12 +287,12 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     }
                 });
         }
-        
+
         if(node && elementName) {
             markedParent = DomUtils.getFirstMarkedAncestor(node.parentNode);
             if(markedParent && (elementName == "quotedStructure"
                 || elementName == "quotedText") && DomUtils.getElementNameByNode(markedParent) == "mod" ) {
-                    
+
                 var textMod = me.detectModifications(markedParent, false, false, true);
                 textMod = (textMod) ? textMod.textMod : null;
                 if(textMod && textMod.getAttribute("type") == "substitution") {
@@ -303,7 +303,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                         modType = (modElement) ? modElement.getAttribute("class") : "",
                         destination = textMod.querySelector('*[class="destination"]'), pos,
                         posMenu = Ext.clone(me.posMenu), menuItem;
-                        
+
                     if(destination) {
                         pos = language.nodeGetLanguageAttribute(destination, "pos");
                         if(pos.value) {
@@ -313,7 +313,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                             if(menuItem) {
                                 menuItem.checked = true;
                             }
-                        }    
+                        }
                     }
 
                     if(!menu.down("*[name=modType]")) {
@@ -389,17 +389,17 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     }]);
                 }
             }
-            
+
             me.addPosMenuItems(menu, node, elementName, markedParent);
             me.addExternalContextMenuItems(menu, node, elementName, markedParent);
         }
     },
-    
-    
+
+
     addPosMenuItems: function(menu, node, elementName, markedParent) {
-        var me = this, language = me.getController("Language"), cls, 
+        var me = this, language = me.getController("Language"), cls,
             mod = me.detectModifications(node, false, false, true);
-            
+
         if(mod && mod.modElement) {
             cls = mod.modElement.getAttribute("class");
             if(cls == "destination" || cls == "source") {
@@ -422,11 +422,11 @@ Ext.define('LIME.controller.ModsMarkerController', {
                         type: "pos",
                         menu: posMenu
                     }]);
-                }    
+                }
             }
         }
     },
-    
+
     addExternalContextMenuItems: function(menu, node, elementName, markedParent) {
         var me = this;
         if(Ext.Array.contains(me.getExternalConnectedElements(), elementName)) {
@@ -446,7 +446,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                         }
                     });
                 });
-                
+
                 menu.add(['-', {
                     text : 'Set as external mod element',
                     name: "connectExternal",
@@ -457,18 +457,18 @@ Ext.define('LIME.controller.ModsMarkerController', {
             }
         }
     },
-    
+
     onFocusExternalMenuItem: function(cmp) {
         this.application.fireEvent('nodeFocusedExternally', cmp.refMod.node, {
             select : true,
             scroll : true
         });
     },
-    
+
     onExternalConnect: function(cmp, checked) {
         console.log(cmp, checked);
     },
-    
+
     onModTypeSelected: function(cmp, checked) {
         var me = this, buttonCfg = Ext.Object.getValues(me.activeModButtons).filter(function(cfg) {
                 return cfg.modType == cmp.modType;
@@ -483,14 +483,14 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 me.removeElementStyles(cmp.refNode, buttonCfg);
             }
         }
-        
+
     },
-    
+
     onTypeSelected: function(cmp, checked) {
         var me = this, sameType, oldType;
         if(checked && cmp.textMod && cmp.modElement) {
             oldType = cmp.modElement.getAttribute("class");
-            sameType = cmp.textMod.querySelectorAll("*[class="+cmp.type+"]"); 
+            sameType = cmp.textMod.querySelectorAll("*[class="+cmp.type+"]");
             if(sameType.length == 1) {
                 sameType[0].setAttribute("class", oldType);
             }
@@ -502,7 +502,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 elId = cmp.refNode.getAttribute(DomUtils.elementIdAttribute),
                 existedEl = cmp.textMod.querySelector("*[class='"+cmp.type+"']["+langPrefix+"href='#']"),
                 href = (elId) ? "#"+elId : "#";
-                
+
             if(existedEl) {
                 existedEl.setAttribute(langPrefix+"href", href);
             } else {
@@ -518,18 +518,18 @@ Ext.define('LIME.controller.ModsMarkerController', {
             }
         }
     },
-    
+
     removeElementStyles: function(node, buttonCfg) {
         if(node) {
-            node.removeAttribute(buttonCfg.modType);    
+            node.removeAttribute(buttonCfg.modType);
         }
     },
-    
-    addModificationButtons: function() {      
+
+    addModificationButtons: function() {
        this.addActiveMofigicationButtons();
        this.addPassiveModificationButtons();
     },
-    
+
     addPassiveModificationButtons: function() {
          var me = this, app = me.application;
             markerButtons = {
@@ -560,7 +560,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     label: Locale.getString("split", me.getPluginName()),
                     buttonStyle: "background-color:#DBEADC;border-radius:3px",
                     handler: function(button) {
-                        if ( DocProperties.documentState == 'diffEditingScenarioB' ) { 
+                        if ( DocProperties.documentState == 'diffEditingScenarioB' ) {
                             me.splitHandlerB(button);
                         } else {
                             me.splitHandler(button);
@@ -571,7 +571,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     label: Locale.getString("join", me.getPluginName()),
                     buttonStyle: "background-color:#DBEADC;border-radius:3px",
                     handler: function(button) {
-                        if ( DocProperties.documentState == 'diffEditingScenarioB' ) { 
+                        if ( DocProperties.documentState == 'diffEditingScenarioB' ) {
                             me.joinHandlerB(button);
                         } else {
                             me.joinHandler(button);
@@ -608,7 +608,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             },
             config = {
                 name : 'passiveModifications',
-                group: "structure",
+                group: "commons",
                 //after: "activeModifications",
                 buttons: markerButtons,
                 rules: rules,
@@ -617,7 +617,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
        app.fireEvent(Statics.eventsNames.addMarkingButton, config);
        me.passiveModButtons = markerButtons;
     },
-    
+
     addActiveMofigicationButtons: function() {
         var me = this, app = me.application;
             markerButtons = {
@@ -709,7 +709,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             },
             config = {
                 name : 'activeModifications',
-                group: "structure",
+                group: "commons",
                 //after: "commonReference",
                 buttons: markerButtons,
                 rules: rules,
@@ -718,9 +718,9 @@ Ext.define('LIME.controller.ModsMarkerController', {
        app.fireEvent(Statics.eventsNames.addMarkingButton, config);
        me.activeModButtons = markerButtons;
     },
-    
+
     getOrCreatePath: function(dom, path) {
-        var me = this, elements = path.split("/"), node, 
+        var me = this, elements = path.split("/"), node,
             iterNode = dom, tmpNode;
 
         for(var i = 0; i<elements.length; i++) {
@@ -732,7 +732,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         node = iterNode;
         return node;
     },
-    
+
     createMetaElement: function(dom, name) {
         var me = this, node,
             metaStructure = Language.getMetadataStructure();
@@ -753,19 +753,19 @@ Ext.define('LIME.controller.ModsMarkerController', {
                         node = me.objToDom(iterNode.ownerDocument, Ext.merge({
                             name : objStructure.name
                         }, source));
-                        me.insertChildInOrder(iterNode, node, parentStructure, objStructure);               
+                        me.insertChildInOrder(iterNode, node, parentStructure, objStructure);
                     } else {
                         iterNode = tmpNode;
                     }
                 }
                 parentStructure = objStructure;
-            }); 
+            });
 
         }
         return node;
     },
-    
-    
+
+
     getElementStructurePath: function(name, structure, inChildren) {
         var me = this, path = [], chPath = [];
         if(structure.name != name) {
@@ -781,17 +781,17 @@ Ext.define('LIME.controller.ModsMarkerController', {
         }
         return path;
     },
-    
-    
+
+
     insertTextModChildInOrder: function(parent, child) {
         var me = this, txtModStructure = LoadPlugin.getSchemaElements(LoadPlugin.langSchema, "textualMod"),
             type = child.getAttribute("class"),
             childStructure = txtModStructure.children.filter(function(el) {return el.name == type;})[0];
         if(childStructure) {
-            me.insertChildInOrder(parent, child, txtModStructure, childStructure);    
+            me.insertChildInOrder(parent, child, txtModStructure, childStructure);
         }
     },
-    
+
     insertChildInOrder: function(parent, child, parentStructure, childStructure) {
         var indexInParent = parentStructure.children.indexOf(childStructure),
             refNode, tmpNode;
@@ -809,14 +809,14 @@ Ext.define('LIME.controller.ModsMarkerController', {
             }
         }
     },
-    
+
     getMetaDomPath: function(path) {
         var me = this,
             docMeta = me.getDocumentMetadata(),
             metaDom = docMeta.metadata.originalMetadata.metaDom;
         return me.getOrCreatePath(metaDom, path);
     },
-    
+
     objToDom: function(doc, obj) {
         var me = this, node, childNode;
         if(obj.name) {
@@ -827,19 +827,19 @@ Ext.define('LIME.controller.ModsMarkerController', {
             });
             if(!Ext.isEmpty(obj.text)) {
                 childNode = doc.createTextNode(obj.text);
-                node.appendChild(childNode);               
+                node.appendChild(childNode);
             } else {
                 Ext.each(obj.children, function(child) {
                     childNode = me.objToDom(doc, child);
                     if(childNode) {
                         node.appendChild(childNode);
                     }
-                });    
+                });
             }
         }
         return node;
     },
-    
+
     getDocumentMetadata: function() {
         var me = this, editor = me.getController("Editor"),
             languageController = me.getController("Language"),
@@ -850,17 +850,17 @@ Ext.define('LIME.controller.ModsMarkerController', {
             metadata: metadata
         };
     },
-    
+
     setElementStyles: function(markedElements, button, originalButton, buttonCfg) {
-        var me = this, editor = me.getController("Editor"), 
+        var me = this, editor = me.getController("Editor"),
             styleClass = markedElements[0].getAttribute("class"),
             style = Ext.clone(button.pattern.wrapperStyle);
-            
+
         buttonCfg = buttonCfg || me.activeModButtons[originalButton.name];
         Ext.each(markedElements, function(markedElement) {
             markedElement.setAttribute(buttonCfg.modType, "true");
         });
-        
+
         style["this"]+= ";"+buttonCfg.elementStyle;
         style["before"]+= ";"+buttonCfg.labelStyle;
         editor.applyAllStyles('body#tinymce:not(.noboxes) *[class="' + styleClass + '"]['+buttonCfg.modType+']', style, buttonCfg.shortLabel);
@@ -870,7 +870,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         var textualMods = parent.querySelectorAll("*[class~=textualMod]");
         return "pmod_"+(textualMods.length+1);
     },
-    
+
     activeInsertionHandler: function(button, markedElements, originalButton) {
         if(!markedElements.length) return;
         var me = this,
@@ -878,7 +878,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             langPrefix = docMeta.langPrefix,
             metaDom = docMeta.metadata.originalMetadata.metaDom,
             activeModifications = me.getOrCreatePath(metaDom, "analysis/activeModifications"),
-            modEl = markedElements[0], 
+            modEl = markedElements[0],
             quotedEl = modEl.querySelector("*[class~=quotedStructure], *[class~=quotedText]"),
             refEl = Array.prototype.slice.call(modEl.querySelectorAll("*[class~=ref]")).filter(function(el) {
                 return (modEl == DomUtils.getFirstMarkedAncestor(el.parentNode));
@@ -923,7 +923,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         me.setElementStyles(markedElements, button, originalButton);
         me.askForRenumbering(modEl, textualMod);
     },
-    
+
     activeDelHandler: function(button, markedElements, originalButton) {
         if(!markedElements.length) return;
         var me = this,
@@ -931,14 +931,14 @@ Ext.define('LIME.controller.ModsMarkerController', {
             langPrefix = docMeta.langPrefix,
             metaDom = docMeta.metadata.originalMetadata.metaDom,
             activeModifications = me.getOrCreatePath(metaDom, "analysis/activeModifications"),
-            modEl = markedElements[0], 
+            modEl = markedElements[0],
             quotedEl = modEl.querySelector("*[class~=quotedStructure], *[class~=quotedText]"),
             refEl = Array.prototype.slice.call(modEl.querySelectorAll("*[class~=ref]")).filter(function(el) {
                 return (modEl == DomUtils.getFirstMarkedAncestor(el.parentNode));
             })[0],
             newHref = (quotedEl) ? quotedEl.getAttribute(DomUtils.elementIdAttribute) : "",
             destHref = (refEl) ? refEl.getAttribute(langPrefix+"href") : "";
-        
+
         var textModObj = {
             name: "textualMod",
             attributes: [{
@@ -970,7 +970,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         me.setElementStyles(markedElements, button, originalButton);
         me.askForRenumbering(modEl, textualMod);
     },
-    
+
     activeSubstitutionHandler: function(button, markedElements, originalButton) {
         if(!markedElements.length) return;
         var me = this,
@@ -978,7 +978,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             langPrefix = docMeta.langPrefix,
             metaDom = docMeta.metadata.originalMetadata.metaDom,
             activeModifications = me.getOrCreatePath(metaDom, "analysis/activeModifications"),
-            modEl = markedElements[0], 
+            modEl = markedElements[0],
             quotedEls = modEl.querySelectorAll("*[class~=quotedStructure], *[class~=quotedText]"),
             refEl = Array.prototype.slice.call(modEl.querySelectorAll("*[class~=ref]")).filter(function(el) {
                 return (modEl == DomUtils.getFirstMarkedAncestor(el.parentNode));
@@ -1029,7 +1029,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         me.setElementStyles(markedElements, button, originalButton);
         me.askForRenumbering(modEl, textualMod);
     },
-    
+
     activeJoinHandler: function(button, markedElements, originalButton) {
         if(!markedElements.length) return;
         var me = this,
@@ -1037,7 +1037,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             langPrefix = docMeta.langPrefix,
             metaDom = docMeta.metadata.originalMetadata.metaDom,
             activeModifications = me.getOrCreatePath(metaDom, "analysis/activeModifications"),
-            modEl = markedElements[0], 
+            modEl = markedElements[0],
             quotedEls = modEl.querySelectorAll("*[class~=quotedStructure], *[class~=quotedText]"),
             refEl = Array.prototype.slice.call(modEl.querySelectorAll("*[class~=ref]")).filter(function(el) {
                 return (modEl == DomUtils.getFirstMarkedAncestor(el.parentNode));
@@ -1089,7 +1089,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         me.setElementStyles(markedElements, button, originalButton);
         me.askForRenumbering(modEl, textualMod);
     },
-    
+
     activeSplitHandler: function(button, markedElements, originalButton) {
         if(!markedElements.length) return;
         var me = this,
@@ -1097,7 +1097,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             langPrefix = docMeta.langPrefix,
             metaDom = docMeta.metadata.originalMetadata.metaDom,
             activeModifications = me.getOrCreatePath(metaDom, "analysis/activeModifications"),
-            modEl = markedElements[0], 
+            modEl = markedElements[0],
             quotedEls = modEl.querySelectorAll("*[class~=quotedStructure], *[class~=quotedText]"),
             refEl = Array.prototype.slice.call(modEl.querySelectorAll("*[class~=ref]")).filter(function(el) {
                 return (modEl == DomUtils.getFirstMarkedAncestor(el.parentNode));
@@ -1105,7 +1105,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             newHref = (quotedEls[0]) ? quotedEls[0].getAttribute(DomUtils.elementIdAttribute) : "",
             oldHref = (quotedEls[1]) ? quotedEls[1].getAttribute(DomUtils.elementIdAttribute) : "",
             destHref = (refEl) ? refEl.getAttribute(langPrefix+"href") : "";
-        
+
 
         var textModObj = {
             name: "textualMod",
@@ -1150,7 +1150,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         me.setElementStyles(markedElements, button, originalButton);
         me.askForRenumbering(modEl, textualMod);
     },
-    
+
     activeRenumberingHandler: function(button, markedElements, originalButton) {
         if(!markedElements.length) return;
         var me = this,
@@ -1158,7 +1158,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             langPrefix = docMeta.langPrefix,
             metaDom = docMeta.metadata.originalMetadata.metaDom,
             activeModifications = me.getOrCreatePath(metaDom, "analysis/activeModifications"),
-            modEl = markedElements[0], 
+            modEl = markedElements[0],
             quotedEls = modEl.querySelectorAll("*[class~=quotedStructure], *[class~=quotedText]"),
             refEl = Array.prototype.slice.call(modEl.querySelectorAll("*[class~=ref]")).filter(function(el) {
                 return (modEl == DomUtils.getFirstMarkedAncestor(el.parentNode));
@@ -1166,7 +1166,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             newHref = (quotedEls[0]) ? quotedEls[0].getAttribute(DomUtils.elementIdAttribute) : "",
             oldHref = (quotedEls[1]) ? quotedEls[1].getAttribute(DomUtils.elementIdAttribute) : "",
             destHref = (refEl) ? refEl.getAttribute(langPrefix+"href") : "";
-        
+
 
         var textModObj = {
             name: "textualMod",
@@ -1223,7 +1223,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             });
         } else {
             var focusedNode = editor.getFocusedNode();
-                
+
             if ( focusedNode ){
                 var button = DomUtils.getButtonByElement(focusedNode);
                 me.insertionHandler(button, [focusedNode]);
@@ -1236,7 +1236,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             }
         }
     },
-        
+
     insertionHandler: function(button, markedElements) {
         var me = this,
             docMeta = me.getDocumentMetadata(),
@@ -1271,7 +1271,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                         value: "#"+element.getAttribute("internalid")
                     }]
                 }]
-            }; 
+            };
             textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
             modEl = element;
             passiveModifications.appendChild(textualMod);
@@ -1280,23 +1280,23 @@ Ext.define('LIME.controller.ModsMarkerController', {
             me.askForRenumbering(modEl, textualMod);
         }
     },
-    
+
     renumberingHandler: function(button) {
         var me = this, editor = me.getController("Editor"),
             selectedNode = editor.getSelectedNode(true);
-        
+
         var num = Ext.Array.toArray(selectedNode.querySelectorAll(".num")).filter(function(num) {
             return num.parentNode == selectedNode;
         })[0];
-        
+
         if(num) {
             me.createRenumbering(num, null, false, selectedNode);
         } else {
             Ext.MessageBox.alert("Error", "Number to renumbering is missing!");
         }
-        
+
     },
-    
+
     splitHandler: function(button) {
         var me = this, editor = me.getController("Editor"),
             selection = editor.getSelectionObject(null, null, true),
@@ -1335,7 +1335,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     var items = parents.reverse().map(function(parent) {
                         var id = parent.getAttribute(DomUtils.elementIdAttribute),
                             relBtn = DomUtils.getButtonByElement(parent);
-                        
+
                         return {
                             boxLabel: relBtn.shortLabel,
                             name: 'splitParent',
@@ -1364,7 +1364,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     me.createAndShowFloatingForm(selection.start, formTitle, false, false, function(cmp) {
                         //var parentId = cmp.getValues().splitParent;
                         var parentId = me.getRadioSelectedValue("splitParent");
-                        var tmpParent = Ext.fly(selection.start).parent(".toMarkNode", true) || 
+                        var tmpParent = Ext.fly(selection.start).parent(".toMarkNode", true) ||
                                         Ext.fly(selection.start).parent(".beaking", true);
                         var posNode = tmpParent || selection.start;
                         me.splitElement(DocProperties.getMarkedElement(parentId).htmlElement, posNode);
@@ -1380,7 +1380,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             }
         } else {
             Ext.MessageBox.alert("Error", "You can split one element at time!");
-        } 
+        }
     },
 
     splitHandlerB: function(button) {
@@ -1493,7 +1493,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             }
             node.setAttribute(me.getSplitAttr(), "true");
             newElement.setAttribute(me.getSplitAttr(), "true");
-            
+
             if(button) {
                 me.setElementStyles([node, newElement], button, button, {
                     shortLabel: button.shortLabel+" "+Locale.getString("splitted", me.getPluginName()),
@@ -1515,7 +1515,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             me.splitElement(node, posNode.parentNode, initialSplitNode);
         }
     },
-    
+
     setSplitMetadataB: function(node1, node2) {
         var me = this,
             editorMeta = me.getDocumentMetadata(),
@@ -1525,10 +1525,10 @@ Ext.define('LIME.controller.ModsMarkerController', {
             passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
             prevId = language.nodeGetLanguageAttribute(node1, "eId").value || node1.getAttribute(DomUtils.elementIdAttribute),
             expressionThis = metaDom.querySelector("[class=FRBRExpression] [class=FRBRthis]");
-            
-        var prevId = (expressionThis && expressionThis.getAttribute("value")) 
+
+        var prevId = (expressionThis && expressionThis.getAttribute("value"))
                 ? expressionThis.getAttribute("value")+"#"+prevId : "#"+prevId;
-            
+
         textModObj = {
             name: "textualMod",
             attributes: [{
@@ -1578,7 +1578,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         };
 
         textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
-        passiveModifications.appendChild(textualMod);   
+        passiveModifications.appendChild(textualMod);
     },
 
     setSplitMetadata: function(prevNode, prevMeta, nodes) {
@@ -1592,8 +1592,8 @@ Ext.define('LIME.controller.ModsMarkerController', {
             metaDom = editorMeta.metadata.originalMetadata.metaDom,
             passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
             prevId = language.nodeGetLanguageAttribute(prevNode, "eId").value || prevNode.getAttribute(DomUtils.elementIdAttribute),
-            expressionThis = prevMeta.identification && 
-                            prevMeta.identification.FRBRExpression && 
+            expressionThis = prevMeta.identification &&
+                            prevMeta.identification.FRBRExpression &&
                             prevMeta.identification.FRBRExpression.FRBRthis;
 
         var prevId = (expressionThis && expressionThis.attr.value)
@@ -1633,7 +1633,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 value: prevId
             }]
         }]);
-            
+
         textModObj = {
             name: "textualMod",
             attributes: [{
@@ -1650,9 +1650,9 @@ Ext.define('LIME.controller.ModsMarkerController', {
         };
 
         textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
-        passiveModifications.appendChild(textualMod);   
+        passiveModifications.appendChild(textualMod);
     },
-    
+
     joinHandler: function(button) {
         var me = this, editor = me.getController("Editor");
 
@@ -1825,7 +1825,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             metaDom = editorMeta.metadata.originalMetadata.metaDom,
             passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
             destId = joinedNode.getAttribute(DomUtils.elementIdAttribute);
-            
+
         textModObj = {
             name: "textualMod",
             attributes: [{
@@ -1852,7 +1852,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 }]
             }]
         };
-        
+
         Ext.each(joinedData, function(joinedEl) {
             textModObj.children.push({
                 name : "old",
@@ -1861,10 +1861,10 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     value : "#" + joinedEl.langId || joinedEl.id
                 }]
             });
-        }); 
+        });
 
         textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
-        passiveModifications.appendChild(textualMod);    
+        passiveModifications.appendChild(textualMod);
     },
 
     beforeDelHandler: function() {
@@ -1893,7 +1893,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             }
         }
     },
-    
+
     delHandler: function(button, markedElements) {
         var me = this,
             editorMeta = me.getDocumentMetadata(),
@@ -1933,7 +1933,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                         name: "old",
                         text: oldText
                     }]
-                }; 
+                };
                 modEl = element;
                 textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
                 passiveModifications.appendChild(textualMod);
@@ -1955,7 +1955,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             });
         }
     },
-    
+
     updateSubsMetadata: function(node, oldText) {
         var me = this, extNode = Ext.fly(node),
             elId = extNode.dom.getAttribute(DomUtils.elementIdAttribute),
@@ -2004,16 +2004,16 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 }]
             }]
         };
-        
+
         textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
         if(prevTextualMod) {
             prevTextualMod = prevTextualMod.parentNode;
-            passiveModifications.replaceChild(textualMod, prevTextualMod);           
+            passiveModifications.replaceChild(textualMod, prevTextualMod);
         } else {
-            passiveModifications.appendChild(textualMod);    
+            passiveModifications.appendChild(textualMod);
         }
     },
-    
+
     updateRenumberingMetadata: function(node, oldText, renumberedNode) {
         var me = this, extNode = new Ext.Element(node),
             language = me.getController("Language"),
@@ -2026,12 +2026,12 @@ Ext.define('LIME.controller.ModsMarkerController', {
             passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
             query = "*[class='textualMod'][type='renumbering'] *[class='destination']["+langPrefix+"href='#"+parentId+"']",
             prevTextualMod = passiveModifications.querySelector(query), textualMod,
-            textModObj = {},    
+            textModObj = {},
             expressionThis = metaDom.querySelector("[class=FRBRExpression] [class=FRBRthis]");
-            
-        elId = (expressionThis && expressionThis.getAttribute("value")) 
+
+        elId = (expressionThis && expressionThis.getAttribute("value"))
                 ? expressionThis.getAttribute("value")+"#"+elId : "#"+elId;
-                
+
         textModObj = {
             name: "textualMod",
             attributes: [{
@@ -2067,13 +2067,13 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 }]
             }]
         };
-        
+
         textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
         if(prevTextualMod) {
             prevTextualMod = prevTextualMod.parentNode;
-            passiveModifications.replaceChild(textualMod, prevTextualMod);           
+            passiveModifications.replaceChild(textualMod, prevTextualMod);
         } else {
-            passiveModifications.appendChild(textualMod);    
+            passiveModifications.appendChild(textualMod);
         }
     },
 
@@ -2105,11 +2105,11 @@ Ext.define('LIME.controller.ModsMarkerController', {
             }
         }
     },
-   
+
     substitutionHandler: function(aliasButton, elements, button) {
-        this.createSubstitution(elements[0]);        
+        this.createSubstitution(elements[0]);
     },
-    
+
     createRenumbering: function(node, formText, update, renumberedNode) {
         var me = this, editor = me.getController("Editor"),
             panel = me.createAndShowFloatingForm(node, "Insert the new text",formText, false, function(form, text) {
@@ -2128,15 +2128,15 @@ Ext.define('LIME.controller.ModsMarkerController', {
             }, function(form) {
                 if(update) {
                     var oldText = DomUtils.replaceTextOfNode(form.relatedNode, form.originalText);
-                    me.updateRenumberingMetadata(form.relatedNode, oldText, form.renumberedNode);                   
+                    me.updateRenumberingMetadata(form.relatedNode, oldText, form.renumberedNode);
                 } else {
                     //me.application.fireEvent(Statics.eventsNames.unmarkNodes, [form.relatedNode]);
                     //TODO: remove meta
-                    form.renumberedNode.removeAttribute(me.getRenumberingAttr());   
+                    form.renumberedNode.removeAttribute(me.getRenumberingAttr());
                 }
                 form.destroy();
                 me.openedForm = null;
-            }); 
+            });
 
         editor.selectNode(node);
         panel.relatedNode = node;
@@ -2204,7 +2204,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             }
         };
     },
-    
+
     createSubstitution: function(node, formText, update) {
         var me = this, editor = me.getController("Editor"),
             oldText = formText,
@@ -2217,9 +2217,9 @@ Ext.define('LIME.controller.ModsMarkerController', {
             }, function(form) {
                 if(update) {
                     var oldText = DomUtils.replaceTextOfNode(form.relatedNode, form.originalText);
-                    me.updateSubsMetadata(form.relatedNode, oldText);                   
+                    me.updateSubsMetadata(form.relatedNode, oldText);
                 } else {
-                    me.application.fireEvent(Statics.eventsNames.unmarkNodes, [form.relatedNode]);    
+                    me.application.fireEvent(Statics.eventsNames.unmarkNodes, [form.relatedNode]);
                 }
                 form.destroy();
                 me.openedForm = null;
@@ -2254,26 +2254,26 @@ Ext.define('LIME.controller.ModsMarkerController', {
             Ext.defer(function() {
                 editor.getEditor().focus();
                 if(!update) {
-                    editor.selectNode(node);    
+                    editor.selectNode(node);
                 }
             }, 40);
         }
 
         me.openedForm = panel;
     },
-    
+
     createAndShowFloatingForm: function(node, title ,text, readOnly, onAccept, onCancel, customConfig) {
         customConfig = customConfig || {};
-        var me = this, editor = me.getController("Editor"), 
+        var me = this, editor = me.getController("Editor"),
             editorBoundingRect = editor.getIframe().dom.getBoundingClientRect(),
             elementBoundingRect = node.getBoundingClientRect(),
             boxMargin= {top: -150, left: -20},
             boxWidth = customConfig.width || 300,
             boxPos = {x: (editorBoundingRect.left+elementBoundingRect.left+boxMargin.left),
                       y: (editorBoundingRect.top+elementBoundingRect.top+boxMargin.top)},
-            panel, buttons; 
-        
-        
+            panel, buttons;
+
+
         if(!readOnly) {
             buttons = [{
                 text : Locale.getString("openFileWindowSouthCancelButtonLabel"),
@@ -2309,13 +2309,13 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 margin : 0,
                 allowBlank: false
             }],
-            
+
             buttons: buttons
         });
-        
+
         if(elementBoundingRect.width) {
             if(elementBoundingRect.width < boxWidth) {
-                boxPos.x -= (boxWidth -  elementBoundingRect.width)/2;    
+                boxPos.x -= (boxWidth -  elementBoundingRect.width)/2;
             } else {
                 boxPos.x += (elementBoundingRect.width - boxWidth)/2;
             }
@@ -2323,22 +2323,22 @@ Ext.define('LIME.controller.ModsMarkerController', {
         panel.showAt(boxPos.x, boxPos.y);
         return panel;
     },
-    
+
     substitutionUpdate: function(node, textMod) {
         var me = this, oldEl = textMod.querySelector("*[class='old']"),
             extEl = Ext.fly(node), nodeText = DomUtils.getTextOfNode(node);
-            
+
         //extEl.setHTML(DomUtils.getTextOfNode(oldEl));
         me.createSubstitution(node, DomUtils.getTextOfNode(oldEl), true);
     },
-    
+
     getAnalysisByNodeOrNodeId: function(node, nodeId) {
         var me = this, id = nodeId || node.getAttribute(DomUtils.elementIdAttribute),
             editorMeta = me.getDocumentMetadata(),
             langPrefix = editorMeta.langPrefix,
             metaDom = editorMeta.metadata.originalMetadata.metaDom,
             metaEl = metaDom.querySelector("*["+langPrefix+"href='#"+id+"']");
-        
+
         if(metaEl && metaEl.parentNode) {
             return {
                 analysis: metaEl.parentNode,
@@ -2347,7 +2347,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             };
         }
     },
-    
+
     detectModifications: function(node, nodeId, unmarked, noAction) {
         var me = this, elId = nodeId || node.getAttribute(DomUtils.elementIdAttribute),
             editorMeta = me.getDocumentMetadata(),
@@ -2384,7 +2384,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     break;
             }
         }
-        
+
         return null;
     },
 
@@ -2396,9 +2396,9 @@ Ext.define('LIME.controller.ModsMarkerController', {
             modifications.parentNode.removeChild(modifications);
         }
     },
-    
+
     askForRenumbering: function(modEl, textualMod) {
-        
+
         var me = this, win = Ext.widget("window", {
             title: "This modification has caused a renumbering?",
             closable: false,
@@ -2432,11 +2432,11 @@ Ext.define('LIME.controller.ModsMarkerController', {
             }
         }, this);*/
     },
-    
+
     addRenumberingAfterMod: function(modEl, textualMod) {
         //TODO:
     },
-    
+
     editorNodeFocused: function(node) {
         var me = this;
         if(me.openedForm) {
@@ -2445,15 +2445,15 @@ Ext.define('LIME.controller.ModsMarkerController', {
         }
         if(node) {
             try {
-                me.detectModifications(node);    
+                me.detectModifications(node);
             } catch(e) {
                 Ext.log({level: "error"}, e);
             }
         }
-        
+
         Ext.callback(this.editorClickHandlerCustom, this, [node, me.getController("Editor").getEditor()]);
     },
-    
+
     nodesUnmarked: function(nodesIds) {
         var me = this;
         Ext.each(nodesIds, function(nodeId) {
@@ -2471,7 +2471,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         me.application.removeListener(Statics.eventsNames.editorDomNodeFocused, me.editorNodeFocused, me);
         me.application.removeListener(Statics.eventsNames.unmarkedNodes, me.nodesUnmarked, me);
     },
-    
+
     onInitPlugin: function() {
         var me = this;
         me.application.on(Statics.eventsNames.afterLoad, me.onDocumentLoaded, me);

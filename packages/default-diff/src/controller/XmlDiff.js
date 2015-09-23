@@ -148,6 +148,7 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
                         var markingMenuController = me.getController('MarkingMenu'),
                             markingMenu = markingMenuController.getMarkingMenu(),
                             structure = markingMenuController.getTreeButtonsStructure();
+                        me.getController('ModsMarkerController').addModificationButtons();
                         Ext.defer(function() {
                             structure.disable();
                         }, 100);
@@ -200,7 +201,6 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
 
     init: function() {
         var me = this;
-
         me.application.on(Statics.eventsNames.afterLoad, me.afterDocumentLoaded, me);
         me.application.on(Statics.eventsNames.markingMenuLoaded, me.onMarkingMenuLoaded, me);
 
