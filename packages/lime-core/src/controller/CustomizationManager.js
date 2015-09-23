@@ -241,6 +241,7 @@ Ext.define('LIME.controller.CustomizationManager', {
     },
 
     enableDualEditorMode: function(dualConfig) {
+        console.info('enableDualEditorMode', dualConfig);
         var me = this,
             mainTabPanel = me.getMain(),
             explorer = me.getOutliner(),

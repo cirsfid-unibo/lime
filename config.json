@@ -1,4 +1,4 @@
 {
     "nodeServer": "http://sinatra.cirsfid.unibo.it/node/aknservices",
-    "phpServer": "php/"
+    "phpServer": "http://localhost:8080/lime-dev/php/"
 }
