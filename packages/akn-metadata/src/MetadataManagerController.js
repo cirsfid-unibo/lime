@@ -576,7 +576,8 @@ Ext.define('AknMetadata.MetadataManagerController', {
                         editor.changed = true;
                     }
                });
-            } else if (name == "lifecycle" || name == "workflow" || name == "classification") {
+            } else if ((name == "lifecycle" || name == "workflow" || name == "classification")
+                       && cmp.customPath) {
                 var result = DocProperties.updateMetadata(Ext.merge({
                     metadata : editor.getDocumentMetadata(),
                     path : cmp.customPath,
@@ -700,8 +701,6 @@ Ext.define('AknMetadata.MetadataManagerController', {
                 change: function(cmp, newValue, oldValue) {
                     if(!cmp.up("metaGrid")) {
                         var form = cmp.up("form");
-                        if (!!oldValue)
-                            console.warn(oldValue, newValue, 'asd');
                         me.updateMetadata(form, form.getValues(), undefined, !!oldValue);
                     }
                 }
