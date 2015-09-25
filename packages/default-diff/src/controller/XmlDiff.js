@@ -217,7 +217,7 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
                 docsSelected: function (selector) {
                     selector.enableEditButton();
                     me.getDocsUrl(selector.up('diffTab'), selector);
-                },
+                }
             },
             'diffTab': {
                 diffTypeChanged: function (cmp) {

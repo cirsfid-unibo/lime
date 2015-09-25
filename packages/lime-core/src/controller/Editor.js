@@ -1005,14 +1005,14 @@ Ext.define('LIME.controller.Editor', {
 
     addUndoButtons: function (editor) {
         var me = this,
-            undoManager = this.getController('UndoManager'),
-            buttons = {};
+            undoManager = this.getController('UndoManager');
+        me.undoButtons = {};
 
         function addButton (id, title, cb) {
             editor.addButton(id, {
                 tooltip: title,
                 onPostRender: function () {
-                    buttons[id] = this;
+                    me.undoButtons[id] = this;
                     this.disabled(true);
                 },
                 onclick: cb
@@ -1020,18 +1020,16 @@ Ext.define('LIME.controller.Editor', {
         };
         addButton('lime-undo', 'Undo', undoManager.undo.bind(undoManager));
         addButton('lime-redo', 'Redo', undoManager.redo.bind(undoManager));
-
-        // Enable/Disable undo/redo buttons depending on whether the
-        this.refreshUndoButtons = function () {
-            console.info(undoManager.currentLevel, undoManager.checkpoints);
-            buttons['lime-undo'].disabled(!undoManager.canUndo());
-            buttons['lime-redo'].disabled(!undoManager.canRedo());
-        }
     },
 
     // Enable or disable undo buttons depending on the UndoManager state.
-    // Defined in addUndoButtons
-    refreshUndoButtons: function () {},
+    refreshUndoButtons: function () {
+        if (!this.undoButtons) return;
+        var undoManager = this.getController('UndoManager');
+        console.info(undoManager.currentLevel, undoManager.checkpoints);
+        this.undoButtons['lime-undo'].disabled(!undoManager.canUndo());
+        this.undoButtons['lime-redo'].disabled(!undoManager.canRedo());
+    },
 
     /**
      * Set the callbacks for the autosave plugin in tinyMCE.
