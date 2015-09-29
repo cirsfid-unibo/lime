@@ -49,7 +49,8 @@ Ext.define('AknMetadata.Application', {
     override: 'LIME.Application',
 
     requires: [
-        'AknMetadata.MetadataManagerController'
+        'AknMetadata.MetadataManagerController',
+        'AknMetadata.new.Window'
     ],
 
     initControllers : function() {

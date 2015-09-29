@@ -44,47 +44,12 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// This controller loads in the metadata store the right values every time
-// a new document is loaded in LIME.
-Ext.define('AknMain.metadata.ImportController', {
-    extend: 'Ext.app.Controller',
+Ext.define('AknMetadata.new.Model', {
+    extend: 'Ext.app.ViewModel',
 
-    requires: [
-        'AknMain.xml.Document'
-    ],
+    alias: 'viewmodel.akn-metadata',
 
-    listen: {
-        global:  {
-            loadDocument: 'onLoadDocument'
-        }
-    },
-
-    // On the loadDocument event, load metadata from the original xml document.
-    // No HtmlToso, no XSLTs, just plain and simple AkomaNtoso. KISS. <3
-    onLoadDocument: function (config) {
-        var akn = AknMain.xml.Document.parse(config.originalXml),
-            store = Ext.getStore('metadata').newMainDocument();
-
-        // FRBRWork
-        // TODO: parse URI
-        // TODO: FRBRalias
-        this.set('date', '//*[local-name(.)="FRBRWork"]/*[local-name(.)="FRBRdate"]/@date', store, akn);
-        this.set('author', '//*[local-name(.)="FRBRauthor"]/@value', store, akn);
-        this.set('country', '//*[local-name(.)="FRBRcountry"]/@value', store, akn);
-        // TODO: FRBRsubtype
-        // TODO: FRBRnumber
-        // TODO: FRBRname
-        // TODO: FRBRprescriptive
-        // TODO: FRBRauthoritative
-
-        console.info(store.data);
-        // console.info('arguments', config.originalXml);
-    },
-
-    set: function (prop, xpath, store, akn) {
-        var val = akn.xpath(xpath);
-        // console.log('xpath', xpath, val);
-        if (val)
-            store.set(prop, val.getDom().textContent);
+    data: {
+        document: null
     }
 });
