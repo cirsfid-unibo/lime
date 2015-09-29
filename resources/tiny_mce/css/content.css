@@ -1000,7 +1000,7 @@
     margin-right: 5px; }
 #tinymce.lime .tocItem {
   display: block;
-  margin: 2px;
+  margin: 5px 0;
   color: #444; }
   #tinymce.lime .tocItem[akn_level="1"] {
     margin-left: 10px; }
@@ -1010,6 +1010,12 @@
     margin-left: 30px; }
   #tinymce.lime .tocItem[akn_level="4"] {
     margin-left: 40px; }
+  #tinymce.lime .tocItem[akn_level="5"] {
+    margin-left: 50px; }
+  #tinymce.lime .tocItem[akn_level="6"] {
+    margin-left: 60px; }
+  #tinymce.lime .tocItem[akn_level="7"] {
+    margin-left: 70px; }
 #tinymce.lime .p {
   margin: 0 4px;
   padding: 0 4px;
@@ -1251,6 +1257,9 @@
 #tinymce.lime .pointOfOrder:before {
   content: "pointOfOrder";
   width: 85px; }
+#tinymce.lime .point:before {
+  content: "point";
+  width: 43px; }
 #tinymce.lime .proceduralMotions:before {
   content: "proceduralMotions";
   width: 115px; }
@@ -2055,5 +2064,3 @@
     font-size: 13px;
     line-height: 15px;
     vertical-align: text-bottom; }
-
-/*# sourceMappingURL=content.css.map */
