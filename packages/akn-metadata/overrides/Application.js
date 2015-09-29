@@ -50,7 +50,7 @@ Ext.define('AknMetadata.Application', {
 
     requires: [
         'AknMetadata.MetadataManagerController',
-        'AknMetadata.new.Window'
+        'AknMetadata.newMeta.Window'
     ],
 
     initControllers : function() {

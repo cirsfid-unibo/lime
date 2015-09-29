@@ -46,13 +46,13 @@
 
 // Metadata editor for the AknMain.metadata.Store
 // Todo: add validation/display errors
-Ext.define('AknMetadata.new.Editor', {
+Ext.define('AknMetadata.newMeta.Editor', {
     extend: 'Ext.panel.Panel',
     xtype: 'akn-metadata-editor',
 
     requires: [
-        'AknMetadata.new.Model',
-        'AknMetadata.new.Controller'
+        'AknMetadata.newMeta.Model',
+        'AknMetadata.newMeta.Controller'
     ],
 
     controller: 'akn-metadata',
@@ -162,7 +162,7 @@ Ext.define('AknMetadata.new.Editor', {
     }]
 });
 
-Ext.define('AknMetadata.new.EditorTab', {
+Ext.define('AknMetadata.newMeta.EditorTab', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.metadataTab',
     defaults: {

@@ -44,7 +44,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('AknMetadata.new.Model', {
+Ext.define('AknMetadata.newMeta.Model', {
     extend: 'Ext.app.ViewModel',
 
     alias: 'viewmodel.akn-metadata',

@@ -44,21 +44,26 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Window for editing metadata in the AknMain.metadata.Store
-Ext.define('AknMetadata.new.Window', {
-    extend: 'Ext.window.Window',
+Ext.define('AknMetadata.newMeta.Controller', {
+    extend: 'Ext.app.ViewController',
+    alias: 'controller.akn-metadata',
 
-    requires: [
-        'AknMetadata.new.Editor'
-    ],
+    init: function () {
+        this.refreshStore();
+    },
 
-    title: 'Experimental metadata editor',
-    height: 400,
-    width: 600,
-    resizable: true,
-    layout: 'fit',
+    listen: {
+        store: {
+            '#metadata': {
+                datachanged: 'refreshStore'
+            }
+        }
+    },
 
-    items: [{
-        xtype: 'akn-metadata-editor'
-    }]
+    refreshStore: function () {
+        console.info('refresh');
+        this.getViewModel().setData({
+            document: Ext.getStore('metadata').getMainDocument()
+        });
+    }
 });
