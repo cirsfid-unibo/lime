@@ -53,6 +53,10 @@ Ext.define('AknMetadata.new.Window', {
     ],
 
     title: 'Experimental metadata editor',
+    height: 400,
+    width: 600,
+    resizable: true,
+    layout: 'fit',
 
     items: [{
         xtype: 'akn-metadata-editor'

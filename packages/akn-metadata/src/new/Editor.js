@@ -44,7 +44,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Window for editing metadata in the AknMain.metadata.Store
+// Metadata editor for the AknMain.metadata.Store
+// Todo: add validation/display errors
 Ext.define('AknMetadata.new.Editor', {
     extend: 'Ext.panel.Panel',
     xtype: 'akn-metadata-editor',
@@ -59,9 +60,112 @@ Ext.define('AknMetadata.new.Editor', {
         type: 'akn-metadata'
     },
 
+    layout: {
+        type: 'accordion',
+        titleCollapse: true,
+        animate: true,
+        fill: true
+    },
+
     items: [{
-        xtype: 'textfield',
-        fieldLabel: 'Language',
-        bind: '{document.country}'
+        xtype: 'metadataTab',
+        title: 'Work',
+        items: [{
+            xtype: 'datefield',
+            fieldLabel: 'Work date',
+            bind: '{document.date}'
+        }, {
+            xtype: 'textfield',
+            fieldLabel: 'Number',
+            bind: '{document.name}'
+        }, {
+            xtype: 'combobox',
+            store: 'Nationalities',
+            displayField: 'name',
+            fieldLabel: 'Nation',
+            bind: '{document.country}'
+        }, {
+            xtype: 'textfield',
+            fieldLabel: 'Author',
+            bind: '{document.author}'
+        }, {
+            xtype: 'gridpanel',
+            bind: {
+                store: '{document.aliases}'
+            },
+            columns: [
+                { text: 'Value', dateIndex: 'value', flex: 1, editor: 'textfield', allowBlank: false },
+                { text: 'Name', dateIndex: 'name', editor: 'textfield' }
+            ],
+            plugins: {
+                ptype: 'rowediting',
+                clicksToEdit: 1
+            }
+        }]
+    }, {
+        xtype: 'metadataTab',
+        title: 'Version',
+        items: [{
+            xtype: 'combobox',
+            store: 'DocumentLanguages',
+            displayField: 'name',
+            fieldLabel: 'Language',
+            bind: '{document.language}'
+        }, {
+            xtype: 'datefield',
+            fieldLabel: 'Version date',
+            bind: '{document.date}'
+        }, {
+            xtype: 'textfield',
+            fieldLabel: 'Author',
+            bind: '{document.author}'
+        }]
+    }, {
+        xtype: 'metadataTab',
+        title: 'Manifestation',
+        items: []
+    }, {
+        xtype: 'metadataTab',
+        title: 'References',
+        layout: 'fit',
+        items: [{
+            xtype: 'gridpanel',
+            bind: {
+                store: '{document.aliases}'
+            },
+            columns: [
+                { text: 'Id', dateIndex: 'eid', editor: 'textfield', allowBlank: false },
+                { text: 'Type', dateIndex: 'type', editor: 'combo', allowBlank: false },
+                { text: 'Href', dateIndex: 'href', flex: 1, editor: 'textfield' },
+                { text: 'Name', dateIndex: 'name', editor: 'textfield' }
+            ],
+            plugins: {
+                ptype: 'cellediting',
+                clicksToEdit: 1
+            },
+            tools: [{
+                type: 'plus',
+                tooltip: 'Add a new reference',
+                callback: function (grid) {
+                    console.log('arguments', arguments);
+                    grid.getStore().add({});
+                }
+            }, {
+                type: 'minus',
+                tooltip: 'Remove selected references',
+                callback: function (grid) {
+                    console.log(grid.getSelection());
+                    grid.getStore().remove(grid.getSelection());
+                }
+            }]
+        }]
     }]
+});
+
+Ext.define('AknMetadata.new.EditorTab', {
+    extend: 'Ext.panel.Panel',
+    alias: 'widget.metadataTab',
+    defaults: {
+        padding: '5 20'
+    }
 });
