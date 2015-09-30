@@ -1023,7 +1023,8 @@ Ext.define('LIME.controller.Editor', {
 
     // Enable or disable undo buttons depending on the UndoManager state.
     refreshUndoButtons: function () {
-        if (!this.undoButtons) return;
+        if (!this.undoButtons['lime-undo']) return;
+        if (!this.undoButtons['lime-redo']) return;
         var undoManager = this.getController('UndoManager');
         console.info(undoManager.currentLevel, undoManager.checkpoints);
         this.undoButtons['lime-undo'].disabled(!undoManager.canUndo());
