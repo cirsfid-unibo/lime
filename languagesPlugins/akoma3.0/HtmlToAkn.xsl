@@ -177,9 +177,9 @@
             <xsl:apply-templates select="./*[contains(@class,'num')]"/>
             <xsl:apply-templates select="./*[contains(@class,'heading') and not(contains(@class,'subheading'))]"/>
             <xsl:apply-templates select="./*[contains(@class,'subheading')]"/>
-            <xsl:apply-templates select="./*[not(contains(@class,'num')) and 
-                                            not(contains(@class,'heading')) and 
-                                            not(contains(@class,'subheading'))]"/>
+            <xsl:apply-templates select="./node()[not(contains(@class,'num')) and 
+                                                  not(contains(@class,'heading')) and 
+                                                  not(contains(@class,'subheading'))]"/>
         </xsl:element>
     </xsl:template>
     
