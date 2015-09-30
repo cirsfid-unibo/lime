@@ -64,6 +64,10 @@ Ext.define('LIME.controller.UndoManager', {
     checkpoints: [],
     currentLevel: 0,
 
+    init: function () {
+        setInterval(this.addCheckpoint.bind(this), 2000);
+    },
+
     // Create and add a new checkpoint
     addCheckpoint: function () {
         var checkpoint = this.buildCheckpoint(),
@@ -71,9 +75,8 @@ Ext.define('LIME.controller.UndoManager', {
         if (this.areDifferent(checkpoint, lastCheckpoint)) {
             this.checkpoints.length = (++this.currentLevel) + 1;
             this.checkpoints[this.currentLevel] = checkpoint;
+            this.fireEvent('change');
         }
-        // console.info('change');
-        this.fireEvent('change');
     },
 
     // Restore the checkpoint before the current one
@@ -116,9 +119,10 @@ Ext.define('LIME.controller.UndoManager', {
     // - Metadata (Not yet supported)
     buildCheckpoint: function () {
         var editorController = this.getController('Editor'),
-            editor = this.getController('Editor').getEditor(),
             application = this.application,
-            html = this.stripHtmlNoise(editor.getContent());
+            editor = this.getController('Editor').getEditor(),
+            html = editor && this.stripHtmlNoise(editor.getContent());
+        if (!html) return null;
         return {
             html: html,
             restore: function () {
@@ -132,13 +136,29 @@ Ext.define('LIME.controller.UndoManager', {
 
     // Given an html string, retuns it with its visibleBookmarks removed
     stripHtmlNoise: function (html) {
-        return html.replace(/<span class="visibleBookmark">[^\/]*<\/span>/g, '');
+        return html.replace(/<span class="visibleBookmark">[^\/]*<\/span>/g, '')
+                   .replace(/ focused="true"/g, '');
     },
 
     // Return whether the two checkpoints are equal
     areDifferent: function (a, b) {
-        var different = !a || !b || (a.html && b.html && a.html !== b.html);
-        // if (a && b && different) Utilities.debug.diff(a.html, b.html);
-        return different;
+        function normalize(str) {
+            // In checkpoint comparison ignore:
+            // - breaking spans
+            // - newlines
+            // - id
+            // - data-labelinfo
+            // - internal ids
+            return str.replace(/<span class="breaking">\s*<\/span>/g, '')
+                      .replace(/\r?\n|\r/g, '')
+                      .replace(/ id="[^"]*"/g, '')
+                      .replace(/ data-labelinfo="[^"]*"/g, '')
+                      .replace(/ internalid="[^"]*"/g, '');
+        }
+        if (!a || !b) return true;
+        if (!a.html || !b.html) return true;
+        if (normalize(a.html) === normalize(b.html)) return false;
+        // Utilities.debug.diff(normalize(a.html), normalize(b.html), 100);
+        return true;
     }
 });

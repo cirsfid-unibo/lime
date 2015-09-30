@@ -502,16 +502,24 @@ Ext.define('LIME.Utilities', {
     // Debug utilities
     debug: {
         // Find difference between two strings
-        diff: function (a, b, errorLength) {
+        diff: function (a, b, errorLength, backtrack) {
             errorLength = errorLength || 40;
+            backtrack = backtrack || 5;
+            a = a.replace(/\r?\n|\r/g, '¶');
+            b = b.replace(/\r?\n|\r/g, '¶');
             if (a !== b) {
                 var maxLength = Math.max(a.length, b.length);
                 for (var i = 0; i < maxLength; i++)
                     if (a[i] !== b[i])
                         break;
-                console.log('Found difference after character', i)
-                console.log(a.substr(i, errorLength));
-                console.log(b.substr(i, errorLength));
+                backtrack = Math.min(backtrack, i);
+                var line = '';
+                for (var j = i-backtrack; j < i+errorLength; j++)
+                    line += a[j] === b[j] ? ' ': '×';
+                console.log('Found difference');
+                console.log(a.substr(i - backtrack, errorLength));
+                console.log(b.substr(i - backtrack, errorLength));
+                console.log(line);
             } else {
                 console.log('No difference found');
             }

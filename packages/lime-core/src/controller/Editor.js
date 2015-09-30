@@ -1000,7 +1000,6 @@ Ext.define('LIME.controller.Editor', {
             return;
         this.changed = false;
         this.getController('Storage').saveDocument();
-        this.getController('UndoManager').addCheckpoint();
     },
 
     addUndoButtons: function (editor) {
