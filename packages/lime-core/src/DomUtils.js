@@ -475,6 +475,8 @@ Ext.define('LIME.DomUtils', {
             if (elementId && markingElement) {
                 return markingElement.button;
             }
+
+            return DocProperties.getFirstButtonByName(this.getNameByNode(element));
         }
         return null;
     },

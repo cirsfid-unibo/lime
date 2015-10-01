@@ -93,11 +93,20 @@ class nPassiveModification extends PassiveModification {
 }
 
 class newAKNDiff09 extends AKNDiff {
+	protected function setParentsAttributes($node) {
+		$childDiv = $node->getElementsByTagName('div');
+		foreach( $childDiv as $childNode ) {
+			$childNode->setAttribute('parent', $this->getAllParentsId($childNode));
+			$childNode->setAttribute('parentWid', $this->getAllParentsWId($childNode));
+			$childNode->setAttribute('parentClass', $childNode->parentNode->getAttribute("class"));
+		}
+	}
 	
 	protected  function buildColumns($node) {
 		$list = array();
 		$tdNode = $this->tableDOM->createElement('td');
 		foreach ($node->childNodes as $childNode) {
+			
 			if($childNode->nodeName == 'div' &&
 			   !($childNode->getAttribute('akn_status') == 'removed')) {
 					$list = array_merge($list, $this->buildColumns($childNode));
@@ -116,7 +125,7 @@ class newAKNDiff09 extends AKNDiff {
 						$importedNode->setAttribute('parentOriginalId', $childNode->parentNode->getAttribute("akn_originalId"));
 					 * */
 				}
-				
+				//$this->setParentsAttributes($importedNode);
 				$tdNode->appendChild($importedNode);
 				if(!$this->searchNodeValue($list, $tdNode->nodeValue)) {
 					array_push($list, $tdNode);
@@ -756,6 +765,18 @@ class newAKNDiff09 extends AKNDiff {
 		return -1;
 	}
 
+	protected function getPrecedingText($node) {
+		// $parent = $node->parentNode;
+		// $encoding = mb_detect_encoding($parent->nodeValue);
+		// $precedingText = mb_substr($parent->nodeValue, 0, (mb_strpos($parent->nodeValue, $node->nodeValue, 0, $encoding)), $encoding);
+		$text = "";
+		while ($node->previousSibling) {
+			$text .= $node->previousSibling->nodeValue;
+			$node = $node->previousSibling;
+		}
+		return $text;
+	}
+
 	protected function applyMods($table) {
 		$xpath = new DOMXPath($table->ownerDocument);
 		$oldTds = $xpath->query("//*[@class='oldVersion']", $table);
@@ -776,18 +797,19 @@ class newAKNDiff09 extends AKNDiff {
 			switch($mod->type) {
 				case "substitution":
 					$precedingText = FALSE;
-					$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId ='$id' or contains(@parent, '$mod->destination')]", $table);
-					
+					$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId ='$id' or @akn_currentId ='$mod->destination' or contains(@parent, '$mod->destination')]", $table);
+					//echo $destNodes->length.' - '.$mod->old.' - '.$id.' - '.$mod->destination.'<br>';
+					$newNode = $xpath->query("//*[@class='newVersion']//*[@akn_currentId ='$id' or contains(@parent, '$mod->destination')]", $table)->item(0);
+					if($newNode) {
+						$precedingText = $this->getPrecedingText($newNode);
+					}
 					if(!$destNodes->length && $mod->old) {
-						$newNode = $xpath->query("//*[@class='newVersion']//*[@akn_currentId ='$id' or contains(@parent, '$mod->destination')]", $table)->item(0);
 						if($newNode) {
 							$parent = $newNode->parentNode;
 							$parentId = $parent->getAttribute('akn_currentId');
-							$encoding = mb_detect_encoding($parent->nodeValue);
-							$precedingText = mb_substr($parent->nodeValue, 0, (mb_strpos($parent->nodeValue, $newNode->nodeValue, 0, $encoding)), $encoding);
 							$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId ='$parentId']", $table);
 							
-							//echo $destNodes->length.' - '.$mod->old.'<br>';
+							//echo $destNodes->length.' - '.$mod->old.' - '.$parentId.'<br>';
 
 							if (!$destNodes->length) {
 								$destNodes = $xpath->query("//*[@class='oldVersion']//*[contains(., '$precedingText')]", $table);
@@ -796,15 +818,16 @@ class newAKNDiff09 extends AKNDiff {
 					}
 
 					$subsNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId ='$id' or contains(@parent, '$id')]", $table);
-					//echo $mod->destination." - ".$destNodes->length. " - ".$id." - ".$mod->old."<br>";					
-					if($mod->old) {
-						$destNodes = ($destNodes->length) ? $destNodes : $oldTds;
+					//echo $mod->destination." - ".$destNodes->length. " - ".$id." - ".$mod->old." - ".$precedingText."<br>";					
+					if($mod->old && $destNodes->length) {
+						//$destNodes = ($destNodes->length) ? $destNodes : $oldTds;
 						if($this->findAndwrapTextNode($mod->old, $destNodes, $mod->type, $precedingText) === FALSE) {
 							$this->setAllAttribute($subsNodes, "class", "errorSubstitution");
 							$this->setAllAttribute($subsNodes, "data-old", $mod->old);
 							$this->setAllAttribute($subsNodes, "title", $mod->old." not found");
 						}
 					} else {
+						//echo $mod->destination." - ".$id." - ".$mod->old." - ".$precedingText."<br>";					
 						$this->setAllAttribute($destNodes, "class", $mod->type);	
 					}
 					$this->setAllAttribute($subsNodes, "class", $mod->type);
@@ -821,24 +844,26 @@ class newAKNDiff09 extends AKNDiff {
 				case "repeal":
 					$idCond = "";
 					$targetNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId= '$mod->destination' or @akn_wId= '$mod->destination' or contains(@parent, '$mod->destination')]", $table);
-					//echo $targetNodes->length. " - ".$id." - ".$mod->old."<br>";
+					//echo $targetNodes->length. " - ".$id." - ".$mod->old." - ".$targetNodes->item(0)->nodeName."<br>";
 
 					if($targetNodes->length) {
 						$firstTarget = $targetNodes->item(0);
 						$originalId = $firstTarget->getAttribute("akn_wId");
 						$idCond = ($originalId) ? "contains(@parent, '$originalId') or " : $idCond;
-						$firstTargetParent = $xpath->query("./ancestor::*[@parent or @parentOriginalId]", $firstTarget);
+						//$firstTargetParent = $xpath->query("./ancestor::*[@parent or @parentOriginalId]", $firstTarget);
+						$firstTargetParent = $xpath->query("./ancestor::*[contains(@class, 'hcontainer')]", $firstTarget);
 						if($firstTargetParent->length) {
-							$firstTargetParent = $firstTargetParent->item(0); 
-							$originalId = $firstTargetParent->getAttribute("parentOriginalId");
-							$parentId = ($originalId) ? $originalId : $firstTargetParent->getAttribute("parent");
-							$idCond = ($parentId) ? "@parent = '$parentId' or $idCond" : $idCond;
+							$firstTargetParent = $firstTargetParent->item($firstTargetParent->length-1);
+							// $originalId = $firstTargetParent->getAttribute("parentOriginalId");
+							// $parentId = ($originalId) ? $originalId : $firstTargetParent->getAttribute("parent");
+							// $idCond = ($parentId) ? "@parent = '$parentId' or $idCond" : $idCond;
+							$parentId = $firstTargetParent->getAttribute("akn_currentId");
+							$idCond = ($parentId) ? "@akn_currentId = '$parentId' or $idCond" : $idCond;
 						}
 					}
 					$destNodes = $xpath->query("//*[@class='oldVersion']//*[$idCond contains(@parent, '$mod->destination') or contains(@parentWid, '$mod->destination')]", $table);
-
-					if($destNodes->length <= 1 ) {
-						$destNodes = ($destNodes->length) ? $destNodes : $oldTds;
+					if($destNodes->length == 1 ) {
+						//$destNodes = ($destNodes->length) ? $destNodes : $oldTds;
 						if($mod->old) {
 							$repealNodes = $this->findAndwrapTextNode($mod->old, $destNodes, $mod->type);
 							if($repealNodes === FALSE) {

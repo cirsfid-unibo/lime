@@ -124,7 +124,7 @@ Ext.define('LIME.controller.Language', {
                 if (DocProperties.documentInfo.docType == 'documentCollection') return;
 
                 var intId = element.getAttribute(DomUtils.elementIdAttribute), newId,
-                    hrefElements = tmpElement.querySelectorAll("*["+langPrefix+"href *= '#"+intId+"']");
+                    hrefElements = tmpElement.querySelectorAll("*["+langPrefix+"href = '#"+intId+"']");//TODO: improve this to work with complete href eg: /uy/..../#id
 
                 var elName = DomUtils.getNameByNode(element),
                     button = DocProperties.getFirstButtonByName(elName),

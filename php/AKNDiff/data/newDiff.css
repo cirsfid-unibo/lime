@@ -174,3 +174,10 @@ div.noMods {
 .notes .bottomRef {
 	padding: 0px 10px 0px 0px;
 }
+
+.inline.del {
+    display: inline-block;
+    visibility: hidden;
+    width: 8px;
+    line-height: 1px;
+}
