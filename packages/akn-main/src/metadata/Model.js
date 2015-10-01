@@ -73,6 +73,9 @@ Ext.define('AknMain.metadata.Document', {
         { name: 'generation', type: 'date' },   // '2015-03-12'
         { name: 'media', type: 'string' },      // 'xml'
         { name: 'path', type: 'string' },       // 'http://sinatra ... xml'
+        { name: 'authoritative', type: 'boolean' },
+        { name: 'prescriptive', type: 'boolean' },
+
 
         { name: 'source', reference: 'Reference' },
 
