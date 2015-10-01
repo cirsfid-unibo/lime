@@ -154,4 +154,6 @@
     .mref             { @include Label('mref'); }
     .ref              { @include Label('ref'); }
     .rref             { @include Label('rref'); }
+
+    .ins[substitution] { @include Label('substitution'); }
 }

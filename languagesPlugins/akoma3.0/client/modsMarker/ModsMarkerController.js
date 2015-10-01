@@ -552,8 +552,8 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     buttonStyle: "background-color:#DBEADC;border-radius:3px",
                     handler: me.beforeSubstitutionHandler,
                     elementStyle: "background-color: #fcf8e3;border-color: #faebcc;",
-                    labelStyle: "border-color: #faebcc;",
-                    shortLabel: Locale.getString("substitution", me.getPluginName()),
+                    // labelStyle: "border-color: #faebcc;",
+                    // shortLabel: Locale.getString("substitution", me.getPluginName()),
                     modType: "substitution"
                 },
                 splitCustom: {
