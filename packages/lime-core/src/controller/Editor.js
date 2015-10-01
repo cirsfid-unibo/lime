@@ -113,7 +113,8 @@ Ext.define('LIME.controller.Editor', {
      * @returns {Object} A reference to the editor object
      */
     getEditor: function(cmp) {
-        return this.getEditorComponent(cmp).getEditor();
+        var editorComponent = this.getEditorComponent(cmp);
+        return editorComponent && editorComponent.getEditor();
     },
 
     /**
@@ -1023,6 +1024,7 @@ Ext.define('LIME.controller.Editor', {
 
     // Enable or disable undo buttons depending on the UndoManager state.
     refreshUndoButtons: function () {
+        if (!this.undoButtons) return;
         if (!this.undoButtons['lime-undo']) return;
         if (!this.undoButtons['lime-redo']) return;
         var undoManager = this.getController('UndoManager');
