@@ -94,13 +94,21 @@ Ext.define('AknMetadata.newMeta.Editor', {
                 store: '{document.aliases}'
             },
             columns: [
-                { text: 'Value', dateIndex: 'value', flex: 1, editor: 'textfield', allowBlank: false },
-                { text: 'Name', dateIndex: 'name', editor: 'textfield' }
+                { text: 'Value', dataIndex: 'value', flex: 1, editor: 'textfield', allowBlank: false },
+                { text: 'Name', dataIndex: 'name', editor: 'textfield' }
             ],
             plugins: {
                 ptype: 'rowediting',
                 clicksToEdit: 1
             }
+        }, {
+            xtype: 'checkboxfield',
+            boxLabel: 'Prescriptive',
+            bind: '{document.prescriptive}'
+        }, {
+            xtype: 'checkboxfield',
+            boxLabel: 'Authoritative',
+            bind: '{document.authoritative}'
         }]
     }, {
         xtype: 'metadataTab',
@@ -131,13 +139,21 @@ Ext.define('AknMetadata.newMeta.Editor', {
         items: [{
             xtype: 'gridpanel',
             bind: {
-                store: '{document.aliases}'
+                store: '{document.references}'
             },
             columns: [
-                { text: 'Id', dateIndex: 'eid', editor: 'textfield', allowBlank: false },
-                { text: 'Type', dateIndex: 'type', editor: 'combo', allowBlank: false },
-                { text: 'Href', dateIndex: 'href', flex: 1, editor: 'textfield' },
-                { text: 'Name', dateIndex: 'name', editor: 'textfield' }
+                { text: 'Id', dataIndex: 'eid', editor: 'textfield', allowBlank: false },
+                {
+                    text: 'Type',
+                    dataIndex: 'type',
+                    editor: {
+                        xtype: 'combo',
+                        store: AknMain.metadata.Reference.validators.type[0].list
+                    },
+                    allowBlank: false
+                },
+                { text: 'Href', dataIndex: 'href', flex: 1, editor: 'textfield' },
+                { text: 'Name', dataIndex: 'name', editor: 'textfield' }
             ],
             plugins: {
                 ptype: 'cellediting',
@@ -159,11 +175,63 @@ Ext.define('AknMetadata.newMeta.Editor', {
                 }
             }]
         }]
+    }, {
+        xtype: 'metadataTab',
+        title: 'Lifecycle',
+        layout: 'fit',
+        items: [{
+            xtype: 'gridpanel',
+            bind: {
+                store: '{document.lifecycleEvents}'
+            },
+            columns: [
+                { text: 'Id', dataIndex: 'eid', editor: 'textfield', allowBlank: false },
+                { text: 'Date', dataIndex: 'date', editor: 'datefield' },
+                {
+                    text: 'Source',
+                    dataIndex: 'source',
+                    editor: {
+                        xtype: 'combo',
+                        store: '{document.references}'
+                    }
+                },
+                { text: 'Refers', dataIndex: 'refers', editor: 'textfield' },
+                { text: 'Original', dataIndex: 'origianl', editor: 'checkboxfield' },
+                {
+                    text: 'Type',
+                    dataIndex: 'type',
+                    editor: {
+                        xtype: 'combo',
+                        store: AknMain.metadata.LifecycleEvent.validators.type[0].list
+                    }
+                }
+            ],
+            plugins: {
+                ptype: 'cellediting',
+                clicksToEdit: 1
+            },
+            tools: [{
+                type: 'plus',
+                tooltip: 'Add a new event',
+                callback: function (grid) {
+                    console.log('arguments', arguments);
+                    grid.getStore().add({});
+                }
+            }, {
+                type: 'minus',
+                tooltip: 'Remove selected events',
+                callback: function (grid) {
+                    console.log(grid.getSelection());
+                    grid.getStore().remove(grid.getSelection());
+                }
+            }]
+        }]
     }]
 });
 
 Ext.define('AknMetadata.newMeta.EditorTab', {
     extend: 'Ext.panel.Panel',
+    scrollable: 'y',
     alias: 'widget.metadataTab',
     defaults: {
         padding: '5 20'

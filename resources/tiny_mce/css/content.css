@@ -1521,6 +1521,9 @@
 #tinymce.lime .rref:before {
   content: "rref";
   width: 37px; }
+#tinymce.lime .ins[substitution]:before {
+  content: "substitution";
+  width: 85px; }
 
 #tinymce.lime.it .address:before {
   content: "indirizzo";
