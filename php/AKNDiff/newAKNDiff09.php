@@ -782,7 +782,7 @@ class newAKNDiff09 extends AKNDiff {
 		$oldTds = $xpath->query("//*[@class='oldVersion']", $table);
 		
 		foreach($this->mods as $id => $mod) {
-			//echo $mod->type. " - ".$id." - ".$mod->previousId."<br>";
+			//echo $mod->type. " - ".$id." - ".$mod->previousId."->".$mod->old."<br>";
 			if($mod->previousId) {
 				// It's important to check first if there're nodes with parent = id and after check if contains
 				$originalNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId ='$id' or @parent = '$id']", $table);
@@ -843,25 +843,32 @@ class newAKNDiff09 extends AKNDiff {
 					break;
 				case "repeal":
 					$idCond = "";
+					$parentIdCond = "";
 					$targetNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId= '$mod->destination' or @akn_wId= '$mod->destination' or contains(@parent, '$mod->destination')]", $table);
-					//echo $targetNodes->length. " - ".$id." - ".$mod->old." - ".$targetNodes->item(0)->nodeName."<br>";
+					//echo $targetNodes->length. " - ".$mod->destination." - ".$mod->old." - ".$targetNodes->item(0)->nodeName."<br>";
 
 					if($targetNodes->length) {
 						$firstTarget = $targetNodes->item(0);
 						$originalId = $firstTarget->getAttribute("akn_wId");
 						$idCond = ($originalId) ? "contains(@parent, '$originalId') or " : $idCond;
 						//$firstTargetParent = $xpath->query("./ancestor::*[@parent or @parentOriginalId]", $firstTarget);
-						$firstTargetParent = $xpath->query("./ancestor::*[contains(@class, 'hcontainer')]", $firstTarget);
+						$firstTargetParent = $xpath->query("./ancestor::*[contains(@class, 'container') or contains(@parentClass, 'container')]", $firstTarget);
+						//echo $firstTarget->ownerDocument->saveHTML($firstTarget->parentNode)."!!<br>";
 						if($firstTargetParent->length) {
 							$firstTargetParent = $firstTargetParent->item($firstTargetParent->length-1);
 							// $originalId = $firstTargetParent->getAttribute("parentOriginalId");
 							// $parentId = ($originalId) ? $originalId : $firstTargetParent->getAttribute("parent");
-							// $idCond = ($parentId) ? "@parent = '$parentId' or $idCond" : $idCond;
 							$parentId = $firstTargetParent->getAttribute("akn_currentId");
+							$parentAttr = $firstTargetParent->getAttribute("parent");
 							$idCond = ($parentId) ? "@akn_currentId = '$parentId' or $idCond" : $idCond;
+							$parentIdCond = ($parentAttr) ? "@parent = '$parentAttr'" : "";
 						}
 					}
+					
 					$destNodes = $xpath->query("//*[@class='oldVersion']//*[$idCond contains(@parent, '$mod->destination') or contains(@parentWid, '$mod->destination')]", $table);
+					if (!$destNodes->length && $parentIdCond)
+						$destNodes = $xpath->query("//*[@class='oldVersion']//*[$parentIdCond]", $table);
+
 					if($destNodes->length == 1 ) {
 						//$destNodes = ($destNodes->length) ? $destNodes : $oldTds;
 						if($mod->old) {
