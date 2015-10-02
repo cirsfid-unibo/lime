@@ -72,7 +72,7 @@ Ext.define('AknMain.xml.Document', {
             },
 
             xpath: function (xpath) {
-                var result = document.evaluate(
+                var result = dom.evaluate(
                     xpath,
                     dom,
                     null,
