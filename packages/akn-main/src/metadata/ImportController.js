@@ -68,23 +68,57 @@ Ext.define('AknMain.metadata.ImportController', {
         // FRBRWork
         // TODO: parse URI
         // TODO: FRBRalias
-        this.set('date', '//*[local-name(.)="FRBRWork"]/*[local-name(.)="FRBRdate"]/@date', store, akn);
-        this.set('author', '//*[local-name(.)="FRBRauthor"]/@value', store, akn);
-        this.set('country', '//*[local-name(.)="FRBRcountry"]/@value', store, akn);
+        this.set('date', '//FRBRWork/FRBRdate/@date', store, akn);
+        this.set('author', '//FRBRauthor/@value', store, akn);
+        this.set('country', '//FRBRcountry/@value', store, akn);
         // TODO: FRBRsubtype
         // TODO: FRBRnumber
         // TODO: FRBRname
         // TODO: FRBRprescriptive
         // TODO: FRBRauthoritative
 
-        console.info(store.data);
+        this.importReferences(store.references(), akn);
+        this.importSource(store, akn);
+
+        // console.info(store.data);
         // console.info('arguments', config.originalXml);
     },
 
     set: function (prop, xpath, store, akn) {
-        var val = akn.xpath(xpath);
-        // console.log('xpath', xpath, val);
+        var val = akn.localXpath(xpath);
         if (val)
             store.set(prop, val.getDom().textContent);
+    },
+
+    importReferences: function (store, akn) {
+        akn.localXpaths('//references/*').forEach(function (reference) {
+            var dom = reference.getDom();
+            var data = {
+                eid: dom.getAttribute('eId'),
+                type: dom.tagName,
+                href: dom.getAttribute('href'),
+                showAs: dom.getAttribute('showAs')
+            }
+            store.add(data);
+        });
+    },
+
+    importSource: function (store, akn) {
+        var source = akn.localXpath('//identification/@source'),
+            sourceEid = source && source.getDom().textContent.substring(1),
+            sourceRecord = sourceEid && store.references().findRecord('eid', sourceEid);
+
+        if (sourceRecord) {
+            store.setSource(sourceRecord);
+        } else {
+            store.setSource(
+                store.references().add({
+                    eid: 'source',
+                    type: 'TLCPerson',
+                    href: '/ontology/person/somebody',
+                    showAs: 'Somebody'
+                })[0]
+            );
+        }
     }
 });
