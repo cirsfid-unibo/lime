@@ -247,9 +247,10 @@ Ext.define('LIME.controller.ModsMarkerController', {
                             if ( element.querySelector('.old') )  {
                                 var oldText = element.querySelector('.old').textContent;
                                 editorEl.setAttribute('data-old-text', oldText);
-                                if ( modType == 'repeal' ) {
+                                // TODO: Understand if this is necessary
+                                /*if ( modType == 'repeal' ) {
                                     editorEl.innerHTML = oldText;
-                                }
+                                }*/
                             }
                             if(buttonCfg && button && DomUtils.getButtonByElement(editorEl).name == button.name) {
                                 me.setElementStyles([editorEl], button, null, buttonCfg);

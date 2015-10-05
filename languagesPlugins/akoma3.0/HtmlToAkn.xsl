@@ -461,6 +461,7 @@
 
     <xsl:template match="p[contains(@class, 'breaking')] |
                          span[contains(@class, 'breaking')]">
+        <xsl:apply-templates />
     </xsl:template>
     
     <!-- Called template -->
