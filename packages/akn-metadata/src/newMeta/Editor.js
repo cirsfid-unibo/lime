@@ -153,7 +153,7 @@ Ext.define('AknMetadata.newMeta.Editor', {
                     allowBlank: false
                 },
                 { text: 'Href', dataIndex: 'href', flex: 1, editor: 'textfield' },
-                { text: 'Name', dataIndex: 'name', editor: 'textfield' }
+                { text: 'Name', dataIndex: 'showAs', editor: 'textfield' }
             ],
             plugins: {
                 ptype: 'cellediting',

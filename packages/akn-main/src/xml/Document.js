@@ -62,6 +62,9 @@ Ext.define('AknMain.xml.Document', {
 
     newDocument: function (dom) {
         var me = this;
+        function local(xpath) {
+            return xpath.replace(/([a-zA-Z]+)/g, '*[local-name(.)="$1"]');
+        }
         return {
             getDom: function () {
                 return dom;
@@ -71,6 +74,7 @@ Ext.define('AknMain.xml.Document', {
                 return me.serializer.serializeToString(dom);
             },
 
+            // Return the first xpath match
             xpath: function (xpath) {
                 var result = dom.evaluate(
                     xpath,
@@ -81,7 +85,31 @@ Ext.define('AknMain.xml.Document', {
                 );
                 if (result.singleNodeValue)
                     return me.newDocument(result.singleNodeValue);
-            }
+            },
+
+            // Returns the list of xpath metches
+            xpaths: function (xpath) {
+                var result = dom.evaluate(
+                    xpath,
+                    dom,
+                    null,
+                    XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+                    null
+                );
+                var matches = [];
+                for (var i=0; i < result.snapshotLength; i++)
+                    matches.push(me.newDocument(result.snapshotItem(i)));
+                return matches;
+            },
+
+            // These functions force the xpath to use local-name() everywhere
+            localXpath: function (xpath) {
+                return this.xpath(local(xpath));
+            },
+
+            localXpaths: function (xpath) {
+                return this.xpaths(local(xpath));
+            },
         };
     }
 });
