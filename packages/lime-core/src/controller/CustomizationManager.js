@@ -188,6 +188,7 @@ Ext.define('LIME.controller.CustomizationManager', {
                     diff.tab.show();
                     diff.enforceReload = true;
                     mainTabPanel.setActiveTab(diff);
+                    diff.fireEvent("finishEditing", diff);
                 }
 
                 editorTab.noChangeModeEvent = false;

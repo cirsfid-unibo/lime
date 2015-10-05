@@ -222,6 +222,9 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
             'diffTab': {
                 diffTypeChanged: function (cmp) {
                     me.getDiff(cmp, cmp.down('doubleDocSelector'));
+                },
+                finishEditing: function (diffTab) {
+                    me.getDocsUrl(diffTab, diffTab.down('doubleDocSelector'));
                 }
             },
 
