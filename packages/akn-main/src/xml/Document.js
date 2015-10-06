@@ -45,71 +45,75 @@
  */
 
 // Parse xml and allow to use XPath on it.
-// Eg. var doc = AknMain.xml.Document.parse('<akomaNtoso></akomaNtoso>');
-// doc.xpath('[local-name()="akomaNtoso"]').xpath(...).serialize();
-// doc = AknMain.xml.Document.newDocument(domObject);
-// doc.serialize();
+// Eg. var doc = AknMain.xml.Document.parse('<akomaNtoso></akomaNtoso>', 'akn');
+// doc.select('//akn:references') -> [Dom elements]
+// doc.getXml('//akn:meta') -> "<meta xmlns="">...</meta>"
+// doc.getValue('//FRBRWork/FRBRdate/@date') -> "2015-04-03"
+// doc.query('count(//akn:references)') -> "4"
+// The second parameter (ns) is the namespace prefix which can be used in the
+// xpath queries to match the namespace of root element. (which often is the default one)
 Ext.define('AknMain.xml.Document', {
     singleton: true,
 
     parser: new DOMParser(),
     serializer: new XMLSerializer(),
 
-    parse: function (xml) {
+    parse: function (xml, ns) {
         var dom = this.parser.parseFromString(xml, "application/xml");
-        return this.newDocument(dom);
+        return this.newDocument(dom, ns);
     },
 
-    newDocument: function (dom) {
+    newDocument: function (dom, ns) {
         var me = this;
-        function local(xpath) {
-            return xpath.replace(/([a-zA-Z]+)/g, '*[local-name(.)="$1"]');
+        var document = dom.ownerDocument || dom;
+        var dom = dom.ownerDocument == null ? dom.documentElement : dom;
+
+        //
+        var defaultResolver = document.createNSResolver(dom).lookupNamespaceURI;
+        var defaultNs = dom.namespaceURI || dom.firstElementChild.namespaceURI;
+        var nsResolver = function (prefix) {
+            if (prefix == ns) return defaultNs;
+            else defaultResolver(prefix);
         }
+
+        function executeXpath (xpath, type) {
+            return document.evaluate(
+                xpath,
+                dom,
+                nsResolver,
+                type,
+                null
+            );
+        }
+
         return {
-            getDom: function () {
-                return dom;
-            },
-
-            serialize: function () {
-                return me.serializer.serializeToString(dom);
-            },
-
-            // Return the first xpath match
-            xpath: function (xpath) {
-                var result = dom.evaluate(
-                    xpath,
-                    dom,
-                    null,
-                    XPathResult.FIRST_ORDERED_NODE_TYPE,
-                    null
-                );
-                if (result.singleNodeValue)
-                    return me.newDocument(result.singleNodeValue);
-            },
-
-            // Returns the list of xpath metches
-            xpaths: function (xpath) {
-                var result = dom.evaluate(
-                    xpath,
-                    dom,
-                    null,
-                    XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
-                    null
-                );
+            // Return list of dom element matchers
+            select: function (xpath) {
+                var result = executeXpath(xpath, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
                 var matches = [];
                 for (var i=0; i < result.snapshotLength; i++)
-                    matches.push(me.newDocument(result.snapshotItem(i)));
+                    matches.push(result.snapshotItem(i));
                 return matches;
             },
 
-            // These functions force the xpath to use local-name() everywhere
-            localXpath: function (xpath) {
-                return this.xpath(local(xpath));
+            // Return string concatenation of matches
+            getValue: function (xpath) {
+                return this.select(xpath)
+                    .map(function (el) { return el.textContent})
+                    .join('\n');
             },
 
-            localXpaths: function (xpath) {
-                return this.xpaths(local(xpath));
+            // Execute xpath function and return a string
+            query: function (xpath) {
+                return executeXpath(xpath, XPathResult.STRING_TYPE).stringValue;
             },
+
+            // Return serialization of first match
+            getXml: function (xpath) {
+                var result = executeXpath(xpath, XPathResult.FIRST_ORDERED_NODE_TYPE);
+                if (result.singleNodeValue)
+                    return me.serializer.serializeToString(result.singleNodeValue);
+            }
         };
     }
 });

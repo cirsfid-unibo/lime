@@ -62,15 +62,16 @@ Ext.define('AknMain.metadata.ImportController', {
     // On the loadDocument event, load metadata from the original xml document.
     // No HtmlToso, no XSLTs, just plain and simple AkomaNtoso. KISS. <3
     onLoadDocument: function (config) {
-        var akn = AknMain.xml.Document.parse(config.originalXml),
+        var akn = AknMain.xml.Document.parse(config.originalXml, 'akn'),
             store = Ext.getStore('metadata').newMainDocument();
 
         // FRBRWork
         // TODO: parse URI
         // TODO: FRBRalias
-        this.set('date', '//FRBRWork/FRBRdate/@date', store, akn);
-        this.set('author', '//FRBRauthor/@value', store, akn);
-        this.set('country', '//FRBRcountry/@value', store, akn);
+        store.set('type', akn.query('local-name(//akn:akomaNtoso/*)'));
+        store.set('date', akn.getValue('//akn:FRBRWork/akn:FRBRdate/@date'));
+        store.set('author', akn.getValue('//akn:FRBRauthor/@value'));
+        store.set('country', akn.getValue('//akn:FRBRcountry/@value'));
         // TODO: FRBRsubtype
         // TODO: FRBRnumber
         // TODO: FRBRname
@@ -79,37 +80,26 @@ Ext.define('AknMain.metadata.ImportController', {
 
         this.importReferences(store.references(), akn);
         this.importSource(store, akn);
-
-        // console.info(store.data);
-        // console.info('arguments', config.originalXml);
-    },
-
-    set: function (prop, xpath, store, akn) {
-        var val = akn.localXpath(xpath);
-        if (val)
-            store.set(prop, val.getDom().textContent);
     },
 
     importReferences: function (store, akn) {
-        akn.localXpaths('//references/*').forEach(function (reference) {
-            var dom = reference.getDom();
+        akn.select('//akn:references/*').forEach(function (reference) {
             var data = {
-                eid: dom.getAttribute('eId'),
-                type: dom.tagName,
-                href: dom.getAttribute('href'),
-                showAs: dom.getAttribute('showAs')
+                eid: reference.getAttribute('eId'),
+                type: reference.tagName,
+                href: reference.getAttribute('href'),
+                showAs: reference.getAttribute('showAs')
             }
             store.add(data);
         });
     },
 
     importSource: function (store, akn) {
-        var source = akn.localXpath('//identification/@source'),
-            sourceEid = source && source.getDom().textContent.substring(1),
-            sourceRecord = sourceEid && store.references().findRecord('eid', sourceEid);
-
-        if (sourceRecord) {
-            store.setSource(sourceRecord);
+        var source = akn.getValue('//akn:identification/@source').substring(1),
+            reference = source && store.references().findRecord('eid', source);
+        console.log('source', source, reference);
+        if (reference) {
+            store.setSource(reference);
         } else {
             store.setSource(
                 store.references().add({
