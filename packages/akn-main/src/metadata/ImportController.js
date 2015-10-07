@@ -50,7 +50,8 @@ Ext.define('AknMain.metadata.ImportController', {
     extend: 'Ext.app.Controller',
 
     requires: [
-        'AknMain.xml.Document'
+        'AknMain.xml.Document',
+        'AknMain.Uri'
     ],
 
     listen: {
@@ -63,52 +64,90 @@ Ext.define('AknMain.metadata.ImportController', {
     // No HtmlToso, no XSLTs, just plain and simple AkomaNtoso. KISS. <3
     onLoadDocument: function (config) {
         var akn = AknMain.xml.Document.parse(config.originalXml, 'akn'),
-            store = Ext.getStore('metadata').newMainDocument();
+            store = Ext.getStore('metadata').newMainDocument(),
+            uri = AknMain.Uri.parse(akn.getValue('//akn:FRBRExpression/akn:FRBRuri/@value'));
+        return main ();
 
-        // FRBRWork
-        // TODO: parse URI
-        // TODO: FRBRalias
-        store.set('type', akn.query('local-name(//akn:akomaNtoso/*)'));
-        store.set('date', akn.getValue('//akn:FRBRWork/akn:FRBRdate/@date'));
-        store.set('author', akn.getValue('//akn:FRBRauthor/@value'));
-        store.set('country', akn.getValue('//akn:FRBRcountry/@value'));
-        // TODO: FRBRsubtype
-        // TODO: FRBRnumber
-        // TODO: FRBRname
-        // TODO: FRBRprescriptive
-        // TODO: FRBRauthoritative
+        function main () {
+            importReferences();
+            importAliases();
 
-        this.importReferences(store.references(), akn);
-        this.importSource(store, akn);
-    },
+            importWork();
+            importExpression();
+            importManifestation();
 
-    importReferences: function (store, akn) {
-        akn.select('//akn:references/*').forEach(function (reference) {
-            var data = {
-                eid: reference.getAttribute('eId'),
-                type: reference.tagName,
-                href: reference.getAttribute('href'),
-                showAs: reference.getAttribute('showAs')
-            }
-            store.add(data);
-        });
-    },
+            store.set('type', akn.query('local-name(//akn:akomaNtoso/*)'));
 
-    importSource: function (store, akn) {
-        var source = akn.getValue('//akn:identification/@source').substring(1),
-            reference = source && store.references().findRecord('eid', source);
-        console.log('source', source, reference);
-        if (reference) {
-            store.setSource(reference);
-        } else {
-            store.setSource(
-                store.references().add({
-                    eid: 'source',
-                    type: 'TLCPerson',
-                    href: '/ontology/person/somebody',
-                    showAs: 'Somebody'
-                })[0]
-            );
+            store.setSource(getReference('//akn:identification/@source', {
+                eid: 'source',
+                type: 'TLCPerson',
+                href: '/ontology/person/somebody',
+                showAs: 'Somebody'
+            }));
+        }
+
+        function importReferences () {
+            akn.select('//akn:references/*').forEach(function (reference) {
+                var data = {
+                    eid: reference.getAttribute('eId'),
+                    type: reference.tagName,
+                    href: reference.getAttribute('href'),
+                    showAs: reference.getAttribute('showAs')
+                }
+                store.references().add(data);
+            });
+        }
+
+        function importAliases () {
+            akn.select('//akn:FRBRalias').forEach(function (alias) {
+                var data = {
+                    name: alias.getAttribute('name'),
+                    value: alias.getAttribute('value'),
+                    level: {
+                        FRBRWork: 'work',
+                        FRBRExpression: 'expression',
+                        FRBRManifestation: 'manifestation',
+                        FRBRItem: 'item'
+                    }[alias.parentNode.tagName]
+                }
+                store.aliases().add(data);
+            })
+        }
+
+        function importWork() {
+            store.set('date',    new Date(akn.getValue('//akn:FRBRWork/akn:FRBRdate/@date') || uri.date));
+            store.set('author',  uri.author);
+            store.set('number',  akn.getValue('//akn:FRBRWork/akn:FRBRnumber/@value'));
+            store.set('name',    akn.getValue('//akn:FRBRWork/akn:FRBRname/@value'));
+            if (!store.get('name') && !store.get('number')) store.set('name', uri.name);
+            store.set('subtype', akn.getValue('//akn:FRBRWork/akn:FRBRsubtype/@value') || uri.subtype);
+            store.set('country', akn.getValue('//akn:FRBRWork/akn:FRBRcountry/@value') || uri.country);
+            store.set('authoritative', akn.getValue('//akn:FRBRWork/akn:FRBRauthoritative/@value') === 'true');
+            store.set('prescriptive', akn.getValue('//akn:FRBRWork/akn:FRBRprescriptive/@value') === 'true');
+            store.setWorkAuthor(getReference('//akn:FRBRWork/akn:FRBRauthor/@href'));
+            store.setWorkAuthorRole(getReference('//akn:FRBRWork/akn:FRBRauthor/@as'));
+        }
+
+        function importExpression () {
+            store.set('version', new Date(akn.getValue('//akn:FRBRExpression/akn:FRBRdate/@date') || uri.version));
+            store.set('language', akn.getValue('//akn:FRBRExpression/akn:FRBRlanguage/@language') || uri.language);
+            store.setExpressionAuthor(getReference('//akn:FRBRExpression/akn:FRBRauthor/@href'));
+            store.setExpressionAuthorRole(getReference('//akn:FRBRExpression/akn:FRBRauthor/@as'));
+        }
+
+        function importManifestation () {
+            store.setManifestationAuthor(getReference('//akn:FRBRManifestation/akn:FRBRauthor/@href'));
+            store.setManifestationAuthorRole(getReference('//akn:FRBRManifestation/akn:FRBRauthor/@as'));
+        }
+
+        function getReference (xpath, fallback) {
+            var eid = akn.getValue(xpath).substring(1),
+                reference = eid && store.references().findRecord('eid', eid);
+
+            if (reference)
+                return reference;
+            else if (fallback)
+                return store.references().add(fallback)[0];
         }
     }
 });

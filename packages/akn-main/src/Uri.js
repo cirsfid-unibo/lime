@@ -45,7 +45,6 @@
  */
 
 
-
 // Class for AkomaNtoso URI management
 // Note: documentation of AkomaNtoso URI is a little vague in some places.
 // This implementation is not (and can't be) perfect.
@@ -69,7 +68,6 @@
 // uri.expression()    -> "/akn/it/act/legge/stato/2014-09-12/2/ita@2015-03-12!official/2015-04-11"
 // uri.manifestation() -> "/akn/it/act/legge/stato/2014-09-12/2/ita@2015-03-12!official/2015-04-11/main.xml"
 // uri.item()          -> "http://sinatra.cirsfid.unibo.it/node/documentsdb/mnardi@unibo.it/myFiles/esempio.xml"
-
 Ext.define('AknMain.Uri', {
     singleton: true,
 

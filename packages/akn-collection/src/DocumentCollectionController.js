@@ -347,13 +347,13 @@ Ext.define('AknCollection.DocumentCollectionController', {
             Server.getDocument(document.id, callback);
         } else {
             me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
-                var el = AknMain.xml.Document.parse(xml).xpath(
-                    '//*[local-name()="component"]/*' +
-                    '[descendant::*[local-name()="FRBRthis" and ' +
-                                   '@value="' + document.id + '"]]'
+
+                var result = AknMain.xml.Document.parse(xml, 'akn').getXml(
+                    '//akn:component/*' +
+                    '[descendant::akn:FRBRthis[@value="' + document.id + '"]]'
                 );
-                if (el)
-                    callback('<akomaNtoso>' + el.serialize() + '</akomaNtoso>');
+                if (result)
+                    callback('<akomaNtoso>' + result + '</akomaNtoso>');
                 else {
                     callback('');
                 }

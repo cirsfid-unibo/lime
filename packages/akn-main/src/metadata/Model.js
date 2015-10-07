@@ -63,10 +63,12 @@ Ext.define('AknMain.metadata.Document', {
         // Identification                       Example:
         { name: 'country', type: 'string' },    // 'it'
         { name: 'type', type: 'string' },       // 'bill'
+        { name: 'subtype', type: 'string' },    // 'decree'
         { name: 'subtype', type: 'string' },    // 'legge'
         { name: 'author', type: 'string' },     // 'camera'
         { name: 'date', type: 'date' },         // '2014-09-12'
-        { name: 'name', type: 'string' },       // '2' 'nomelegge'
+        { name: 'number', type: 'string' },     // 'legge 19822'
+        { name: 'name', type: 'string' },       // 'nomelegge'
         { name: 'language', type: 'string' },   // 'ita'
         { name: 'version', type: 'date' },      // '2015-03-12'
         { name: 'official', type: 'string' },   // 'official'
@@ -76,6 +78,12 @@ Ext.define('AknMain.metadata.Document', {
         { name: 'authoritative', type: 'boolean' },
         { name: 'prescriptive', type: 'boolean' },
 
+        { name: 'workAuthor', reference: 'Reference' },
+        { name: 'workAuthorRole', reference: 'Reference' },
+        { name: 'expressionAuthor', reference: 'Reference' },
+        { name: 'expressionAuthorRole', reference: 'Reference' },
+        { name: 'manifestationAuthor', reference: 'Reference' },
+        { name: 'manifestationAuthorRole', reference: 'Reference' },
 
         { name: 'source', reference: 'Reference' },
 
@@ -113,8 +121,13 @@ Ext.define('AknMain.metadata.Alias', {
     fields: [
         { name: 'documentId', reference: 'Document' },
         { name: 'name', type: 'string' },
-        { name: 'value', type: 'string' }
-    ]
+        { name: 'value', type: 'string' },
+        { name: 'level', type: 'string' }
+    ],
+
+    validators: {
+        type: { type: 'inclusion', list: ['work', 'expression', 'manifestation', 'item'] }
+    }
 });
 
 Ext.define('AknMain.metadata.Reference', {
