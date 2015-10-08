@@ -177,7 +177,6 @@ Ext.define('AknMain.Uri', {
                     version = expressionStr.match(/\/\w\w\w@([\w\W\d\-]*)(!|$|\/)/)[1];
                 } catch (e) { error('Missing version', expressionStr); }
             }
-
             this.country = country;
             this.type = type;
             this.subtype = subtype;
@@ -192,6 +191,7 @@ Ext.define('AknMain.Uri', {
             throw new Error(msg + ': "' + piece + '"');
         }
 
+        parseUri.call(uri, uriStr);
         return uri;
     }
 });

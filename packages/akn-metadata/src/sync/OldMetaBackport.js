@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
+ * Copyright (c) 2015 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
  *
  * Authors:
@@ -44,22 +44,68 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+// Watch for metadata store changes and port them to the old meta system (dom)
+Ext.define('AknMetadata.sync.OldMetaBackport', {
+    extend: 'Ext.app.Controller',
 
-Ext.define('AknMetadata.Application', {
-    override: 'LIME.Application',
+    listen: {
+        store: {
+            '#metadata': {
+                update: 'onMetadataUpdate'
+            }
+        }
+    },
 
-    requires: [
-        'AknMetadata.MetadataManagerController',
-        'AknMetadata.sync.EditorSynchronizer',
-        'AknMetadata.sync.OldMetaBackport',
-        'AknMetadata.newMeta.Window'
-    ],
+    onMetadataUpdate: function (store, record, operation, fields) {
+        function isUpdate (field) {
+            return operation == 'edit' && fields.indexOf(field) != -1;
+        }
 
-    initControllers : function() {
-        Locale.getPackageStrings('akn-metadata');
-        this.controllers.push('AknMetadata.MetadataManagerController');
-        this.controllers.push('AknMetadata.sync.EditorSynchronizer');
-        this.controllers.push('AknMetadata.sync.OldMetaBackport');
-        this.callParent();
+        if (isUpdate('date') || isUpdate('version')) {
+            console.log('argum', arguments)
+            this.updateDates();
+        }
+    },
+
+    updateDates: function () {
+        var store = Ext.getStore('metadata').getMainDocument();
+        var date = store.get('date'),
+            version = store.get('version');
+
+        // get uri
+        // parse uri
+        try {
+            // We know better than the Law of Demeter.
+            var oldUriStr = this.getController('Editor').getDocumentMetadata().originalMetadata.metaDom.querySelector('[class="FRBRManifestation"] [class="FRBRthis"]').getAttribute('value')
+            var uri = AknMain.Uri.parse(oldUriStr);
+        } catch (e) {return; }
+        console.warn('uri', uri.manifestation());
+        console.warn('uri', oldUriStr);
+
+        if (uri.date !== date || uri.version !== version) {
+            console.warn('actual update')
+            // uri.date = date;
+            // uri.version = version;
+            //
+            // this.superUpdate('FRBRWork', 'FRBRthis', 'value', uri.work());
+            // this.superUpdate('FRBRExpression', 'FRBRthis', 'value', uri.expression());
+            // this.superUpdate('FRBRManifestation', 'FRBRthis', 'value', uri.manifestation());
+            // this.superUpdate('FRBRManifestation', 'FRBRdate', 'date', uri.date);
+        }
+    },
+
+    // Wrapper for DocProperties.updateMetadata
+    superUpdate: function (level, item, prop, value) {
+        var metadata = this.getController('Editor').getDocumentMetadata();
+        var request = {
+            metadata: metadata,
+            path: 'identification/'+level+'/'+item,
+            data: {},
+            isAttr: true,
+            overwrite: true
+        };
+        request.data[prop] = value;
+
+        DocProperties.updateMetadata(request);
     }
 });

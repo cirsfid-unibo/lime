@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
+ * Copyright (c) 2015 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
  *
  * Authors:
@@ -44,22 +44,44 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+// Update the metadata store when some elmeents are marked in the editor:
+// - marking a docDate updates all URI
+// - marking a signature adds a reference
+Ext.define('AknMetadata.sync.EditorSynchronizer', {
+    extend: 'Ext.app.Controller',
 
-Ext.define('AknMetadata.Application', {
-    override: 'LIME.Application',
+    init: function () {
+        this.application.on({
+            // nodeChangedExternally: this.onNodeMarked
+            nodeAttributesChanged: this.onAttributeChange.bind(this)
+        });
+    },
 
-    requires: [
-        'AknMetadata.MetadataManagerController',
-        'AknMetadata.sync.EditorSynchronizer',
-        'AknMetadata.sync.OldMetaBackport',
-        'AknMetadata.newMeta.Window'
-    ],
+    onNodeMarked: function (nodes, config) {
+        var me = this;
+        if (config.unmark) return;
+        nodes.forEach(function (node) {
+            console.warn('node', node);
+        });
+    },
 
-    initControllers : function() {
-        Locale.getPackageStrings('akn-metadata');
-        this.controllers.push('AknMetadata.MetadataManagerController');
-        this.controllers.push('AknMetadata.sync.EditorSynchronizer');
-        this.controllers.push('AknMetadata.sync.OldMetaBackport');
-        this.callParent();
+    onAttributeChange: function (node) {
+        switch (DomUtils.getNameByNode(node)) {
+        case 'docDate':
+            this.docDateUpdated(node);
+        default:
+            console.log(DomUtils.getNameByNode(node));
+        }
+    },
+
+    docDateUpdated: function (node) {
+        var meta = Ext.getStore('metadata').newMainDocument();
+        var date = new Date(node.getAttribute('akn_date'));
+        console.info('date', node.getAttribute('akn_date'));
+        if (!isNaN(date.getTime())) {
+            console.info('setting date', date);
+            meta.set('date', date);
+            meta.set('version', date);
+        }
     }
 });
