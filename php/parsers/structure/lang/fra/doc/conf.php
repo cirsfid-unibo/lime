@@ -49,10 +49,7 @@ $rules = Array(
 
     "preambleInitList" => Array("INTRODUCTION"),
 								
-    "preambleEndList" => Array("REQUIREMENTS",
-    	                       "CODEX STANDARD",
-    	                       "GUIDELINES ON",
-    	                       "STANDARD"),
+    "preambleEndList" => Array("CODEX STAN"),
 							   
 	"mainBodyInitList" => Array("REQUIREMENTS"),
     						   

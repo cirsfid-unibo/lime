@@ -44,19 +44,33 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+ 
 $rules = Array(
-    "preamble" => "/{{preambleEndList}}[:]?|{{mainBodyInitList}}/",
+    /*
+	 * PART
+     * SECTION
+     * SUBSECTION
+     * PARAGRAPH
+     * SUBPARAGRAPH
+     * CLAUSE
+     * SUBCLAUSE
+     * LIST
+     * SUBLIST (iterata)
+	 */
+    
+    "hierarchy" => Array("part","section","subsection","paragraph","subparagraph","clause","subclause"),
 
-    "preambleInitList" => Array("INTRODUCTION"),
-								
-    "preambleEndList" => Array("REQUIREMENTS",
-    	                       "CODEX STANDARD",
-    	                       "GUIDELINES ON",
-    	                       "STANDARD"),
-							   
-	"mainBodyInitList" => Array("REQUIREMENTS"),
-    						   
-    "conclusionsInitList" => Array("APPENDIX")
+    #"section" => "/(?<![\w\.\,] )(?P<num>({{number}}\s*\.[A-Z ]*))/",
+    #"section" => "/(?P<num>([0-9]\.))/",
+    "section" => "/(?<![\w\.\,] ){{numparagraph}} +{{bodyitem}}/u",
+
+    #"numsubsection" => "/[0-9]\.[0-9]/",
+    #"subsection" => "/(?<![\w\.\,] ){{numsubsection}} +{{bodyitem}}/u",
+    "subsection" => "/(?<![\w\:\.\,\<\> ]{2})(?P<num>(\d\.\d)) /",
+
+    "paragraph" => "/(?P<num>(\d\.\d\.\d)) /",
+
+
 );
 
 ?>
