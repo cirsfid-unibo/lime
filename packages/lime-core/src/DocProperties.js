@@ -313,7 +313,7 @@ Ext.define('LIME.DocProperties', {
     },
 
     updateMetadata: function(config) {
-        console.info('updateMetadata', config);
+        // console.info('updateMetadata', config);
         var obj = config.metadata.obj,
             nodes = config.path.split("/"),
             targetNode = nodes[nodes.length-1],

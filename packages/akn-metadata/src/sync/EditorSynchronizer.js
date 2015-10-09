@@ -52,7 +52,7 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
 
     init: function () {
         this.application.on({
-            // nodeChangedExternally: this.onNodeMarked
+            nodeChangedExternally: this.onNodeMarked.bind(this),
             nodeAttributesChanged: this.onAttributeChange.bind(this)
         });
     },
@@ -61,8 +61,39 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
         var me = this;
         if (config.unmark) return;
         nodes.forEach(function (node) {
-            console.warn('node', node);
+            var tagName = DomUtils.getNameByNode(node);
+            switch (tagName) {
+            case 'role':
+            case 'location':
+            case 'person':
+                me.addRefersTo(node, {
+                    role: 'TLCRole',
+                    location: 'TLCLocation',
+                    person: 'TLCPerson'
+                }[tagName]);
+                break;
+            default:
+                // console.log(DomUtils.getNameByNode(node));
+            }
         });
+    },
+
+    addRefersTo: function (node, type) {
+        var meta = Ext.getStore('metadata').getMainDocument(),
+            text = node.textContent,
+            showAs = text.substring(0, 40),
+            eid = showAs.toLowerCase().replace(/[^\w]/g, '')
+            data = {
+                eid: eid,
+                type: type,
+                href: '',
+                showAs: showAs
+            };
+        if(eid) {
+            node.setAttribute('akn_refersto', '#' + eid);
+            // this.application.fireEvent('nodeAttributesChanged', node);
+            meta.references().add(data);
+        }
     },
 
     onAttributeChange: function (node) {
