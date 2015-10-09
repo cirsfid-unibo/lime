@@ -62,7 +62,6 @@ Ext.define('AknMetadata.sync.OldMetaBackport', {
         }
 
         if (isUpdate('date') || isUpdate('version')) {
-            console.log('argum', arguments)
             this.updateDates();
         }
     },
@@ -71,26 +70,20 @@ Ext.define('AknMetadata.sync.OldMetaBackport', {
         var store = Ext.getStore('metadata').getMainDocument();
         var date = store.get('date'),
             version = store.get('version');
-
-        // get uri
-        // parse uri
         try {
             // We know better than the Law of Demeter.
             var oldUriStr = this.getController('Editor').getDocumentMetadata().originalMetadata.metaDom.querySelector('[class="FRBRManifestation"] [class="FRBRthis"]').getAttribute('value')
             var uri = AknMain.Uri.parse(oldUriStr);
         } catch (e) {return; }
-        console.warn('uri', uri.manifestation());
-        console.warn('uri', oldUriStr);
 
         if (uri.date !== date || uri.version !== version) {
-            console.warn('actual update')
-            // uri.date = date;
-            // uri.version = version;
-            //
-            // this.superUpdate('FRBRWork', 'FRBRthis', 'value', uri.work());
-            // this.superUpdate('FRBRExpression', 'FRBRthis', 'value', uri.expression());
-            // this.superUpdate('FRBRManifestation', 'FRBRthis', 'value', uri.manifestation());
-            // this.superUpdate('FRBRManifestation', 'FRBRdate', 'date', uri.date);
+            uri.date = AknMain.metadata.XmlSerializer.normalizeDate(date);
+            uri.version = AknMain.metadata.XmlSerializer.normalizeDate(version);
+            this.superUpdate('FRBRWork', 'FRBRthis', 'value', uri.work());
+            this.superUpdate('FRBRExpression', 'FRBRthis', 'value', uri.expression());
+            this.superUpdate('FRBRExpression', 'FRBRdate', 'date', uri.date);
+            this.superUpdate('FRBRManifestation', 'FRBRthis', 'value', uri.manifestation());
+            this.getController('Editor').showDocumentIdentifier();
         }
     },
 

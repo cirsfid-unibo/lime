@@ -102,6 +102,28 @@ describe ('AknMain.Uri', function () {
         expect(uri.work()).toEqual('/akn/ng/bill/2003-05-14/19');
         expect(uri.expression()).toEqual(uriStr);
     });
+
+    it ('"/akn/it/act/2015-07-21/ita@/main.xml"', function () {
+        var uriStr = '/akn/it/act/2015-07-21/ita@/main.xml';
+        var uri = AknMain.Uri.parse(uriStr);
+        expect(uri.country).toEqual('it');
+        expect(uri.type).toEqual('act');
+        expect(uri.date).toEqual('2015-07-21');
+        expect(uri.language).toEqual('ita');
+        // If expression date is missing, it's the same of the work
+        expect(uri.version).toEqual('2015-07-21');
+        expect(uri.media).toEqual('main.xml');
+
+        expect(uri.work()).toEqual('/akn/it/act/2015-07-21');
+        expect(uri.expression()).toEqual('/akn/it/act/2015-07-21/ita@');
+        expect(uri.manifestation()).toEqual(uriStr);
+    });
+
+    it ('"/akn/it/act/1970-01-01/ita@/main.xml"', function () {
+        var uriStr = '/akn/it/act/1970-01-01/ita@/main.xml';
+        var uri = AknMain.Uri.parse(uriStr);
+        expect(uri.date).toEqual('1970-01-01');
+    });
 });
 
 

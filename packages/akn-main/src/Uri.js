@@ -106,14 +106,14 @@ Ext.define('AknMain.Uri', {
         function expression () {
             return this.work() +
                    '/' + this.language +
-                   '@' + this.version +
+                   '@' + (this.version != this.date ? this.version : '') +
                    (this.official ? '!' + this.official : '') +
                    (this.generation ? '/' + this.generation : '');
         }
 
         function manifestation () {
             return this.expression() +
-                   '/main.' + this.media;
+                   '/' + this.media;
         }
 
         function item () {
@@ -123,7 +123,7 @@ Ext.define('AknMain.Uri', {
         function parseUri (uriStr) {
             var workStr = uriStr;
             var expressionStart = uriStr.search(/\/\w\w\w@/);
-            var expressionStr;
+            var expressionStr = "";
             if (expressionStart != -1) {
                 workStr = uriStr.substring(0, expressionStart);
                 expressionStr = uriStr.substring(expressionStart);
@@ -144,7 +144,7 @@ Ext.define('AknMain.Uri', {
             var dateIndex = 4;
             // If work[4] is not a date, expect it to be the subtype
             var subtype;
-            if (!Date.parse(work[4])) {
+            if (isNaN(Date.parse(work[4]))) {
                 subtype = work[4];
                 dateIndex++;
             }
@@ -159,7 +159,7 @@ Ext.define('AknMain.Uri', {
             }
 
             var date = work[dateIndex];
-            if (!Date.parse(date)) {
+            if (isNaN(Date.parse(date))) {
                 if (dateIndex != 4) date = work.slice(4, 7);
                 error('Invalid date', date);
             }
@@ -169,14 +169,25 @@ Ext.define('AknMain.Uri', {
             // Expression
             var language;
             var version;
-            if (expressionStr) {
-                try {
-                    language = expressionStr.match(/\/(\w\w\w)@/)[1];
-                } catch (e) { error('Missing language', expressionStr); }
-                try {
-                    version = expressionStr.match(/\/\w\w\w@([\w\W\d\-]*)(!|$|\/)/)[1];
-                } catch (e) { error('Missing version', expressionStr); }
-            }
+            var result;
+            var lastMatch = 0;
+            try {
+                result = expressionStr.match(/\/(\w\w\w)@/)
+                language = result[1];
+                lastMatch = result.index + result[0].length;
+            } catch (e) { if (expressionStr) error('Missing language', expressionStr); }
+            try {
+                // version = expressionStr.match(/\/\w\w\w@([\w\W\d\-]*)(!|$|\/)/)[1];
+                result = expressionStr.match(/\/\w\w\w@([^!$\/]*)/);
+                version = result[1];
+                lastMatch = result.index + result[0].length;
+                if (version === '') version = date;
+            } catch (e) { if (expressionStr) error('Missing version', expressionStr); }
+
+            // Manifestation
+            var manifestationStr = expressionStr.substring(lastMatch + 1);
+            var media = manifestationStr;
+
             this.country = country;
             this.type = type;
             this.subtype = subtype;
@@ -185,6 +196,7 @@ Ext.define('AknMain.Uri', {
             this.name = name;
             this.language = language;
             this.version = version;
+            this.media = media;
         }
 
         function error (msg, piece) {

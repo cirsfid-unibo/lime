@@ -69,17 +69,16 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
         switch (DomUtils.getNameByNode(node)) {
         case 'docDate':
             this.docDateUpdated(node);
+            break;
         default:
-            console.log(DomUtils.getNameByNode(node));
+            // console.log(DomUtils.getNameByNode(node));
         }
     },
 
     docDateUpdated: function (node) {
         var meta = Ext.getStore('metadata').newMainDocument();
         var date = new Date(node.getAttribute('akn_date'));
-        console.info('date', node.getAttribute('akn_date'));
         if (!isNaN(date.getTime())) {
-            console.info('setting date', date);
             meta.set('date', date);
             meta.set('version', date);
         }

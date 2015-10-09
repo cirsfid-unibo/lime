@@ -111,7 +111,7 @@ Ext.define('AknMain.metadata.XmlSerializer', {
 
     normalizeDate: function (date) {
         if (!date) return '';
-        function padding (n) { return n >= 10 ? 10 : '0' + n; }
+        function padding (n) { return n >= 10 ? n : '0' + n; }
         return [
             date.getFullYear(),
             padding(date.getMonth() + 1),
