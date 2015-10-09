@@ -76,6 +76,7 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
     },
 
     docDateUpdated: function (node) {
+        console.info('docDateUpdated')
         var meta = Ext.getStore('metadata').newMainDocument();
         var date = new Date(node.getAttribute('akn_date'));
         if (!isNaN(date.getTime())) {

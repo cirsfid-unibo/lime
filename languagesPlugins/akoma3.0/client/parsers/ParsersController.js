@@ -356,6 +356,8 @@ Ext.define('LIME.controller.ParsersController', {
                 if ( dateObj &&widgetConfig &&
                          widgetConfig.attributes && widgetConfig.attributes.date.name ) {
                     node.setAttribute(widgetConfig.attributes.date.name, dateObj.date);
+                    console.log('fire event 1', (window.asdasdasd = node))
+                    me.application.fireEvent(Statics.eventsNames.nodeAttributesChanged, node);
                 }
             }
             Ext.callback(callback);
@@ -598,6 +600,10 @@ Ext.define('LIME.controller.ParsersController', {
                         }
                     };
                     markedNodes = me.searchInlinesToMark(node, dateParsed.match, config);
+                    console.log('fire event 2', (window.asdasdasd = node))
+                    markedNodes.forEach(function (node) {
+                        me.application.fireEvent(Statics.eventsNames.nodeAttributesChanged, node);
+                    })
                 }
             }, me);
         }
