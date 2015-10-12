@@ -71,7 +71,7 @@
 Ext.define('AknMain.Uri', {
     singleton: true,
 
-    parse: function (uriStr) {
+    empty: function () {
         var uri = {
             country: undefined,
             type: undefined,
@@ -84,16 +84,102 @@ Ext.define('AknMain.Uri', {
             official: undefined,
             generation: undefined,
             media: undefined,
-            path: undefined,
-
-            work: work,
-            expression: expression,
-            manifestation: manifestation,
-            item: item,
-            constructor: parseUri
+            path: undefined
         };
+        uri.work = this.uriFunctions.work.bind(uri),
+        uri.expression = this.uriFunctions.expression.bind(uri),
+        uri.manifestation = this.uriFunctions.manifestation.bind(uri),
+        uri.item = this.uriFunctions.item.bind(uri)
+        return uri;
+    },
 
-        function work () {
+    parse: function (uriStr) {
+        var workStr = uriStr;
+        var expressionStart = uriStr.search(/\/\w\w\w@/);
+        var expressionStr = "";
+        if (expressionStart != -1) {
+            workStr = uriStr.substring(0, expressionStart);
+            expressionStr = uriStr.substring(expressionStart);
+        }
+
+        var work = workStr.split('/');
+        if (work[0]) error('Unexpected uri start', work[0]);
+        if (work[1] != 'akn') error('Missing /akn/ start', work[1]);
+
+        var country = work[2];
+        if (!country || (country.length != 2 && country.length != 4))
+            error('Missing country', country);
+
+        var type = work[3];
+        if (!type || ['doc', 'act', 'bill', 'debaterecord'].indexOf(type) == -1)
+            error('Invalid doc type', type);
+
+        var dateIndex = 4;
+        // If work[4] is not a date, expect it to be the subtype
+        var subtype;
+        if (isNaN(Date.parse(work[4]))) {
+            subtype = work[4];
+            dateIndex++;
+        }
+
+        // If work[4] and work[5] are not dates,
+        // expect work[5] it to be the author.
+        // Problem: we do not support author if there is no subtype
+        var author;
+        if (subtype && !Date.parse(work[5])) {
+            author = work[5];
+            dateIndex++;
+        }
+
+        var date = work[dateIndex];
+        if (isNaN(Date.parse(date))) {
+            if (dateIndex != 4) date = work.slice(4, 7);
+            error('Invalid date', date);
+        }
+
+        var name = work[dateIndex + 1];
+
+        // Expression
+        var language;
+        var version;
+        var result;
+        var lastMatch = 0;
+        try {
+            result = expressionStr.match(/\/(\w\w\w)@/)
+            language = result[1];
+            lastMatch = result.index + result[0].length;
+        } catch (e) { if (expressionStr) error('Missing language', expressionStr); }
+        try {
+            // version = expressionStr.match(/\/\w\w\w@([\w\W\d\-]*)(!|$|\/)/)[1];
+            result = expressionStr.match(/\/\w\w\w@([^!$\/]*)/);
+            version = result[1];
+            lastMatch = result.index + result[0].length;
+            if (version === '') version = date;
+        } catch (e) { if (expressionStr) error('Missing version', expressionStr); }
+
+        // Manifestation
+        var manifestationStr = expressionStr.substring(lastMatch + 1);
+        var media = manifestationStr;
+
+        var uri = this.empty();
+        uri.country = country;
+        uri.type = type;
+        uri.subtype = subtype;
+        uri.author = author;
+        uri.date = date;
+        uri.name = name;
+        uri.language = language;
+        uri.version = version;
+        uri.media = media;
+        return uri;
+
+        function error (msg, piece) {
+            throw new Error(msg + ': "' + piece + '"');
+        }
+    },
+
+    uriFunctions: {
+        work: function () {
             return '/akn' +
                    '/' + this.country +
                    '/' + this.type +
@@ -101,109 +187,23 @@ Ext.define('AknMain.Uri', {
                    (this.author ? '/' + this.author : '') +
                    '/' + this.date +
                    (this.name ? '/' + this.name : '');
-        }
+        },
 
-        function expression () {
+        expression: function () {
             return this.work() +
                    '/' + this.language +
                    '@' + (this.version != this.date ? this.version : '') +
                    (this.official ? '!' + this.official : '') +
                    (this.generation ? '/' + this.generation : '');
-        }
+        },
 
-        function manifestation () {
+        manifestation: function () {
             return this.expression() +
                    '/' + this.media;
-        }
+        },
 
-        function item () {
+        item: function () {
             return this.path;
         }
-
-        function parseUri (uriStr) {
-            var workStr = uriStr;
-            var expressionStart = uriStr.search(/\/\w\w\w@/);
-            var expressionStr = "";
-            if (expressionStart != -1) {
-                workStr = uriStr.substring(0, expressionStart);
-                expressionStr = uriStr.substring(expressionStart);
-            }
-
-            var work = workStr.split('/');
-            if (work[0]) error('Unexpected uri start', work[0]);
-            if (work[1] != 'akn') error('Missing /akn/ start', work[1]);
-
-            var country = work[2];
-            if (!country || (country.length != 2 && country.length != 4))
-                error('Missing country', country);
-
-            var type = work[3];
-            if (!type || ['doc', 'act', 'bill', 'debaterecord'].indexOf(type) == -1)
-                error('Invalid doc type', type);
-
-            var dateIndex = 4;
-            // If work[4] is not a date, expect it to be the subtype
-            var subtype;
-            if (isNaN(Date.parse(work[4]))) {
-                subtype = work[4];
-                dateIndex++;
-            }
-
-            // If work[4] and work[5] are not dates,
-            // expect work[5] it to be the author.
-            // Problem: we do not support author if there is no subtype
-            var author;
-            if (subtype && !Date.parse(work[5])) {
-                author = work[5];
-                dateIndex++;
-            }
-
-            var date = work[dateIndex];
-            if (isNaN(Date.parse(date))) {
-                if (dateIndex != 4) date = work.slice(4, 7);
-                error('Invalid date', date);
-            }
-
-            var name = work[dateIndex + 1];
-
-            // Expression
-            var language;
-            var version;
-            var result;
-            var lastMatch = 0;
-            try {
-                result = expressionStr.match(/\/(\w\w\w)@/)
-                language = result[1];
-                lastMatch = result.index + result[0].length;
-            } catch (e) { if (expressionStr) error('Missing language', expressionStr); }
-            try {
-                // version = expressionStr.match(/\/\w\w\w@([\w\W\d\-]*)(!|$|\/)/)[1];
-                result = expressionStr.match(/\/\w\w\w@([^!$\/]*)/);
-                version = result[1];
-                lastMatch = result.index + result[0].length;
-                if (version === '') version = date;
-            } catch (e) { if (expressionStr) error('Missing version', expressionStr); }
-
-            // Manifestation
-            var manifestationStr = expressionStr.substring(lastMatch + 1);
-            var media = manifestationStr;
-
-            this.country = country;
-            this.type = type;
-            this.subtype = subtype;
-            this.author = author;
-            this.date = date;
-            this.name = name;
-            this.language = language;
-            this.version = version;
-            this.media = media;
-        }
-
-        function error (msg, piece) {
-            throw new Error(msg + ': "' + piece + '"');
-        }
-
-        parseUri.call(uri, uriStr);
-        return uri;
     }
 });
