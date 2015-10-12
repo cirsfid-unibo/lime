@@ -47,6 +47,8 @@
 Ext.define('LIME.controller.ParsersController', {
     extend : 'Ext.app.Controller',
 
+    requires: ['AknMain.Reference'],
+
     config : {
         pluginName : "parsers"
     },
@@ -1830,6 +1832,9 @@ Ext.define('LIME.controller.ParsersController', {
     parseReference: function(data, callback) {
         var me = this, editor = me.getController("Editor"), attrs = [],
             body = editor.getBody(), nodesToMark = [], button = DocProperties.getFirstButtonByName('ref');
+
+        var todayDate = date = Ext.Date.format(new Date(), 'Y-m-d');
+
         // Filter the result and remove repeating elements
         data = data.filter(function(obj) {
             var itemsLikeMe = data.filter(function(item) {
@@ -1863,6 +1868,26 @@ Ext.define('LIME.controller.ParsersController', {
             }
         };
 
+        var getRefHref = function(refData) {
+            console.log(refData);
+            var ref = AknMain.Reference.empty();
+            ref.internal = (refData.num && !refData.date && !refData.docnum && !refData.type) ? true : false;
+            ref.id = refData.num;
+            ref.uri.country = DocProperties.documentInfo.docLocale;
+            ref.uri.type = 'act';
+            ref.uri.name = refData.docnum;
+            ref.uri.date = refData.date || todayDate;
+            ref.uri.language = DocProperties.documentInfo.docLang;
+            var href = "";
+            try {
+                href = ref.ref();
+            } catch(e) {
+                console.error(e);
+            }
+            console.log(ref);
+            return href;
+        };
+
         var next = function(index) {
             index = index || total-nums;
             var obj = data[index];
@@ -1870,10 +1895,8 @@ Ext.define('LIME.controller.ParsersController', {
             try {
                 var matchStr = obj.ref;
                 var ranges = DomUtils.findText(matchStr, body);
-                var date = obj.date || "",
-                    docNum = obj.docnum || "",
-                    artnum = obj.num || "",
-                    href = "/"+DocProperties.documentInfo.docLocale+"/act/"+date+"/"+docNum+"#"+artnum;
+
+                href = getRefHref(obj);
 
                 if ( ranges.length ) {
                     Ext.each(ranges, function(range) {
@@ -2697,7 +2720,7 @@ Ext.define('LIME.controller.ParsersController', {
                     editor.parserWorking = false;
                     me.parserActivated = true;
                     Ext.defer(function() {
-                        app.fireEvent('nodeChangedExternally', editor.getBody(), {
+                        app.fireEvent('nodeChangedExternally', [editor.getBody()], {
                             change : true,
                             silent: true
                         }, {
