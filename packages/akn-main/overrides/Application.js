@@ -50,7 +50,8 @@ Ext.define('AknMain.Application', {
     requires: [
         'AknMain.parsers.Num',
         'AknMain.metadata.ImportController',
-        'AknMain.metadata.Store'
+        'AknMain.metadata.Store',
+        'AknMain.Reference'
     ],
 
     init: function () {
