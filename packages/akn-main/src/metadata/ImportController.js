@@ -63,10 +63,16 @@ Ext.define('AknMain.metadata.ImportController', {
     // On the loadDocument event, load metadata from the original xml document.
     // No HtmlToso, no XSLTs, just plain and simple AkomaNtoso. KISS. <3
     onLoadDocument: function (config) {
-        var akn = AknMain.xml.Document.parse(config.originalXml, 'akn'),
-            store = Ext.getStore('metadata').newMainDocument(),
-            uri = AknMain.Uri.parse(akn.getValue('//akn:FRBRExpression/akn:FRBRuri/@value'));
-        return main ();
+        if (!config.originalXml) return;
+        try {
+            var akn = AknMain.xml.Document.parse(config.originalXml, 'akn'),
+                store = Ext.getStore('metadata').newMainDocument(),
+                uri = AknMain.Uri.parse(akn.getValue('//akn:FRBRExpression/akn:FRBRuri/@value'));
+            return main ();
+        } catch (e) {
+            console.warn('Exception parsing metadata: ', e);
+            console.warn(e.stack);
+        }
 
         function main () {
             importReferences();
