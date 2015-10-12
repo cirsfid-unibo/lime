@@ -58,7 +58,7 @@
 // uri.date        "2014-09-12"               |
 // uri.name        "2" "nomelegge" (optional) |
 // uri.language    "ita"                      | Expression
-// uri.version     "2015-03-12"               |
+// uri.version     "2015-03-12"    (optional) |
 // uri.official    "official"      (optional) |
 // uri.generation  "2015-04-11"    (optional) |
 // uri.media       "main.xml"                 | Manifestation
@@ -190,9 +190,10 @@ Ext.define('AknMain.Uri', {
         },
 
         expression: function () {
+            var version = ((this.version && this.version != this.date) ? this.version : '');
             return this.work() +
                    '/' + this.language +
-                   '@' + (this.version != this.date ? this.version : '') +
+                   '@' + version +
                    (this.official ? '!' + this.official : '') +
                    (this.generation ? '/' + this.generation : '');
         },

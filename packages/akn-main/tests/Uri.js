@@ -124,6 +124,15 @@ describe ('AknMain.Uri', function () {
         var uri = AknMain.Uri.parse(uriStr);
         expect(uri.date).toEqual('1970-01-01');
     });
+
+    it ('Empty creation, optional version', function () {
+        var uri = AknMain.Uri.empty();
+        uri.country = 'it';
+        uri.type = 'act';
+        uri.date = '1970-01-01';
+        uri.language = 'ita';        
+        expect(uri.expression()).toEqual('/akn/it/act/1970-01-01/ita@');
+    });
 });
 
 
