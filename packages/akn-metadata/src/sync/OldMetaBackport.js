@@ -51,11 +51,45 @@ Ext.define('AknMetadata.sync.OldMetaBackport', {
     listen: {
         store: {
             '#metadata': {
+                add: 'onDocumentAdded',
                 update: 'onMetadataUpdate'
             }
         }
     },
 
+    // Listen to add events of references store.
+    onDocumentAdded: function (store, records) {
+        var me = this;
+        records.forEach(function (document) {
+            document.references().on('add', me.onReferenceAdded, me);
+        })
+    },
+
+    // When a new reference is added, update the htmltoso references
+    onReferenceAdded: function (store, records, index) {
+        try {
+            var dom = this.getController('Editor').getDocumentMetadata().originalMetadata.metaDom;
+        } catch (e) {
+            // Document is being loaded: nothing to do.
+            return;
+        }
+        records.forEach(function (reference) {
+            var node = dom.querySelector('[class="references"] *[eId="' + reference.get('eid') + '"]');
+            if (!node) {
+                node = document.createElement("div");
+
+                dom.querySelector('[class="references"]').appendChild(node);
+            }
+            node.setAttribute('eId', reference.get('eid'));
+            node.setAttribute('class', reference.get('type'));
+            node.setAttribute('akn_href', reference.get('href'));
+            node.setAttribute('akn_showAs', reference.get('showAs'));
+        });
+
+    },
+
+    // When the AknMain.metadata.Document is updated, watch for date/version
+    // update and update URIs accordingly.
     onMetadataUpdate: function (store, record, operation, fields) {
         function isUpdate (field) {
             return operation == 'edit' && fields.indexOf(field) != -1;
@@ -66,6 +100,7 @@ Ext.define('AknMetadata.sync.OldMetaBackport', {
         }
     },
 
+    // Update URis and FRBRdate when document date or version has changed.
     updateDates: function () {
         var store = Ext.getStore('metadata').getMainDocument();
         var date = store.get('date'),
