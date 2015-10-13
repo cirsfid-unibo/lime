@@ -85,7 +85,7 @@ Ext.define('AknMetadata.sync.OldMetaBackport', {
             node.setAttribute('akn_href', reference.get('href'));
             node.setAttribute('akn_showAs', reference.get('showAs'));
         });
-
+        Ext.GlobalEvents.fireEvent('forceMetadataWidgetRefresh');
     },
 
     // When the AknMain.metadata.Document is updated, watch for date/version

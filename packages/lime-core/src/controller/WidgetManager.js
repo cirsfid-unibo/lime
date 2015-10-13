@@ -64,6 +64,12 @@ Ext.define('LIME.controller.WidgetManager', {
     }],
     
     tabGroupName: "widgetManager",
+
+    listen: {
+        global: {
+            forceMetadataWidgetRefresh: 'refreshActiveWidgetData'
+        }
+    },
     
     /*
      * Wrapper function for creating widgets
@@ -153,6 +159,17 @@ Ext.define('LIME.controller.WidgetManager', {
         this.application.fireEvent(Statics.eventsNames.addContextPanelTab, cmp);
         return cmp;
     },
+
+    refreshActiveWidgetData: function() {
+        console.log('refresh req');
+        var contextPanel = this.getContextPanel();
+        if ( !this.tab || !contextPanel.isVisible() ) return;
+        var widget = this.tab.down();
+
+        if (widget) {
+            this.setWidgetContent(widget, true);
+        }
+    },
     
     /*  
      *  This function sets the content of a widget. 
@@ -162,7 +179,7 @@ Ext.define('LIME.controller.WidgetManager', {
      *  @param {markedElementWidget} widget
      * */
     
-    setWidgetContent: function(widget) {
+    setWidgetContent: function(widget, refresh) {
         var me = this, markedElement = DocProperties.getMarkedElement(widget.id),
             fields = widget.query('textfield');
             
@@ -204,8 +221,9 @@ Ext.define('LIME.controller.WidgetManager', {
                 }
             });
         }
-        
-        me.setWidgetAttributes(widget);
+        if (!refresh) {
+            me.setWidgetAttributes(widget);
+        }
     },
     
     /*

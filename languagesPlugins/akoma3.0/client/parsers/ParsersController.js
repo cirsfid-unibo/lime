@@ -1869,7 +1869,7 @@ Ext.define('LIME.controller.ParsersController', {
         };
 
         var getRefHref = function(refData) {
-            console.log(refData);
+            //console.log(refData);
             var ref = AknMain.Reference.empty();
             ref.internal = (refData.num && !refData.date && !refData.docnum && !refData.type) ? true : false;
             ref.id = refData.num;
@@ -1884,7 +1884,7 @@ Ext.define('LIME.controller.ParsersController', {
             } catch(e) {
                 console.error(e);
             }
-            console.log(ref);
+            //console.log(ref);
             return href;
         };
 
