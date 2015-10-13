@@ -64,7 +64,6 @@ Ext.define('AknMain.metadata.Document', {
         { name: 'country', type: 'string' },    // 'it'
         { name: 'type', type: 'string' },       // 'bill'
         { name: 'subtype', type: 'string' },    // 'decree'
-        { name: 'subtype', type: 'string' },    // 'legge'
         { name: 'author', type: 'string' },     // 'camera'
         { name: 'date', type: 'date' },         // '2014-09-12'
         { name: 'number', type: 'string' },     // 'legge 19822'
