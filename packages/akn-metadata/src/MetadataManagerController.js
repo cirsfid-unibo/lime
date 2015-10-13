@@ -74,6 +74,12 @@ Ext.define('AknMetadata.MetadataManagerController', {
 
     tabMetaMap: {},
 
+    listen: {
+        global: {
+            forceMetadataWidgetRefresh: 'refreshMetadataFields'
+        }
+    },
+
     addMetadataButton : function() {
         var me = this, toolbar = me.getMainToolbar();
         if (!toolbar.down("[cls='" + me.getBtnCls() + "']")) {
@@ -427,15 +433,27 @@ Ext.define('AknMetadata.MetadataManagerController', {
         }*/
     },
 
+    refreshMetadataFields: function() {
+        try {
+            var contextPanel = this.getContextPanel();
+            if (contextPanel.down()) {
+                var tab = contextPanel.down().activeTab;
+                this.fillMetadataFields(tab, false);
+            }
+        } catch(e) {
+            console.error('metadataManager failed to refresh metadata', e);
+        }
+    },
+
     // TODO: update every time
     fillMetadataFields: function(tab, filled) {
         var me = this, editor = me.getController("Editor"),
             metadata = editor.getDocumentMetadata(),
             tabMap = me.tabMetaMap[tab.name];
 
-        tabMap.filled = (filled !== undefined) ? filled : tabMap.filled;
+        //tabMap.filled = (filled !== undefined) ? filled : tabMap.filled;
 
-        if(!tabMap || tabMap.filled ) return;
+        if(!tabMap) return;
         metadata = (metadata && metadata.obj && tabMap.metaParent) ?  metadata.obj[tabMap.metaParent] : metadata.obj;
         if(metadata && metadata[tab.name]) {
 
@@ -474,6 +492,7 @@ Ext.define('AknMetadata.MetadataManagerController', {
 
                 if(cmpToFill) {
                     if(cmpToFill.xtype == "metaGrid") {
+                        cmpToFill.store.removeAll();
                         me.fillGridFields(cmpToFill, el);
                     } else {
                         me.fillFormFields(cmpToFill, el);
@@ -483,7 +502,7 @@ Ext.define('AknMetadata.MetadataManagerController', {
             });
         }
 
-        tabMap.filled = true;
+        //tabMap.filled = true;
     },
 
     fillGridFields: function(grid, data) {

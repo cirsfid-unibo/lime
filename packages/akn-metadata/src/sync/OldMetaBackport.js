@@ -115,10 +115,15 @@ Ext.define('AknMetadata.sync.OldMetaBackport', {
             uri.date = AknMain.metadata.XmlSerializer.normalizeDate(date);
             uri.version = AknMain.metadata.XmlSerializer.normalizeDate(version);
             this.superUpdate('FRBRWork', 'FRBRthis', 'value', uri.work());
+            this.superUpdate('FRBRWork', 'FRBRuri', 'value', uri.work());
+            this.superUpdate('FRBRWork', 'FRBRdate', 'date', uri.date);
             this.superUpdate('FRBRExpression', 'FRBRthis', 'value', uri.expression());
+            this.superUpdate('FRBRExpression', 'FRBRuri', 'value', uri.expression());
             this.superUpdate('FRBRExpression', 'FRBRdate', 'date', uri.date);
             this.superUpdate('FRBRManifestation', 'FRBRthis', 'value', uri.manifestation());
+            this.superUpdate('FRBRManifestation', 'FRBRuri', 'value', uri.manifestation());
             this.getController('Editor').showDocumentIdentifier();
+            Ext.GlobalEvents.fireEvent('forceMetadataWidgetRefresh');
         }
     },
 

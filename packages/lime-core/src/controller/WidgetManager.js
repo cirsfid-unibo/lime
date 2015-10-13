@@ -161,7 +161,6 @@ Ext.define('LIME.controller.WidgetManager', {
     },
 
     refreshActiveWidgetData: function() {
-        console.log('refresh req');
         var contextPanel = this.getContextPanel();
         if ( !this.tab || !contextPanel.isVisible() ) return;
         var widget = this.tab.down();
