@@ -98,6 +98,14 @@ Ext.define('AknMetadata.sync.OldMetaBackport', {
         if (isUpdate('date') || isUpdate('version')) {
             this.updateDates();
         }
+
+        if ( isUpdate('number') ) {
+            this.updateNumber();
+        }
+
+        if ( isUpdate('subtype') ) {
+            this.updateSubtype();
+        }
     },
 
     // Update URis and FRBRdate when document date or version has changed.
@@ -105,26 +113,61 @@ Ext.define('AknMetadata.sync.OldMetaBackport', {
         var store = Ext.getStore('metadata').getMainDocument();
         var date = store.get('date'),
             version = store.get('version');
-        try {
-            // We know better than the Law of Demeter.
-            var oldUriStr = this.getController('Editor').getDocumentMetadata().originalMetadata.metaDom.querySelector('[class="FRBRManifestation"] [class="FRBRthis"]').getAttribute('value')
-            var uri = AknMain.Uri.parse(oldUriStr);
-        } catch (e) {return; }
+
+        var uri = this.getUri();
+        if (!uri) return;
 
         if (uri.date !== date || uri.version !== version) {
             uri.date = AknMain.metadata.XmlSerializer.normalizeDate(date);
             uri.version = AknMain.metadata.XmlSerializer.normalizeDate(version);
-            this.superUpdate('FRBRWork', 'FRBRthis', 'value', uri.work());
-            this.superUpdate('FRBRWork', 'FRBRuri', 'value', uri.work());
             this.superUpdate('FRBRWork', 'FRBRdate', 'date', uri.date);
-            this.superUpdate('FRBRExpression', 'FRBRthis', 'value', uri.expression());
-            this.superUpdate('FRBRExpression', 'FRBRuri', 'value', uri.expression());
             this.superUpdate('FRBRExpression', 'FRBRdate', 'date', uri.date);
-            this.superUpdate('FRBRManifestation', 'FRBRthis', 'value', uri.manifestation());
-            this.superUpdate('FRBRManifestation', 'FRBRuri', 'value', uri.manifestation());
-            this.getController('Editor').showDocumentIdentifier();
-            Ext.GlobalEvents.fireEvent('forceMetadataWidgetRefresh');
+            this.updateUri(uri);
         }
+    },
+
+    updateNumber: function() {
+        var store = Ext.getStore('metadata').getMainDocument();
+        var number = store.get('number');
+        var uri = this.getUri();
+        if (!uri) return;
+
+        if (uri.name !== number) {
+            uri.name = number;
+            this.superUpdate('FRBRWork', 'FRBRnumber', 'value', uri.name);
+            this.updateUri(uri);
+        }
+    },
+
+    updateSubtype: function() {
+        var store = Ext.getStore('metadata').getMainDocument();
+        var subtype = store.get('subtype');
+        var uri = this.getUri();
+        if (!uri) return;
+
+        if (uri.subtype !== subtype) {
+            uri.subtype = subtype;
+            this.updateUri(uri);
+        }
+    },
+
+    getUri: function() {
+        try {
+            // We know better than the Law of Demeter.
+            var oldUriStr = this.getController('Editor').getDocumentMetadata().originalMetadata.metaDom.querySelector('[class="FRBRManifestation"] [class="FRBRthis"]').getAttribute('value')
+            return AknMain.Uri.parse(oldUriStr);
+        } catch (e) {return; }
+    },
+
+    updateUri: function(uri) {
+        this.superUpdate('FRBRWork', 'FRBRthis', 'value', uri.work());
+        this.superUpdate('FRBRWork', 'FRBRuri', 'value', uri.work());
+        this.superUpdate('FRBRExpression', 'FRBRthis', 'value', uri.expression());
+        this.superUpdate('FRBRExpression', 'FRBRuri', 'value', uri.expression());
+        this.superUpdate('FRBRManifestation', 'FRBRthis', 'value', uri.manifestation());
+        this.superUpdate('FRBRManifestation', 'FRBRuri', 'value', uri.manifestation());
+        this.getController('Editor').showDocumentIdentifier();
+        Ext.GlobalEvents.fireEvent('forceMetadataWidgetRefresh');
     },
 
     // Wrapper for DocProperties.updateMetadata

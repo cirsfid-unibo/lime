@@ -72,6 +72,12 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
                     person: 'TLCPerson'
                 }[tagName]);
                 break;
+            case 'docNumber':
+                me.addDocNumberMeta(node);
+                break;
+            case 'docType':
+                me.addDocTypeMeta(node);
+                break;
             default:
                 // console.log(DomUtils.getNameByNode(node));
             }
@@ -96,6 +102,25 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
         }
     },
 
+    addDocNumberMeta: function(node) {
+        var meta = Ext.getStore('metadata').getMainDocument();
+        var numStr = node.textContent;
+        var num = numStr.match(/(?!((n|num|no|nr)(\.|º|°|\s)?))\w+/); //TODO: move to parsers!!
+
+        num = (num.length) ? num[0] : numStr;
+        num = num.trim();
+        meta.set('number', num);
+    },
+
+    addDocTypeMeta: function(node) {
+        var meta = Ext.getStore('metadata').getMainDocument();
+        var type = node.textContent;
+
+        type = type.toLowerCase().trim();
+
+        meta.set('subtype', type);
+    },
+
     onAttributeChange: function (node) {
         switch (DomUtils.getNameByNode(node)) {
         case 'docDate':
@@ -108,7 +133,7 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
 
     docDateUpdated: function (node) {
         console.info('docDateUpdated')
-        var meta = Ext.getStore('metadata').newMainDocument();
+        var meta = Ext.getStore('metadata').getMainDocument();
         var date = new Date(node.getAttribute('akn_date'));
         if (!isNaN(date.getTime())) {
             meta.set('date', date);
