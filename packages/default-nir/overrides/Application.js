@@ -50,11 +50,13 @@ Ext.define('DefaultNir.Application', {
     requires: [
         'DefaultNir.NirUtils',
         'DefaultNir.controller.NirPreview',
+        'DefaultNir.controller.AliasUrnSync',
         'DefaultNir.view.NirPreviewMainTab'
     ],
 
     initControllers : function() {
         this.controllers.push('DefaultNir.controller.NirPreview');
+        this.controllers.push('DefaultNir.controller.AliasUrnSync');
         
         Locale.getPackageStrings('default-nir');
         this.callParent();
