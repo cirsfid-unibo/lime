@@ -170,46 +170,6 @@
 		"title": {
 			"children": ["num", "heading", "subheading", "subtitle", "p"]
 		},
-		"ref": {
-			"askFor": {
-                "type": {
-                    "label": "Type",
-                    "type": "list",
-                    "values": ["internal", "external"]
-                },
-				"nationality": {
-					"label": "Nationality",
-					"type": "nationality"
-				},
-				"doctype": {
-					"label": "Doc. Type",
-					"type": "doctype"
-				},
-				"subtype": {
-					"label": "Doc. SubType",
-					"type": "text"
-				},
-				"date": {
-					"label": "Date",
-					"type": "date"
-				},
-				"number": {
-					"label": "Number",
-					"type": "text"
-				},
-				"artnum": {
-					"label": "Article number",
-					"type": "text"
-				}
-			},
-			"attributes" : {
-				"href" : {
-					"tpl": "/{nationality}/{doctype}/{date}/{number}#{artnum}",
-					"separator": "/",
-					"internalSeparator": "#"
-				}
-			}
-		},
 		"role": {
 			"askFor": {
 				"refersTo": {

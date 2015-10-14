@@ -52,12 +52,24 @@ Ext.define('LIME.view.widgets.MarkedElementWidget', {
     
     collapsible : true,
     frame : true,
+    width: "40%",
     fieldDefaults : {
         msgTarget : 'side',
         labelWidth : 30
     },
     defaults : {
         anchor : '100%'
-    }
-    
+    },
+    bbar: [{
+        xtype: 'component',
+        itemId: 'successSaveLabel',
+        hidden: true,
+        flex: 1,
+        baseCls: 'form-success-state',
+        cls: Ext.baseCSSPrefix + 'success-icon',
+        html: 'Data have been saved'
+    },'->', {
+        xtype: 'button',
+        text: Locale.getString("saveDocumentButtonLabel")
+    }]
 });
