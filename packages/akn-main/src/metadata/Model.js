@@ -59,6 +59,11 @@ Ext.define('AknMain.metadata.Base', {
 Ext.define('AknMain.metadata.Document', {
     extend: 'AknMain.metadata.Base',
 
+    requires: [
+        'AknMain.Uri',
+        'AknMain.metadata.XmlSerializer'
+    ],
+
     fields: [
         // Identification                       Example:
         { name: 'country', type: 'string' },    // 'it'
@@ -112,6 +117,24 @@ Ext.define('AknMain.metadata.Document', {
             'portion',
             'doc'
         ] }
+    },
+
+    getUri: function () {
+        var uri = AknMain.Uri.empty();
+        var normalize = AknMain.metadata.XmlSerializer.normalizeDate;
+        uri.country = this.get('country');
+        uri.type = this.get('type');
+        uri.subtype = this.get('subtype');
+        uri.author = this.get('author');
+        uri.date = normalize(this.get('date'));
+        uri.name = this.get('name') || this.get('number');
+        uri.language = this.get('language');
+        uri.version = normalize(this.get('version'));
+        uri.official = this.get('official');
+        uri.generation = normalize(this.get('generation'));
+        uri.media = this.get('media');
+        uri.path = this.get('path');
+        return uri;
     }
 });
 
@@ -131,6 +154,7 @@ Ext.define('AknMain.metadata.Alias', {
 
 Ext.define('AknMain.metadata.Reference', {
     extend: 'AknMain.metadata.Base',
+    idProperty: 'eid',
     fields: [
         { name: 'documentId', reference: 'Document' },
         { name: 'eid', type: 'string' },

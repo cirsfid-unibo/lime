@@ -46,7 +46,7 @@
 
 // This controller loads in the metadata store the right values every time
 // a new document is loaded in LIME.
-Ext.define('AknMain.metadata.ImportController', {
+Ext.define('AknMetadata.sync.ImportController', {
     extend: 'Ext.app.Controller',
 
     requires: [
@@ -81,6 +81,7 @@ Ext.define('AknMain.metadata.ImportController', {
             importWork();
             importExpression();
             importManifestation();
+            importPublication();
 
             store.set('type', akn.query('local-name(//akn:akomaNtoso/*)'));
 
@@ -144,6 +145,13 @@ Ext.define('AknMain.metadata.ImportController', {
         function importManifestation () {
             store.setManifestationAuthor(getReference('//akn:FRBRManifestation/akn:FRBRauthor/@href'));
             store.setManifestationAuthorRole(getReference('//akn:FRBRManifestation/akn:FRBRauthor/@as'));
+        }
+
+        function importPublication () {
+            store.set('pubblicationName', akn.getValue('//akn:publication/@name'));
+            store.set('pubblicationShowAs', akn.getValue('//akn:publication/@showAs'));
+            store.set('pubblicationNumber', akn.getValue('//akn:publication/@number'));
+            store.set('pubblicationDate', new Date(akn.getValue('//akn:publication/@date')));
         }
 
         function getReference (xpath, fallback) {

@@ -56,32 +56,54 @@ Ext.define('AknMain.metadata.XmlSerializer', {
 
     template: [
         '<meta>',
-        '   <identification source="#{source.eid}">',
+        // identification
+        '   <identification source="#{source}">',
         '       <FRBRWork>',
-        '           <FRBRthis value="/akn/{country}/{type}/{date}"/>',
-        '           <FRBRuri value="/akn/{country}/{type}/{date}"/>',
+        '           <FRBRthis value="{uri.work}/main"/>',
+        '           <FRBRuri value="{uri.work}"/>',
+        '<tpl for="aliases"><tpl if="level==\'work\'">' +
+        '           <FRBRalias value="{value}" name="{name}"/>',
+        '</tpl></tpl>' +
         '           <FRBRdate date="{date}" name=""/>',
+        '<tpl if="workAuthor">' +
+        '           <FRBRauthor href="#{workAuthor}" as="#{workAuthorRole}"/>',
+        '</tpl>' +
         '           <FRBRcountry value="{country}"/>',
         '       </FRBRWork>',
         '       <FRBRExpression>',
-        '          <FRBRthis value="/akn/{country}/{type}/{date}/{language}@"/>',
-        '          <FRBRuri value="/akn/{country}/{type}/{date}/{language}@"/>',
+        '          <FRBRthis value="{uri.expression}/main"/>',
+        '          <FRBRuri value="{uri.expression}',
+        '<tpl for="aliases"><tpl if="level==\'expression\'">' +
+        '           <FRBRalias value="{value}" name="{name}"/>',
+        '</tpl></tpl>' +
+        '<tpl if="expressionAuthor">' +
+        '           <FRBRauthor href="#{expressionAuthor}" as="#{expressionAuthorRole}"/>',
+        '</tpl>' +
         '          <FRBRdate date="{version}" name=""/>',
         '          <FRBRlanguage language="{language}"/>',
         '       </FRBRExpression>',
         '       <FRBRManifestation>',
-        '           <FRBRthis value="/akn/{country}/{type}/{date}/{language}@/{media}"/>',
-        '           <FRBRuri value="/akn/{country}/{type}/{date}/{language}@/{media}"/>',
+        '           <FRBRthis value="{uri.manifestation}/main"/>',
+        '           <FRBRuri value="{uri.manifestation}"/>',
+        '<tpl for="aliases"><tpl if="level==\'manifestation\'">' +
+        '           <FRBRalias value="{value}" name="{name}"/>',
+        '</tpl></tpl>' +
+        '<tpl if="manifestationAuthor">' +
+        '           <FRBRauthor href="#{manifestationAuthor}" as="#{manifestationAuthorRole}"/>',
+        '</tpl>' +
         '           <FRBRdate date="{today}" name=""/>',
         '       </FRBRManifestation>',
         '   </identification>',
+        // Publication
         '   <publication date="{pubblicationDate}" name="{pubblicationName}"',
         '                showAs="{pubblicationShowAs}" number="{pubblicationNumber}"/>',
-        '   <references source="#{source.eid}">',
+        // References
+        '   <references source="#{source}">',
         '<tpl for="references">' +
         '        <{type} eId="{eid}" href="{href}" showAs="{showAs}"/>',
         '</tpl>' +
         '   </references>',
+
         '</meta>'
     ],
 
@@ -94,15 +116,26 @@ Ext.define('AknMain.metadata.XmlSerializer', {
     },
 
     serialize: function (model) {
+        function mapData(store) {
+            var res = [];
+            store.each(function (d) { res.push(d.getData()); });
+            return res;
+        }
         console.info(model);
         var data = model.getData();
         data.date = this.normalizeDate(data.date);
         data.version = this.normalizeDate(data.version);
         data.pubblicationDate = this.normalizeDate(data.pubblicationDate);
         data.today = this.normalizeDate(new Date());
-        data.source = model.getSource().getData();
-        data.references = [];
-        model.references().each(function (d) { return data.references.push(d.getData()); });
+        data.references = mapData(model.references());
+        data.aliases = mapData(model.aliases());
+
+        var uri = model.getUri();
+        data.uri = {
+            work: uri.work(),
+            expression: uri.expression(),
+            manifestation: uri.manifestation()
+        };
 
         console.info(data);
 
