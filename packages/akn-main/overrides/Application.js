@@ -49,14 +49,12 @@ Ext.define('AknMain.Application', {
 
     requires: [
         'AknMain.parsers.Num',
-        'AknMain.metadata.ImportController',
         'AknMain.metadata.Store',
         'AknMain.Reference'
     ],
 
     init: function () {
         Ext.create('AknMain.metadata.Store');
-        this.controllers.push('AknMain.metadata.ImportController');
         this.callParent(arguments);
     }
 });
