@@ -1109,7 +1109,8 @@ Ext.define('LIME.controller.ParsersController', {
                 if(docType) {
                     var docString = docType.string;
                     config.marker = {
-                        silent : true
+                        silent : true,
+                        noEvent : false
                     };
                     me.searchInlinesToMark(node, docString, config);
                 }
@@ -1122,7 +1123,8 @@ Ext.define('LIME.controller.ParsersController', {
             app = me.application, editor = me.getController("Editor"), config = {
                 markButton : markButton,
                 marker : {
-                    silent : true
+                    silent : true,
+                    noEvent : false
                 }
             };
         if (response) {
@@ -1162,6 +1164,7 @@ Ext.define('LIME.controller.ParsersController', {
      * if it returns false the node will be skipped
      */
     searchInlinesToMark : function(node, matchStr, config, filter, beforeMarking, noMarking) {
+        config.marker = config.marker || {};
         if (!node || !matchStr || !(config && config.marker && config.markButton))
             return;
         var me = this, resList = DomUtils.smartFindTextNodes(matchStr, node);
@@ -1206,11 +1209,11 @@ Ext.define('LIME.controller.ParsersController', {
         }, this);
 
         if( nodesToMark.length && !noMarking) {
-            me.requestMarkup(config.markButton, {
+            me.requestMarkup(config.markButton, Ext.merge({
                 silent : true,
                 noEvent : true,
                 nodes : nodesToMark
-            });
+            }, config.marker));
         }
         return nodesToMark;
     },
