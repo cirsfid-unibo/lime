@@ -57,24 +57,30 @@ Ext.define('DefaultNir.controller.AliasUrnSync', {
         }
     },
 
-    //TODO: finish!! and remove the old function from overrides Language.js
     setUrnAlias: function() {
         var store = Ext.getStore('metadata').getMainDocument();
         var uri = this.getUri();
         if (!uri) return;
-        var subtype = store.get('subtype');
-        var number = store.get('number');
-        var date = store.get('date');
 
-        uri.date = AknMain.metadata.XmlSerializer.normalizeDate(date);
-        uri.subtype = subtype;
-        uri.name = number;
+        uri.date = AknMain.metadata.XmlSerializer.normalizeDate(store.get('date'));
+        uri.subtype = store.get('subtype');
+        uri.name = store.get('number');;
 
-        var alias = this.getController('Editor').getDocumentMetadata().originalMetadata.metaDom.querySelector('[class="FRBRalias"]');
+        var meta = this.getController('Editor').getDocumentMetadata().originalMetadata.metaDom;
+        var alias = meta.querySelector('[class="FRBRalias"][name="urn:uri"]') ||
+                    meta.querySelector('[class="FRBRalias"]');
 
-        console.log(alias);
+        if (!alias) return;
 
-        //Ext.GlobalEvents.fireEvent('forceMetadataWidgetRefresh');
+        alias.setAttribute('name', 'urn:uri');
+        alias.setAttribute('value', this.uriToUrnNir(uri));
+        Ext.GlobalEvents.fireEvent('forceMetadataWidgetRefresh');
+    },
+
+    uriToUrnNir: function(uri) {
+        return 'urn:nir'+
+                    (uri.subtype ? ':'+uri.subtype : '')+
+                    ':'+uri.date+ (uri.name ? ';'+uri.name : '');
     },
 
     getUri: function() {
