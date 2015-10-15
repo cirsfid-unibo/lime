@@ -282,25 +282,6 @@ Ext.define('LIME.controller.CustomizationManager', {
                             me.getUri().setUri(manifestationUri.getAttribute("value"));
                         }
                     }
-                    me.manageAfterLoad = function() {
-                        var newId = dualConfig.editableDoc.replace("/diff/", "/diff_modified/");
-                        DocProperties.documentInfo.docId = newId;
-                        Ext.each([xmlDiff.firstDoc, xmlDiff.secondDoc], function(doc, index) {
-                            var textFields = xmlDiff.query("textfield");
-                            var oldPath = doc.path;
-                            doc.path = doc.path.replace("/diff/", "/diff_modified/");
-                            doc.id = doc.id.replace("/diff/", "/diff_modified/");
-                            if(doc.id == dualConfig.editableDoc) {
-                                doc.id = newId;
-                                doc.path = doc.path.replace("/diff/", "/diff_modified/");
-                            }
-                            Ext.each(textFields, function(text) {
-                                if(text.getValue() == oldPath) {
-                                    text.setValue(doc.path);
-                                }
-                            });
-                        }, me);
-                    };
                     storage.openDocument(dualConfig.editableDoc);
                 }, true);
             });

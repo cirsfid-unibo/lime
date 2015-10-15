@@ -223,7 +223,6 @@ Ext.define('LIME.controller.ModsMarkerController', {
             }
         });
 
-
         modsElements = metaDom.querySelectorAll("[class=passiveModifications] [class=textualMod]");
         Ext.each(modsElements, function(element) {
             var modEls = element.querySelectorAll("["+hrefAttr+"]");
@@ -232,9 +231,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 var buttonCfg = Ext.Object.getValues(me.passiveModButtons).filter(function(cfg) {
                     return cfg.modType == modType;
                 })[0];
-                if(buttonCfg) {
-                    button = DocProperties.getFirstButtonByName(buttonCfg.markAsButton);
-                }
+
                 Ext.each(modEls, function(modEl) {
                     var href = modEl.getAttribute(hrefAttr);
                     if(!Ext.isEmpty(href.trim())) {
@@ -252,8 +249,9 @@ Ext.define('LIME.controller.ModsMarkerController', {
                                     editorEl.innerHTML = oldText;
                                 }*/
                             }
-                            if(buttonCfg && button && DomUtils.getButtonByElement(editorEl).name == button.name) {
-                                me.setElementStyles([editorEl], button, null, buttonCfg);
+
+                            if(buttonCfg) {
+                                me.setElementStyles([editorEl], null, null, buttonCfg);
                             }
                         }
                     }
@@ -853,14 +851,16 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },
 
     setElementStyles: function(markedElements, button, originalButton, buttonCfg) {
-        var me = this, editor = me.getController("Editor"),
-            styleClass = markedElements[0].getAttribute("class"),
-            style = Ext.clone(button.pattern.wrapperStyle);
-
+        var me = this, 
         buttonCfg = buttonCfg || me.activeModButtons[originalButton.name];
+
         Ext.each(markedElements, function(markedElement) {
             markedElement.setAttribute(buttonCfg.modType, "true");
         });
+        if (!button) return;
+        var editor = me.getController("Editor"),
+            styleClass = markedElements[0].getAttribute("class"),
+            style = Ext.clone(button.pattern.wrapperStyle);
 
         style["this"]+= ";"+buttonCfg.elementStyle;
         style["before"]+= ";"+buttonCfg.labelStyle;
