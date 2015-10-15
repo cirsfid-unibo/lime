@@ -61,7 +61,8 @@ $rules = Array(
                                "PROYECTO DE LEY SUSTITUTIVO",
                                "EXPOSICIÓN DE MOTIVOS", 
                                "INFORME",
-                               "Proyecto de Ley"
+                               "Proyecto de Ley",
+                               "CODEX STAN"
                                ),
    
     						   
