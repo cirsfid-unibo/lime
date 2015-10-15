@@ -70,6 +70,7 @@ Ext.define('LIME.view.widgets.MarkedElementWidget', {
         html: 'Data have been saved'
     },'->', {
         xtype: 'button',
+        itemId: 'save',
         text: Locale.getString("saveDocumentButtonLabel")
     }]
 });
