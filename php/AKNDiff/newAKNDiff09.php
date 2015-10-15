@@ -799,7 +799,7 @@ class newAKNDiff09 extends AKNDiff {
 					$precedingText = FALSE;
 					$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId ='$id' or @akn_currentId ='$mod->destination' or contains(@parent, '$mod->destination')]", $table);
 					//echo $destNodes->length.' - '.$mod->old.' - '.$id.' - '.$mod->destination.'<br>';
-					$newNode = $xpath->query("//*[@class='newVersion']//*[@akn_currentId ='$id' or contains(@parent, '$mod->destination')]", $table)->item(0);
+					$newNode = $xpath->query("(//*[@class='newVersion']//*[@akn_currentId ='$id' or contains(@parent, '$mod->destination')])[last()]", $table)->item(0);
 					if($newNode) {
 						$precedingText = $this->getPrecedingText($newNode);
 					}
@@ -844,7 +844,7 @@ class newAKNDiff09 extends AKNDiff {
 				case "repeal":
 					$idCond = "";
 					$parentIdCond = "";
-					$targetNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId= '$mod->destination' or @akn_wId= '$mod->destination' or contains(@parent, '$mod->destination')]", $table);
+					$targetNodes = $xpath->query("(//*[@class='newVersion']//*[@akn_currentId= '$mod->destination' or @akn_wId= '$mod->destination' or contains(@parent, '$mod->destination')])[last()]", $table);
 					//echo $targetNodes->length. " - ".$mod->destination." - ".$mod->old." - ".$targetNodes->item(0)->nodeName."<br>";
 
 					if($targetNodes->length) {
