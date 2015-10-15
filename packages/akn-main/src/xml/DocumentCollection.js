@@ -92,6 +92,7 @@ Ext.define('AknMain.xml.DocumentCollection', {
         // Detect the right XSLT for HTMLToso conversion
         var lang = Utilities.detectMarkingLang(content);
         var xslt = Config.getLanguageTransformationFile("languageToLIME", lang);
+        console.log(content);
         Server.applyXslt(content, xslt, function (content) {
             callback(content, lang);
         });
@@ -109,10 +110,10 @@ Ext.define('AknMain.xml.DocumentCollection', {
 
     generateMeta: function () {
         var meta = new AknMain.metadata.Document();
-        meta.set('country', this.getDocLang());
+        meta.set('country', this.getDocLocale());
         meta.set('type', 'documentCollection');
         meta.set('date', new Date());
-        meta.set('language', this.getDocLocale());
+        meta.set('language', this.getDocLang());
         meta.set('media', 'main.xml');
         meta.set('pubblicationDate', new Date());
 
@@ -132,22 +133,11 @@ Ext.define('AknMain.xml.DocumentCollection', {
     // Extract and sanitize the main documnet components from the linked documents
     getComponents: function () {
         return this.getLinkedDocuments().map(function (xml) {
-            var parser = new DOMParser();
-            var doc = parser.parseFromString(xml, "application/xml");
-
-            var xpathResult = document.evaluate(
-                '/*[local-name()="akomaNtoso"]/*',
-                doc,
-                null,//doc.createNSResolver(doc.documentElement),
-                XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
-                null
-            );
-
             var serializer = new XMLSerializer();
-            var result = '';
-            for (var i = 0; i < xpathResult.snapshotLength; i++)
-                result += serializer.serializeToString(xpathResult.snapshotItem(i));
-            return result;
+            var doc = AknMain.xml.Document.parse(xml, 'akn');
+            return doc.select('//akn:akomaNtoso/*').map(function (dom) {
+                return serializer.serializeToString(dom);
+            }).join('');
         });
     }
 });

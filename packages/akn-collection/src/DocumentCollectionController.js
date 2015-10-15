@@ -326,7 +326,7 @@ Ext.define('AknCollection.DocumentCollectionController', {
         function done() {
             var collection = new AknMain.xml.DocumentCollection ({
                 linkedDocuments: xmls,
-                docLang: DocProperties.documentInfo.docLang,
+                docLang: DocProperties.documentInfo.docLang, //TODO: get from input form not from document
                 docLocale: DocProperties.documentInfo.docLocale
             });
             collection.toHtmlToso(function (html) {

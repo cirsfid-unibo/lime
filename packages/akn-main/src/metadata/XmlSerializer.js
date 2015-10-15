@@ -72,7 +72,7 @@ Ext.define('AknMain.metadata.XmlSerializer', {
         '       </FRBRWork>',
         '       <FRBRExpression>',
         '          <FRBRthis value="{uri.expression}/main"/>',
-        '          <FRBRuri value="{uri.expression}',
+        '          <FRBRuri value="{uri.expression}"/>',
         '<tpl for="aliases"><tpl if="level==\'expression\'">' +
         '           <FRBRalias value="{value}" name="{name}"/>',
         '</tpl></tpl>' +
