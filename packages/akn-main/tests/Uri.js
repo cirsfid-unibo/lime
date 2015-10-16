@@ -101,7 +101,6 @@ describe ('AknMain.Uri', function () {
     it ('"/akn/it/act/2015-07-21/ita@/main.xml"', function () {
         var uriStr = '/akn/it/act/2015-07-21/ita@/main.xml';
         var uri = AknMain.Uri.parse(uriStr);
-        console.log(uri)
         expect(uri.country).toEqual('it');
         expect(uri.type).toEqual('act');
         expect(uri.date).toEqual('2015-07-21');
