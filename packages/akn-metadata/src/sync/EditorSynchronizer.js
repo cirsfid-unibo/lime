@@ -108,17 +108,17 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
         var num = numStr.match(/(?!((n|num|no|nr)(\.|º|°|\s)?))\w+/); //TODO: move to parsers!!
 
         num = (num.length) ? num[0] : numStr;
-        num = num.trim();
-        meta.set('number', num);
+        meta.set('number', this.normalize(num));
     },
 
     addDocTypeMeta: function(node) {
         var meta = Ext.getStore('metadata').getMainDocument();
-        var type = node.textContent;
-
-        type = type.toLowerCase().trim();
-
+        var type = this.normalize(node.textContent);
         meta.set('subtype', type);
+    },
+
+    normalize: function(str) {
+        return str.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
     },
 
     onAttributeChange: function (node) {
