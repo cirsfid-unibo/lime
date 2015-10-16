@@ -57,11 +57,12 @@
 // uri.author      "stato" (optional)         |
 // uri.date        "2014-09-12"               |
 // uri.name        "2" "nomelegge" (optional) |
+// uri.component   "main" "table1" (optional) |
 // uri.language    "ita"                      | Expression
 // uri.version     "2015-03-12"    (optional) |
 // uri.official    "official"      (optional) |
 // uri.generation  "2015-04-11"    (optional) |
-// uri.media       "main.xml"                 | Manifestation
+// uri.media       ".xml"                     | Manifestation
 // uri.path        "http://sinatra ... xml"   | Item
 //
 // uri.work()          -> "/akn/it/act/legge/stato/2014-09-12/2"
@@ -83,6 +84,7 @@ Ext.define('AknMain.Uri', {
             version: undefined,
             official: undefined,
             generation: undefined,
+            component: undefined,
             media: undefined,
             path: undefined
         };
@@ -94,88 +96,76 @@ Ext.define('AknMain.Uri', {
     },
 
     parse: function (uriStr) {
-        var workStr = uriStr;
-        var expressionStart = uriStr.search(/\/\w\w\w@/);
-        var expressionStr = "";
-        if (expressionStart != -1) {
-            workStr = uriStr.substring(0, expressionStart);
-            expressionStr = uriStr.substring(expressionStart);
-        }
-
-        var work = workStr.split('/');
-        if (work[0]) error('Unexpected uri start', work[0]);
-        if (work[1] != 'akn') error('Missing /akn/ start', work[1]);
-
-        var country = work[2];
-        if (!country || (country.length != 2 && country.length != 4))
-            error('Missing country', country);
-
-        var type = work[3];
-        if (!type || ['doc', 'act', 'bill', 'debaterecord'].indexOf(type) == -1)
-            error('Invalid doc type', type);
-
-        var dateIndex = 4;
-        // If work[4] is not a date, expect it to be the subtype
-        var subtype;
-        if (isNaN(Date.parse(work[4]))) {
-            subtype = work[4];
-            dateIndex++;
-        }
-
-        // If work[4] and work[5] are not dates,
-        // expect work[5] it to be the author.
-        // Problem: we do not support author if there is no subtype
-        var author;
-        if (subtype && !Date.parse(work[5])) {
-            author = work[5];
-            dateIndex++;
-        }
-
-        var date = work[dateIndex];
-        if (isNaN(Date.parse(date))) {
-            if (dateIndex != 4) date = work.slice(4, 7);
-            error('Invalid date', date);
-        }
-
-        var name = work[dateIndex + 1];
-
-        // Expression
-        var language;
-        var version;
-        var result;
-        var lastMatch = 0;
-        try {
-            result = expressionStr.match(/\/(\w\w\w)@/)
-            language = result[1];
-            lastMatch = result.index + result[0].length;
-        } catch (e) { if (expressionStr) error('Missing language', expressionStr); }
-        try {
-            // version = expressionStr.match(/\/\w\w\w@([\w\W\d\-]*)(!|$|\/)/)[1];
-            result = expressionStr.match(/\/\w\w\w@([^!$\/]*)/);
-            version = result[1];
-            lastMatch = result.index + result[0].length;
-            if (version === '') version = date;
-        } catch (e) { if (expressionStr) error('Missing version', expressionStr); }
-
-        // Manifestation
-        var manifestationStr = expressionStr.substring(lastMatch + 1);
-        var media = manifestationStr;
-
+        var components = uriStr.split('/');
         var uri = this.empty();
-        uri.country = country;
-        uri.type = type;
-        uri.subtype = subtype;
-        uri.author = author;
-        uri.date = date;
-        uri.name = name;
-        uri.language = language;
-        uri.version = version;
-        uri.media = media;
-        return uri;
 
-        function error (msg, piece) {
-            throw new Error(msg + ': "' + piece + '"');
+        required(function (item) {
+            return item === '';
+        }, 'Unexpected uri start');
+
+        tryProcessing(function (item) {
+            return item === 'akn';
+        }, noop);
+
+        uri.country = required(function (item) {
+            return item && (item.length === 2 || item.length === 4);
+        }, 'Missing country');
+
+        uri.type = required(function (item) {
+            return item && ['doc', 'act', 'bill', 'debaterecord', 'documentCollection'].indexOf(item) !== -1;
+        }, 'Invalid doc type');
+
+        var subtype;
+        var author;
+        uri.date = tryProcessing(isDate, function (item) {
+            uri.subtype = required(isSubtype, 'Invalid date and subtype');
+            return tryProcessing(isDate, function (item) {
+                uri.author = required(anything);
+                return required(isDate, 'Invalid date')
+            });
+        });
+        // throw 'asdasd -> '+uri.date;
+        var version = tryProcessing(isVersion, function (item) {
+            if (item)
+                uri.name = required(anything);
+            // return tryProcessing(isVersion, 'Missing language', noop);
+            return tryProcessing(anything, noop);
+        });
+        if (!isVersion(version)) return uri;
+        uri.language = version.substring(0, 3);
+        uri.version = version.substring(4);
+        if (uri.version === '') uri.version = uri.date;
+
+        var lastElement = tryProcessing(anything, noop);
+        if (lastElement && lastElement.endsWith('.xml')) {
+            uri.media = 'xml';
+            uri.component = lastElement.substring(0, lastElement.length - 4);
+        } else if (lastElement) {
+            uri.component = lastElement;
         }
+
+        function noop() {}
+        function error (msg, piece) { throw new Error(msg + ': "' + piece + '"'); }
+        function anything(item) { return !!item; }
+        function isDate(item) { return !isNaN(Date.parse(item)); }
+        function isSubtype(item) { return item && !!item.match(/^[a-zA-Z]*$/); }
+        function isVersion(item) { return item && !!item.match(/^\w\w\w@/); }
+        function tryProcessing(test, failure) {
+            var item = components.shift();
+            if (test(item)) {
+                return item;
+            } else {
+                components.unshift(item);
+                return failure(item);
+            }
+        }
+        function required(test, errorMsg) {
+            return tryProcessing(test, function (item) {
+                error(errorMsg, item);
+            });
+        }
+
+        return uri;
     },
 
     uriFunctions: {
@@ -200,7 +190,7 @@ Ext.define('AknMain.Uri', {
 
         manifestation: function () {
             return this.expression() +
-                   '/' + this.media;
+                   '/' + this.component + '.' + this.media;
         },
 
         item: function () {

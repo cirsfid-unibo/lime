@@ -50,11 +50,6 @@ describe ('AknMain.Uri', function () {
         expect(fn).toThrowError('Unexpected uri start: "d"');
     });
 
-    it ('"/asdakn/it/..." -> Missing /akn/ start: "asdakn"', function () {
-        var fn = function () { AknMain.Uri.parse('/asdakn/it/...'); };
-        expect(fn).toThrowError('Missing /akn/ start: "asdakn"');
-    });
-
     it ('"/akn/asdasdasd/..." -> Missing country: "asdasdasd"', function () {
         var fn = function () { AknMain.Uri.parse('/akn/asdasdasd/...'); };
         expect(fn).toThrowError('Missing country: "asdasdasd"');
@@ -67,7 +62,7 @@ describe ('AknMain.Uri', function () {
 
     it ('"/akn/it/act/20122112/..." -> Invalid date: "20122112,..."', function () {
         var fn = function () { AknMain.Uri.parse('/akn/it/act/20122112/...'); };
-        expect(fn).toThrowError('Invalid date: "20122112,..."');
+        expect(fn).toThrowError('Invalid date and subtype: "20122112"');
     });
 
     it ('"/akn/dz/debaterecord/2004-12-21"', function () {
@@ -106,13 +101,15 @@ describe ('AknMain.Uri', function () {
     it ('"/akn/it/act/2015-07-21/ita@/main.xml"', function () {
         var uriStr = '/akn/it/act/2015-07-21/ita@/main.xml';
         var uri = AknMain.Uri.parse(uriStr);
+        console.log(uri)
         expect(uri.country).toEqual('it');
         expect(uri.type).toEqual('act');
         expect(uri.date).toEqual('2015-07-21');
         expect(uri.language).toEqual('ita');
         // If expression date is missing, it's the same of the work
         expect(uri.version).toEqual('2015-07-21');
-        expect(uri.media).toEqual('main.xml');
+        expect(uri.component).toEqual('main');
+        expect(uri.media).toEqual('xml');
 
         expect(uri.work()).toEqual('/akn/it/act/2015-07-21');
         expect(uri.expression()).toEqual('/akn/it/act/2015-07-21/ita@');
@@ -130,8 +127,14 @@ describe ('AknMain.Uri', function () {
         uri.country = 'it';
         uri.type = 'act';
         uri.date = '1970-01-01';
-        uri.language = 'ita';        
+        uri.language = 'ita';
         expect(uri.expression()).toEqual('/akn/it/act/1970-01-01/ita@');
+    });
+
+    it ('/uy/bill/ejecutivo/2005-04-04/carpeta137-2005', function () {
+        // Optional /akn start
+        var uri = AknMain.Uri.parse('/uy/bill/ejecutivo/2005-04-04/carpeta137-2005');
+        expect(uri.work()).toEqual('/akn/uy/bill/ejecutivo/2005-04-04/carpeta137-2005');
     });
 });
 
