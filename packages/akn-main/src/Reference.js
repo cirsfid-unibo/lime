@@ -80,7 +80,7 @@ Ext.define('AknMain.Reference', {
 
 
         var ref = this.empty();
-        
+
         if (idStr)
             ref.id = idStr;
         if (uriStr) {
@@ -102,10 +102,10 @@ Ext.define('AknMain.Reference', {
             var idSep = '#';
             if ( this.internal )
                 return idSep+this.id;
-            
+
             var exp = this.uri.expression();
 
-            return (this.id) ? exp+'/'+idSep+this.id : exp;
+            return (this.id) ? exp+idSep+this.id : exp;
         }
     }
 });

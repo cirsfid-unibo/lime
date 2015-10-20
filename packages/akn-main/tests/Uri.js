@@ -110,8 +110,9 @@ describe ('AknMain.Uri', function () {
         expect(uri.component).toEqual('main');
         expect(uri.media).toEqual('xml');
 
-        expect(uri.work()).toEqual('/akn/it/act/2015-07-21');
-        expect(uri.expression()).toEqual('/akn/it/act/2015-07-21/ita@');
+        expect(uri.work()).toEqual('/akn/it/act/2015-07-21/main');
+        expect(uri.work(true)).toEqual('/akn/it/act/2015-07-21');
+        expect(uri.expression(true)).toEqual('/akn/it/act/2015-07-21/ita@');
         expect(uri.manifestation()).toEqual(uriStr);
     });
 

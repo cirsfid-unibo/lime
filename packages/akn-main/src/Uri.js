@@ -65,10 +65,16 @@
 // uri.media       ".xml"                     | Manifestation
 // uri.path        "http://sinatra ... xml"   | Item
 //
-// uri.work()          -> "/akn/it/act/legge/stato/2014-09-12/2"
-// uri.expression()    -> "/akn/it/act/legge/stato/2014-09-12/2/ita@2015-03-12!official/2015-04-11"
+// uri.work()          -> "/akn/it/act/legge/stato/2014-09-12/2/main"
+// uri.expression()    -> "/akn/it/act/legge/stato/2014-09-12/2/ita@2015-03-12!official/2015-04-11/main"
 // uri.manifestation() -> "/akn/it/act/legge/stato/2014-09-12/2/ita@2015-03-12!official/2015-04-11/main.xml"
 // uri.item()          -> "http://sinatra.cirsfid.unibo.it/node/documentsdb/mnardi@unibo.it/myFiles/esempio.xml"
+// work and expression allows you to hide the component part (Eg. FRBRuri generation)
+// uri.work(true)      -> "/akn/it/act/legge/stato/2014-09-12/2"
+
+// Todo: extract code
+// Fix documentation
+// handle components
 Ext.define('AknMain.Uri', {
     singleton: true,
 
@@ -96,100 +102,140 @@ Ext.define('AknMain.Uri', {
     },
 
     parse: function (uriStr) {
-        var components = uriStr.split('/');
-        var uri = this.empty();
+        var uri = this.empty(),
+            components = uriStr.split('/');
+            is = this.is;
 
-        required(function (item) {
-            return item === '';
-        }, 'Unexpected uri start');
+        if (is.component(components[components.length-1]))
+            uri.component = components.pop();
+        required(is.empty, 'Unexpected uri start');
+        optional(is.equalTo('akn'));
+        uri.country = required(is.country, 'Missing country');
+        uri.type = required(is.type, 'Invalid doc type');
 
-        tryProcessing(function (item) {
-            return item === 'akn';
-        }, noop);
-
-        uri.country = required(function (item) {
-            return item && (item.length === 2 || item.length === 4);
-        }, 'Missing country');
-
-        uri.type = required(function (item) {
-            return item && ['doc', 'act', 'bill', 'debaterecord', 'documentCollection'].indexOf(item) !== -1;
-        }, 'Invalid doc type');
-
-        var subtype;
-        var author;
-        uri.date = tryProcessing(isDate, function (item) {
-            uri.subtype = required(isSubtype, 'Invalid date and subtype');
-            return tryProcessing(isDate, function (item) {
-                uri.author = required(anything);
-                return required(isDate, 'Invalid date')
+        uri.date = optional(is.date, function () {
+            uri.subtype = required(is.subtype, 'Invalid date and subtype');
+            return optional(is.date, function () {
+                uri.author = required(is.anything);
+                return required(is.date, 'Invalid date')
             });
         });
-        // throw 'asdasd -> '+uri.date;
-        var version = tryProcessing(isVersion, function (item) {
-            if (item)
-                uri.name = required(anything);
-            // return tryProcessing(isVersion, 'Missing language', noop);
-            return tryProcessing(anything, noop);
+        var version = optional(is.version, function () {
+            uri.name = optional(is.anything);
+            return optional(is.anything);
         });
-        if (!isVersion(version)) return uri;
-        uri.language = version.substring(0, 3);
-        uri.version = version.substring(4);
-        if (uri.version === '') uri.version = uri.date;
 
-        var lastElement = tryProcessing(anything, noop);
-        if (lastElement && lastElement.endsWith('.xml')) {
-            uri.media = 'xml';
-            uri.component = lastElement.substring(0, lastElement.length - 4);
-        } else if (lastElement) {
-            uri.component = lastElement;
+        if (is.version(version)) {
+            uri.language = version.substring(0, 3);
+            uri.version = version.substring(4);
+            if (uri.version === '') uri.version = uri.date;
+
+            var lastElement = optional(is.anything);
+            if (lastElement && lastElement.endsWith('.xml')) {
+                uri.media = 'xml';
+                uri.component = lastElement.substring(0, lastElement.length - 4);
+            } else if (lastElement) {
+                uri.component = lastElement;
+            }
         }
 
-        function noop() {}
-        function error (msg, piece) { throw new Error(msg + ': "' + piece + '"'); }
-        function anything(item) { return !!item; }
-        function isDate(item) { return !isNaN(Date.parse(item)); }
-        function isSubtype(item) { return item && !!item.match(/^[a-zA-Z]*$/); }
-        function isVersion(item) { return item && !!item.match(/^\w\w\w@/); }
-        function tryProcessing(test, failure) {
+        function optional(test, failure) {
             var item = components.shift();
             if (test(item)) {
                 return item;
             } else {
                 components.unshift(item);
-                return failure(item);
+                return failure ? failure(item) : undefined;
             }
         }
         function required(test, errorMsg) {
-            return tryProcessing(test, function (item) {
-                error(errorMsg, item);
+            return optional(test, function (item) {
+                throw new Error(errorMsg + ': "' + item + '"');
             });
         }
 
         return uri;
     },
 
+    // Functions to check if a string can be a certain URI component
+    is: {
+        // Accept every non empty string
+        anything: function (item) {
+            return !!item;
+        },
+        // Accept only empty strings
+        empty: function (item) {
+            return item === '';
+        },
+        // Equality check
+        equalTo: function (str) {
+            return function (item) {
+                return item === str;
+            }
+        },
+        // Accept country codes
+        country: function (item) {
+            return item && (item.length === 2 || item.length === 4);
+        },
+        // Accept dates
+        date: function (item) {
+            return !isNaN(Date.parse(item));
+        },
+        // Accept versions eg "ita@2009-10-10"
+        version: function (item) {
+            return item && !!item.match(/^\w\w\w@/);
+        },
+        // Accept document types
+        type: function (item) {
+            return item && [
+                'doc',
+                'act',
+                'bill',
+                'debaterecord',
+                'documentCollection'
+            ].indexOf(item) !== -1;
+        },
+        // Accept subtypes
+        subtype: function (item) {
+            return item && !!item.match(/^[a-zA-Z]*$/);
+        },
+        author: function (item) {
+            return item && !!item.match(/^[a-zA-Z]*$/);
+        },
+        component: function (item) {
+            return item && [
+                'main',
+                'table',
+                'schedule'
+            ].indexOf(item) !== -1;
+        }
+    },
+
+    // URI output functions
+    // Eg. uri.work()
     uriFunctions: {
-        work: function () {
+        work: function (hideComponent) {
             return '/akn' +
                    '/' + this.country +
                    '/' + this.type +
                    (this.subtype ? '/' + this.subtype : '') +
                    (this.author ? '/' + this.author : '') +
                    '/' + this.date +
-                   (this.name ? '/' + this.name : '');
+                   (this.name ? '/' + this.name : '') +
+                   ((this.component && !hideComponent) ? '/' + this.component : '');
         },
 
-        expression: function () {
+        expression: function (hideComponent) {
             var version = ((this.version && this.version != this.date) ? this.version : '');
-            return this.work() +
+            return this.work(true) +
                    '/' + this.language +
                    '@' + version +
                    (this.official ? '!' + this.official : '') +
-                   (this.generation ? '/' + this.generation : '');
+                   ((this.component && !hideComponent) ? '/' + this.component : '');
         },
 
         manifestation: function () {
-            return this.expression() +
+            return this.expression(true) +
                    '/' + this.component + '.' + this.media;
         },
 
