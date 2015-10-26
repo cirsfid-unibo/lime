@@ -44,78 +44,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Panel for editing reference href attribute
-Ext.define('AknMetadata.tagAttributes.RefPanel', {
-    extend: 'LIME.view.widgets.MarkedElementWidget',
-    alias: 'widget.refPanel',
+Ext.define('LimeDemo.SaveDocumentButton', {
+    override: 'LIME.view.maintoolbar.SaveDocumentButton',
 
-    ref: null,
-    title: 'Reference data',
-    items: [{
-        xtype: 'combo',
-        emptyText: 'Type',
-        name: 'type',
-        displayField: 'name',
-        valueField: 'type',
-        queryMode: 'local',
-        store: Ext.create('Ext.data.Store', {
-            fields: ['name', 'type'],
-            data: [{name: 'internal', type: 'internal'}, {name: 'external', type: 'external'}]
-        })
-    }, {
-        xtype: 'nationalitySelector'
-    }, {
-        xtype: 'docTypeSelector'
-    }, {
-        xtype: 'textfield',
-        name: 'subtype',
-        emptyText: 'Doc. SubType'
-    }, {
-        xtype: 'datefield',
-        name: 'date',
-        emptyText: 'Date'
-    }, {
-        xtype: 'textfield',
-        name: 'number',
-        emptyText: 'Number'
-    }, {
-        xtype: 'textfield',
-        name: 'fragment',
-        emptyText: 'Fragment'
-    }],
-
-    listeners: {
-        afterrender: function () {
-            this.down('[itemId=save]').disable(); //Save button isn't working yet
-            if (!this.ref) return;
-            this.down('[name=type]').on('change', this.onTypeChange, this);
-            this.getForm().setValues(this.refToFormValues());
-        }
-    },
-
-    onTypeChange: function(field, newValue, oldValue) {
-        if (newValue == 'internal') {
-            this.query('field').filter(function(field) {
-                return (field.name != 'type' && field.name != 'fragment');
-            }).forEach(function(field) {
-                field.disable();
-            });
-        } else {
-            this.query('field').forEach(function(field) {
-                field.enable();
-            });
-        }
-    },
-
-    refToFormValues: function() {
-        return {
-            type: (this.ref.internal) ? 'internal' : 'external',
-            nationality: this.ref.uri.country,
-            docType: this.ref.uri.type,
-            subtype: this.ref.uri.subtype,
-            date: this.ref.uri.date,
-            number: this.ref.uri.name,
-            fragment: this.ref.id
-        }
-    }
+    disabled: true
 });

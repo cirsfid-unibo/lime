@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -56,7 +56,7 @@ Ext.define('LIME.controller.LoginManager', {
         'modal.Registration',
         'maintoolbar.UserButton'
     ],
-    
+
     refs: [{
         ref : 'viewport',
         selector : 'viewport'
@@ -70,8 +70,8 @@ Ext.define('LIME.controller.LoginManager', {
         ref : 'registrationWindow',
         selector : 'registration'
     }],
-    
-    
+
+
     init : function() {
         var me = this;
         User.loadFromLocalStorage();
@@ -87,7 +87,7 @@ Ext.define('LIME.controller.LoginManager', {
                         me.getLogin().setData({
                             username: User.username,
                             password: User.password
-                        });  
+                        });
                         me.login();
                     } else {
                         cmp.show();
@@ -101,10 +101,10 @@ Ext.define('LIME.controller.LoginManager', {
             },
             'box[cls=registration]': {
                 render: function(cmp) {
-                    cmp.getEl().addListener("click", me.showRegistration);         
+                    cmp.getEl().addListener("click", me.showRegistration);
                 }
             },
-            
+
             'login checkbox': {
                 change: function(cmp, useDemoUser) {
                     var loginView = me.getLogin();
@@ -118,12 +118,12 @@ Ext.define('LIME.controller.LoginManager', {
             'registration button' : {
                 click : me.register
             },
-            
+
             'userButton': {
                 beforerender: function(cmp) {
                     var fullName = User.preferences.fullName;
                     if (fullName) {
-                        var tpl = new Ext.Template(cmp.tpl); 
+                        var tpl = new Ext.Template(cmp.tpl);
                         cmp.setText(tpl.apply({
                             name: fullName
                         }));
@@ -132,7 +132,7 @@ Ext.define('LIME.controller.LoginManager', {
             }
         });
     },
-    
+
     // Fake login (used for debug purposes when Exist is down)
     fakeLogin: function () {
         User.username = 'demo@prova.com';
@@ -143,7 +143,7 @@ Ext.define('LIME.controller.LoginManager', {
     },
 
     // Try logging in, getting user data/preferences.
-    // If successful, switch to editor. 
+    // If successful, switch to editor.
     login: function () {
         var me = this,
             loginView = this.getLogin(),
@@ -156,23 +156,24 @@ Ext.define('LIME.controller.LoginManager', {
             loginView.hide();
             me.getViewport().showEditor();
         }, function(error) {
-            console.log(error);
-            loginView.loginFailed(); 
-            Ext.Msg.alert(Locale.strings.authErrors.LOGIN_FAILED_TITLE, 
+            loginView.show();
+            loginView.loginFailed();
+            Ext.Msg.alert(Locale.strings.authErrors.LOGIN_FAILED_TITLE,
                           Locale.strings.authErrors.ERR_0);
         });
+        // throw new Error();
     },
-    
+
     // Register a new user.
     register: function () {
         var registrationWindow = this.getRegistrationWindow(),
             form = registrationWindow.down('form').getForm(),
             me = this;
-        
+
         if (!form.isValid())
             return registrationWindow.registrationFailed();
         if (!registrationWindow.checkPasswords()) return;
-        
+
         // Give feedback to the user
         registrationWindow.setLoading(true);
 
@@ -184,7 +185,7 @@ Ext.define('LIME.controller.LoginManager', {
             editorLanguage: Locale.strings.languageCode,
             views: []
         };
-        
+
         Server.register(User.getJsonSerialization(), function() {
             Ext.Msg.alert(Locale.strings.registrationOk, Locale.strings.registrationOkMessage);
             registrationWindow.setLoading(false);
@@ -192,22 +193,22 @@ Ext.define('LIME.controller.LoginManager', {
         }, function(error) {
             Ext.Msg.alert(Locale.strings.authErrors.REGISTRATION_FAILED_TITLE, Locale.strings.authErrors.ERR_1);
             console.log(error);
-            registrationWindow.setLoading(false); 
+            registrationWindow.setLoading(false);
             registrationWindow.registrationFailed();
         });
     },
-    
+
 
     // Logout and clean the localStorage.
-    // Refresh the page to force the user to login again.      
+    // Refresh the page to force the user to login again.
     logout: function () {
         User.clearLocalStorage();
         window.location.reload();
     },
-    
-    // Show a form where the user can add his 
+
+    // Show a form where the user can add his
     // registration details (e.g. username, password, email).
     showRegistration: function () {
         Ext.widget('registration').show();
     }
-}); 
+});
