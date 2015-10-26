@@ -47,28 +47,37 @@
  
 $rules = Array(
 
-	"references" => Array("ref_1","ref_2","ref_2b","ref_2c",
-						  "ref_3","ref_4","ref_4b","ref_5"),
+	"references" => Array("ref_1","ref_1a","ref_1b","ref_1c","ref_1d",
+						  "ref_3","ref_3b","ref_3c",
+						  "ref_4"),
+	
+	//"ref_1"  => "/({{partition}} +{{num}},? +((della|del|dello|dell(’|')) *)?)?{{type}}\s+{{date}}\s*(,\s*n\.\s*{{docnum}}+)/",
 
-	//"ref_1" => "/({{partition}}[\s\d\w,)-]+\s*)?{{type}}\s+{{date}}\s*(,\s*n\.\s*{{docnum}}+)/",
-	//"ref_1" => "/({{partition}}(?P<num>[\s\d\w,\)-]+)\s*)?{{type}}\s+{{date}}\s*(,\s*n\.\s*{{docnum}}+)/",
-	"ref_1" => "/({{partition}} +{{num}} +((della|del|dello|dell(’|')) *)?)?{{type}}\s+{{date}}\s*(,\s*n\.\s*{{docnum}}+)/",
-	"ref_2" => "/{{partition}} +{{num}} +(della|del|dello|dell(’|')) *{{type}} +del +{{date}}/",
-	"ref_2b" => "/{{partition}} +{{num}} +(della|del|dello|dell(’|')) +{{type}}/",
-	"ref_2c" => "/{{partition}} +{{num}}/",
+	"ref_1"  => "/(?:{{partition}}\s+{{num}},? *)+\s+(della|del|dello|dell(’|'))\s+{{type}}\s+{{date}}\s*,\s*n\.\s*{{docnum}}/",
+	"ref_1a" => "/(?:{{partition}}\s+{{num}},? *)+\s+(della|del|dello|dell(’|'))\s+{{type}}\s*n\.\s*{{docnum}}/",
+	"ref_1b" => "/(?:{{partition}}\s+{{num}},? *)+\s+(della|del|dello|dell(’|'))\s+{{type}}\s+del\s+{{date}}/",
+	"ref_1c" => "/(?:{{partition}}\s+{{num}},? *)+\s+(della|del|dello|dell(’|'))\s+{{type}}/",
+	"ref_1d" => "/{{partition}}\s+{{num}}/",
 
 	"ref_3" => "/O +del +{{date}}/",
-	"ref_4" => "/direttiva +\d+\/\d+\/CE/",
-	"ref_4b" => "/procedimento +[C\-\d]+\/\d+/",
-	"ref_5" =>"/{{partition}} +{{num}}( +delle +disposizioni +transitorie)? +della +Costituzione +federale/",
+	"ref_3b" => "/direttiva +\d+\/\d+\/CE/",
+	"ref_3c" => "/procedimento +[C\-\d]+\/\d+/",
+
+	"ref_4" =>"/{{partition}} +{{num}}( +delle +disposizioni +transitorie)? +della +Costituzione +federale/",
 	
 	"docnum" => "\d+\.?\d*",
 	"date" => "[\w\d\s\.°﻿]+\d{4}",
-	"num" => "[\d\-\–\, ]+(bis|ter|quater|quinquies)?",
+	"num" => "(?:(?:\d+[\-\–]?(bis|ter|quater|quinquies)?)|(?:[a-z]{1,2}\)))",
 	
 	"partition" => Array("articolo",
 						 "articoli",
-						 "art\."),
+						 "art\.",
+						 "artt\.",
+						 "comma",
+						 "commi",
+						 "lettera",
+						 "lettere"
+						 ),
 );
 
 ?>
