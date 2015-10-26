@@ -35,7 +35,15 @@
  
  <xsl:template match="*[name()='p']">
   <xsl:apply-templates />
-  <br/><br/>
+  <!-- Normalization for truncated lines at 69 characters -->
+  <xsl:choose>
+   <xsl:when test="string-length(.//text()) = 69">
+      <xsl:text> </xsl:text>
+   </xsl:when>
+   <xsl:otherwise>
+      <br/><br/>
+   </xsl:otherwise>
+  </xsl:choose>
  </xsl:template>
 
  <xsl:template match="*[name()='div']">
