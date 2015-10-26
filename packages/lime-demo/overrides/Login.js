@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 - Copyright holders CIRSFID and Department of
+ * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
  *
  * Authors:
@@ -44,78 +44,74 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Panel for editing reference href attribute
-Ext.define('AknMetadata.tagAttributes.RefPanel', {
-    extend: 'LIME.view.widgets.MarkedElementWidget',
-    alias: 'widget.refPanel',
+/**
+ * This view is used as an interface to allow the user to login.
+ */
 
-    ref: null,
-    title: 'Reference data',
-    items: [{
-        xtype: 'combo',
-        emptyText: 'Type',
-        name: 'type',
-        displayField: 'name',
-        valueField: 'type',
-        queryMode: 'local',
-        store: Ext.create('Ext.data.Store', {
-            fields: ['name', 'type'],
-            data: [{name: 'internal', type: 'internal'}, {name: 'external', type: 'external'}]
-        })
-    }, {
-        xtype: 'nationalitySelector'
-    }, {
-        xtype: 'docTypeSelector'
-    }, {
-        xtype: 'textfield',
-        name: 'subtype',
-        emptyText: 'Doc. SubType'
-    }, {
-        xtype: 'datefield',
-        name: 'date',
-        emptyText: 'Date'
-    }, {
-        xtype: 'textfield',
-        name: 'number',
-        emptyText: 'Number'
-    }, {
-        xtype: 'textfield',
-        name: 'fragment',
-        emptyText: 'Fragment'
-    }],
+Ext.define('LimeDemo.view.Login', {
+    override: 'LIME.view.Login',
 
-    listeners: {
-        afterrender: function () {
-            this.down('[itemId=save]').disable(); //Save button isn't working yet
-            if (!this.ref) return;
-            this.down('[name=type]').on('change', this.onTypeChange, this);
-            this.getForm().setValues(this.refToFormValues());
-        }
-    },
+    initComponent : function() {
+        this.title = Locale.strings.login;
+        this.items = [{
+            xtype : 'toolbar',
+            items : ['->', {
+                xtype : 'languageSelectionBox'
+            }]
+        }, {
+            // Form to type username and password (including buttons)
 
-    onTypeChange: function(field, newValue, oldValue) {
-        if (newValue == 'internal') {
-            this.query('field').filter(function(field) {
-                return (field.name != 'type' && field.name != 'fragment');
-            }).forEach(function(field) {
-                field.disable();
-            });
-        } else {
-            this.query('field').forEach(function(field) {
-                field.enable();
-            });
-        }
-    },
+            xtype : 'form',
+            frame : true,
+            padding : '10px',
+            layout : 'anchor',
+            defaults : {
+                anchor : '100%'
+            },
 
-    refToFormValues: function() {
-        return {
-            type: (this.ref.internal) ? 'internal' : 'external',
-            nationality: this.ref.uri.country,
-            docType: this.ref.uri.type,
-            subtype: this.ref.uri.subtype,
-            date: this.ref.uri.date,
-            number: this.ref.uri.name,
-            fragment: this.ref.id
-        }
+            // The fields
+            defaultType : 'textfield',
+            items : [{
+                xtype : "checkbox",
+                boxLabel : Locale.strings.guestLogin
+            }, {
+                emptyText : 'Email',
+                name : 'username',
+                allowBlank : false
+            }, {
+                emptyText : 'Password',
+                inputType : 'password',
+                name : 'password',
+                allowBlank : false
+            }],
+
+            // The buttons
+            dockedItems : [{
+                xtype : 'toolbar',
+                dock : 'bottom',
+
+                items : ['->', {
+                    xtype : 'container',
+                    layout : 'vbox',
+                    items : [{
+                        xtype : 'button',
+                        minWidth : 100,
+                        text : Locale.strings.login
+                    }, {
+                        xtype : 'box',
+                        cls : 'forgotPassword',
+                        style : {
+                            marginTop : '10px'
+                        },
+                        autoEl : {
+                            tag : 'a',
+                            href : '#',
+                            html : Locale.strings.forgotPassword
+                        }
+                    }]
+                }, '->']
+            }]
+        }];
+        this.callParent(arguments);
     }
 });
