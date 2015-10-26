@@ -1466,7 +1466,9 @@ Ext.define('LIME.controller.ParsersController', {
         var me = this, app = me.application,
             markButton, numButton, nodesToMark = [], numsToMark = [], headingsToMark = [],
             markButton = DocProperties.getChildConfigByName(button, partName) || DocProperties.getFirstButtonByName(partName),
-            numButton = DocProperties.getChildConfigByName(markButton,"num"),
+            numButton = DocProperties.getChildConfigByName(markButton,"num") || 
+                        DocProperties.getChildConfigByName(button,"num") || 
+                        DocProperties.getFirstButtonByName("num"),
             headingButton = DocProperties.getChildConfigByName(markButton,"heading");
 
         if( partName == "item" ) {
