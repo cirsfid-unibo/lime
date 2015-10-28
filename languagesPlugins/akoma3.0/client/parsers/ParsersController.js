@@ -1839,20 +1839,31 @@ Ext.define('LIME.controller.ParsersController', {
             body = editor.getBody(), nodesToMark = [], button = DocProperties.getFirstButtonByName('ref');
 
         var todayDate = date = Ext.Date.format(new Date(), 'Y-m-d');
-        // Filter the result and remove repeating elements
-        // Remove references included in other references
-        data = data.filter(function(obj, i) {
-            var itemsLikeMe = data.filter(function(item, j) {
-                return (i != j && ( obj.start >= item.start && obj.end <= item.end ) 
-                    && JSON.stringify(obj) !== JSON.stringify(item));
-            });
-            return !itemsLikeMe.length;
+        
+        data.sort(function compare(a,b) {
+            return b.ref.length - a.ref.length;
         });
-        console.log("Ref to mark: ",data.length);
+        // Filter the result and remove repeating elements
+        var filtredData = [];
+        var containsRef = function(list, ref) {
+            var refs = list.filter(function(item) {
+                return ( (item.start >= ref.start && item.end <= ref.end) ||
+                        (ref.start >= item.start && ref.end <= item.end));
+            });
+            return refs.length != 0;
+        };
+
+        // Remove references included in other references
+        for (var i = 0; i < data.length; i++) {
+            if (!containsRef(filtredData, data[i]))
+                filtredData.push(data[i]);
+        }
+
+        console.log("Ref to mark: ",filtredData.length);
 
         var refStrings = [];
         // Remove dublicate strings
-        data = data.filter(function(obj) {
+        filtredData = filtredData.filter(function(obj) {
             if (refStrings.indexOf(obj.ref) == -1) {
                 refStrings.push(obj.ref);
                 return true;
@@ -1860,11 +1871,7 @@ Ext.define('LIME.controller.ParsersController', {
             return false;
         });
 
-        data.sort(function compare(a,b) {
-            return b.ref.length - a.ref.length;
-        });
-
-        var total = nums = data.length;
+        var total = nums = filtredData.length;
         var callCallback = function() {
             if (--nums > 0) {
                 if ( !(nums % 100) ) {
@@ -1906,7 +1913,7 @@ Ext.define('LIME.controller.ParsersController', {
 
         var next = function(index) {
             index = index || total-nums;
-            var obj = data[index];
+            var obj = filtredData[index];
 
             try {
                 var matchStr = obj.ref;
