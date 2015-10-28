@@ -73,6 +73,7 @@
 		*[local-name()='act'] |
 		*[local-name()='doc'] |
 		*[local-name()='judgement'] |
+		*[local-name()='judgment'] |
 		*[local-name()='documentCollection'] |
 		*[local-name()='amendmentList'] |
 		*[local-name()='amendment'] |
@@ -391,6 +392,7 @@
 						*[local-name()='debateBody'] |
 						*[local-name()='amendmentBody'] |
 						*[local-name()='judgementBody'] |
+						*[local-name()='judgmentBody'] |
 						*[local-name()='fragment'] |
 						*[local-name()='extractStructure'] |
 						*[local-name()='subFlow']
