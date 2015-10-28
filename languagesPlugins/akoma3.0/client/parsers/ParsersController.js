@@ -1900,7 +1900,7 @@ Ext.define('LIME.controller.ParsersController', {
             try {
                 var matchStr = obj.ref;
                 var ranges = DomUtils.findText(matchStr, body);
-                console.log(matchStr, ranges);
+
                 href = getRefHref(obj);
 
                 if ( ranges.length ) {
@@ -2567,7 +2567,7 @@ Ext.define('LIME.controller.ParsersController', {
             uselessNodes = node.querySelectorAll('br, .breaking+br, .breaking+.breaking, .hcontainer > br, .container > br');
 
         // Remove double breaking nodes
-        /*Ext.each(uselessNodes, function(el) {
+        Ext.each(uselessNodes, function(el) {
             if ( el.nodeName.toLowerCase() == 'br' ) {
                 var next = el.nextSibling;
                 var prev = el.previousSibling;
@@ -2580,7 +2580,7 @@ Ext.define('LIME.controller.ParsersController', {
             } else {
                 el.parentNode.removeChild(el);
             }
-        });*/
+        });
 
         var hcontainers = Ext.Array.toArray(node.querySelectorAll('.article')).filter(function(el) {
             var fly = Ext.fly(el);
@@ -2744,7 +2744,7 @@ Ext.define('LIME.controller.ParsersController', {
 
                 me.callParser("quote", content, function(result) {
                 var jsonData = Ext.decode(result.responseText, true);
-                    if (jsonData && jsonData.success) {
+                    if (jsonData) {
                         var data = jsonData.response.slice(0, 50);
                         var clusterNum = 5;
                         var times = Math.ceil(data.length/clusterNum);
@@ -2762,7 +2762,7 @@ Ext.define('LIME.controller.ParsersController', {
                             }
                         };
                         goNext();
-                    } else callStrParser();
+                    }
                 }, function() {
                     callStrParser();
                 });
@@ -2772,20 +2772,21 @@ Ext.define('LIME.controller.ParsersController', {
                 var body = editor.getBody();
                 app.fireEvent(Statics.eventsNames.progressUpdate, Locale.getString("structureParser", me.getPluginName()));
                 me.saveQuotes(body);
-                var goToNext = function() {
-                    me.restoreQuotes(body, function() {
-                        me.addHcontainerHeadings(body);
-                        callReferenceParser();
-                    });
-                };
                 me.callParser("structure", editor.getContent(), function(result) {
                     var jsonData = Ext.decode(result.responseText, true);
                     if (jsonData) {
-                        me.parseStructure(jsonData.response, goToNext);
-                    } else {
-                        goToNext();
+                        me.parseStructure(jsonData.response, function() {
+                            me.restoreQuotes(body, function() {
+                                me.addHcontainerHeadings(body);
+                                callReferenceParser();
+                            });
+                        });
                     }
-                }, goToNext);
+                }, function() {
+                    me.restoreQuotes(body, function() {
+                        callReferenceParser();
+                    });
+                });
             };
 
             var callReferenceParser = function() {

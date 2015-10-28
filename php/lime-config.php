@@ -60,8 +60,8 @@ define('SERVER_NAME', 'http://sinatra.cirsfid.unibo.it');
 
 
 // absolute path to AbiWord utility
-//define('ABIWORD_PATH', '/usr/bin/abiword');
-define('ABIWORD_PATH', 'C:\Users\octavian.bujor2\Programs\AbiWordStable\bin\AbiWord.exe');
+define('ABIWORD_PATH', '/usr/bin/abiword');
+// define('ABIWORD_PATH', 'C:\Users\octavian.bujor2\Programs\AbiWordStable\bin\AbiWord.exe');
 
 
 ?>
