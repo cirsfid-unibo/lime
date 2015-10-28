@@ -47,46 +47,19 @@
  
 $rules = Array(
 
-	"references" => Array("ref_1","ref_1a","ref_1b","ref_1c","ref_1e","ref_1d",
-						  "ref_2a","ref_2b","ref_2c","ref_2d",
-						  "ref_3","ref_3b","ref_3c",
-						  "ref_4"),
+	"references" => Array(  "ref_2c","ref_2b","ref_2","ref_2a",
+							"ref_1",
+		                  ),
+
+	"ref_1"  => "/{{type}}\s+{{courttype}}\s+{{docnum}}/",
 	
-	//"ref_1"  => "/({{partition}} +{{num}},? +((della|del|dello|dell(’|')) *)?)?{{type}}\s+{{date}}\s*(,\s*n\.\s*{{docnum}}+)/",
+    "ref_2c" => "/{{type}}\s+{{docnum}}\s+al\s+{{docauthority}}[- ]+{{courttype}}/",
+    "ref_2b" => "/{{type}}\s+{{docnum}}\s+din\s+{{date}}\s+a\s+{{courttype}}/",
+	"ref_2"  => "/{{type}}\s+{{docnum}}\s+din\s+{{date}}/",
+	"ref_2a" => "/{{type}}\s+din\s+{{date}}/",
 
-	"ref_1"  => "/{{partnum}}\s+(della|del|dello|dell(’|'))\s+{{type}}\s+{{date}}\s*,\s*n\.\s*{{docnum}}/",
-	"ref_1a" => "/{{partnum}}\s+(della|del|dello|dell(’|'))\s+{{type}}\s*n\.\s*{{docnum}}/",
-	"ref_1b" => "/{{partnum}}\s+(della|del|dello|dell(’|'))\s+{{type}}\s+del\s+{{date}}/",
-	"ref_1c" => "/{{partnum}}\s+(della|del|dello|dell(’|'))\s+{{type}}/",
-	"ref_1e" => "/{{type}}\s+{{date}}\s*,\s*n\.\s*{{docnum}}/",
-	"ref_1d" => "/{{partition}}\s+{{num}}/",
-
-	"ref_2a" => "/(?:{{partition}}\s+{{num}}{{numlist}}?,? *)+\s+(della|del|dello|dell(’|'))\s+{{type}}\s*n\.\s*{{docnum}}/",
-	"ref_2b" => "/(?:{{partition}}\s+{{num}}{{numlist}}?,? *)+\s+(della|del|dello|dell(’|'))\s+{{type}}\s+del\s+{{date}}/",
-	"ref_2c" => "/(?:{{partition}}\s+{{num}}{{numlist}}?,? *)+\s+(della|del|dello|dell(’|'))\s+{{type}}/",
-	"ref_2d" => "/{{partition}}\s+{{num}}{{numlist}}/",
-
-	"ref_3"  => "/O +del +{{date}}/",
-	"ref_3b" => "/direttiva +\d+\/\d+\/CE/",
-	"ref_3c" => "/procedimento +[C\-\d]+\/\d+/",
-
-	"ref_4"  =>"/{{partition}} +{{num}}( +delle +disposizioni +transitorie)? +della +Costituzione +federale/",
-	
-	"docnum" => "\d+\.?\d*",
-	"date"   => "[\w\d\s\.°﻿]+\d{4}",
-	"num"    => "(?:(?:\d+[\-\–]?(bis|ter|quater|quinquies)?)|(?:[a-z]{1,2}\)))",
-    "numlist"=> "[e\d\-\, ]+",
-    "partnum"=> "(?:{{partition}}\s+{{num}},? *)+",
-	
-	"partition" => Array("articolo",
-						 "articoli",
-						 "art\.",
-						 "artt\.",
-						 "comma",
-						 "commi",
-						 "lettera",
-						 "lettere"
-						 ),
+	"docnum" => "nr\.?\s*[0-9]+(?:\.[0-9]+)?\s*(?:(?:D\/\d{4})|(?:\/\d+\/\d{4}))?",
+	"date"   => "[\w\s\.°﻿]+\d{4}",
 );
 
 ?>
