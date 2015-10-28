@@ -148,7 +148,16 @@
 					"name": "za"
 				}
 			]
-		}
+		}, {
+            "name": "judgment",
+            "locales": [
+                {
+                    "name": "it"
+                }, {
+                    "name": "ro"
+                }
+            ]
+        }
 	],
 
 	"customViews": ["MarkingMenu"],

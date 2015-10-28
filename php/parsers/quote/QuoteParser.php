@@ -62,7 +62,8 @@ class QuoteParser {
 
     public function parse($content, $jsonOutput = FALSE) {
         $return = array();
-		if($this->lang && $this->docType && !empty($this->parserRules)) {
+        
+		if($this->lang && $this->docType && !empty($this->parserRules) && !empty($this->parserRules['quote'])) {
 			$resolved = resolveRegex($this->parserRules['quote'],$this->parserRules,$this->lang, $this->docType, $this->dirName);
 			$success = 	preg_match_all($resolved["value"], $content, $result, PREG_OFFSET_CAPTURE);
 			if ($success) {

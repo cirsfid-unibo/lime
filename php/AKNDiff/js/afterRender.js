@@ -10,6 +10,7 @@ function addVisualizationLayouts() {
 }
 
 function isPrintMode() {
+    return false;
     return !window.frameElement;
 }
 

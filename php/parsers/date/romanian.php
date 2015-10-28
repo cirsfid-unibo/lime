@@ -44,24 +44,30 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-// the exist admin user
-define('EXIST_ADMIN_USER', 'admin');
+global $day,$year,$num_month,$date_sep;
 
-// the exist admin password 
-define('EXIST_ADMIN_PASSWORD', 'exist');
+$monthsNames = array(
+	"ianuarie",
+	"februarie",
+	"martie",
+	"aprilie",
+	"mai",
+	"iunie",
+	"iulie",
+	"august",
+	"septembie",
+	"octombrie",
+	"noiembrie",
+	"decembrie"
+);
 
-// the exist db base url
-define('EXIST_URL','http://sinatra.cirsfid.unibo.it:8080/exist/');
-// define('EXIST_URL','http://localhost:8080/exist/');
-
-// the server url 
-define('SERVER_NAME', 'http://sinatra.cirsfid.unibo.it');
-// define('SERVER_NAME', 'http://localhost:8080');
+$localpatterns = array( );
 
 
-// absolute path to AbiWord utility
-//define('ABIWORD_PATH', '/usr/bin/abiword');
-define('ABIWORD_PATH', 'C:\Users\octavian.bujor2\Programs\AbiWordStable\bin\AbiWord.exe');
-
+$examples = <<<END
+	<li>30 octombrie 1991</li>
+	<li>9 februarie 2009</li>
+	<li>25 mai 1999</li>
+END;
 
 ?>
