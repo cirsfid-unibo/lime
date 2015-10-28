@@ -47,24 +47,33 @@
  
 $rules = Array(
 
-	"references" => Array("ref_1","ref_1a","ref_1b","ref_1c","ref_1e","ref_1d",
-						  "ref_2a","ref_2b","ref_2c","ref_2d",
-						  "ref_3","ref_3b","ref_3c",
-						  "ref_4"),
-	
-	//"ref_1"  => "/({{partition}} +{{num}},? +((della|del|dello|dell(’|')) *)?)?{{type}}\s+{{date}}\s*(,\s*n\.\s*{{docnum}}+)/",
+	"references" => Array(
+		                  "ref_1","ref_1a","ref_1b","ref_1c","ref_1e","ref_1d","ref_1f",
+						  "ref_2a","ref_2b","ref_2c",
 
+						  "ref_3","ref_3b","ref_3c",
+						  "ref_4"
+						  ),
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	"ref_1"  => "/{{partnum}}\s+(della|del|dello|dell(’|'))\s+{{type}}\s+{{date}}\s*,\s*n\.\s*{{docnum}}/",
 	"ref_1a" => "/{{partnum}}\s+(della|del|dello|dell(’|'))\s+{{type}}\s*n\.\s*{{docnum}}/",
 	"ref_1b" => "/{{partnum}}\s+(della|del|dello|dell(’|'))\s+{{type}}\s+del\s+{{date}}/",
 	"ref_1c" => "/{{partnum}}\s+(della|del|dello|dell(’|'))\s+{{type}}/",
 	"ref_1e" => "/{{type}}\s+{{date}}\s*,\s*n\.\s*{{docnum}}/",
-	"ref_1d" => "/{{partition}}\s+{{num}}/",
+	"ref_1d" => "/{{partnum}}{{numlist}}/",
+	"ref_1f" => "/{{partnum}}/",
 
 	"ref_2a" => "/(?:{{partition}}\s+{{num}}{{numlist}}?,? *)+\s+(della|del|dello|dell(’|'))\s+{{type}}\s*n\.\s*{{docnum}}/",
 	"ref_2b" => "/(?:{{partition}}\s+{{num}}{{numlist}}?,? *)+\s+(della|del|dello|dell(’|'))\s+{{type}}\s+del\s+{{date}}/",
 	"ref_2c" => "/(?:{{partition}}\s+{{num}}{{numlist}}?,? *)+\s+(della|del|dello|dell(’|'))\s+{{type}}/",
-	"ref_2d" => "/{{partition}}\s+{{num}}{{numlist}}/",
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	"ref_3"  => "/O +del +{{date}}/",
 	"ref_3b" => "/direttiva +\d+\/\d+\/CE/",
@@ -74,9 +83,16 @@ $rules = Array(
 	
 	"docnum" => "\d+\.?\d*",
 	"date"   => "[\w\d\s\.°﻿]+\d{4}",
-	"num"    => "(?:(?:\d+[\-\–]?(bis|ter|quater|quinquies)?)|(?:[a-z]{1,2}\)))",
-    "numlist"=> "[e\d\-\, ]+",
-    "partnum"=> "(?:{{partition}}\s+{{num}},? *)+",
+
+    "partnum"=> "(?:(?:, *)?{{partition}}\s+{{num}}){1,5}",
+	"num"    => "\b(?:(?:[a-z]|[1-9]{1,2}(?:\.[1-9])?)\)?[\-\–]?{{latin}}?)\b",
+
+    "numFake"  => "\b(?:(?:[a-z]\)|[1-9]{1,2}(?:\.[1-9])?)\)?)\b",
+	"numFake2" => "\b(?:(?:[a-z]\)|[1-9]{1,2}(?:\.[1-9])?)\)?)\b",
+
+    "numlist"=> "(?:(?:\,\s*{{numFake}})(?:\s+e\s+{{numFake2}})?)|(?:\s+e\s+(?:[a-z]|[1-9]{1,2}(?:\.[1-9])?)\)?)",
+
+    "latin"  => "(?:bis|ter|quater|quinquies)",
 	
 	"partition" => Array("articolo",
 						 "articoli",
@@ -85,7 +101,9 @@ $rules = Array(
 						 "comma",
 						 "commi",
 						 "lettera",
-						 "lettere"
+						 "lettere",
+						 "numero",
+						 "numeri",
 						 ),
 );
 

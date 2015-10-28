@@ -71,12 +71,13 @@ class ReferenceParser {
 				$success = 	preg_match_all($resolved["value"], $content, $result, PREG_OFFSET_CAPTURE);
 				if ($success) 
 					for ($i = 0; $i < $success; $i++) {
-						$match = $result[0][$i][0];
+						$match = trim($result[0][$i][0], ", ");
 						$offset = $result[0][$i][1];
 						$entry = Array(
 							"ref" => $match,
 							"start" => $offset,
-							"end" => $offset+strlen($match)
+							"end" => $offset+strlen($match),
+							"regex" => $ref,
 							);
 						
 						if (array_key_exists("type", $result)) {
