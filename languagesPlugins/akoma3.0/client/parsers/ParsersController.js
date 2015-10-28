@@ -1839,15 +1839,25 @@ Ext.define('LIME.controller.ParsersController', {
             body = editor.getBody(), nodesToMark = [], button = DocProperties.getFirstButtonByName('ref');
 
         var todayDate = date = Ext.Date.format(new Date(), 'Y-m-d');
-
         // Filter the result and remove repeating elements
-        data = data.filter(function(obj) {
-            var itemsLikeMe = data.filter(function(item) {
-                return ((item != obj) && (item.ref.indexOf(obj.ref) != -1)
-                    //&& ( obj.start >= item.start && obj.end <= item.end )
-                    );
+        // Remove references included in other references
+        data = data.filter(function(obj, i) {
+            var itemsLikeMe = data.filter(function(item, j) {
+                return (i != j && ( obj.start >= item.start && obj.end <= item.end ) 
+                    && JSON.stringify(obj) !== JSON.stringify(item));
             });
             return !itemsLikeMe.length;
+        });
+        console.log("Ref to mark: ",data.length);
+
+        var refStrings = [];
+        // Remove dublicate strings
+        data = data.filter(function(obj) {
+            if (refStrings.indexOf(obj.ref) == -1) {
+                refStrings.push(obj.ref);
+                return true;
+            }
+            return false;
         });
 
         data.sort(function compare(a,b) {
@@ -1869,6 +1879,7 @@ Ext.define('LIME.controller.ParsersController', {
                 if ( nodesToMark.length ) {
                     me.requestMarkup(button, {silent:true, noEvent : true, nodes:nodesToMark, attributes: attrs});
                 }
+                console.log("Ref marked", body.querySelectorAll('[class~=ref]').length);
                 Ext.callback(callback);
             }
         };
@@ -1901,10 +1912,11 @@ Ext.define('LIME.controller.ParsersController', {
                 var matchStr = obj.ref;
                 var ranges = DomUtils.findText(matchStr, body);
                 href = getRefHref(obj);
-
+                //console.log(nums, matchStr, ranges.length);
                 if ( ranges.length ) {
                     Ext.each(ranges, function(range) {
                         if(!me.canPassNode(range.startContainer.firstChild, button.id, [DomUtils.tempParsingClass])){
+                            // console.log(matchStr, "cannot pass");
                             return;
                         }
 
@@ -1913,6 +1925,7 @@ Ext.define('LIME.controller.ParsersController', {
                         try {
                             range.surroundContents(span);
                             attrs.push({ name: 'href', value: href });
+                            // console.log(matchStr, span);
                             nodesToMark.push(span);
                         } catch(e) {
                             Ext.log({level: "error"}, e);
@@ -1927,12 +1940,12 @@ Ext.define('LIME.controller.ParsersController', {
             callCallback();
         };
 
-        setTimeout(function() {
+        /*setTimeout(function() {
             if (nums > 0) {
                 nums = 0;
                 callCallback();
             }
-        }, 10000);
+        }, 10000);*/
 
         if ( nums ) {
             next(0);
