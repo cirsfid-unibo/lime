@@ -44,68 +44,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
-require_once(dirname(__FILE__)."/../utils.php");
-
-class QuoteParser {
-    
-    public $lang, $docType;
-    private $parserRules = array();
-    
-    public function __construct($lang, $docType) {
-        $this->lang = $lang;
-        $this->docType = $docType;
-        $this->dirName = dirname(__FILE__);
-
-        $this->loadConfiguration();
-    }
-
-    public function parse($content, $jsonOutput = FALSE) {
-        $return = array();
-        
-		if($this->lang && $this->docType && !empty($this->parserRules) && !empty($this->parserRules['quote'])) {
-			$resolved = resolveRegex($this->parserRules['quote'],$this->parserRules,$this->lang, $this->docType, $this->dirName);
-			$success = 	preg_match_all($resolved["value"], $content, $result, PREG_OFFSET_CAPTURE);
-			if ($success) {
-				for ($i = 0; $i < $success; $i++) {
-					$struct = FALSE;
-					if ($this->isStructure($result["quoted"][$i][0])) $struct = TRUE;
-					
-					$entry = Array (
-						"start" => Array("string" => $result["start"][$i][0],
-										 "offset" => $result["start"][$i][1]),
-										 
-						"quoted" => Array("string" => $result["quoted"][$i][0],
-										  "offset" => $result["quoted"][$i][1]),
-						
-						"struct" => $struct,
-										  
-						"end" => Array("string" => $result["end"][$i][0],
-									   "offset" => $result["end"][$i][1])
-					);
-					$return[] = $entry;
-				}
-			}
-		} else {
-			$return = Array('success' => FALSE);
-		}
-
-        $ret = array("response" => $return);
-        if($jsonOutput) {
-            return json_encode($ret);    
-        } else {
-            return $ret;
-        }
-    }
-
-    private function isStructure($content) {
-		$resolved = resolveRegex($this->parserRules['struct'],$this->parserRules,$this->lang, $this->docType);
-		return preg_match_all($resolved["value"],$content,$result,PREG_OFFSET_CAPTURE);
-	}
-
-    private function loadConfiguration() {
-        $this->parserRules = importParserConfiguration($this->lang,$this->docType, $this->dirName);
-    }
-}
+ 
+$rules = Array(
+    "hierarchy" => Array()
+);
 
 ?>

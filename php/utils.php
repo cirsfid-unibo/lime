@@ -188,7 +188,10 @@ function detectLanguage($text, $length = 2) {
 	
 	    $result = $l->detect($text, 1);
 		$languages = array_keys($result);
-	    return (count($languages)) ? $languages[0] : NULL;
+		if (!count($languages)) return NULL;
+		// Temporary solution in order to have the same romanian language code
+		$language = ($languages[0] == 'ron') ? 'rum' : $languages[0];
+	    return $language;
 	} catch (Text_LanguageDetect_Exception $e) {
 	    return NULL;
 	}

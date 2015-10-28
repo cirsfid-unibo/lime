@@ -177,7 +177,8 @@ class DateParser {
         $vocs = array("ita" => "italian.php", 
                       "eng" => "english.php", 
                       "esp" => "espanol.php", 
-                      "spa" => "espanol.php",);
+                      "spa" => "espanol.php",
+                      "rum" => "romanian.php",);
         
         $day = "(\d){1,2}";
         $year = "(\d){4}";
