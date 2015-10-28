@@ -35,6 +35,12 @@
     "article": {
         "pattern": "hcontainer"
     },
+    "arguments": {
+        "pattern": "container"
+    },
+    "remedies": {
+        "pattern": "container"
+    },
     "attachments": {
         "pattern": "container"
     },
