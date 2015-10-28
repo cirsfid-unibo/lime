@@ -10,7 +10,8 @@
     .collectionBody { @include Label('collectionBody');}
     .fragmentBody   { @include Label('fragmentBody');}
     .debateBody     { @include Label('debateBody');}
-    .conclusions    { @include Label('conclusions');; }
+    .conclusions    { @include Label('conclusions'); }
+    .header         { @include Label('header'); }
 
     .administrationOfOath   { @include Label('administrationOfOath'); }
     .amendmentContent       { @include Label('amendmentContent'); }

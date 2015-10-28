@@ -6,14 +6,17 @@
     // ----------------
     $mainHue: 0;
     .preamble       { @include MainPart; @include Color($mainHue - 60); }
-    .preface        { @include MainPart; @include Color($mainHue - 30); }
+    .preface,
+    .header         { @include MainPart; @include Color($mainHue - 30); }
     .body,
     .mainBody,
+    .judgmentBody,
     .amendmentBody,
     .collectionBody,
     .fragmentBody,
     .debateBody     { @include MainPart; @include Color($mainHue); }
     .conclusions    { @include MainPart; @include Color($mainHue + 30); }
+
 
     // ----------------
     // -- Containers --
@@ -174,6 +177,7 @@
     .from,
     .ins,
     .judge,
+    .lawyer,
     .legislature,
     .listConclusion,
     .listIntroduction,
