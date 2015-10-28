@@ -1,40 +1,155 @@
 {
-	"rootElements": ["header", "judgmentBody", "conclusions", "attachments", "components"],
-	"commonElements": ["commonElement", "hierarchicalStructure",  "genericElement", "externalFragment", "commonsInline", "contentInline", "commonReference", "remark",  "foreign"],
-	
-	"elements": {
+    "rootElements": [
+        "header",
+        "judgmentBody",
+        "conclusions",
+        "attachments",
+        "components"
+    ],
+    "commonElements": [
+        "commonElement",
+        "hierarchicalStructure",
+        "genericElement",
+        "externalFragment",
+        "commonsInline",
+        "contentInline",
+        "commonReference",
+        "remark",
+        "foreign"
+    ],
+    "elements": {
         "header": {
-            "children": ["p", "docketNumber", "date", "docAuthority", "judge", "role", "docType", "docPurpose", "party", "location", "quantity", "lawyer", "blockList"]
+            "children": [
+                "p",
+                "neutralCitation",
+                "courtType",
+                "docketNumber",
+                "docNumber",
+                "docDate",
+                "docType",
+                "docAuthority",
+                "party",
+                "lawyer",
+                "judge",
+                "date",
+                "role",
+                "docPurpose",
+                "location",
+                "quantity",
+                "blockList"
+            ]
         },
-		"hierarchicalStructure": {
-			"children": ["sublist", "indent", "division", "part", "proviso", "book", "rule", "tome", "blockList", "transitional", "subdivision", "fillIn", "alinea"]
-		},
+        "hierarchicalStructure": {
+            "children": [
+                "sublist",
+                "indent",
+                "division",
+                "part",
+                "proviso",
+                "book",
+                "rule",
+                "tome",
+                "blockList",
+                "transitional",
+                "subdivision",
+                "fillIn",
+                "alinea"
+            ]
+        },
         "judgmentBody": {
-            "children": ["introduction", "background", "motivation", "decision"]
+            "children": [
+                "introduction",
+                "background",
+                "motivation",
+                "decision"
+            ]
         },
-		"genericElement": {
-			"children": ["hcontainer", "inline", "p", "placeholder", "blockContainer", "block", "tblock", "container", "marker"]
-		},
-		"externalFragment": {
-			"children": ["extractText", "rmod", "mmod", "mod", "quotedText", "extractStructure", "quotedStructure"]
-		},
-		"commonsInline": {
-			"children": ["def", "decoration", "docPurpose"]
-		},
-		"contentInline": {
-			"children": ["del", "omissis",  "outcome", "ins", "eop", "noteRef", "authorialNote"]
-		},
-		"commonElement": {
-			"children": ["process",  "location", "concept", "quantity", "organization", "object", "date", "term", "time", "event", "person", "role", "entity"]
-		},
-		"commonReference": {
-			"children": ["ref", "rref", "mref"]
-		},
-		"preamble": {
-			"children": ["p", "toc", "session", "formula", "recitals", "citations", "affectedDocument", "longTitle"]
-		},
-		"conclusions": {
-			"children": ["p", "date", "location", "blockContainer", "signature"]
-		}
-	}
+        "genericElement": {
+            "children": [
+                "hcontainer",
+                "inline",
+                "p",
+                "placeholder",
+                "blockContainer",
+                "block",
+                "tblock",
+                "container",
+                "marker"
+            ]
+        },
+        "externalFragment": {
+            "children": [
+                "extractText",
+                "rmod",
+                "mmod",
+                "mod",
+                "quotedText",
+                "extractStructure",
+                "quotedStructure"
+            ]
+        },
+        "commonsInline": {
+            "children": [
+                "def",
+                "decoration",
+                "docPurpose"
+            ]
+        },
+        "contentInline": {
+            "children": [
+                "del",
+                "omissis",
+                "outcome",
+                "ins",
+                "eop",
+                "noteRef",
+                "authorialNote"
+            ]
+        },
+        "commonElement": {
+            "children": [
+                "process",
+                "location",
+                "concept",
+                "quantity",
+                "organization",
+                "object",
+                "date",
+                "term",
+                "time",
+                "event",
+                "person",
+                "role",
+                "entity"
+            ]
+        },
+        "commonReference": {
+            "children": [
+                "ref",
+                "rref",
+                "mref"
+            ]
+        },
+        "preamble": {
+            "children": [
+                "p",
+                "toc",
+                "session",
+                "formula",
+                "recitals",
+                "citations",
+                "affectedDocument",
+                "longTitle"
+            ]
+        },
+        "conclusions": {
+            "children": [
+                "p",
+                "date",
+                "location",
+                "blockContainer",
+                "signature"
+            ]
+        }
+    }
 }

@@ -1102,6 +1102,9 @@
 #tinymce.lime .body:before {
   content: "body";
   width: 37px; }
+#tinymce.lime .judgmentBody:before {
+  content: "judgmentBody";
+  width: 85px; }
 #tinymce.lime .mainBody:before {
   content: "mainBody";
   width: 61px; }
@@ -1249,6 +1252,9 @@
 #tinymce.lime .item:before {
   content: "item";
   width: 37px; }
+#tinymce.lime .lawyer:before {
+  content: "lawyer";
+  width: 49px; }
 #tinymce.lime .list:before {
   content: "list";
   width: 37px; }
@@ -1565,6 +1571,9 @@
 #tinymce.lime.it .amendmentBody:before {
   content: "corpo-emendamento";
   width: 115px; }
+#tinymce.lime.it .judgmentBody:before {
+  content: "corpo-sentenza";
+  width: 97px; }
 #tinymce.lime.it .amendmentContent:before {
   content: "cont.emend.";
   width: 79px; }
@@ -1775,6 +1784,9 @@
 #tinymce.lime.it .judge:before {
   content: "giudice";
   width: 55px; }
+#tinymce.lime.it .lawyer:before {
+  content: "avvocato";
+  width: 61px; }
 #tinymce.lime.it .legislature:before {
   content: "legislatura";
   width: 79px; }
@@ -1818,8 +1830,8 @@
   content: "dich-nazionale";
   width: 97px; }
 #tinymce.lime.it .neutralCitation:before {
-  content: "cod-sentenza";
-  width: 85px; }
+  content: "citazione-standard";
+  width: 121px; }
 #tinymce.lime.it .noteRef:before {
   content: "rif-nota";
   width: 61px; }
@@ -1827,8 +1839,8 @@
   content: "mozione";
   width: 55px; }
 #tinymce.lime.it .num:before {
-  content: "numero";
-  width: 49px; }
+  content: "identificativo";
+  width: 97px; }
 #tinymce.lime.it .object:before {
   content: "oggetto";
   width: 55px; }
@@ -2009,6 +2021,12 @@
 #tinymce.lime.it .title:before {
   content: "titolo";
   width: 49px; }
+#tinymce.lime.it .toc:before {
+  content: "indice";
+  width: 49px; }
+#tinymce.lime.it .tocItem:before {
+  content: "elemento-indice";
+  width: 103px; }
 #tinymce.lime.it .tome:before {
   content: "tomo";
   width: 37px; }

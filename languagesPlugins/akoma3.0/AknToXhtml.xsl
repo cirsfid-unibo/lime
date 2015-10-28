@@ -115,6 +115,8 @@
 					     *[local-name()='body'] |
 					     *[local-name()='formula'] |
 					     *[local-name()='mainBody'] |
+ 						*[local-name()='judgementBody'] |
+ 						*[local-name()='judgmentBody'] |
 					     *[local-name()='amendmentHeading'] |
 						 *[local-name()='amendmentContent'] |
 						 *[local-name()='amendmentReference'] |
@@ -391,8 +393,6 @@
 						*[local-name()='attachments'] |
 						*[local-name()='debateBody'] |
 						*[local-name()='amendmentBody'] |
-						*[local-name()='judgementBody'] |
-						*[local-name()='judgmentBody'] |
 						*[local-name()='fragment'] |
 						*[local-name()='extractStructure'] |
 						*[local-name()='subFlow']
@@ -465,6 +465,7 @@
 						 *[local-name()='legislature'] |
 						 *[local-name()='session'] |
 						 *[local-name()='shortTitle'] |
+						 *[local-name()='lawyer'] |
 						 *[local-name()='docPurpose'] |
 						 *[local-name()='docCommittee'] |
 						 *[local-name()='docIntroducer'] |

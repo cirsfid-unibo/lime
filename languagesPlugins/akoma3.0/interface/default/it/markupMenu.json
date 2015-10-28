@@ -16,8 +16,12 @@
         "shortLabel": "non-numerato"
     },
     "amendmentBody": {
-        "label": "corpo di emendamento",
+        "label": "Corpo di emendamento",
         "shortLabel": "corpo-emendamento"
+    },
+    "judgmentBody": {
+        "label": "Corpo sentenza",
+        "shortLabel": "corpo-sentenza"
     },
     "amendmentContent": {
         "label": "Contenuto di emendamento",
@@ -132,7 +136,7 @@
         "shortLabel": "contenitore"
     },
     "courtType": {
-        "label": "tipo corte",
+        "label": "Tipo corte",
         "shortLabel": "tipo-corte"
     },
     "coverPage": {
@@ -140,7 +144,7 @@
         "shortLabel": "copertina"
     },
     "date": {
-        "label": "data",
+        "label": "Data",
         "shortLabel": "data"
     },
     "debateBody": {
@@ -315,6 +319,10 @@
         "label": "Giudice",
         "shortLabel": "giudice"
     },
+    "lawyer": {
+        "label": "Avvocato",
+        "shortLabel": "avvocato"
+    },
     "legislature": {
         "label": "Legislatura",
         "shortLabel": "legislatura"
@@ -376,8 +384,8 @@
         "shortLabel": "dich-nazionale"
     },
     "neutralCitation": {
-        "label": "Codice sentenza",
-        "shortLabel": "cod-sentenza"
+        "label": "Citazione standard",
+        "shortLabel": "citazione-standard"
     },
     "noteRef": {
         "label": "Riferimento in nota",

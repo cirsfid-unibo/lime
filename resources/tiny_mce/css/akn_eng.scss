@@ -5,6 +5,7 @@
     .preamble       { @include Label('preamble'); }
     .preface        { @include Label('preface'); }
     .body           { @include Label('body');}
+    .judgmentBody   { @include Label('judgmentBody');}
     .mainBody       { @include Label('mainBody');}
     .amendmentBody  { @include Label('amendmentBody');}
     .collectionBody { @include Label('collectionBody');}
@@ -55,6 +56,7 @@
     .division               { @include Label('division'); }
     .indent                 { @include Label('indent'); }
     .item                   { @include Label('item'); }
+    .lawyer                 { @include Label('lawyer'); }
     .list                   { @include Label('list'); }
     .ministerialStatements  { @include Label('ministerialStatements'); }
     .nationalInterest       { @include Label('nationalInterest'); }
