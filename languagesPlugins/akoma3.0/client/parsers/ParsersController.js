@@ -1895,7 +1895,7 @@ Ext.define('LIME.controller.ParsersController', {
             //console.log(refData);
             var ref = AknMain.Reference.empty();
             ref.internal = (refData.num && !refData.date && !refData.docnum && !refData.type) ? true : false;
-            ref.id = refData.num;
+            ref.id = refData.fragment || refData.num;
             ref.uri.country = DocProperties.documentInfo.docLocale;
             ref.uri.type = 'act';
             ref.uri.name = refData.docnum;
