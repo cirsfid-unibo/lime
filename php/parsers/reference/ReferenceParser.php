@@ -80,6 +80,12 @@ class ReferenceParser {
 							"regex" => $ref,
 							);
 						
+						if (array_key_exists("fragment", $result)) {
+							if(is_array($result["fragment"])) {
+								$entry["fragment"] = $result["fragment"][$i][0];
+							}
+						}
+
 						if (array_key_exists("type", $result)) {
 							if(is_array($result["type"])) {
 								$entry["type"] = $result["type"][$i][0];

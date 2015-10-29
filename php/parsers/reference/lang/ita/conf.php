@@ -48,10 +48,8 @@
 $rules = Array(
 
 	"references" => Array(
-		                  "ref_1","ref_1a","ref_1b","ref_1c","ref_1e","ref_1d","ref_1f",
-						  //"ref_2a","ref_2b","ref_2c",
+		                  "ref_1","ref_1a","ref_1b","ref_1c","ref_1d","ref_1e","ref_1f",
 						  "ref_range",
-						  //"range",
 
 						  "ref_3","ref_3b","ref_3c",
 						  "ref_4"
@@ -61,18 +59,13 @@ $rules = Array(
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	"ref_1"  => "/{{partnum}}{{numlist}}?,?\s+(?:della|del|dello|dell(’|'))\s*{{type}}\s+{{date}}\s*,\s*n\.\s*{{docnum}}/",
-	"ref_1a" => "/{{partnum}}{{numlist}}?,?\s+(?:della|del|dello|dell(’|'))\s*{{type}}\s*n\.\s*{{docnum}}/",
-	"ref_1b" => "/{{partnum}}{{numlist}}?,?\s+(?:della|del|dello|dell(’|'))\s*{{type}}\s+del\s+{{date}}/",
-	"ref_1c" => "/{{partnum}}{{numlist}}?,?\s+(?:della|del|dello|dell(’|'))\s*{{type}}/",
-	"ref_1e" => "/{{type}}\s+{{date}}\s*,\s*n\.\s*{{docnum}}/",
-	"ref_1d" => "/{{partnum}}{{numlist}}/",
-	"ref_1f" => "/{{partnum}}/",
-
-	
-	"ref_2a" => "/(?:{{partition}}\s+{{num}}{{numlist}}?,? *)+\s+(della|del|dello|dell(’|'))\s+{{type}}\s*n\.\s*{{docnum}}/",
-	"ref_2b" => "/(?:{{partition}}\s+{{num}}{{numlist}}?,? *)+\s+(della|del|dello|dell(’|'))\s+{{type}}\s+del\s+{{date}}/",
-	"ref_2c" => "/(?:{{partition}}\s+{{num}}{{numlist}}?,? *)+\s+(della|del|dello|dell(’|'))\s+{{type}}/",
+	"ref_1"  => "/(?P<fragment>{{partnum}}{{numlist}}?),?\s+(?:della|del|dello|dell(’|'))\s*{{type}}\s+{{date}}\s*,\s*n\.\s*{{docnum}}/",
+	"ref_1a" => "/(?P<fragment>{{partnum}}{{numlist}}?),?\s+(?:della|del|dello|dell(’|'))\s*{{type}}\s*n\.\s*{{docnum}}/",
+	"ref_1b" => "/(?P<fragment>{{partnum}}{{numlist}}?),?\s+(?:della|del|dello|dell(’|'))\s*{{type}}\s+del\s+{{date}}/",
+	"ref_1c" => "/(?P<fragment>{{partnum}}{{numlist}}?),?\s+(?:della|del|dello|dell(’|'))\s*{{type}}/",
+	"ref_1d" => "/{{type}}\s+{{date}}\s*,\s*n\.\s*{{docnum}}/",
+	"ref_1e" => "/(?P<fragment>{{partnum}}{{numlist}})/",
+	"ref_1f" => "/(?P<fragment>{{partnum}})/",
 
 	"ref_range" => "/{{partition}}\s+{{range}}\s+(?:della|del|dello|dell(’|'))\s*{{type}}/",
 	"range" => "(?:da\s+{{numFrom}}\s+a\s+{{numTo}})",
@@ -96,19 +89,39 @@ $rules = Array(
 
     "partnum"  => "(?:(?:, )?{{partition}}\s+{{num}}){1,5}",
 
-    "num" => "(?:\b[a-z]{1,2}\b\))|(?:\b[0-9]{1,3}\b(?:\.[0-9]+)?\)?[\-\–]?{{latin}}?)",
+    "num"      => "(?:\b[a-z]{1,2}\b\))|(?:\b[0-9]{1,4}\b(?:\.[0-9]+)?\)?[\-\–]?{{latin}}?)",
+    "numFrom"  => "(?:\b[a-z]{1,2}\b\))|(?:\b[0-9]{1,4}\b(?:\.[0-9]+)?\)?[\-\–]?{{latinFrom}}?)",
+	"numTo"    => "(?:\b[a-z]{1,2}\b\))|(?:\b[0-9]{1,4}\b(?:\.[0-9]+)?\)?[\-\–]?{{latinTo}}?)",
+    "numFake"  => "(?:\b[a-z]{1,2}\b\))|(?:\b[0-9]{1,4}\b(?:\.[0-9]+)?\)?[\-\–]?{{latinFake}}?)",
 
-    "numFrom"  => "(?:\b[a-z]{1,2}\b\))|(?:\b[0-9]{1,3}\b(?:\.[0-9]+)?\)?)",
-	"numTo"    => "(?:\b[a-z]{1,2}\b\))|(?:\b[0-9]{1,3}\b(?:\.[0-9]+)?\)?)",
-    "numFake"  => "(?:\b[a-z]{1,2}\b\))|(?:\b[0-9]{1,3}\b(?:\.[0-9]+)?\)?)",
-
-    "numlist"  => "(?:(?:\,\s*{{numFrom}}){1,10}(?:\s+e\s+{{numTo}})?)|(?:\s+e\s+{{numFake}})",
+    "numlist"  => "(?:(?:\,\s*{{numFrom}}){1,20}(?:\s+e\s+{{numTo}})?)|(?:\s+e\s+{{numFake}})",
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    "latin"  => "(?:bis|ter|quater|quinquies)",
+    //"latin"     => Array("bis","ter","quater","quinquies"),
+    "latin"     => Array("bis","ter","quater","quinquies"),
+    "latinFrom" => Array("bis","ter","quater","quinquies"),
+    "latinTo"   => Array("bis","ter","quater","quinquies"),
+    "latinFake" => Array("bis","ter","quater","quinquies"),
+
+    "ordinal" => Array("primo",
+    	               "secondo",
+    	               "terzo",
+    	               "quarto",
+    	               "quinto",
+    	               "sesto",
+    	               "settimo",
+    	               "ottavo",
+    	               "nono",
+    	               "decimo",
+    	               "undicesimo",
+    	               "dodicesimo",
+    	               "tredicesimo",
+    	               "quattordicesimo",
+    	               "quindicesimo",
+    	               ),
 	
 	"partition" => Array("articolo",
 						 "articoli",
