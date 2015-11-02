@@ -2761,10 +2761,19 @@ Ext.define('LIME.controller.ParsersController', {
                 var content = editor.getContent();
                 content = content.replace(/<([a-z][a-z0-9]*)[^>]*?(\/?)>/gi, "<$1$2>");
 
+                var filterData = function(data) {
+                    return data.filter(function(obj) {
+                        var str = obj.quoted.string.replace(/<br[^>]*>/g, "").
+                                    replace(/[.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+
+                        return str.trim().length;
+                    });
+                };
+
                 me.callParser("quote", content, function(result) {
-                var jsonData = Ext.decode(result.responseText, true);
-                    if (jsonData && jsonData.success) {
-                        var data = jsonData.response.slice(0, 50);
+                    var jsonData = Ext.decode(result.responseText, true);
+                    if (jsonData && jsonData.success !== false) {
+                        var data = filterData(jsonData.response).slice(0, 50);
                         var clusterNum = 5;
                         var times = Math.ceil(data.length/clusterNum);
                         var done = 0;
