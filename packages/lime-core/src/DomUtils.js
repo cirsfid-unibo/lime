@@ -1220,6 +1220,31 @@ Ext.define('LIME.DomUtils', {
         };
     },
 
+    // Compute simple statistics for document passed
+    // returns an object containing the number of total marked elements
+    // and the number of marked elements for each tag with an extract of their content
+    computeDocStatistics: function(node, textLimit) {
+        textLimit = textLimit || 100;
+        var markedElements = node.querySelectorAll("*[" + this.elementIdAttribute + "]");
+        var statistics = {
+            markedCount: markedElements.length,
+            elements: {}
+        };
+        for(var i = 0; i < markedElements.length; i++) {
+            var name = this.getNameByNode(markedElements[i]);
+            statistics.elements[name] = statistics.elements[name] || {
+                count: 0,
+                elements: []
+            };
+            statistics.elements[name].elements.push({
+                textLength: markedElements[i].textContent.length,
+                textExtract: Ext.String.ellipsis(markedElements[i].textContent, textLimit)
+            });
+            statistics.elements[name].count++;
+        }
+        return statistics;
+    },
+
     constructor: function() {
         this.setBreakingElementHtml("<span class=\""+this.breakingElementClass+"\">&nbsp;</span>");
     }
