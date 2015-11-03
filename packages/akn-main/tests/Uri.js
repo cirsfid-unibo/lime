@@ -136,6 +136,35 @@ describe ('AknMain.Uri', function () {
         var uri = AknMain.Uri.parse('/uy/bill/ejecutivo/2005-04-04/carpeta137-2005');
         expect(uri.work()).toEqual('/akn/uy/bill/ejecutivo/2005-04-04/carpeta137-2005');
     });
+
+    it ('/akn/it/judgment/sentenza/cc/1999-12-17/1/2000/ita@!eucases/main.xml', function () {
+        // Should ignore nonstandard components 2000
+        var uri = AknMain.Uri.parse('/akn/it/judgment/sentenza/cc/1999-12-17/1/2000/ita@/main.xml');
+        expect(uri.country).toEqual('it');
+        expect(uri.type).toEqual('judgment');
+        expect(uri.subtype).toEqual('sentenza');
+        expect(uri.author).toEqual('cc');
+        expect(uri.date).toEqual('1999-12-17');
+        expect(uri.name).toEqual('1');
+        expect(uri.language).toEqual('ita');
+        expect(uri.componenet).toEqual('main');
+        expect(uri.media).toEqual('xml');
+    });
+
+    it ('/akn/it/judgment/sentenza/cc/1999-12-17/1/ita@!eucases/main.xml', function () {
+        // Should detect the optional version authoring information
+        var uri = AknMain.Uri.parse('/akn/it/judgment/sentenza/cc/1999-12-17/1/ita@!eucases/main.xml');
+        expect(uri.country).toEqual('it');
+        expect(uri.type).toEqual('judgment');
+        expect(uri.subtype).toEqual('sentenza');
+        expect(uri.author).toEqual('cc');
+        expect(uri.date).toEqual('1999-12-17');
+        expect(uri.name).toEqual('1');
+        expect(uri.language).toEqual('ita');
+        expect(uri.authoring).toEqual('eucases');
+        expect(uri.componenet).toEqual('main');
+        expect(uri.media).toEqual('xml');
+    });
 });
 
 
