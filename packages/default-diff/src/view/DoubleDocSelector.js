@@ -64,11 +64,18 @@ Ext.define('DefaultDiff.view.DoubleDocSelector', {
             changeMsg = Locale.getString('changeDocument', this.getPluginName()),
             selectMsg = Locale.getString('selectDocument', this.getPluginName());
 
-        firstButton.setText(this.firstDoc.id ? changeMsg : selectMsg);
-        secondButton.setText(this.secondDoc.id ? changeMsg : selectMsg);
+        firstButton.setTooltip(this.firstDoc.id ? changeMsg : selectMsg);
+        secondButton.setTooltip(this.secondDoc.id ? changeMsg : selectMsg);
 
-        this.down('fieldset:first textfield').setValue(this.firstDoc.path);
-        this.down('fieldset:last textfield').setValue(this.secondDoc.path);
+        var firstField = this.down('fieldset:first textfield');
+        var secondField = this.down('fieldset:last textfield');
+        firstField.setValue(this.firstDoc.path);
+        secondField.setValue(this.secondDoc.path);
+
+        if (this.firstDoc.path)
+            Ext.QuickTips.register({target: firstField.getEl(), text: this.firstDoc.path});
+        if (this.secondDoc.path)
+            Ext.QuickTips.register({target: secondField.getEl(), text: this.secondDoc.path});
 
         if (this.firstDoc.id && this.secondDoc.id)
             this.fireEvent('docsSelected', this);
@@ -114,13 +121,13 @@ Ext.define('DefaultDiff.view.DoubleDocSelector', {
                 layout: 'hbox',
                 items: [{
                     xtype: 'textfield',
-                    fieldLabel: Locale.getString('firstDocumentLabel', this.getPluginName()),
+                    emptyText: Locale.getString('firstDocumentLabel', this.getPluginName()),
                     readOnly: true,
-                    labelWidth: 80,
                     flex: 1
                 }, {
                     xtype: 'button',
                     cls: 'selectButton',
+                    glyph:'xf016@FontAwesome',
                     handler: function () {
                         this.up('doubleDocSelector').fireEvent('firstDocSelected', this.up('doubleDocSelector'));
                     }
@@ -129,14 +136,16 @@ Ext.define('DefaultDiff.view.DoubleDocSelector', {
         }, {
             xtype: 'button',
             cls: 'resetButton',
-            text: Locale.getString('resetDocument', this.getPluginName()),
+            glyph:'xf0e2@FontAwesome',
+            tooltip: Locale.getString('resetDocument', this.getPluginName()),
             handler: function () {
                 this.up('doubleDocSelector').clearSelectedDocuments();
             }
         },{
             xtype: 'button',
             cls: 'editButton',
-            text: this.editButtonLabel,
+            tooltip: this.editButtonLabel,
+            glyph:'xf044@FontAwesome',
             margin: '0px 0px 0px 5px',
             handler: function () {
                 this.up('doubleDocSelector').fireEvent('edit', this.up('doubleDocSelector'));
@@ -151,28 +160,18 @@ Ext.define('DefaultDiff.view.DoubleDocSelector', {
                 layout: 'hbox',
                 items: [{
                     xtype: 'textfield',
-                    fieldLabel: Locale.getString('secondDocumentLabel', this.getPluginName()),
+                    emptyText: Locale.getString('secondDocumentLabel', this.getPluginName()),
                     readOnly: true,
-                    labelWidth: 80,
                     flex: 1
                 }, {
                     xtype: 'button',
                     cls: 'selectButton',
+                    glyph:'xf016@FontAwesome',
                     handler: function () {
                         this.up('doubleDocSelector').fireEvent('secondDocSelected', this.up('doubleDocSelector'));
                     }
                 }]
             }]
-        }, {
-            xtype: 'button',
-            cls: 'printDiffButton',
-            text: 'Print',
-            margin: "0px 0px 0px 5px",
-            handler: function (cmp) {
-                var url = cmp.up('diffTab').iframeSource;
-                if (url)
-                    window.open(url);
-            }
         }];
         this.callParent();
     }

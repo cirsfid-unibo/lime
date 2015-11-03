@@ -97,6 +97,21 @@ Ext.define('DefaultDiff.view.DiffTab', {
             cls : 'diffContainer',
             flex : 1,
             border : 0,
+            tabBar: {
+                items: [{
+                    xtype: 'tbfill'
+                }, {
+                    xtype: 'button',
+                    cls: 'printDiffButton',
+                    tooltip: 'Print',
+                    glyph:'xf02f@FontAwesome', 
+                    handler: function (cmp) {
+                        var url = cmp.up('diffTab').iframeSource;
+                        if (url)
+                            window.open(url);
+                    }
+                }]
+            },
             items : [{
                 title : Locale.getString("textTabTitle", me.getPluginName()),
                 format : 'text',
