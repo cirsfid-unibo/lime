@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -46,7 +46,7 @@
 
 Ext.define('LIME.controller.ConsolidationController', {
     extend: 'Ext.app.Controller',
-    
+
     views: ["LIME.ux.consolidation.ConsolidationMainTab"],
 
     refs: [{
@@ -87,16 +87,16 @@ Ext.define('LIME.controller.ConsolidationController', {
     config: {
         pluginName: "consolidation",
     },
-    
+
     // The document being modified.
     modifiedDoc: null,
-    // The document containing the active 
+    // The document containing the active
     // modifications.
     modifyingDoc: null,
 
     init: function () {
         var me = this;
-        
+
         me.application.on(Statics.eventsNames.afterLoad, me.afterDocumentLoaded, me);
 
         this.control({
@@ -139,7 +139,7 @@ Ext.define('LIME.controller.ConsolidationController', {
             callback: cb,
             scope: me
         };
-        me.application.fireEvent(Statics.eventsNames.selectDocument, config); 
+        me.application.fireEvent(Statics.eventsNames.selectDocument, config);
     },
 
     // Display the document path inside the selected document fields.
@@ -173,9 +173,9 @@ Ext.define('LIME.controller.ConsolidationController', {
             "editableDoc": this.modifiedDoc.id,
             "notEditableDoc": this.modifyingDoc.id
         };
-        // var dualConfig={editableDoc: 
-        //     "/db/wawe_users_documents/aasd.gmail.com/my_documents/it/doc.xml", 
-        //     notEditableDoc: 
+        // var dualConfig={editableDoc:
+        //     "/db/wawe_users_documents/aasd.gmail.com/my_documents/it/doc.xml",
+        //     notEditableDoc:
         //     "/db/wawe_users_documents/aasd.gmail.com/my_documents/it/veto.xml"};
         console.log(dualConfig);
 
@@ -192,13 +192,13 @@ Ext.define('LIME.controller.ConsolidationController', {
 
         //me.getAppViewport().setLoading(true);
 
-        editorTab.noChangeModeEvent = true;
+        me.getController('Editor').setAutosaveEnabled(false);
 
         // Set active the editor tab
         mainTabPanel.setActiveTab(editorTab);
 
         if(consolidationTab) {
-            consolidationTab.tab.hide();  
+            consolidationTab.tab.hide();
         }
 
         var tinyView = editorController.getEditorComponent();
@@ -216,7 +216,7 @@ Ext.define('LIME.controller.ConsolidationController', {
         editorController.defaultActions = {
             noExpandButtons: true
         };
-        
+
         //explorer.setVisible(false);
 
         explorer.up().remove(explorer);
@@ -226,7 +226,7 @@ Ext.define('LIME.controller.ConsolidationController', {
         if(markingMenu) {
             markingMenu.hide();//up().remove(markingMenu);
         }
-        
+
         secondEditor = me.createSecondEditor();
         me.secondEditor = secondEditor;
         var el2 = Ext.fly(editorController.getEditor(editorController.getSecondEditor()).getBody());
@@ -241,7 +241,7 @@ Ext.define('LIME.controller.ConsolidationController', {
           editorController.addContentStyle('#tinymce div.mod', 'padding-left: 15px', editorController.getSecondEditor());
           editorController.addContentStyle('#tinymce div.mod', 'border-radius: 0', editorController.getSecondEditor());
           editorController.addContentStyle('#tinymce div.mod', 'border-left: 5px solid #1B6427', editorController.getSecondEditor());
-          
+
           editorController.addContentStyle('#tinymce div.quotedStructure', 'padding-left: 15px', editorController.getSecondEditor());
           editorController.addContentStyle('#tinymce div.quotedStructure', 'border-radius: 0', editorController.getSecondEditor());
           editorController.addContentStyle('#tinymce div.quotedStructure', 'border-left: 5px solid #ABB26E', editorController.getSecondEditor());
@@ -268,7 +268,7 @@ Ext.define('LIME.controller.ConsolidationController', {
                     };
                     storage.openDocument(dualConfig.editableDoc);
                 }, true);
-            });    
+            });
         }, 100);
     },
 
@@ -309,7 +309,7 @@ Ext.define('LIME.controller.ConsolidationController', {
                     mainTabPanel.setActiveTab(diff);
                 }
 
-                editorTab.noChangeModeEvent = false;
+                me.getController('Editor').setAutosaveEnabled(true);
                 viewport.remove(editor);
 
                 newExplorer = Ext.widget("outliner", {

@@ -73,6 +73,10 @@ Ext.define('LIME.controller.Editor', {
         { ref: 'uri',              selector: 'mainEditorUri' }
     ],
 
+    config: {
+        autosaveEnabled: true
+    },
+
     constructor: function(){
         /**
          * @property {HTMLElement} lastFocused The last focused element
@@ -999,8 +1003,10 @@ Ext.define('LIME.controller.Editor', {
         /* Check if there has been a change */ /* TODO: pensare a una soluzione più intelligente */
         if (!userRequested && !this.changed || this.parserWorking)
             return;
-        this.changed = false;
-        this.getController('Storage').saveDocument();
+        if (this.getAutosaveEnabled()) {
+            this.changed = false;
+            this.getController('Storage').saveDocument();
+        }
     },
 
     addUndoButtons: function (editor) {

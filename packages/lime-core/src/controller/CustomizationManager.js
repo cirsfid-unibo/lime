@@ -158,65 +158,77 @@ Ext.define('LIME.controller.CustomizationManager', {
         return secondEditor.query('mainEditor')[0];
     },
 
+    // Save document and restore single editor mode
     finishEditingMode: function(editor, diff) {
-         var me = this,
-            mainTabPanel = me.getMain(),
-            viewport = me.getAppViewport(),
-            editorTab = me.getMainEditor().up(),
-            newExplorer, language = me.getController("Language"),
-            editorController = me.getController("Editor");
+        var me = this;
 
-        this.stopCallback();
-        editorController.autoSaveContent(true);
-
-        if(me.finishEditBtn) {
-            me.finishEditBtn.up().remove(me.finishEditBtn);
-        }
-        if(me.syncButton) {
-            if (me.syncButton.syncEnabled)
-                me.getController('DualEditorSynchronizer').disable();
-            me.syncButton.up().remove(me.syncButton);
-        }
+        me.getController("Editor").autoSaveContent(true);
+        var language = me.getController("Language");
         var html = language.getHtmlToTranslate(null, editor, me.secondDocumentConfig.metaDom);
         language.translateContent(html, function(xml) {
             xml = xml.replace('<?xml version="1.0" encoding="UTF-8"?>', '');
 
             var url = me.secondDocumentConfig.docId.replace("/diff/", "/diff_modified/");
 
-            Server.saveDocument(url, xml, function() {
-                if(diff) {
-                    diff.tab.show();
-                    diff.enforceReload = true;
-                    mainTabPanel.setActiveTab(diff);
-                    diff.fireEvent("finishEditing", diff);
-                }
-
-                editorTab.noChangeModeEvent = false;
-                viewport.remove(editor.up('main'));
-
-                newExplorer = Ext.widget("outliner", {
-                    region : 'west',
-                    expandable : true,
-                    resizable : true,
-                    width : '15%',
-                    autoScroll : true,
-                    margin : 2
-                });
-                viewport.down('mainEditor').up().add(newExplorer);
+            Server.saveDocument(url, xml, function () {
+                me.restoreSingleEditor(editor, diff);
             });
         });
     },
 
-    addFinishEditingButton : function(cmp, xmlDiff) {
+    // Switch back to single editor mode
+    restoreSingleEditor: function (editor, diff) {
+        var me = this;
+        this.stopCallback();
+
+        function remove (button) {
+            if (button) button.up().remove(button);
+        }
+        remove(me.finishEditBtn);
+        remove(me.cancelButton);
+        remove(me.syncButton);
+        me.getController('DefaultDiff.controller.DualEditorSynchronizer').disable();
+
+        if(diff) {
+            diff.tab.show();
+            diff.enforceReload = true;
+            me.getMain().setActiveTab(diff);
+            diff.fireEvent("finishEditing", diff);
+        }
+
+        var editorTab = me.getMainEditor().up();
+        me.getController('Editor').setAutosaveEnabled(true);
+        var viewport = me.getAppViewport();
+        viewport.remove(editor.up('main'));
+
+        var newExplorer = Ext.widget("outliner", {
+            region : 'west',
+            expandable : true,
+            resizable : true,
+            width : '15%',
+            autoScroll : true,
+            margin : 2
+        });
+        viewport.down('mainEditor').up().add(newExplorer);
+    },
+
+    addButtons: function(cmp, xmlDiff) {
         var me = this, toolbar = me.getMainToolbar();
         if (!toolbar.down("[cls=finishEditingButton]")) {
-            //toolbar.add("->");
             me.finishEditBtn = toolbar.insert(6, {
                 cls : "finishEditingButton",
                 margin : "0 10 0 240",
                 text : "Finish editing",
                 listeners : {
                     click : Ext.bind(me.finishEditingMode, me, [cmp, xmlDiff])
+                }
+            });
+            me.cancelButton = toolbar.insert(7, {
+                cls : "finishEditingButton",
+                margin : "0 10 0 20",
+                text : "Cancel",
+                listeners : {
+                    click : Ext.bind(me.restoreSingleEditor, me, [cmp, xmlDiff])
                 }
             });
             me.syncButton = toolbar.insert(7, {
@@ -256,7 +268,7 @@ Ext.define('LIME.controller.CustomizationManager', {
         dualConfig.startCallback();
         this.stopCallback = dualConfig.stopCallback;
 
-        editorTab.noChangeModeEvent = true;
+        me.getController('Editor').setAutosaveEnabled(false);
 
         // Set active the editor tab
         mainTabPanel.setActiveTab(editorTab);
@@ -269,7 +281,7 @@ Ext.define('LIME.controller.CustomizationManager', {
         secondEditor = me.createSecondEditor();
         me.secondEditor = secondEditor;
 
-        me.addFinishEditingButton(secondEditor, xmlDiff);
+        me.addButtons(secondEditor, xmlDiff);
 
         Ext.defer(function() {
             storage.openDocumentNoEditor(dualConfig.notEditableDoc, function(config) {
