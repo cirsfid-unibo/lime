@@ -857,14 +857,6 @@ Ext.define('LIME.controller.ModsMarkerController', {
         Ext.each(markedElements, function(markedElement) {
             markedElement.setAttribute(buttonCfg.modType, "true");
         });
-        if (!button) return;
-        var editor = me.getController("Editor"),
-            styleClass = markedElements[0].getAttribute("class"),
-            style = Ext.clone(button.pattern.wrapperStyle);
-
-        style["this"]+= ";"+buttonCfg.elementStyle;
-        style["before"]+= ";"+buttonCfg.labelStyle;
-        editor.applyAllStyles('body#tinymce:not(.noboxes) *[class="' + styleClass + '"]['+buttonCfg.modType+']', style, buttonCfg.shortLabel);
     },
 
     getTextualModId: function( parent ) {
