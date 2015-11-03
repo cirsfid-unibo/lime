@@ -86,7 +86,6 @@ Ext.define('AknMetadata.tagAttributes.RefPanel', {
 
     listeners: {
         afterrender: function () {
-            this.down('[itemId=save]').disable(); //Save button isn't working yet
             if (!this.ref) return;
             this.down('[name=type]').on('change', this.onTypeChange, this);
             this.getForm().setValues(this.refToFormValues());

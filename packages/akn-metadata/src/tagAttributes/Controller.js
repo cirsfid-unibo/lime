@@ -53,6 +53,15 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
 
     init: function () {
         this.application.on(Statics.eventsNames.editorDomNodeFocused, this.showNodeAttributes, this);
+
+        this.control({
+            "refPanel [itemId=save]": {
+                click: function(cmp) {
+                    var refPanel = cmp.up('refPanel');
+                    refPanel.onSave(refPanel);
+                }
+            }
+        });
     },
 
     showNodeAttributes: function(node) {
@@ -75,7 +84,9 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
     },
 
     createRefPanel: function(node) {
-        var href = node.getAttribute(Language.getAttributePrefix()+'href');
+        var me = this;
+        var attribute = Language.getAttributePrefix()+'href';
+        var href = node.getAttribute(attribute);
         var ref = null;
         try {
             ref = AknMain.Reference.parse(href);
@@ -83,10 +94,41 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
         } catch (e) {
             console.error(e);
         }
+
+        var saveRef = function(refPanel) {
+            var data = refPanel.getValues();
+            var ref = AknMain.Reference.empty();
+            ref.internal = (data.type == "external") ? false : true;
+            ref.id = data.fragment;
+            ref.uri.country = data.nationality;
+            ref.uri.type = data.docType;
+            ref.uri.subtype = data.subtype;
+            ref.uri.name = data.number;
+            ref.uri.date = (data.date) ? Ext.Date.format(new Date(data.date), 'Y-m-d') : "";
+            ref.uri.language = DocProperties.documentInfo.docLang;
+            var href = "";
+            try {
+                href = ref.ref();
+            } catch(e) {
+                console.error(e);
+            }
+            if (href.length > 1) {
+                node.setAttribute(attribute, href);
+                refPanel.down("#successSaveLabel").setVisible(true);
+                me.closeContextPanel();
+            }
+        };
+
         console.log('create ref panel', href);
         return Ext.widget('refPanel', {
-            ref: ref
+            ref: ref,
+            onSave: saveRef
         });
+    },
+
+    closeContextPanel: function() {
+        this.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
+                                    false, this.tabGroupName);
     },
 
     // Wrapper function to create and add the attributes tab to the context panel.
