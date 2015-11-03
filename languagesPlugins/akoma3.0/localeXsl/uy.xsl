@@ -13,5 +13,11 @@
        		<xsl:apply-templates />
 		</xsl:element>
 	</xsl:template>
+
+	<xsl:template match="*[@class = 'textualMod']/*[@class = 'old']/text()">
+        <uy:text>
+        	<xsl:value-of select="."/>
+        </uy:text>
+	</xsl:template>
 	
 </xsl:stylesheet>
