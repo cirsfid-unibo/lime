@@ -67,8 +67,15 @@ Ext.define('DefaultDiff.view.DoubleDocSelector', {
         firstButton.setTooltip(this.firstDoc.id ? changeMsg : selectMsg);
         secondButton.setTooltip(this.secondDoc.id ? changeMsg : selectMsg);
 
-        this.down('fieldset:first textfield').setValue(this.firstDoc.path);
-        this.down('fieldset:last textfield').setValue(this.secondDoc.path);
+        var firstField = this.down('fieldset:first textfield');
+        var secondField = this.down('fieldset:last textfield');
+        firstField.setValue(this.firstDoc.path);
+        secondField.setValue(this.secondDoc.path);
+
+        if (this.firstDoc.path)
+            Ext.QuickTips.register({target: firstField.getEl(), text: this.firstDoc.path});
+        if (this.secondDoc.path)
+            Ext.QuickTips.register({target: secondField.getEl(), text: this.secondDoc.path});
 
         if (this.firstDoc.id && this.secondDoc.id)
             this.fireEvent('docsSelected', this);
