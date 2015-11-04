@@ -237,7 +237,7 @@ Ext.define('LIME.controller.ParsersController', {
     getTextChildrenGroups: function(node, extraElements, isTextNodeFn) {
         extraElements = extraElements || [];
         var textGroups = [], group = [],
-            groupElementsName = ["br", "sub", "sup"].concat(extraElements),
+            groupElementsName = ["br", "sub", "sup", "mod", "quotedStructure", "quotedText"].concat(extraElements),
             headingNode = Ext.fly(node).last('.num,.heading,.subheading', true);
 
         for ( var i = 0; i < node.childNodes.length; i++ ) {
@@ -261,6 +261,7 @@ Ext.define('LIME.controller.ParsersController', {
             } else {
                 if ( child.nodeType == DomUtils.nodeType.TEXT ||
                     groupElementsName.indexOf(child.nodeName.toLowerCase()) != -1 ||
+                    groupElementsName.indexOf(DomUtils.getNameByNode(child)) != -1 ||
                     (child.nodeName.toLowerCase() == 'span' &&
                     !fly.is('.num') && !fly.is('.heading') && !fly.is('.subheading') ) ) {
 
@@ -2582,32 +2583,13 @@ Ext.define('LIME.controller.ParsersController', {
     },
 
     normalizeNodes: function(node) {
-        var me = this,
-            uselessNodes = node.querySelectorAll('br, .breaking+br, .breaking+.breaking, .hcontainer > br, .container > br');
-
-        // Remove double breaking nodes
-        /*Ext.each(uselessNodes, function(el) {
-            if ( el.nodeName.toLowerCase() == 'br' ) {
-                var next = el.nextSibling;
-                var prev = el.previousSibling;
-                if ( (next && next.nodeType == DomUtils.nodeType.ELEMENT && next.nodeName.toLowerCase() == 'br') ||
-                     (prev && prev.nodeType == DomUtils.nodeType.ELEMENT && prev.nodeName.toLowerCase() == 'br') ||
-                     (!Ext.fly(el.parentNode).is('.inline') && !Ext.fly(el.parentNode).is('.block') &&
-                      (el.parentNode.nodeName.toLowerCase() != 'span')) ) {
-                    el.parentNode.removeChild(el);
-                }
-            } else {
-                el.parentNode.removeChild(el);
-            }
-        });*/
-
+        var me = this;
         var hcontainers = Ext.Array.toArray(node.querySelectorAll('.article')).filter(function(el) {
             var fly = Ext.fly(el);
             if ( fly.child("div") && !fly.child(".paragraph") ) {
                 return true;
             }
         });
-
         var pToMark = [], paragraphToMark = [];
         Ext.each(hcontainers, function(hcontainer) {
             var textGroups = me.getTextChildrenGroups(hcontainer);

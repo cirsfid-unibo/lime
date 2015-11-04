@@ -41,7 +41,7 @@
       <xsl:text> </xsl:text>
    </xsl:when>
    <xsl:otherwise>
-      <br/><br/>
+      <br/>
    </xsl:otherwise>
   </xsl:choose>
  </xsl:template>

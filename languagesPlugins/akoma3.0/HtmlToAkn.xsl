@@ -270,9 +270,44 @@
                 </p>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:apply-templates />
+                <xsl:call-template name="addImplicitP"/>
             </xsl:otherwise>
         </xsl:choose> 
+    </xsl:template>
+
+    <xsl:template name="addImplicitP">
+        <xsl:variable name="blocks" select="'|container|block|'"/>
+        <xsl:for-each select="node()">
+            <xsl:variable name="prev" select="preceding-sibling::node()[1]"/>
+            <xsl:variable name="pattern">
+                <xsl:value-of select="substring-before(@class,' ')" />
+            </xsl:variable>
+            <xsl:choose>
+                <xsl:when test="contains($blocks, concat('|', $pattern, '|'))">
+                    <xsl:apply-templates select="."/>
+                </xsl:when>
+                <!-- Skip nodes that contains only &nbsp or spaces -->
+                <xsl:when test="not(translate(translate(normalize-space(), ' ',''), '&#xa0;',''))">
+                </xsl:when>
+                <xsl:when test="not($prev) or
+                                $prev[contains($blocks, concat('|', substring-before(@class,' '), '|'))]">
+                    <xsl:variable name="nextBreak" select="following-sibling::node()
+                        [contains($blocks, concat('|', substring-before(@class,' '), '|'))]
+                        [1]"/>
+                    <xsl:variable name="nextBreakPos" select="count($nextBreak/preceding-sibling::node()) + 1"/>
+                    <xsl:variable name="myPos" select="position()"/>
+                    <p>
+                        <xsl:if test="$nextBreakPos = 1">
+                            <xsl:apply-templates select="(.|following-sibling::node())"/>
+                        </xsl:if>
+                        <xsl:if test="$nextBreakPos > 1">
+                            <xsl:apply-templates select="(.|following-sibling::node())
+                                [(position() + $myPos -1)&lt;$nextBreakPos]"/>
+                        </xsl:if>
+                    </p>
+                </xsl:when>
+            </xsl:choose>
+        </xsl:for-each>
     </xsl:template>
 	
 	<xsl:template match="span[contains(@class,'documentRef')]">
@@ -385,8 +420,11 @@
     
     <!-- HTML elements -->
     <xsl:template match="br">
-        <xsl:if test="contains(../@class, 'block') or contains(../@class, 'inline')">
-            <eol />
+        <xsl:variable name="parentPattern">
+            <xsl:value-of select="substring-before(../@class,' ')" />
+        </xsl:variable>
+        <xsl:if test="$parentPattern = 'block' or $parentPattern = 'inline'">
+            <eol/>
         </xsl:if>
     </xsl:template>
 
@@ -461,7 +499,9 @@
 
     <xsl:template match="p[contains(@class, 'breaking')] |
                          span[contains(@class, 'breaking')]">
-        <xsl:apply-templates />
+        <xsl:if test="translate(translate(normalize-space(), ' ',''), '&#xa0;','')">
+            <xsl:apply-templates />
+        </xsl:if>
     </xsl:template>
     
     <!-- Called template -->

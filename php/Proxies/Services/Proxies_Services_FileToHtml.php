@@ -170,6 +170,9 @@ class Proxies_Services_FileToHtml implements Proxies_Services_Interface
     private function cleanHtml($htmlSource){
     	// Replace all non breaking spaces with spaces
     	$htmlSource = str_replace(chr(0xC2).chr(0xA0), " ", $htmlSource);
+    	// Replace the END OF GUARDED AREA with -
+        $htmlSource = str_replace("&#151;", "-", $htmlSource);
+    	
         // Build XSLT
         $xslt = new XSLTProcessor();
         $xslt->importStylesheet($this->cleaningXslDom);

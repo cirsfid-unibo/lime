@@ -1202,7 +1202,7 @@ Ext.define('LIME.DomUtils', {
     },
 
     normalizeBr: function(str) {
-        return str.replace(/(<br\/>(<br\/>)?(\s*))+/g, '$1');
+        return str.replace(/(<br\/>(\s*))+/g, '$1');
     },
 
     nodeListToArray: function (nodelist) {
