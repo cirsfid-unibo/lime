@@ -58,14 +58,22 @@ $rules = Array(
     "heading" => "\([A-Z].+\)\.?",
 
     "paragraph" => "/(?<![\w\.\,] ){{numparagraph}} +{{bodyitem}}/u",
-    "numparagraph" => "\(*\b\d{1,2}[\)\.\-]",
+    //"numparagraph" => "\(*\b\d{1,2}[\)\.\-]",
+    "numparagraph" => "\(*\b\d{1,2}[\.]",
 
+    /*
     "item" => "/(?<![\w\.\,] ){{numitem}} +{{bodyitem}}/u",
     "numitem" => "\(*\b[A-Za-z]{1,2}[\)\.\-]",
-    #"numitem" => "\b([A-Za-z-]+|\d+|{{roman}})\)|\b(\d+\s*\.)",
     "bodyitem" => "[\p{L}\p{N}\p{P}\p{S} ]+[\.;]?",
-    
     "hierarchy" => Array("book","title","chapter","section","article","paragraph","item")
+    */
+
+    "item1" => "/(?<![\w\.\,] ){{numitem1}} +{{bodyitem}}/u",
+    "item2" => "/(?<![\w\.\,] ){{numitem2}} +{{bodyitem}}/u",
+    "numitem1" => "\(*\b[A-Za-z]{1,2}[\)]",
+    "numitem2" => "\(*\b[0-9]{1,2}[\)]",
+    "bodyitem" => "[\p{L}\p{N}\p{P}\p{S} ]+[\.;]?",
+    "hierarchy" => Array("book","title","chapter","section","article","paragraph","item1","item2")
 
 );
 
