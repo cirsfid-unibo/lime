@@ -372,6 +372,11 @@ Ext.define('LIME.controller.ParsersController', {
                          DocProperties.getFirstButtonByName("docTitle");
 
         var initNodes = node.querySelectorAll('.docNumber, .docDate, .docType');
+
+        var isFinishTitle = function(text) {
+            return text.match(/\b[\w]+\b\.(?!\w)/g);
+        };
+
         if ( initNodes.length ) {
             var initTitleNode = initNodes[initNodes.length-1];
             var wrapper = Ext.DomHelper.createDom({
@@ -380,7 +385,8 @@ Ext.define('LIME.controller.ParsersController', {
             });
             DomUtils.insertAfter(wrapper, initTitleNode);
             me.wrapPartNodeSibling(wrapper, function(el) {
-                return DomUtils.nodeHasClass(el, DomUtils.breakingElementClass);
+                return isFinishTitle(el.previousSibling.textContent) || 
+                        DomUtils.nodeHasClass(el, DomUtils.breakingElementClass);
             });
             me.requestMarkup(markButton, {
                 silent : true,
@@ -582,30 +588,32 @@ Ext.define('LIME.controller.ParsersController', {
     parseDocDate : function(data, node, button, noLimit) {
         var me = this, dates = data.response.dates, app = me.application,
             editor = me.getController("Editor"),
-            markButton = DocProperties.getChildConfigByName(button,"docDate") ||
-                         DocProperties.getChildConfigByName(button, "date") ||
-                         DocProperties.getFirstButtonByName("date"),
-            attributeName = markButton.rules.askFor.date1.insert.attribute.name,
-        config = {
-            markButton : markButton
-        };
+            markButtonDocDate = DocProperties.getChildConfigByName(button,"docDate"),
+            markButton = DocProperties.getChildConfigByName(button, "date") ||
+                         DocProperties.getFirstButtonByName("date");
+            attributeName = markButton.rules.askFor.date1.insert.attribute.name;
 
         if (dates) {
+            dates = Ext.Object.getValues(dates).sort(function(a,b) {
+                return a.offsets[0].start - b.offsets[0].start;
+            });
             var markedNodes = [];
-            Ext.Object.each(dates, function(key, dateParsed) {
-                if ( !markButton.name == 'docDate' || !markedNodes || noLimit || !markedNodes.length ) {
-                    config.marker = {
+            Ext.each(dates, function(dateParsed) {
+                var existingDocDate = node.querySelector('.docDate');
+                var config = {
+                    markButton: (markButtonDocDate && !existingDocDate) ? markButtonDocDate : markButton,
+                    marker: {
                         silent : true,
                         attribute : {
                             name : attributeName,
                             value : dateParsed.date
                         }
-                    };
-                    markedNodes = me.searchInlinesToMark(node, dateParsed.match, config);
-                    markedNodes.forEach(function (node) {
-                        me.application.fireEvent(Statics.eventsNames.nodeAttributesChanged, node);
-                    })
-                }
+                    }
+                };
+                markedNodes = me.searchInlinesToMark(node, dateParsed.match.trim(), config);
+                markedNodes.forEach(function (node) {
+                    me.application.fireEvent(Statics.eventsNames.nodeAttributesChanged, node);
+                })
             }, me);
         }
     },
