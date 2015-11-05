@@ -60,8 +60,10 @@ $monthsNames = array(
 	"dicembre"
 );
 
-$localpatterns = array( 
-	"dd mm yyyy"=> "/(?P<day>$day)\s*$date_sep\s*(?P<month>$num_month)\s*$date_sep\s*(?P<year>$year)/i"
+$localpatterns = array(
+    "vigenza"    => "/(?<=Vigente al:)\s*(?P<day>$day)\s*$date_sep\s*(?P<month>$num_month)\s*$date_sep\s*(?P<year>$year)/i",
+	"dd mm yyyy" => "/(?P<day>$day)\s*$date_sep\s*(?P<month>$num_month)\s*$date_sep\s*(?P<year>$year)/i",
+
 ) ;
 
 

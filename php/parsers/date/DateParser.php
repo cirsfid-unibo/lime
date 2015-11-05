@@ -66,6 +66,7 @@ class DateParser {
         $element = array();
         $dates = array();
         foreach ($this->patterns as $key => $value) {
+
             $success = preg_match_all($value, $content, $n, PREG_OFFSET_CAPTURE);
             if ($success) {
                 $preg_result[] = $n;
@@ -84,10 +85,12 @@ class DateParser {
                     $offset = $n["0"][$k][1];
                     $match = $n["0"][$k][0];
                     $offsetEnd = $offset+strlen($match);
+
                     // Skip imcomplete or already saved matches
                     if(!$this->isValidMatch($match, $offset, $offsetEnd)) {
                         continue;
                     }
+
                     if (!isset($counter[$match]))
                         $counter[$match] = 0;
                     $counter[$match]++;
@@ -163,11 +166,11 @@ class DateParser {
 
     private function isValidMatch($match, $start, $end) {
         $dates = array_filter($this->dates, function($date) use ($match, $start, $end)  {
-            return ((strpos($date["match"], $match) || strpos($match, $date["match"]))
-                    && $date["start"] <= $start && $date["end"] >= $end 
-                    && !($date["start"] == $start && $date["end"] == $end));
+            return ((strpos($date["match"], $match) !== FALSE || strpos($match, $date["match"]) !== FALSE)
+                    && $date["start"] <= $start && $date["end"] >= $end );
+                    //&& $date["start"] <= $start && $date["end"] >= $end 
+                    //&& !($date["start"] == $start && $date["end"] == $end));
         });
-     
         return empty($dates);
     }
 
