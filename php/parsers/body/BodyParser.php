@@ -134,6 +134,18 @@ class BodyParser {
 							$numitems[] = $match[0];
 						}
 					}
+
+					if(array_key_exists("numitem1",$result)) {
+						foreach($result["numitem1"] as $index => $match) {
+							$numitems[] = $match[0];
+						}
+					}
+
+					if(array_key_exists("numitem2",$result)) {
+						foreach($result["numitem2"] as $index => $match) {
+							$numitems[] = $match[0];
+						}
+					}
 					
 					if(array_key_exists("bodyitem",$result)) {
 						foreach($result["bodyitem"] as $index => $match) {
