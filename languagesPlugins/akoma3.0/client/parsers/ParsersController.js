@@ -2696,6 +2696,13 @@ Ext.define('LIME.controller.ParsersController', {
 
     normalizeNodes: function(node) {
         var me = this;
+
+        // Add text wrapping to items that not contain h?containers
+        Ext.each(node.querySelectorAll('.item'), function(item) {
+            if (!AknMain.xml.Document.newDocument(item).select("*[contains(@class, 'container')]").length)
+                me.wrapItemText(item);
+        });
+
         var hcontainers = Ext.Array.toArray(node.querySelectorAll('.article')).filter(function(el) {
             var fly = Ext.fly(el);
             if ( fly.child("div") && !fly.child(".paragraph") ) {
