@@ -1472,28 +1472,54 @@ Ext.define('LIME.controller.ParsersController', {
     },
 
     wrapBodyParts : function(partName, parts, node, button) {
-        var me = this, app = me.application,
-            markButton, numButton, nodesToMark = [], numsToMark = [], headingsToMark = [],
-            markButton = DocProperties.getChildConfigByName(button, partName) || DocProperties.getFirstButtonByName(partName),
+        var me = this;
+
+        switch(partName) {
+            case "item":
+                me.wrapBlockList(partName, parts, node, button);
+                return;
+            case "paragraph":
+                parts = parts.map(function(data) {
+                    data.num = {value: data.numparagraph, start: data.start}
+                    return data;
+                });
+                break;
+            case "item1":
+            case "item2":
+                partName = "item";
+                parts = parts.map(function(data) {
+                    data.num = {value: data.numitem.trim(), start: data.start}
+                    return data;
+                });
+                break;
+                
+        }
+
+        var nodesToMark = [], numsToMark = [], headingsToMark = [],
+            markButton = DocProperties.getChildConfigByName(button, partName) 
+                        || DocProperties.getFirstButtonByName(partName),
             numButton = DocProperties.getChildConfigByName(markButton,"num") || 
                         DocProperties.getChildConfigByName(button,"num") || 
                         DocProperties.getFirstButtonByName("num"),
             headingButton = DocProperties.getChildConfigByName(markButton,"heading");
 
-        if( partName == "item" ) {
-            me.wrapBlockList(partName, parts, node, button);
-            return;
-        }
 
-        if ( partName == "paragraph" ) {
-            parts = parts.map(function(data) {
-                data.num = {
-                    value: data.numparagraph,
-                    start: data.start
+        // Choose just one occurrence trying to exclude those that are in references
+        var chooseTextObj = function(textNodesObjs, numVal) {
+            if (textNodesObjs.length == 1) return textNodesObjs[0];
+            var finishCharactersReg = /[;.:]$/;
+            for (var i = 0; i < textNodesObjs.length; i++) {
+                var textBeforeNum = textNodesObjs[i][0].node.textContent;
+                textBeforeNum = textBeforeNum.substring(0, textBeforeNum.indexOf(numVal)).trim();
+                var prevText = DomUtils.getPreviousTextNode(textNodesObjs[i][0].node, true);
+                if ( prevText ) {
+                    textBeforeNum = prevText.textContent.trim() + textBeforeNum;
+                    if (textBeforeNum.match(finishCharactersReg))
+                        return textNodesObjs[i];
                 }
-                return data;
-            });
-        }
+            }
+            return textNodesObjs[0];
+        };
 
         Ext.each(parts, function(element) {
             if(!element.value.trim()) return;
@@ -1502,7 +1528,7 @@ Ext.define('LIME.controller.ParsersController', {
                 parent, partNode;
             var textNodesObj = [];
 
-            if ( partName == "paragraph" ) {
+            if ( partName == "paragraph" || partName == "item" ) {
                 textNodesObj = DomUtils.smartFindTextNodes(element.value, node);
                 textNodesObj = textNodesObj.map(function(group) {
                     return group.map(function(obj) {
@@ -1516,16 +1542,14 @@ Ext.define('LIME.controller.ParsersController', {
                 textNodesObj = DomUtils.smartFindTextNodes(numVal, node);
 
             if ( !textNodesObj.length ) return;
-
-            var firstNode = textNodesObj[0][0].node;
-
+            var textNodeObj = chooseTextObj(textNodesObj, numVal);
+            var firstNode = textNodeObj[0].node;
             if ( Ext.fly(firstNode) && Ext.fly(firstNode).parent("." + DomUtils.tempParsingClass, true) )  return;
-
             partNode = (firstNode.parentNode == node) ? firstNode: firstNode.parentNode;
             var newWrapper = me.wrapPartNode(partNode, node);
             element.wrapper = newWrapper;
             nodesToMark.push(newWrapper);
-            numsToMark = Ext.Array.push(numsToMark, me.newTextNodeToSpans(textNodesObj[0]));
+            numsToMark = Ext.Array.push(numsToMark, me.newTextNodeToSpans(textNodeObj));
 
             if ( headingVal ) {
                 var text = DomUtils.smartFindTextNodes(headingVal, node);
@@ -1539,12 +1563,19 @@ Ext.define('LIME.controller.ParsersController', {
             me.wrapPartNodeSibling(node, function(sibling) {
                 var elButton = DomUtils.getButtonByElement(sibling);
                 /* If sibling is marked with the same button or it is temp element then stop the loop */
-                if ((elButton && (elButton.id === markButton.id)) || (headingsToMark.indexOf(sibling) == -1 && DomUtils.nodeHasClass(sibling, DomUtils.tempParsingClass)) ) {
+                if ((elButton && (elButton.id === markButton.id)) 
+                    || (headingsToMark.indexOf(sibling) == -1 
+                            && DomUtils.nodeHasClass(sibling, DomUtils.tempParsingClass)) ) {
                     return true;
                 }
                 return false;
             });
         }, this);
+        
+        if (partName == "item") {
+            me.wrapItems(nodesToMark, button);
+        }
+
         if (numsToMark.length > 0) {
             me.requestMarkup(numButton, {
                 silent : true,
@@ -1567,6 +1598,7 @@ Ext.define('LIME.controller.ParsersController', {
             });
             me.onNodeChanged(nodesToMark, {});
         }
+
         // Do contains elements
         Ext.each(parts, function(element) {
             var contains = element.contains, containsPartName = Ext.Object.getKeys(contains)[0];
@@ -1578,6 +1610,81 @@ Ext.define('LIME.controller.ParsersController', {
                 }
             }
         }, this);
+    },
+
+
+    // Wraps items in at least one blockList
+    // breaks items in more blockLists if between items there is some content
+    wrapItems: function(nodes, button) {
+        if (!nodes.length) return;
+        var me = this,
+            wrapButton = DocProperties.getChildConfigByName(button,'blockList') 
+                        || DocProperties.getFirstButtonByName('blockList'),
+            introButton = DocProperties.getChildConfigByName(wrapButton, 'listIntroduction');
+
+        var wrapBlocks = [];
+        var listIntroductions = [];
+        var itemsToInsert = Ext.Array.clone(nodes);
+        var addListIndroduction = function(wrapNode) {
+            var prevText = DomUtils.getPreviousTextNode(wrapNode, true);
+            if ( prevText && DomUtils.getTextOfNode(prevText).trim().match(/:$/) ) {
+                var listWrapper = Ext.DomHelper.createDom({
+                    tag : 'span'
+                });
+                // Include saved quote
+                var posList = DomUtils.getPreviousSiblingWithAttr(prevText, 'poslist');
+                if( posList ) {
+                    var prevPrev = DomUtils.getPreviousTextNode(posList, true);
+                    if ( prevPrev ) {
+                        listWrapper.appendChild(prevPrev);
+                    }
+                    listWrapper.appendChild(posList);
+                }
+                listWrapper.appendChild(prevText);
+                wrapNode.appendChild(listWrapper);
+                listIntroductions.push(listWrapper);
+            }
+        };
+
+        while( itemsToInsert.length ) {
+            var wrapNode = Ext.DomHelper.createDom({
+                tag : 'div',
+                cls : DomUtils.tempParsingClass
+            });
+
+            itemsToInsert[0].parentNode.insertBefore(wrapNode, itemsToInsert[0]);
+
+            // List introduction
+            addListIndroduction(wrapNode);
+
+            me.wrapPartNodeSibling(wrapNode, function(node) {
+                if ( itemsToInsert.length != Ext.Array.remove(itemsToInsert, node).length) {
+                    return false;
+                }
+                if ( node.nodeType == DomUtils.nodeType.ELEMENT &&
+                            (node.nodeName.toLowerCase() == "br") ||
+                            DomUtils.nodeHasClass(node, DomUtils.breakingElementClass)) {
+                    return false;
+                } else if ( node.nodeType == DomUtils.nodeType.TEXT &&
+                            Ext.isEmpty(node.data.trim()) ) {
+                    return false;
+                }
+                return true;
+            });
+            wrapBlocks.push(wrapNode);
+        }
+
+        me.requestMarkup(wrapButton, {
+            silent : true,
+            noEvent : true,
+            nodes : wrapBlocks
+        });
+
+        me.requestMarkup(introButton, {
+            silent : true,
+            noEvent : true,
+            nodes : listIntroductions
+        });
     },
 
     parseBodyParts : function(data, node, button) {
@@ -1632,14 +1739,11 @@ Ext.define('LIME.controller.ParsersController', {
                     if(sibling.nodeType == DomUtils.nodeType.TEXT) {
                         return sibling.data.indexOf(delimiter.value) != -1;
                     } else {
-                        var textNodes = DomUtils.smartFindTextNodes(delimiter.value, sibling);
-                        //console.log(textNodes);
-                        if (textNodes.length > 0) {
+                        if (DomUtils.findTextIgnoringHtml(delimiter.value, sibling).length > 0) {
                             return true;
                         }
                         return false;
                     }
-
                 });
 
             } else {

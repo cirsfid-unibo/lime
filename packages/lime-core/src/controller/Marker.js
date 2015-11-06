@@ -488,8 +488,6 @@ Ext.define('LIME.controller.Marker', {
         markedNode.normalize();
         while (markedNode.hasChildNodes()) {
             if(DomUtils.markedNodeIsPattern(markedNode, "inline")) {
-                console.log(markedNode.firstChild);
-                console.log('revoming', markedNode.innerHTML);
                 if(markedNode.firstChild.nodeType == DomUtils.nodeType.TEXT) {
                     DomUtils.addSpacesInTextNode(markedNode.firstChild);
                 } else {
