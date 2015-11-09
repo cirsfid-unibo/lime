@@ -1516,7 +1516,8 @@ Ext.define('LIME.controller.ParsersController', {
                     textBeforeNum = prevText.textContent.trim() + textBeforeNum;
                     if (textBeforeNum.match(finishCharactersReg))
                         return textNodesObjs[i];
-                }
+                } else 
+                    return textNodesObjs[i];
             }
             return textNodesObjs[0];
         };
