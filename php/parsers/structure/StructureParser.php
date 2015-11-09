@@ -74,14 +74,11 @@ class StructureParser {
 					$resolved = resolveRegex($this->parserRules[$value], $this->parserRules,
 											 $this->lang, $this->docType, $this->dirName);
 											 
-					//print_r($resolved);
-											 
 					$success = 	preg_match_all($resolved["value"], $subString, $result, PREG_OFFSET_CAPTURE);
 					if ($success) {
 						$successSum = TRUE;
-						/*echo $value;
-						print_r($result);*/
-						$lastMatch = end($result[0]);
+						//$lastMatch = end($result[0]);
+						$lastMatch = current($result[0]);
 						$delimiter = $lastMatch[0];
 						$endOffset = $lastMatch[1];
 						$valueArray = Array(

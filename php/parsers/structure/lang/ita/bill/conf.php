@@ -58,19 +58,23 @@ $rules = Array(
 							   "IL\s+PRESIDENTE\s+DELLA\s+REPUBBLICA",	
 							   //"Il\s+Presidente\s+della\s+Repubblica\s*",						   
 							   "Attesto che",
-							   "Il [Cc]onsiglio regionale ha approvato\.?"),
+							   "Il [Cc]onsiglio regionale ha approvato\.?",
+							   ),
     
 	"preambleEndList" => Array (
 								"\s*E\s*m\s*a\s*n\s*a\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|(L|l)a +seguente +(L|l)egge|(i|I)l +seguente +decreto(-| +)legge):?",
 								"EMANA\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|(l|L) +seguente +(L|l)egge|(i|I)l +seguente +decreto(-| +)legge):?",
 								"(P|p)(romulga|ROMULGA)\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|(l|L)a +seguente +(L|l)egge|LA +SEGUENTE +LEGGE|(i|I)l +seguente +decreto(-| +)legge):?",
 								"Attesto che",
-								"Decreta:?"
+								"Decreta:?",
 								),
 			   
-    "conclusionsInitList" => Array("Il\s+presente\s+decreto,",
+    "conclusionsInitList" => Array(
+    							   "Il\s+presente\s+decreto,",
 								   "La\s+presente\s+legge,",
-								   "La +presente +legge +regionale +sarà +pubblicata +nel +Bollettino +Ufficiale +della +Regione.")
+								   "La +presente +legge +regionale +sarà +pubblicata +nel +Bollettino +Ufficiale +della +Regione.",
+								   "Data a Roma,?",
+								   )
 
 );
 ?>
