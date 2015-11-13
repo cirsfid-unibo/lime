@@ -320,6 +320,7 @@
         "conclusions": {
             "children": [
                 "p",
+                "docDate",
                 "date",
                 "location",
                 "blockContainer",

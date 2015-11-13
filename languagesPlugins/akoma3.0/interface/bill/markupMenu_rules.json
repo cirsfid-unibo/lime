@@ -26,9 +26,6 @@
 		},
 		"preamble": {
 			"children": ["p", "toc", "session", "formula", "recitals", "citations", "affectedDocument", "longTitle"]
-		},
-		"conclusions": {
-			"children": ["p", "date", "location", "blockContainer", "signature"]
 		}
 	}
 }

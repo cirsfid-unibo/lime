@@ -599,7 +599,7 @@ Ext.define('LIME.controller.ParsersController', {
             });
             var markedNodes = [];
             Ext.each(dates, function(dateParsed) {
-                var existingDocDate = node.querySelector('.docDate');
+                var existingDocDate = node.ownerDocument.querySelector('.docDate');
                 var config = {
                     markButton: (markButtonDocDate && !existingDocDate) ? markButtonDocDate : markButton,
                     marker: {
