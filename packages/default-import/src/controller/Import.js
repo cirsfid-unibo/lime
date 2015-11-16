@@ -80,7 +80,7 @@ Ext.define('DefaultImport.controller.Import', {
 
     uploadFinished: function(content, request) {
         var params = this.getParams(request.response);
-        this.loadDocument(content, params.docMLang, params.docLang);
+        this.loadDocument(content, params.docMLang, params.docLang, params.originalXml);
     },
 
     getParams: function(response) {
@@ -91,18 +91,21 @@ Ext.define('DefaultImport.controller.Import', {
         if(response && response[DocProperties.languageAttribute]) {
             params.docLang = response[DocProperties.languageAttribute] || "";
         }
+        if(response && response["xml"]) {
+            params.originalXml = response["xml"] || "";
+        }
 
         return params;
     },
 
-    loadDocument: function(content, docMarkingLanguage, docLang) {
+    loadDocument: function(content, docMarkingLanguage, docLang, originalXml) {
         content = DomUtils.normalizeBr(content);
-
         // Upload the editor's content
         Ext.GlobalEvents.fireEvent(Statics.eventsNames.loadDocument, {
             docText: content,
             docMarkingLanguage: docMarkingLanguage,
-            docLang: docLang
+            docLang: docLang,
+            originalXml: originalXml
         });
     },
 

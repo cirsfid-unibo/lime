@@ -474,6 +474,7 @@ Ext.define('LIME.controller.Storage', {
     },
 
     updateDocProperties: function(values) {
+        var meta = Ext.getStore('metadata').getMainDocument();
         var frbrValues = {}, separator = "@", versionDate, versionLang;
 
         var separatorPos = values.version.indexOf(separator);
@@ -483,6 +484,8 @@ Ext.define('LIME.controller.Storage', {
         } else {
             versionLang = values.version;
         }
+        //TODO: understand why values.date is not the date
+        //meta.set('date', new Date(values.date));
         frbrValues.work = {
             nationality: values.nationality,
             docType: values.docType,

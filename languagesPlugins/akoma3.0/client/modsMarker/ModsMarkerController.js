@@ -2198,6 +2198,32 @@ Ext.define('LIME.controller.ModsMarkerController', {
         };
     },
 
+    getNodesGridConfig: function() {
+        return {
+            xtype: 'gridpanel',
+            store: Ext.create('Ext.data.Store', {
+                fields:['name', 'content', 'id', 'eId'],
+                data: []
+            }),
+            columns: [
+                { text: 'Name',  dataIndex: 'name' },
+                { text: 'Content', dataIndex: 'content', flex: 1 }, {
+                    xtype : 'actioncolumn',
+                    width : 30,
+                    sortable : false,
+                    menuDisabled : true,
+                    items : [{
+                        icon : 'resources/images/icons/delete.png',
+                        tooltip : 'Remove',
+                        handler : function(grid, rowIndex) {
+                            grid.getStore().removeAt(rowIndex);
+                        }
+                    }]
+                }
+            ]
+        };
+    },
+
     createSubstitution: function(node, formText, update) {
         var me = this, editor = me.getController("Editor"),
             oldText = formText,
