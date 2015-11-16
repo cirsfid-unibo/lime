@@ -162,16 +162,14 @@ Ext.define('LIME.controller.CustomizationManager', {
     finishEditingMode: function(editor, diff) {
         var me = this;
 
-        me.getController("Editor").autoSaveContent(true);
-        var language = me.getController("Language");
-        var html = language.getHtmlToTranslate(null, editor, me.secondDocumentConfig.metaDom);
-        language.translateContent(html, function(xml) {
-            xml = xml.replace('<?xml version="1.0" encoding="UTF-8"?>', '');
-
-            var url = me.secondDocumentConfig.docId.replace("/diff/", "/diff_modified/");
-
-            Server.saveDocument(url, xml, function () {
-                me.restoreSingleEditor(editor, diff);
+        me.getController('Storage').saveDocument(function() {
+            var language = me.getController("Language");
+            var html = language.getHtmlToTranslate(null, editor, me.secondDocumentConfig.metaDom);
+            language.translateContent(html, function(xml) {
+                xml = xml.replace('<?xml version="1.0" encoding="UTF-8"?>', '');
+                Server.saveDocument(me.secondDocumentConfig.docId, xml, function () {
+                    me.restoreSingleEditor(editor, diff);
+                });
             });
         });
     },
