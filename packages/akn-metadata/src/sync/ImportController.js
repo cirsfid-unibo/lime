@@ -63,11 +63,12 @@ Ext.define('AknMetadata.sync.ImportController', {
     // On the loadDocument event, load metadata from the original xml document.
     // No HtmlToso, no XSLTs, just plain and simple AkomaNtoso. KISS. <3
     onLoadDocument: function (config) {
-        if (!config.originalXml) return;
+        config.originalXml = config.originalXml || this.generateMetaXml(config)
         try {
             var akn = AknMain.xml.Document.parse(config.originalXml, 'akn'),
-                store = Ext.getStore('metadata').newMainDocument(),
-                uri = AknMain.Uri.parse(akn.getValue('//akn:FRBRExpression/akn:FRBRuri/@value'));
+                store = Ext.getStore('metadata').newMainDocument();
+                var expUri = akn.getValue('//akn:FRBRExpression/akn:FRBRuri/@value');
+                var uri = expUri ? AknMain.Uri.parse(expUri) : AknMain.Uri.empty();
             return main ();
         } catch (e) {
             console.warn('Exception parsing metadata: ', e);
@@ -163,5 +164,25 @@ Ext.define('AknMetadata.sync.ImportController', {
             else if (fallback)
                 return store.references().add(fallback)[0];
         }
+    },
+
+    generateMetaXml: function(config) {
+        var metaTpl = new Ext.Template([
+            '<akomaNtoso xmlns="akn">',
+                '<{docType}>',
+                    '<meta>',
+                        '<identification>',
+                            '<FRBRWork>',
+                                '<FRBRcountry value="{docLocale}"/>',
+                            '</FRBRWork>',
+                            '<FRBRExpression>',
+                                '<FRBRlanguage language="{docLang}"/>',
+                            '</FRBRExpression>',
+                        '</identification>',
+                    '</meta>',
+                '</{docType}>',
+            '</akomaNtoso>'
+        ]);
+        return (config.docType && config.docLocale && config.docLang) ? metaTpl.apply(config) : "";
     }
 });
