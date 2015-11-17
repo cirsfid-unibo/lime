@@ -72,8 +72,7 @@ Ext.define('LIME.reader.OpenFileReader', {
                 cls: path,
                 leaf: !isFolder,
                 name: name,
-                relPath: path,
-                originalName: path
+                relPath: path
             };
         });
     }

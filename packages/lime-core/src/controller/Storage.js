@@ -484,8 +484,12 @@ Ext.define('LIME.controller.Storage', {
         } else {
             versionLang = values.version;
         }
-        //TODO: understand why values.date is not the date
-        //meta.set('date', new Date(values.date));
+
+        var docDate = new Date(values.date);
+        if (!isNaN(docDate.getTime())) {
+            meta.set('date', docDate);
+        }
+        
         frbrValues.work = {
             nationality: values.nationality,
             docType: values.docType,
