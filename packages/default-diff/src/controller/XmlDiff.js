@@ -148,14 +148,16 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
                         var markingMenuController = me.getController('MarkingMenu'),
                             markingMenu = markingMenuController.getMarkingMenu(),
                             structure = markingMenuController.getTreeButtonsStructure();
-                        me.getController('ModsMarkerController').addModificationButtons();
-                        Ext.defer(function() {
+                        //TODO: check if adding buttons is stil useful
+                        //me.getController('ModsMarkerController').addModificationButtons();
+                        /*Ext.defer(function() {
                             structure.disable();
                         }, 100);
                         var commons = markingMenuController.getTreeButtonsCommons();
-                        markingMenu.setActiveTab(commons);
+                        markingMenu.setActiveTab(commons);*/
+                        markingMenu.setActiveTab(structure);
                         Ext.defer(function() {
-                            markingMenuController.filterTreeByFn(commons, function( node ) {
+                            markingMenuController.filterTreeByFn(structure, function( node ) {
                                 var path = node.getPath();
                                 if ( path.match(/passiveModifications\d+\/action\d+/)  && !path.match(/renumbering/) ) {
                                     return true;
@@ -172,11 +174,11 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
                     var markingMenuController = me.getController('MarkingMenu');
                     me.getController('Editor').setEditorReadonly(false);
                     var structure = markingMenuController.getTreeButtonsStructure();
-                    Ext.defer(function() {
+                    /*Ext.defer(function() {
                         structure.enable();
                     }, 100);
-                    var commons = markingMenuController.getTreeButtonsCommons();
-                    markingMenuController.clearTreeFilter(commons);
+                    var commons = markingMenuController.getTreeButtonsCommons();*/
+                    markingMenuController.clearTreeFilter(structure);
                     me.getController('Editor').defaultActions = {};
                     DocProperties.documentState = '';
                 }

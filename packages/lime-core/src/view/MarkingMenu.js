@@ -100,12 +100,12 @@ Ext.define('LIME.view.MarkingMenuTreePanel', {
 
     unhighlight: null,
 
-    expandPath: function (path, options) {
+    expandPath: function (path, options, highlight) {
         var me = this,
             options = options || {},
             cb = options.callback;
         options.callback = function (success, record, node) {
-            me.highlight(node);
+            if (highlight) me.highlight(node);
             if (cb) cb.apply(this, arguments);
         }
         this.callParent([path, options]);

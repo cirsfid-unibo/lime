@@ -448,7 +448,7 @@ Ext.define('LIME.controller.MarkingMenu', {
             if ( !treePanel.isDisabled() ) {
                 markingMenu.setActiveTab(treePanel);
                 if ( treePanel &&  pathToExpand && me.expandedPath != pathToExpand ) {
-                    treePanel.expandPath(pathToExpand);
+                    treePanel.expandPath(pathToExpand, false, true);
                     me.expandedTree = treePanel;
                     me.expandedPath = pathToExpand;
                 }
