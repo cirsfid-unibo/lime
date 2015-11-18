@@ -86,8 +86,8 @@ Ext.define('LIME.controller.ModsMarkerController', {
             },
             'splitWindow': {
                 close: function() {
-                    me.getMainEditor().unmask();
-                    me.getSecondEditor().unmask();
+                    me.getMainEditor().up().unmask();
+                    me.getSecondEditor().up().unmask();
                 }
             },
             'splitWindow grid': {
@@ -97,11 +97,11 @@ Ext.define('LIME.controller.ModsMarkerController', {
 
                     cmp.up('window').setTitle(cmp.winTitle);
                     if ( cmp.itemId == 'toSplit' ) {
-                        firstEditor.mask();
-                        secondEditor.unmask();
+                        firstEditor.up().mask();
+                        secondEditor.up().unmask();
                     } else {
-                        secondEditor.mask();
-                        firstEditor.unmask();
+                        secondEditor.up().mask();
+                        firstEditor.up().unmask();
                     }
                 }
             },

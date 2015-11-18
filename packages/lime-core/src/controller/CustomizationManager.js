@@ -255,7 +255,6 @@ Ext.define('LIME.controller.CustomizationManager', {
         console.info('enableDualEditorMode', dualConfig);
         var me = this,
             mainTabPanel = me.getMain(),
-            explorer = me.getOutliner(),
             editorTab = me.getMainEditor().up(),
             storage = me.getController("Storage"),
             editorController = me.getController("Editor"),
@@ -274,11 +273,14 @@ Ext.define('LIME.controller.CustomizationManager', {
         if(xmlDiff) {
             xmlDiff.tab.hide();
         }
-
-        explorer.up().remove(explorer);
+        
         secondEditor = me.createSecondEditor();
         me.secondEditor = secondEditor;
 
+        // TODO: prevent adding onother outliner in DualEditMode
+        Ext.each(Ext.ComponentQuery.query('outliner'), function(outliner) {
+            outliner.up().remove(outliner);
+        });
         me.addButtons(secondEditor, xmlDiff);
 
         Ext.defer(function() {
