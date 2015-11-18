@@ -106,6 +106,10 @@ Ext.define('AknMetadata.sync.OldMetaBackport', {
         if ( isUpdate('subtype') ) {
             this.updateSubtype();
         }
+
+        if ( isUpdate('author') ) {
+            this.updateAuthor();
+        }
     },
 
     // Update URis and FRBRdate when document date or version has changed.
@@ -147,6 +151,18 @@ Ext.define('AknMetadata.sync.OldMetaBackport', {
 
         if (uri.subtype !== subtype) {
             uri.subtype = subtype;
+            this.updateUri(uri);
+        }
+    },
+
+    updateAuthor: function() {
+        var store = Ext.getStore('metadata').getMainDocument();
+        var author = store.get('author');
+        var uri = this.getUri();
+        if (!uri) return;
+
+        if (uri.author !== author) {
+            uri.author = author;
             this.updateUri(uri);
         }
     },

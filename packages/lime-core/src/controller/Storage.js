@@ -71,7 +71,7 @@ Ext.define('LIME.controller.Storage', {
         fieldName: "folder",
         defaultValue: "my_documents",
         getValue: function() {
-            return this.defaultValue;
+            return User.username;
         }
     },{
         text: Locale.strings.countryLabel,
@@ -98,15 +98,8 @@ Ext.define('LIME.controller.Storage', {
         text: Locale.strings.docProponent,
         fieldName: "docProponent",
         getValue: function(uri) {
-            var docUri = (uri) ? uri.split("/") : [],
-                value = (docUri.length && !Utilities.isValidDate(docUri[4])) ? docUri[4] : false;
-
-            var docTypes = Config.getDocTypesByLang(Config.getLanguage()).map(function(obj) {
-                return obj.name;
-            });
-
-            value = (value && (docTypes.indexOf(value) == -1)) ? value : Ext.emptyString.toString();
-            return value;
+            var meta = Ext.getStore('metadata').getMainDocument();
+            return meta.get('author');
         }
     }, {
         text: Locale.strings.docDateLabel,
@@ -489,6 +482,9 @@ Ext.define('LIME.controller.Storage', {
         if (!isNaN(docDate.getTime())) {
             meta.set('date', docDate);
         }
+        if (values.docProponent) {
+            meta.set('author', values.docProponent);
+        }
         
         frbrValues.work = {
             nationality: values.nationality,
@@ -730,7 +726,7 @@ Ext.define('LIME.controller.Storage', {
                        };
 
                    if(relatedWindow && relatedWindow.pathToOpen) {
-                       path = relatedWindow.pathToOpen || "";
+                        path = relatedWindow.pathToOpen || "";
                         me.loadOpenFileListData(listViews[0], false, function(store, cmp) {
                             Ext.callback(onStoreLoad, false, [store, cmp]);
                             Ext.callback(relatedWindow.onLoad, false, [store, cmp]);
@@ -744,14 +740,15 @@ Ext.define('LIME.controller.Storage', {
            },
             'saveFileListView': {
                 beforerender: function(cmp) {
-                    var me = this, store = cmp.getStore(), column;
-                    columnConfig = this.storageColumns[cmp.indexInParent],
-                    this.loadOpenFileListData(cmp, false);
-                    store.on("load", function(loadedStore) {
-                        if (!cmp.userClick) {
-                            me.saveListViewOnStoreLoad(loadedStore, cmp);
-                        }
-                    }, this);
+                    var me = this, store = cmp.getStore(), column,
+                        columnConfig = this.storageColumns[cmp.indexInParent];
+
+                    var onStoreLoad = function(store) {
+                        if (!cmp.userClick) me.saveListViewOnStoreLoad(store, cmp);
+                    };
+                    this.loadOpenFileListData(cmp, false, onStoreLoad);
+                    store.on("load", onStoreLoad, this);
+
                     // if (cmp.filter) {
                     //     var notExamples = new Ext.util.Filter({
                     //         filterFn: function(item) {

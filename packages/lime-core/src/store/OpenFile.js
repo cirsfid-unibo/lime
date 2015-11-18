@@ -65,9 +65,10 @@ Ext.define('LIME.reader.OpenFileReader', {
         .map(function (path) {
             var isFolder = (path[path.length -1] == '/');//!path.match(/\.[\w]+$/);
             var name = isFolder ? path.match(/([^\/]+)\/?$/)[1] : path.match(/([^\/]+)$/)[0];
+
             return {
                 path: path,
-                id: path,
+                id: path.replace(/\/$/, ""),
                 text: name,
                 cls: path,
                 leaf: !isFolder,
@@ -94,7 +95,9 @@ Ext.define('LIME.store.OpenFile', {
     listeners: {
         beforeload: function(store, operation, eOpts) {
             if (store.requestNode == 'root') {
-                this.loadRawData(User.properties.folders)
+                this.loadRawData(User.properties.folders);
+                // Calling the callback because of returning false the callback is not called
+                operation.config.callback();
                 return false;
             } else {
                 var path = store.requestNode;
