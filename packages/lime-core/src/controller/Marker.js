@@ -638,7 +638,17 @@ Ext.define('LIME.controller.Marker', {
     },
 
     applyWrappingRuleWithoutEffects: function(node) {
-        var cloned = Ext.clone(node);
+        var fixAllId = function(node) {
+            var fixId = function(node) {
+                node.setAttribute('data-id', node.getAttribute('id'));
+                node.removeAttribute('id');
+            }
+            fixId(node);
+            Ext.each(node.querySelectorAll('[id]'), fixId);
+            return node;
+        };
+        //Temporary solution to remove double ext generated ids.
+        var cloned = fixAllId(Ext.clone(node));
         Interpreters.wrappingRulesHandlerOnTranslate(cloned);
         return cloned;
     },
@@ -653,7 +663,7 @@ Ext.define('LIME.controller.Marker', {
 
         tmpNode = this.applyWrappingRuleWithoutEffects(node);
 
-        tmpStart = tmpNode.querySelector("#"+startSelection.getAttribute("id"));
+        tmpStart = tmpNode.querySelector("[data-id='"+startSelection.getAttribute("id")+"']");
         return tmpStart.parentNode;
     },
 

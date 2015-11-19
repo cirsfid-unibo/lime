@@ -2023,7 +2023,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },
 
     updateRenumberingMetadata: function(node, oldText, renumberedNode) {
-        var me = this, extNode = new Ext.Element(node),
+        var me = this,
             language = me.getController("Language"),
             elId = language.nodeGetLanguageAttribute(renumberedNode, "eId").value || renumberedNode.getAttribute(DomUtils.elementIdAttribute),
             editorMeta = me.getDocumentMetadata(),
