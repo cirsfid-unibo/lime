@@ -1384,6 +1384,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         var winCmp = Ext.widget('splitWindow').show().center();
 
         me.editorClickHandlerCustom = function(node, ed) {
+            node = me.ensureHcontainerNode(node);
             if ( !node ) return;
             var markButton = DocProperties.getFirstButtonByName(DomUtils.getNameByNode(node)),
                 body = ed.getBody();
@@ -1422,6 +1423,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         };
 
         me.secondEditorClickHandlerCustom = function(node, evt, ed) {
+            node = me.ensureHcontainerNode(node);
             if ( !node ) return;
             var markButton = DocProperties.getFirstButtonByName(DomUtils.getNameByNode(node)),
                 body = ed.getBody();
@@ -1439,6 +1441,13 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 }]);
             }
         };
+    },
+
+    ensureHcontainerNode: function(node) {
+        if (!node) return;
+        if (!node.classList || !node.classList.contains('hcontainer')) 
+            return this.ensureHcontainerNode(node.parentNode);
+        return node;
     },
 
     getNodeDataFromGrid: function(grid) {
@@ -1740,7 +1749,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         var me = this,
             editor = me.getController("Editor"),
             selection = editor.getSelectionObject(null, null, true),
-            joinedNode = DomUtils.getFirstMarkedAncestor(selection.start),
+            joinedNode = me.ensureHcontainerNode(DomUtils.getFirstMarkedAncestor(selection.start)),
             joinedData = [];
 
         if ( joinedNode ) {
@@ -1780,13 +1789,19 @@ Ext.define('LIME.controller.ModsMarkerController', {
             });
 
             me.secondEditorClickHandlerCustom = function(node, evt, ed) {
-                winCmp.editor = ed;
+                node = me.ensureHcontainerNode(node);
                 if ( !node ) return;
-                var markButton = DocProperties.getFirstButtonByName(DomUtils.getNameByNode(node)),
+                winCmp.editor = ed;
+                var toJoinButton = DocProperties.getFirstButtonByName(DomUtils.getNameByNode(node)),
                     body = ed.getBody();
 
-                if ( markButton && winCmp && winCmp.isVisible() ) {
+                if ( toJoinButton && winCmp && winCmp.isVisible() ) {
                     var grid = winCmp.down('grid');
+
+                    if ( markButton.name != toJoinButton.name ) {
+                        Ext.Msg.alert(Locale.strings.error, 'You have to select "'+markButton.name+'" element');
+                        return;
+                    }
 
                     if ( !grid.store.getCount() ) {
                         editor.unFocusNodes(false, body);
@@ -1801,7 +1816,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     editor.setFocusStyle(node);
 
                     grid.store.loadData([{
-                        name: markButton.shortLabel,
+                        name: toJoinButton.shortLabel,
                         content: node.textContent,
                         id: node.getAttribute(DomUtils.elementIdAttribute),
                         eId: node.getAttribute(Language.getAttributePrefix()+'eid')

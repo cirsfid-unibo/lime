@@ -529,7 +529,7 @@ Ext.define('LIME.controller.ParsersController', {
         }).filter(function(group) {
             return group.length;
         }).map(function(group) {
-            return me.wrapListOfNodes(group);
+            return me.wrapItemText(me.wrapListOfNodes(group));
         });
 
         if ( nodesToMark.length ) {
@@ -1384,6 +1384,7 @@ Ext.define('LIME.controller.ParsersController', {
                 nodes : [newWrapper]
             });
         }
+        return node;
     },
 
     markOlBlockList: function(node) {

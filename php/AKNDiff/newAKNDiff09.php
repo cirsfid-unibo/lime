@@ -850,6 +850,7 @@ class newAKNDiff09 extends AKNDiff {
 					if($targetNodes->length) {
 						$firstTarget = $targetNodes->item(0);
 						$originalId = $firstTarget->getAttribute("akn_wId");
+						$parentWid = $firstTarget->getAttribute("parentWid");
 						$idCond = ($originalId) ? "contains(@parent, '$originalId') or " : $idCond;
 						//$firstTargetParent = $xpath->query("./ancestor::*[@parent or @parentOriginalId]", $firstTarget);
 						$firstTargetParent = $xpath->query("./ancestor::*[contains(@class, 'container') or contains(@parentClass, 'container')]", $firstTarget);
@@ -869,13 +870,16 @@ class newAKNDiff09 extends AKNDiff {
 					if (!$destNodes->length && $parentIdCond)
 						$destNodes = $xpath->query("//*[@class='oldVersion']//*[$parentIdCond]", $table);
 
+					if (!$destNodes->length && $parentWid)
+						$destNodes = $xpath->query("//*[@class='oldVersion']//*[contains(@parent, '$parentWid')]", $table);
+
 					if($destNodes->length == 1 ) {
 						//$destNodes = ($destNodes->length) ? $destNodes : $oldTds;
 						if($mod->old) {
 							$repealNodes = $this->findAndwrapTextNode($mod->old, $destNodes, $mod->type);
 							if($repealNodes === FALSE) {
-								$this->setAllAttribute($subsNodes, "class", "errorRepeal");
-								$this->setAllAttribute($subsNodes, "data-old", $mod->old);
+								$this->setAllAttribute($targetNodes, "class", "errorRepeal");
+								$this->setAllAttribute($targetNodes, "data-old", $mod->old);
 							}	
 						} else if($destNodes->length == 1) {
 							$this->setAllAttribute($destNodes, "class", $mod->type);		
