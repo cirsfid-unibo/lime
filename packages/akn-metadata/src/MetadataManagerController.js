@@ -181,7 +181,7 @@ Ext.define('AknMetadata.MetadataManagerController', {
         this.addMetaTab("lifecycle", "lifecycle", [
             this.createFieldsetItem ("lifecycle", ["source"]),
             this.createMetaGrid (
-                "lifecycle",
+                "children",
                 ["eId", "date", "source", "type"],
                 {
                     // Custom columns
@@ -197,7 +197,7 @@ Ext.define('AknMetadata.MetadataManagerController', {
         this.addMetaTab("workflow", "workflow", [
             this.createFieldsetItem ("workflow", ["source"]),
             this.createMetaGrid (
-                "workflow",
+                "children",
                 ["date", "actor", "outcome", "refersTo"],
                 {
                     "type": ["generation", "amendment", "repeal"]
@@ -212,7 +212,7 @@ Ext.define('AknMetadata.MetadataManagerController', {
         this.addMetaTab("classification", "classification", [
             this.createFieldsetItem ("classification", ["source"]),
             this.createMetaGrid (
-                "classification",
+                "children",
                 ["value", "showAs", "dictionary", "href"],
                 {
                 },
@@ -452,36 +452,27 @@ Ext.define('AknMetadata.MetadataManagerController', {
             tabMap = me.tabMetaMap[tab.name];
 
         //tabMap.filled = (filled !== undefined) ? filled : tabMap.filled;
-
         if(!tabMap) return;
         metadata = (metadata && metadata.obj && tabMap.metaParent) ?  metadata.obj[tabMap.metaParent] : metadata.obj;
         if(metadata && metadata[tab.name]) {
-
+            // Removing all from grids before filling up
+            Ext.each(tabMap.tab.query('metaGrid'), function(grid) {
+                grid.store.removeAll();
+            });
             // Populate source field.
             var source = metadata[tab.name].attr["source"],
                 sourceField = tabMap.tab.down("*[name='source']");
             if(source && sourceField) {
                 sourceField.setValue(source);
             }
-
             Ext.each(metadata[tab.name].children, function(el) {
                 var cmpToFill = tabMap.tab.down("*[name='" + el.attr["class"] + "']");
 
                 if(tabMap.tab.down("*[name='children']")) {
                     cmpToFill = tabMap.tab.down("*[name='children']");
-                    el.attr["type"] = el.attr["class"];
-                }
-                if(tabMap.tab.down("*[name='lifecycle']")) {
-                    cmpToFill = tabMap.tab.down("*[name='lifecycle']");
-                    el.attr["type"] = el.attr["class"];
-                }
-                if(tabMap.tab.down("*[name='workflow']")) {
-                    cmpToFill = tabMap.tab.down("*[name='workflow']");
-                    el.attr["type"] = el.attr["class"];
-                }
-                if(tabMap.tab.down("*[name='classification']")) {
-                    cmpToFill = tabMap.tab.down("*[name='classification']");
-                    el.attr["type"] = el.attr["class"];
+                    if(tab.name == 'references') {
+                        el.attr["type"] = el.attr["class"];
+                    }
                 }
 
                 if(tabMap.tab.down("*[name='proprietary']")) {
@@ -492,17 +483,30 @@ Ext.define('AknMetadata.MetadataManagerController', {
 
                 if(cmpToFill) {
                     if(cmpToFill.xtype == "metaGrid") {
-                        cmpToFill.store.removeAll();
-                        me.fillGridFields(cmpToFill, el);
+                        me.fillGridFields(cmpToFill, me.normalizeAttributes(el));
                     } else {
-                        me.fillFormFields(cmpToFill, el);
+                        me.fillFormFields(cmpToFill, me.normalizeAttributes(el));
                     }
                 } else {
                 }
             });
         }
-
         //tabMap.filled = true;
+    },
+
+    normalizeAttributes: function(obj) {
+        var normalizedAttr = {
+            "showas": "akn_showAs",
+            "showAs": "akn_showAs",
+            "eid": "eId"
+        };
+        for (attr in normalizedAttr)
+            if (obj.attr[attr] && !obj.attr[normalizedAttr[attr]]) {
+                obj.attr[normalizedAttr[attr]] = obj.attr[attr];
+                delete obj.attr[attr];
+            }
+
+        return obj;
     },
 
     fillGridFields: function(grid, data) {
@@ -523,6 +527,7 @@ Ext.define('AknMetadata.MetadataManagerController', {
     },
 
     tabActivated: function(tab) {
+        //TODO: check why this is called multiple times
         this.fillMetadataFields(tab);
     },
 
@@ -572,16 +577,21 @@ Ext.define('AknMetadata.MetadataManagerController', {
 
         if(tabMap && cmp) {
             path = (tabMap.metaParent) ? tabMap.metaParent + "/" : "";
-            if(name == "children") {
+            if(name == "children" && tab.name == 'references') {
                var groups = {};
                Ext.each(data, function(obj) {
-                   var type = obj.type;
-                   if(type !== undefined) {
-                       delete obj.type;
-                       groups[type] = groups[type] || [];
-                       groups[type].push(obj);
-                   }
+                    var type = obj.type;
+                    if(type !== undefined) {
+                        delete obj.type;
+                        groups[type] = groups[type] || [];
+                        groups[type].push(obj);
+                    }
                });
+                // Removing old references
+                var meta = editor.getDocumentMetadata(),
+                    refs = meta.originalMetadata.metaDom.querySelector('[class=references]');
+                if (refs)
+                    DomUtils.removeChildren(refs);
                Ext.Object.each(groups, function(group, gData) {
                    var result = DocProperties.updateMetadata(Ext.merge({
                         metadata : editor.getDocumentMetadata(),
@@ -595,7 +605,7 @@ Ext.define('AknMetadata.MetadataManagerController', {
                         editor.changed = true;
                     }
                });
-            } else if ((name == "lifecycle" || name == "workflow" || name == "classification")
+            } else if (name == "children" && (tab.name == "lifecycle" || tab.name == "workflow" || tab.name == "classification")
                        && cmp.customPath) {
                 var result = DocProperties.updateMetadata(Ext.merge({
                     metadata : editor.getDocumentMetadata(),
