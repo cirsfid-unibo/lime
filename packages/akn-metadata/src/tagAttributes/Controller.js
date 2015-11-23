@@ -96,7 +96,7 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
         }
 
         var saveRef = function(refPanel) {
-            var data = refPanel.getValues();
+            var data = refPanel.getValues(false, false, false, true);
             var ref = AknMain.Reference.empty();
             ref.internal = (data.type == "external") ? false : true;
             ref.id = data.fragment;
@@ -104,7 +104,7 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
             ref.uri.type = data.docType;
             ref.uri.subtype = data.subtype;
             ref.uri.name = data.number;
-            ref.uri.date = (data.date) ? Ext.Date.format(new Date(data.date), 'Y-m-d') : "";
+            ref.uri.date = (data.date) ? Ext.Date.format(data.date, 'Y-m-d') : "";
             ref.uri.language = DocProperties.documentInfo.docLang;
             var href = "";
             try {
