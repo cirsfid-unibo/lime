@@ -68,6 +68,8 @@ Ext.define('AknMain.xml.Document', {
         var document = dom.ownerDocument || dom;
         var dom = dom.ownerDocument == null ? dom.documentElement : dom;
 
+        // Forse IE to use wgxpath
+        document = (document.createNSResolver && document.evaluate) ? document : window.document;
         //
         var defaultResolver = document.createNSResolver(dom).lookupNamespaceURI;
         var defaultNs = dom.namespaceURI || dom.firstElementChild.namespaceURI;

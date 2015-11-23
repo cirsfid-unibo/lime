@@ -117,8 +117,8 @@ Ext.define('LIME.view.modal.newSavefile.VersionSelector', {
             time = me.timeField.getSubmitValue();
         if (lang) {
             date = (date) ? date : '';
-            time = (time) ? time : '';
-            value = lang + "@" + date+':'+time;
+            time = (time && time != '00:00') ? ':'+time : '';
+            value = lang + "@" + date+time;
         }
         return (value) ? value : "";
     },
