@@ -53,6 +53,12 @@ Ext.require('LIME.Application', function () {
             // First call the parent launch method
             this.callParent();
 
+            // Prevent going back in the browser history when pressing backspace
+            Ext.getDoc().on('keydown', function(e, t) {
+                if (e.getKey() == e.BACKSPACE && (!/^input|textarea$/i.test(t.tagName)))
+                    e.stopEvent();
+            });
+
             // Remove the loading icon
             var loadingDiv = document.querySelector("#loading");
             loadingDiv.parentNode.removeChild(loadingDiv);

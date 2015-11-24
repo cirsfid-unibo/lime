@@ -129,6 +129,12 @@ Ext.define('LIME.controller.LoginManager', {
                         }));
                     }
                 }
+            },
+            '[name=password]' : {
+                specialkey: function(cmp, evt) {
+                    if (evt.getKey() == evt.ENTER)
+                        me.login();
+                }
             }
         });
     },
