@@ -85,7 +85,7 @@ Ext.define('LIME.controller.ContextMenu', {
     showContextMenu: function(coordinates) {
         var me = this, menu = this.getContextMenu(),
             editor = me.getController("Editor"),
-            selectedNode = editor.getSelectedNode();
+            selectedNode = editor.getFocusedNode();
         menu.removeAll();
         Ext.each(me.getMenuItems(), function(item) {
             menu.add(item);

@@ -264,136 +264,156 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },
 
     beforeContextMenuShow: function(menu, node) {
-        var me = this, elementName = DomUtils.getElementNameByNode(node),
-            markedParent, language = me.getController("Language"),
-            button = DomUtils.getButtonByElement(node);
+        var me = this, 
+            elementName = DomUtils.getElementNameByNode(node);
+        
         if(!elementName) {
             node = DomUtils.getFirstMarkedAncestor(node.parentNode);
-            button = DomUtils.getButtonByElement(node);
             elementName = DomUtils.getElementNameByNode(node);
         }
-        if(button && button.name == 'ref') {
-            if(!menu.down("*[name=openlink]"))
-                menu.add({
-                    text : 'Resolve link',
-                    name: 'openlink',
-                    refNode: node,
-                    handler : function() {
-                        var href = node.getAttribute('akn_href');
-                        if (href && href.length > 3) {
-                            window.open('http://akresolver.cs.unibo.it/akn' + href);
-                        }
-                    }
-                });
-        }
 
-        if(node && elementName) {
-            markedParent = DomUtils.getFirstMarkedAncestor(node.parentNode);
-            if(markedParent && (elementName == "quotedStructure"
-                || elementName == "quotedText") && DomUtils.getElementNameByNode(markedParent) == "mod" ) {
-
-                var textMod = me.detectModifications(markedParent, false, false, true);
-                textMod = (textMod) ? textMod.textMod : null;
-                if(textMod && textMod.getAttribute("type") == "substitution") {
-                    var href = language.nodeGetLanguageAttribute(node, "href"),
-                        elId = node.getAttribute(DomUtils.elementIdAttribute),
-                        langId = language.nodeGetLanguageAttribute(node, "eid"),
-                        modElement = textMod.querySelector("*[akn_href*="+elId+"], *[akn_href*="+langId.value+"]"),
-                        modType = (modElement) ? modElement.getAttribute("class") : "",
-                        destination = textMod.querySelector('*[class="destination"]'), pos,
-                        posMenu = Ext.clone(me.posMenu), menuItem;
-
-                    if(destination) {
-                        pos = language.nodeGetLanguageAttribute(destination, "pos");
-                        if(pos.value) {
-                            menuItem = posMenu.items.filter(function(item) {
-                                return item.type == pos.value;
-                            })[0];
-                            if(menuItem) {
-                                menuItem.checked = true;
-                            }
-                        }
-                    }
-
-                    if(!menu.down("*[name=modType]")) {
-                        menu.add(['-', {
-                            text : 'Type',
-                            name: "modType",
-                            menu : {
-                                name: "types",
-                                textMod: textMod,
-                                refNode: node,
-                                modElement: modElement,
-                                items : [{
-                                    text : 'Old',
-                                    group : 'modType',
-                                    textMod: textMod,
-                                    modElement: modElement,
-                                    refNode: node,
-                                    type: "old",
-                                    checked: (modType == "old") ? true : false,
-                                    checkHandler : Ext.bind(me.onTypeSelected, me)
-                                }, {
-                                    text : 'New',
-                                    group : 'modType',
-                                    checked: (modType == "new") ? true : false,
-                                    textMod: textMod,
-                                    refNode: node,
-                                    modElement: modElement,
-                                    type: "new",
-                                    checkHandler : Ext.bind(me.onTypeSelected, me)
-                                }, {
-                                    text : 'Pos',
-                                    group : 'modType',
-                                    checked: (modType == "pos") ? true : false,
-                                    type: "pos",
-                                    checkHandler : Ext.bind(me.onTypeSelected, me),
-                                    menu: posMenu
-                                }]
-                            }
-                        }]);
-                    }
-                }
-            } else if(elementName == "mod") {
-                var meta = this.getAnalysisByNodeOrNodeId(node);
-                if(meta && !menu.down("*[name=modType]")) {
-                    var modType = meta.type;
-                    menu.add(['-', {
-                        text : 'Type',
-                        name: "modType",
-                        menu : {
-                            items : [{
-                                text : Locale.getString("insertion", me.getPluginName()),
-                                modType: 'insertion',
-                                group : 'modType',
-                                refNode: node,
-                                checked: (modType == "insertion") ? true : false,
-                                checkHandler : Ext.bind(me.onModTypeSelected, me)
-                            }, {
-                                text : Locale.getString("repeal", me.getPluginName()),
-                                modType: 'repeal',
-                                group : 'modType',
-                                refNode: node,
-                                checked: (modType == "repeal") ? true : false,
-                                checkHandler : Ext.bind(me.onModTypeSelected, me)
-                            }, {
-                                text : Locale.getString("substitution", me.getPluginName()),
-                                modType: 'substitution',
-                                group : 'modType',
-                                refNode: node,
-                                checked: (modType == "substitution") ? true : false,
-                                checkHandler : Ext.bind(me.onModTypeSelected, me)
-                            }]
-                        }
-                    }]);
-                }
-            }
-
-            me.addPosMenuItems(menu, node, elementName, markedParent);
-            me.addExternalContextMenuItems(menu, node, elementName, markedParent);
+        if (!node || !elementName) return;
+        
+        switch(elementName) {
+            case 'ref':
+                me.addRefContextMenuItem(node, menu);
+                break;
+            case 'mod':
+                me.addModContextMenuItem(node, menu);
+                break;
+            case 'quotedStructure':
+            case 'quotedText':
+                me.addQuotedContextMenuItem(node, menu, elementName);
+                break;
         }
     },
 
+    // TODO: move this function from this file
+    addRefContextMenuItem: function(node, menu) {
+        if(!menu.down("*[name=openlink]"))
+            menu.add({
+                text : 'Resolve link',
+                name: 'openlink',
+                refNode: node,
+                handler : function() {
+                    var href = node.getAttribute('akn_href');
+                    if (href && href.length > 3) {
+                        window.open('http://akresolver.cs.unibo.it' + href);
+                    }
+                }
+            });
+    },
+
+    addModContextMenuItem: function(node, menu) {
+        var me = this, 
+            meta = me.getAnalysisByNodeOrNodeId(node);
+        if(meta && !menu.down("*[name=modType]")) {
+            var modType = meta.type;
+            menu.add(['-', {
+                text : Locale.getString("modType", me.getPluginName()),
+                name: "modType",
+                menu : {
+                    items : [{
+                        text : Locale.getString("insertion", me.getPluginName()),
+                        modType: 'insertion',
+                        group : 'modType',
+                        refNode: node,
+                        checked: (modType == "insertion") ? true : false,
+                        checkHandler : Ext.bind(me.onModTypeSelected, me)
+                    }, {
+                        text : Locale.getString("repeal", me.getPluginName()),
+                        modType: 'repeal',
+                        group : 'modType',
+                        refNode: node,
+                        checked: (modType == "repeal") ? true : false,
+                        checkHandler : Ext.bind(me.onModTypeSelected, me)
+                    }, {
+                        text : Locale.getString("substitution", me.getPluginName()),
+                        modType: 'substitution',
+                        group : 'modType',
+                        refNode: node,
+                        checked: (modType == "substitution") ? true : false,
+                        checkHandler : Ext.bind(me.onModTypeSelected, me)
+                    }]
+                }
+            }]);
+        }
+    },
+
+    addQuotedContextMenuItem: function(node, menu, name) {
+        var me = this,
+            language = me.getController('Language'),
+            markedParent = DomUtils.getFirstMarkedAncestor(node.parentNode);
+        
+
+        if (!markedParent || DomUtils.getElementNameByNode(markedParent) != 'mod' ) {
+            me.addExternalContextMenuItems(menu, node, name, markedParent);
+            return;
+        }
+        me.addPosMenuItems(menu, node, name, markedParent);
+        var textMod = me.detectModifications(markedParent, false, false, true);
+        textMod = (textMod) ? textMod.textMod : null;
+        if (!textMod) return;
+
+        var getPosMenuChecked = function(textMod) {
+            var posMenu = Ext.clone(me.posMenu),
+                destination = textMod.querySelector('*[class="destination"]'),
+                pos = (destination) ? 
+                        language.nodeGetLanguageAttribute(destination, "pos").value : false;
+
+            posMenu.items.filter(function(item) {
+                return pos && item.type == pos;
+            }).map(function(item) {
+                item.checked = true;
+            });
+
+            return posMenu;
+        };
+
+        var elId = node.getAttribute(DomUtils.elementIdAttribute),
+            langId = language.nodeGetLanguageAttribute(node, "eid"),
+            modElement = textMod.querySelector("*[akn_href*="+elId+"], *[akn_href*="+langId.value+"]"),
+            modType = (modElement) ? modElement.getAttribute("class") : "";
+            
+        if(!menu.down("*[name=modType]")) {
+            menu.add(['-', {
+                text : 'Type',
+                name: "modType",
+                menu : {
+                    name: "types",
+                    textMod: textMod,
+                    refNode: node,
+                    modElement: modElement,
+                    items : [{
+                        text : 'Old',
+                        group : 'modType',
+                        textMod: textMod,
+                        modElement: modElement,
+                        refNode: node,
+                        type: "old",
+                        checked: (modType == "old") ? true : false,
+                        checkHandler : Ext.bind(me.onTypeSelected, me)
+                    }, {
+                        text : 'New',
+                        group : 'modType',
+                        checked: (modType == "new") ? true : false,
+                        textMod: textMod,
+                        refNode: node,
+                        modElement: modElement,
+                        type: "new",
+                        checkHandler : Ext.bind(me.onTypeSelected, me)
+                    }, {
+                        text : 'Pos',
+                        group : 'modType',
+                        checked: (modType == "pos") ? true : false,
+                        type: "pos",
+                        checkHandler : Ext.bind(me.onTypeSelected, me),
+                        menu: getPosMenuChecked(textMod)
+                    }]
+                }
+            }]);
+        }
+    },
 
     addPosMenuItems: function(menu, node, elementName, markedParent) {
         var me = this, language = me.getController("Language"), cls,

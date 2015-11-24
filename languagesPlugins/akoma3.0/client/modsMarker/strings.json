@@ -15,7 +15,8 @@
 		"splitted": "splitted",
         "inserted": "inserted",
         "deleted": "deleted",
-        "replaced": "replaced"
+        "replaced": "replaced",
+        "modType": "Modification type"
 	},
 	"it": {
 		"insertion": "Inserimento",
@@ -33,7 +34,8 @@
 		"splitted": "diviso",
         "inserted": "inserito",
         "deleted": "rimosso",
-        "replaced": "sostituito"
+        "replaced": "sostituito",
+        "modType": "Tipo modifica"
 	},
 	"es": {
 		"insertion": "Insertion",
@@ -51,6 +53,7 @@
 		"splitted": "diviso",
         "inserted": "adicional",
         "deleted": "eliminado",
-        "replaced": "reemplazado"
+        "replaced": "reemplazado",
+        "modType": "Tipo de modificación"
 	}
 }
