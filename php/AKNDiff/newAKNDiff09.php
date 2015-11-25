@@ -853,10 +853,11 @@ class newAKNDiff09 extends AKNDiff {
 						$parentWid = $firstTarget->getAttribute("parentWid");
 						$idCond = ($originalId) ? "contains(@parent, '$originalId') or " : $idCond;
 						//$firstTargetParent = $xpath->query("./ancestor::*[@parent or @parentOriginalId]", $firstTarget);
-						$firstTargetParent = $xpath->query("./ancestor::*[contains(@class, 'container') or contains(@parentClass, 'container')]", $firstTarget);
-						//echo $firstTarget->ownerDocument->saveHTML($firstTarget->parentNode)."!!<br>";
-						if($firstTargetParent->length) {
-							$firstTargetParent = $firstTargetParent->item($firstTargetParent->length-1);
+						$targetParents = $xpath->query("./ancestor::*[contains(@class, 'container') or contains(@parentClass, 'container')]", $firstTarget);
+						//echo $mod->destination." - ".$mod->old." - ".$targetParents->length."!!<br>";
+						if($targetParents->length) {
+							$firstTargetParent = $targetParents->item($targetParents->length-1);
+							$parentWithWid = $this->getNodeWithAttribute($targetParents, "akn_wId");
 							// $originalId = $firstTargetParent->getAttribute("parentOriginalId");
 							// $parentId = ($originalId) ? $originalId : $firstTargetParent->getAttribute("parent");
 							$parentId = $firstTargetParent->getAttribute("akn_currentId");
@@ -872,7 +873,17 @@ class newAKNDiff09 extends AKNDiff {
 
 					if (!$destNodes->length && $parentWid)
 						$destNodes = $xpath->query("//*[@class='oldVersion']//*[contains(@parent, '$parentWid')]", $table);
-
+					// This may happen when the node is in quotedStructure so it hasn't parent or parentWid attributes
+					if (!$destNodes->length && $parentWithWid) {
+						$parentWid = $parentWithWid->getAttribute("akn_wId");
+						$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId = '$parentWid']", $table);
+						if (!$destNodes->length) {
+							// May be that wId is to old, now we try to rebuild it combining wId and eId
+							$parentWid = $this->rebuildwIdFromeId($parentWid, $parentWithWid->getAttribute("akn_eId"));
+							$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId = '$parentWid']", $table);
+						}
+					}
+					
 					if($destNodes->length == 1 ) {
 						//$destNodes = ($destNodes->length) ? $destNodes : $oldTds;
 						if($mod->old) {
@@ -918,6 +929,45 @@ class newAKNDiff09 extends AKNDiff {
 					break;
 			}
 		}
+	}
+
+	protected function getNodeWithAttribute($nodes, $attr) {
+		for($i = $nodes->length-1; $i >= 0; $i--) {
+			if ($nodes->item($i)->hasAttribute($attr))
+				return $nodes->item($i);
+		}
+		return FALSE;
+	}
+
+	// This function tries to rebuild wId from an wId and eId
+	protected function rebuildwIdFromeId($wid, $eid) {
+		$widParts = explode("__", $wid);
+		$eidParts = explode("__", $eid);
+		$diff = array_diff($eidParts, $widParts);
+		$newWidParts = $this->buildIdFromDiffArray($diff, array_merge($widParts), $wid);
+		if ( count($newWidParts) == count($widParts) ) {
+			$diff = array_diff($widParts, $eidParts);
+			$newWidParts = $this->buildIdFromDiffArray($diff, $widParts, $wid);
+		}
+		return implode("__", $newWidParts);
+	}
+
+	protected function buildIdFromDiffArray($diff, $idParts, $id, $keepEqual = FALSE) {
+		foreach ($diff as $key => $value) {
+			if (!array_key_exists($key, $idParts)) continue;
+			// If there are the same this means that eId doesn't have this part so remove it
+			if ( $idParts[$key] ==  $value) 
+				array_splice($idParts, $key, 1);
+			else { // check if we need to value to wId
+				$partsEl = explode("_",$value);
+				$partsElWid = explode("_",$idParts[$key]);
+				// adding only if the name of elements are different
+				if ( $partsEl[0] != $partsElWid[0] && strpos($id, $partsEl[0]."_") === FALSE ) { 
+					array_splice( $idParts, $key, 0, $value );
+				}
+			}
+		}
+		return $idParts;
 	}
 
 	protected function addBlankCell($table, $node) {
@@ -1018,13 +1068,13 @@ class newAKNDiff09 extends AKNDiff {
 		$uri = $doc1->documentElement->lookupnamespaceURI(NULL);	
 		$xpath = new DOMXPath($doc1);
 		$xpath->registerNamespace('doc', $uri);
-		$xml_1_date = $xpath->evaluate($expression)->item(0)->getAttribute('date');
+		$xml_1_date = strtotime($xpath->evaluate($expression)->item(0)->getAttribute('date'));
 	
 		
 		$uri = $doc2->documentElement->lookupnamespaceURI(NULL);		
 		$xpath = new DOMXPath($doc2);
 		$xpath->registerNamespace('doc', $uri);
-		$xml_2_date = $xpath->evaluate($expression)->item(0)->getAttribute('date');
+		$xml_2_date = strtotime($xpath->evaluate($expression)->item(0)->getAttribute('date'));
 		
 		/////////////////////////////////////////////////////////////
 		/////////////////////////////////////////////////////////////
@@ -1045,7 +1095,6 @@ class newAKNDiff09 extends AKNDiff {
 		/////////////////////////////////////////////////////////////
 		/////////////////////////////////////////////////////////////
 		/////////////////////////////////////////////////////////////
-				
 		if ($xml_1_date > $xml_2_date) {
 			$this->xml_new = $doc1;
 			$this->xml_old = $doc2;
