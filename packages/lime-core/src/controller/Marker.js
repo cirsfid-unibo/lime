@@ -369,6 +369,9 @@ Ext.define('LIME.controller.Marker', {
                 DomUtils.insertAfter(node, bookmarkParent);
                 bookmarkParent.parentNode.removeChild(bookmarkParent);
             }
+            var breakingParent = Ext.fly(node).parent('.'+DomUtils.breakingElementClass, true);
+            if (breakingParent)
+                DomUtils.unwrapNode(breakingParent);
 
             if ( !node.textContent.trim() ) {
                 node.appendChild(node.ownerDocument.createTextNode("  "));

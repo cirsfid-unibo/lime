@@ -252,12 +252,14 @@ class newAKNDiff09 extends AKNDiff {
 			if(count($nodes)) {
 				$firtPart = $nodes[0];
 				$lastPart = $nodes[count($nodes)-1];
-				$wrapNode = $this->wrapTextNode($firtPart["node"], $firtPart["str"], $wrapperClass);
-				$siblings = $this->getNextSiblingsContaining($wrapNode, $lastPart["node"]);
-				foreach($siblings as $sibling) {
-					$wrapNode->appendChild($sibling);
+				if ( (strlen($firtPart["str"]) >  strlen($searchText)-10) || count($nodes) > 1) {
+					$wrapNode = $this->wrapTextNode($firtPart["node"], $firtPart["str"], $wrapperClass);
+					$siblings = $this->getNextSiblingsContaining($wrapNode, $lastPart["node"]);
+					foreach($siblings as $sibling) {
+						$wrapNode->appendChild($sibling);
+					}
+					$wrapNodes[] = $wrapNode;
 				}
-				$wrapNodes[] = $wrapNode;
 			} else {
 				return FALSE;
 			}
@@ -935,6 +937,23 @@ class newAKNDiff09 extends AKNDiff {
 		for($i = $nodes->length-1; $i >= 0; $i--) {
 			if ($nodes->item($i)->hasAttribute($attr))
 				return $nodes->item($i);
+		}
+		return FALSE;
+	}
+
+	protected function getOldParent($nodes, $text, $table) {
+		$xpath = new DOMXPath($table->ownerDocument);
+		$query = "";
+		for($i = $nodes->length-1; $i >= 0; $i--) {
+			$id = $nodes->item($i)->getAttribute("akn_currentId");
+			if ($id) {
+				$oldNode = $xpath->query("(//*[@class='oldVersion']//*[@akn_currentId='$id'])[last()]", $table);
+				if ($oldNode->length) {
+					$txtNodes = $this->getTextNodesContaining($oldNode->item(0), $text);
+					if (count($txtNodes))
+						return $xpath->query("(./ancestor::*)[last()]", $txtNodes[0]);
+				}
+			}
 		}
 		return FALSE;
 	}
