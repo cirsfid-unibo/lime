@@ -2078,6 +2078,15 @@
 #tinymce.lime.it .structureNotes:before {
   content: "Note";
   width: 37px; }
+#tinymce.lime.it .mod[data-modtype=insertion]:before {
+  content: "Inserimento";
+  width: 79px; }
+#tinymce.lime.it .mod[data-modtype=substitution]:before {
+  content: "Sostituzione";
+  width: 85px; }
+#tinymce.lime.it .mod[data-modtype=repeal]:before {
+  content: "Abrogazione";
+  width: 79px; }
 
 #tinymce.lime.es .address:before {
   content: "direcci├│n";

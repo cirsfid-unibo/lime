@@ -173,4 +173,8 @@
     .commonJudgement { @include Label('Judgement') }
     .commonReport { @include Label('debateReport/report') }
     .structureNotes { @include Label('Note') }
+
+    .mod[data-modtype=insertion] { @include Label('Inserimento'); }
+    .mod[data-modtype=substitution] { @include Label('Sostituzione'); }
+    .mod[data-modtype=repeal] { @include Label('Abrogazione'); }
 }
