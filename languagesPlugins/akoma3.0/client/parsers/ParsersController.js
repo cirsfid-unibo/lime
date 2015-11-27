@@ -2987,10 +2987,45 @@ Ext.define('LIME.controller.ParsersController', {
         }
     },
 
+    beforeContextMenuShow: function(menu, node) {
+        var me = this;
+        var getContentToParse = function() {
+            var editor = me.getController('Editor'),
+                selectionRange = editor.lastSelectionRange || editor.getEditor().selection.getRng();
+            return selectionRange.toString().trim();
+        }
+        //TODO: add loading bar
+        var callParser = function() {
+            var contentToParse = getContentToParse(),
+                button = DomUtils.getButtonByElement(node);
+            
+            if (!contentToParse) return;
+
+            me.callParser("body", contentToParse, function(result) {
+                var jsonData = Ext.decode(result.responseText, true);
+                if (jsonData) {
+                    try {
+                        me.parseBodyParts(jsonData, node, button);
+                    } catch(e) {
+                        Ext.log({level: "error"}, e);
+                    };
+                }
+            });
+        };
+
+        if(menu.down("*[name=autoMarkup]") || !getContentToParse()) return;
+        menu.add({
+            text : 'Markup automatico',
+            name: 'autoMarkup',
+            handler : callParser
+        });
+    },
+
     init : function() {
         var me = this;
         //Listening progress events
         me.application.on(Statics.eventsNames.afterLoad, me.onDocumentLoaded, me);
         me.application.on(Statics.eventsNames.nodeChangedExternally, me.onNodeChanged, me);
+        me.application.fireEvent(Statics.eventsNames.registerContextMenuBeforeShow, Ext.bind(me.beforeContextMenuShow, me));
     }
 });

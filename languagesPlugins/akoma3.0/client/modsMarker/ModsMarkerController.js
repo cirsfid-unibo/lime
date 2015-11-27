@@ -262,7 +262,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         var me = this, 
             elementName = DomUtils.getElementNameByNode(node);
         
-        if(!elementName) {
+        if(!elementName && node) {
             node = DomUtils.getFirstMarkedAncestor(node.parentNode);
             elementName = DomUtils.getElementNameByNode(node);
         }

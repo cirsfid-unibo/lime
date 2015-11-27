@@ -428,17 +428,26 @@ Ext.define('LIME.controller.MarkingMenu', {
             }).reverse();
             var treePanel = relatedButton.getOwnerTree();
             var pathToExpand;
-
             if ( buttonPath[0] == nodesPath[0] ) {
                 pathToExpand = relatedButton.getPath();
             } else {
-                var name = DomUtils.getElementNameByNode(node);
+                /*var name = DomUtils.getElementNameByNode(node);
                 var commonButton = me.getFirstTreeButtonByNameAndType(name, "common");
                 if ( commonButton ) {
                     treePanel = commonButton.getOwnerTree();
                     pathToExpand = commonButton.getPath();
                 } else {
                     pathToExpand = relatedButton.getPath();
+                }*/
+                // Expand only buttons in the structure tree
+                for (var i = nodesPath.length-1; i >= 0; i--) {
+                    var btn = me.getTreeButton(nodesPath[i]),
+                        tree = btn.getOwnerTree();
+                    if (btn && tree.id == 'treeStructure') {
+                        treePanel = tree;
+                        pathToExpand = btn.getPath();
+                        break;
+                    }
                 }
             }
             if ( me.expandedTree && me.expandedPath && me.expandedPath != pathToExpand ) {
