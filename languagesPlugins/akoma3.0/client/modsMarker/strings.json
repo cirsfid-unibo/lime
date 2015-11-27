@@ -16,7 +16,9 @@
         "inserted": "inserted",
         "deleted": "deleted",
         "replaced": "replaced",
-        "modType": "Modification type"
+        "modType": "Modification type",
+        "externalRef": "Set external ref",
+        "quotedType": "Type"
 	},
 	"it": {
 		"insertion": "Inserimento",
@@ -35,7 +37,9 @@
         "inserted": "inserito",
         "deleted": "rimosso",
         "replaced": "sostituito",
-        "modType": "Tipo modifica"
+        "modType": "Tipo modifica",
+        "externalRef": "Aggiungi riferimento",
+        "quotedType": "Tipo"
 	},
 	"es": {
 		"insertion": "Insertion",
@@ -54,6 +58,8 @@
         "inserted": "adicional",
         "deleted": "eliminado",
         "replaced": "reemplazado",
-        "modType": "Tipo de modificación"
+        "modType": "Tipo de modificación",
+        "externalRef": "Set external ref",
+        "quotedType": "Type"
 	}
 }

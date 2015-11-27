@@ -332,7 +332,73 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     }]
                 }
             }]);
+            if (meta) {
+                me.addExternalRefMenuItems(node, menu, meta);
+            }
         }
+    },
+
+    addExternalRefMenuItems: function(node, menu, meta) {
+        var me = this, itemName = 'externalRefs',
+            hrefAttr = Language.getAttributePrefix()+'href';
+
+        if(menu.down("*[name="+itemName+"]")) return;
+
+        var onFocusRefItem = function(item) {
+            me.application.fireEvent('nodeFocusedExternally', item.ref.node, {
+                select : true,
+                scroll : true
+            });
+        };
+
+        var onSelectRefItem = function(item) {
+            var destNode = meta.analysis.querySelector("[class=destination]");
+            if (destNode) {
+                destNode.setAttribute(hrefAttr, item.ref.node.getAttribute(hrefAttr));
+            }
+            me.application.fireEvent('nodeFocusedExternally', node, {
+                select : false,
+                scroll : true
+            });
+        };
+
+        var items = me.getModExternalReferences(node).map(function(ref) {
+            return {
+                text : ref.text,
+                group : itemName,
+                ref: ref,
+                checked: false,
+                checkHandler : onSelectRefItem,
+                listeners: {
+                    focus: onFocusRefItem
+                }
+            };
+        });
+
+        menu.add(['-', {
+            text : Locale.getString('externalRef', me.getPluginName()),
+            name: itemName,
+            menu : {
+                items : items
+            }
+        }]);
+    },
+
+    getModExternalReferences: function(node) {
+        // Get the outmost hcontainer parent
+        var nodeWithRefs = AknMain.xml.Document.newDocument(node)
+                            .select("(./ancestor::*[contains(@class, 'hcontainer')])[1]")[0] 
+                            || node.ownerDocumen;
+        var references = Ext.Array.toArray(nodeWithRefs.querySelectorAll('.ref')).filter(function(refNode) {
+            // Keep only the references that precedes the mod node
+            return node.compareDocumentPosition(refNode) & Node.DOCUMENT_POSITION_PRECEDING;
+        }).map(function(refNode) {
+            return {
+                text: refNode.textContent,
+                node: refNode
+            }
+        }).reverse();
+        return references;
     },
 
     addQuotedContextMenuItem: function(node, menu, name) {
@@ -372,7 +438,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             
         if(!menu.down("*[name=modType]")) {
             menu.add(['-', {
-                text : 'Type',
+                text : Locale.getString('quotedType', me.getPluginName()),
                 name: "modType",
                 menu : {
                     name: "types",
@@ -487,11 +553,10 @@ Ext.define('LIME.controller.ModsMarkerController', {
         var me = this;
         if(checked && cmp.refNode) {
             var meta = me.getAnalysisByNodeOrNodeId(cmp.refNode);
-            if (meta) {
-                meta.analysis.setAttribute("type", cmp.modType);
-                me.setModDataAttributes(cmp.refNode, cmp.modType);
-            } else
-                me.addModMetadata(cmp.refNode, cmp.modType);
+            if (meta && meta.type == cmp.modType) return;
+            if (meta)
+                me.unmarkModMeta(meta.analysis);
+            me.addModMetadata(cmp.refNode, cmp.modType);
         } else if(!checked) {
             me.setModDataAttributes(cmp.refNode, false);
         }
@@ -902,8 +967,8 @@ Ext.define('LIME.controller.ModsMarkerController', {
     activeInsertionHandler: function(button, markedElements, originalButton) {
         if(!markedElements.length) return;
         var modEl = markedElements[0];
-        var textualMod = me.addActiveInsMeta(modEl);
-        me.askForRenumbering(modEl, textualMod);
+        var textualMod = this.addActiveInsMeta(modEl);
+        this.askForRenumbering(modEl, textualMod);
     },
 
     addActiveInsMeta: function(node) {
@@ -925,8 +990,8 @@ Ext.define('LIME.controller.ModsMarkerController', {
     activeDelHandler: function(button, markedElements, originalButton) {
         if(!markedElements.length) return;
         var modEl = markedElements[0];
-        var textualMod = me.addActiveDelMeta(modEl);
-        me.askForRenumbering(modEl, textualMod);
+        var textualMod = this.addActiveDelMeta(modEl);
+        this.askForRenumbering(modEl, textualMod);
     },
 
     addActiveDelMeta: function(node) {
@@ -974,8 +1039,8 @@ Ext.define('LIME.controller.ModsMarkerController', {
     activeSubstitutionHandler: function(button, markedElements, originalButton) {
         if(!markedElements.length) return;
         var modEl = markedElements[0];
-        var textualMod = me.addActiveSubMeta(modEl);
-        me.askForRenumbering(modEl, textualMod);
+        var textualMod = this.addActiveSubMeta(modEl);
+        this.askForRenumbering(modEl, textualMod);
     },
 
     addActiveSubMeta: function(node) {
@@ -2394,9 +2459,12 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     modElement: textModChild
                 };
             }
-
             if ( unmarked ) {
-                me.unmarkModMeta(textMod);
+                var elConf = DocProperties.getElementConfig(DomUtils.getButtonIdByElementId(elId));
+                if (textMod.parentNode.classList[0] != 'activeModifications' || elConf.name == 'mod')
+                    me.unmarkModMeta(textMod);
+                else
+                    textModChild.setAttribute(langPrefix+'href', '#');
                 return;
             }
 
