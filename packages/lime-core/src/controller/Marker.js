@@ -214,9 +214,10 @@ Ext.define('LIME.controller.Marker', {
             element = element || 'div'
             selectionRange = editor.lastSelectionRange || editor.getEditor().selection.getRng();
 
-        var wrapper = selectionRange.startContainer.ownerDocument.createElement(element);
         DomUtils.range.normalize(selectionRange);
         DomUtils.range.normalization.getOutOfFakeEditorElements(selectionRange);
+        
+        var wrapper = selectionRange.startContainer.ownerDocument.createElement(element);
         selectionRange.surroundContents(wrapper);
 
         if ( element == 'div' ) {

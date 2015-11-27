@@ -96,7 +96,7 @@ Ext.define('LIME.ux.akoma3.Language', {
         noPrefixElements : ["collectionBody", "body", "mainBody", "documentRef", "componentRef", "authorialNote"],
         noIdElements: ["preface", "preamble", "body", "mainBody", "collectionBody"],
         noIdPatterns: ["block", "inline"],
-        exceptIdElements: ["mod", "documentRef", "componentRef", "heading", "ins", "del"],
+        exceptIdElements: ["mod", "documentRef", "componentRef", "heading", "ins", "del", "quotedText"],
         documentContextElements: ["mod", "article"],
         noIdNumElements: ["components", "conclusions", "content", "heading"],
         prefixSeparator: "__",
@@ -152,16 +152,6 @@ Ext.define('LIME.ux.akoma3.Language', {
                 ( this.getExceptIdElements().indexOf(elName) != -1 ) ) );
     },
 
-    skipGeneratingId: function( node ) {
-        var workThis = node.querySelector('[class="FRBRWork"] [class="FRBRthis"]');
-        workThis = (workThis) ? workThis.getAttribute('value') : false;
-
-        if ( workThis && (workThis == '/uy/bill/camera/2008-02-25/carpeta1055-2008/main' || 
-                workThis == '/uy/doc/beto/2009-09-09/19541/main' ) ) {
-            return true;
-        }
-    },
-
     /* Find elNum by counting the preceding elements with 
        in given the same name in the context.*/
 
@@ -212,7 +202,6 @@ Ext.define('LIME.ux.akoma3.Language', {
             button = DomUtils.getButtonByElement(element),
             elName = (button) ? button.name : DomUtils.getNameByNode(element);
 
-        if ( me.skipGeneratingId(root) ) return markingId;
         try {
             if ( enforce || me.needsElementId(elName, button) ) {
                 var markedParent = DomUtils.getFirstMarkedAncestor(element.parentNode),

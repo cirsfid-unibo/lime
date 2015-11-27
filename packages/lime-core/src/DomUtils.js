@@ -709,7 +709,8 @@ Ext.define('LIME.DomUtils', {
                 function isInFakeElement (el) {
                     if (el.nodeType == DomUtils.nodeType.TEXT)
                         el = el.parentNode;
-                    return el.dataset['mceType'] == 'bookmark';
+                    return el.dataset['mceType'] == 'bookmark' ||
+                            el.classList[0] == DomUtils.breakingElementClass;
                 }
                 while (isInFakeElement(range.startContainer))
                     range.setStartBefore(range.startContainer);
