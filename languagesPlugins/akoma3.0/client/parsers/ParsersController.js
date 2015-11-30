@@ -1512,9 +1512,9 @@ Ext.define('LIME.controller.ParsersController', {
             for (var i = 0; i < textNodesObjs.length; i++) {
                 var textBeforeNum = textNodesObjs[i][0].node.textContent;
                 textBeforeNum = textBeforeNum.substring(0, textBeforeNum.indexOf(numVal)).trim();
-                var prevText = DomUtils.getPreviousTextNode(textNodesObjs[i][0].node, true);
-                if ( prevText ) {
-                    textBeforeNum = prevText.textContent.trim() + textBeforeNum;
+                var prevTextNode = DomUtils.getPreviousTextNode(textNodesObjs[i][0].node, true);
+                textBeforeNum = (prevTextNode) ? prevTextNode.textContent.trim() + textBeforeNum : textBeforeNum;
+                if ( textBeforeNum ) {
                     if (textBeforeNum.match(finishCharactersReg))
                         return textNodesObjs[i];
                 } else 
