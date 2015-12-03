@@ -344,8 +344,6 @@ Ext.define('LIME.controller.Marker', {
      */
     wrap : function(button, config) {
         var editorController = this.getController('Editor'), 
-            isBlock = DomUtils.blockTagRegex.test(button.pattern.wrapperElement), 
-            newElements = [], 
             selectedNode = editorController.getSelectedNode(), 
             firstMarkedNode = DomUtils.getFirstMarkedAncestor(selectedNode);
         
@@ -355,40 +353,38 @@ Ext.define('LIME.controller.Marker', {
             return;
         }
 
-        if (isBlock) {
-            //newElements = this.wrapBlock(button);
-            newElements = [this.wrapRange(button)];
-        } else {
-            //newElements = this.wrapInline(button);
-            newElements = [this.wrapRange(button, 'span')];
-        }
+        var newElement = this.wrapRow(button, config);
         var setCursorLocation = false;
-        // Common finilizing operations
-        Ext.each(newElements, function(node) {
-            var bookmarkParent = Ext.fly(node).parent('.visibleBookmark', true);
-            if ( bookmarkParent ) {
-                DomUtils.insertAfter(node, bookmarkParent);
-                bookmarkParent.parentNode.removeChild(bookmarkParent);
-            }
-            var breakingParent = Ext.fly(node).parent('.'+DomUtils.breakingElementClass, true);
-            if (breakingParent)
-                DomUtils.unwrapNode(breakingParent);
-
-            if ( !node.textContent.trim() ) {
-                node.appendChild(node.ownerDocument.createTextNode("  "));
-                setCursorLocation = true;
-            }
-
-            this.setMarkedElementProperties(node, button, config);
-        }, this);
-
+        if ( !newElement.textContent.trim() ) {
+            newElement.appendChild(newElement.ownerDocument.createTextNode("  "));
+            setCursorLocation = true;
+        }
         // Warn of the changed nodes
-        this.application.fireEvent('nodeChangedExternally', newElements, Ext.merge(config, Ext.merge(this.nodeChangedConfig, {
+        this.application.fireEvent('nodeChangedExternally', [newElement], Ext.merge(config, Ext.merge(this.nodeChangedConfig, {
             click : (config.silent) ? false : true,
             setCursorLocation: setCursorLocation
         })));
         
-        Ext.callback(config.callback, this, [button, newElements]);
+        Ext.callback(config.callback, this, [button, [newElement]]);
+    },
+
+    wrapRow: function(button, config) {
+        var isBlock = DomUtils.blockTagRegex.test(button.pattern.wrapperElement);
+        var wrapper = (isBlock) ? this.wrapRange(button) : this.wrapRange(button, 'span');
+        
+        // Common finilizing operations
+        var bookmarkParent = Ext.fly(wrapper).parent('.visibleBookmark', true);
+        if ( bookmarkParent ) {
+            DomUtils.insertAfter(wrapper, bookmarkParent);
+            bookmarkParent.parentNode.removeChild(bookmarkParent);
+        }
+        var breakingParent = Ext.fly(wrapper).parent('.'+DomUtils.breakingElementClass, true);
+        if (breakingParent)
+            DomUtils.unwrapNode(breakingParent);
+
+        this.setMarkedElementProperties(wrapper, button, config);
+        
+        return wrapper;
     },
 
     /**
@@ -448,6 +444,7 @@ Ext.define('LIME.controller.Marker', {
     },
 
     setMarkedElementProperties : function(node, button, config) {
+        config = config || {};
         var markingId = this.getMarkingId(button.id); // Get a unique id for the marked element
         // Set the internal id and the class
         node.setAttribute(DomUtils.elementIdAttribute, markingId);

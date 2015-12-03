@@ -778,7 +778,7 @@ class newAKNDiff09 extends AKNDiff {
 		}
 		return $text;
 	}
-
+	
 	protected function applyMods($table) {
 		$xpath = new DOMXPath($table->ownerDocument);
 		$oldTds = $xpath->query("//*[@class='oldVersion']", $table);
@@ -860,6 +860,7 @@ class newAKNDiff09 extends AKNDiff {
 						if($targetParents->length) {
 							$firstTargetParent = $targetParents->item($targetParents->length-1);
 							$parentWithWid = $this->getNodeWithAttribute($targetParents, "akn_wId");
+							$parentStatusRemoved = $this->getNodeWithAttribute($targetParents, "akn_status", "removed");
 							// $originalId = $firstTargetParent->getAttribute("parentOriginalId");
 							// $parentId = ($originalId) ? $originalId : $firstTargetParent->getAttribute("parent");
 							$parentId = $firstTargetParent->getAttribute("akn_currentId");
@@ -868,7 +869,7 @@ class newAKNDiff09 extends AKNDiff {
 							$parentIdCond = ($parentAttr) ? "@parent = '$parentAttr'" : "";
 						}
 					}
-					
+
 					$destNodes = $xpath->query("//*[@class='oldVersion']//*[$idCond contains(@parent, '$mod->destination') or contains(@parentWid, '$mod->destination')]", $table);
 					if (!$destNodes->length && $parentIdCond)
 						$destNodes = $xpath->query("//*[@class='oldVersion']//*[$parentIdCond]", $table);
@@ -885,9 +886,23 @@ class newAKNDiff09 extends AKNDiff {
 							$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId = '$parentWid']", $table);
 						}
 					}
-					
+
+					if (!$destNodes->length && $parentStatusRemoved) {
+						//TODO check if nodes are siblings
+						$oldNodes = $this->findOldNodes($parentStatusRemoved, $table);
+						if ($this->removeSpaces($mod->old) == $this->removeSpaces($this->getTextFromNodes($oldNodes))) {
+							$this->setAllAttribute($oldNodes, "class", "repeal");
+							break;
+						}
+					}
+
 					if($destNodes->length == 1 ) {
 						//$destNodes = ($destNodes->length) ? $destNodes : $oldTds;
+						if ( $parentStatusRemoved && $this->removeSpaces($mod->old) == $this->removeSpaces($destNodes->item(0)->textContent) ) {
+							// Set as removed the entire element
+							$this->setAllAttribute(array($destNodes->item(0)), "class", "repeal");
+							break;
+						}
 						if($mod->old) {
 							$repealNodes = $this->findAndwrapTextNode($mod->old, $destNodes, $mod->type);
 							if($repealNodes === FALSE) {
@@ -933,15 +948,71 @@ class newAKNDiff09 extends AKNDiff {
 		}
 	}
 
-	protected function getNodeWithAttribute($nodes, $attr) {
+	protected function getTextFromNodes($nodes) {
+		$str = "";
+		foreach ($nodes as $node) {
+			$str.= $node->textContent;
+		}
+		return $str;
+	}
+
+	protected function removeSpaces($str) {
+		$str = str_replace(chr(0xC2).chr(0xA0), " ", $str);
+		$str = str_replace("&#160", " ", $str);
+		$str = str_replace("&#xa0", " ", $str);
+		$str = str_replace("&nbsp", " ", $str);
+		return preg_replace('/\s/', '', trim($str));
+	}
+
+	protected function getNodeWithAttribute($nodes, $attr, $value=FALSE) {
 		for($i = $nodes->length-1; $i >= 0; $i--) {
-			if ($nodes->item($i)->hasAttribute($attr))
+			if ($nodes->item($i)->hasAttribute($attr) && (!$value || $nodes->item($i)->getAttribute($attr) == $value) )
 				return $nodes->item($i);
 		}
 		return FALSE;
 	}
 
-	protected function getOldParent($nodes, $text, $table) {
+	protected function findOldNodes($node, $table) {
+		$xpath = new DOMXPath($table->ownerDocument);
+		$wId = $node->getAttribute("akn_wId");
+		if ($wId) {
+			$oldNodes = $this->nodeListToArray($xpath->query("(//*[@class='oldVersion']//*[@akn_wId='$wId' or @parentWid='$wId' or @akn_eId='$wId'])", $table));
+			if (count($oldNodes)) return $oldNodes;
+			$oldNodes = $this->findNodesContainPrentId($wId, $table);
+			if (count($oldNodes)) return $oldNodes;
+		}
+		$eId = $node->getAttribute("akn_eId");
+		if ($eId) {
+			$oldNodes = $this->nodeListToArray($xpath->query("(//*[@class='oldVersion']//*[@akn_eId='$eId'])", $table));
+			if (count($oldNodes)) return $oldNodes;
+			$oldNodes = $this->findNodesContainPrentId($eId, $table);
+			if (count($oldNodes)) return $oldNodes;
+		}
+		return array();
+	}
+
+
+	protected function nodeListToArray($list) {
+		$nodes = array();
+		foreach ($list as $node) {
+			$nodes[] = $node;
+		}
+		return $nodes;
+	}
+
+	protected function findNodesContainPrentId($id, $table) {
+		$xpath = new DOMXPath($table->ownerDocument);
+		$oldNodes = $xpath->query("//*[@class='oldVersion']//*[contains(@parent,'$id')]", $table);
+		$returnNodes = array();
+		foreach ($oldNodes as $node) {
+			$parents = explode(" ", $node->getAttribute('parent'));
+			if (in_array($id, $parents))
+				$returnNodes[] = $node;
+		}
+		return $returnNodes;
+	}
+
+	protected function getFirstOldParent($nodes, $text, $table) {
 		$xpath = new DOMXPath($table->ownerDocument);
 		$query = "";
 		for($i = $nodes->length-1; $i >= 0; $i--) {

@@ -166,6 +166,7 @@ Ext.define('LIME.ux.akoma3.Language', {
 
         if ( !elNum ) {
             elNum = 1;
+            //TODO: don't count the elements inside quotedStructure when the context is not mod
             var siblings = context.querySelectorAll("*[class~="+elName+"]");
             if(siblings.length) {
                 var elIndexInParent = Array.prototype.indexOf.call(siblings, element);

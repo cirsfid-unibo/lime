@@ -47,7 +47,7 @@
 Ext.define('LIME.controller.ModsMarkerController', {
     extend : 'Ext.app.Controller',
 
-    views : ['LIME.ux.modsMarker.ModsMarkerWindow', 'LIME.ux.modsMarker.SplitNodesSelectorWindow'],
+    views : ['LIME.ux.modsMarker.ModsMarkerWindow', 'LIME.ux.modsMarker.SplitNodesSelectorWindow', 'LIME.ux.modsMarker.RepealSelectorWindow'],
 
     refs : [{
         ref : 'contextMenu',
@@ -84,25 +84,20 @@ Ext.define('LIME.controller.ModsMarkerController', {
             '#secondEditor mainEditor' : {
                 click: me.secondEditorClickHandler
             },
-            'splitWindow': {
+            'splitWindow, repealWindow': {
                 close: function() {
-                    me.getMainEditor().up().unmask();
-                    me.getSecondEditor().up().unmask();
+                    me.secondEditorClickHandlerCustom = null;
+                    me.setMaskEditors(false, false);
                 }
             },
             'splitWindow grid': {
                 activate: function(cmp) {
-                    var firstEditor = me.getMainEditor(),
-                        secondEditor = me.getSecondEditor();
-
                     cmp.up('window').setTitle(cmp.winTitle);
-                    if ( cmp.itemId == 'toSplit' ) {
-                        firstEditor.up().mask();
-                        secondEditor.up().unmask();
-                    } else {
-                        secondEditor.up().mask();
-                        firstEditor.up().unmask();
-                    }
+
+                    if ( cmp.itemId == 'toSplit' )
+                        me.setMaskEditors(false, true);
+                    else
+                        me.setMaskEditors(true, false);
                 }
             },
             'splitWindow [itemId=accept]': {
@@ -117,14 +112,36 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     if ( splittedNodes.length && dataToSplit.length ) {
                         me.setSplitNodesStyle(splittedNodes);
                         me.setSplitMetadata(dataToSplit[0].node, secondMeta, splittedNodes);
-                        btn.up('window').close();
+                        cmp.close();
                     } else {
                         Ext.MessageBox.alert("Error", 'Not enough elements selected');
                         console.warn('Not enough elements selected');
                     }
                 }
+            },
+            'repealWindow [itemId=accept]': {
+                click: function(btn) {
+                    var cmp = btn.up('window');
+                    me.delHandlerConsolidation(cmp.selectedText, cmp.selectedNode);
+                    cmp.close();
+                }
             }
         });
+    },
+
+    setMaskEditors: function(leftMask, rightMask) {
+        var rightEditor = this.getMainEditor().up(),
+            leftEditor = this.getSecondEditor().up();
+
+        if (leftMask)
+            leftEditor.mask();
+        else
+            leftEditor.unmask();
+
+        if (rightMask)
+            rightEditor.mask();
+        else
+            rightEditor.unmask();
     },
 
     secondEditorClickHandler: function(editor, evt) {
@@ -1036,6 +1053,27 @@ Ext.define('LIME.controller.ModsMarkerController', {
         return textualMod;
     },
 
+    addPassiveMeta: function(node, type, metaElements) {
+        var metaDom = this.getDocumentMetadata().metadata.originalMetadata.metaDom,
+            passiveModifications = this.getOrCreatePath(metaDom, "analysis/passiveModifications"),
+            hrefAttr = Language.getAttributePrefix()+"href";
+
+        var standardMeta = [{
+            name: "source",
+            attributes: [{
+                name: hrefAttr,
+                value: " "
+            }]
+        }];
+
+        metaElements = (metaElements) ? standardMeta.concat(metaElements) : standardMeta;
+
+        var textModObj = this.buildTexModObj(type, metaElements, passiveModifications);
+        var textualMod = this.objToDom(metaDom.ownerDocument, textModObj);
+        passiveModifications.appendChild(textualMod);
+        return textualMod;
+    },
+
     activeSubstitutionHandler: function(button, markedElements, originalButton) {
         if(!markedElements.length) return;
         var modEl = markedElements[0];
@@ -1936,6 +1974,45 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },
 
     beforeDelHandler: function() {
+        if ( DocProperties.documentState == 'diffEditingScenarioB' )
+            this.beforeDelHandlerConsolidation();
+        else
+            this.beforeDelHandlerAmendment();
+    },
+
+    beforeDelHandlerConsolidation: function() {
+        var me = this;
+        var winCmp = Ext.widget('repealWindow').show().center();
+
+        me.setMaskEditors(false, true);
+
+        me.secondEditorClickHandlerCustom = function(node, evt, ed) {
+            var msg = "";
+            var selectedText = ed.selection.getContent().trim();
+            if (selectedText) {
+                var tpl = new Ext.Template("<h4>You've selected the following portion of text:</h4>{text}");
+                msg = tpl.apply({text: selectedText});
+                winCmp.selectedText = selectedText;
+                winCmp.selectedNode = false;
+            } else {
+                node = me.ensureHcontainerNode(node);
+                if ( !node ) return;
+                var markButton = DocProperties.getFirstButtonByName(DomUtils.getNameByNode(node));
+                var editor = me.getController('Editor');
+                var tpl = new Ext.Template("<h4>You've selected the element <b>{name}</b> which contains the following text:</h4>{text}");
+
+                editor.unFocusNodes(false, ed.getBody());
+                editor.setFocusStyle(node);
+
+                msg = tpl.apply({text: node.textContent.trim(), name: markButton.shortLabel});
+                winCmp.selectedNode = node;
+            }
+            winCmp.down('[itemId=accept]').enable();
+            winCmp.down('[itemId=selectedMsg]').setHtml(msg);
+        };
+    },
+
+    beforeDelHandlerAmendment: function() {
         var me = this,
             editor = me.getController('Editor'),
             selectionRange = editor.lastSelectionRange || editor.getEditor().selection.getRng();
@@ -1962,52 +2039,64 @@ Ext.define('LIME.controller.ModsMarkerController', {
         }
     },
 
+    delHandlerConsolidation: function(removedText, removedNode) {
+        var me = this;
+        if (!removedText && !removedNode) return;
+        var wrapDelWithNode = function(delNode, wrapOld) {
+            var wrapNode = DomUtils.wrapNode(delNode, wrapOld.tagName);
+            wrapNode.setAttribute(Language.getAttributePrefix()+'status', 'removed');
+            // Set the old eId as new wId, TODO check if is ok
+            wrapNode.setAttribute(Language.getAttributePrefix()+'wid', wrapOld.getAttribute(Language.getAttributePrefix()+'eid'));
+            me.application.fireEvent('markingRequest', DocProperties.getFirstButtonByName(DomUtils.getNameByNode(wrapOld)), {
+                silent : true,
+                noEvent : true,
+                nodes : [wrapNode]
+            });
+        };
+
+        var afterDelMarked = function(node) {
+            if (removedText && !removedNode)
+                me.addDelMeta(node, removedText);
+            else {
+                wrapDelWithNode(node, removedNode);
+                me.addDelMeta(node, removedNode.textContent.trim());
+            }
+        };
+        
+        var delButton = DocProperties.getFirstButtonByName('del');
+        afterDelMarked(me.getController('Marker').wrapRow(delButton));
+    },
+
+    addDelMeta: function(node, oldText) {
+        var hrefAttr = Language.getAttributePrefix()+"href";
+        var meta = [{
+            name: "destination",
+            attributes: [{
+                name: hrefAttr,
+                value: "#"+node.getAttribute(DomUtils.elementIdAttribute)
+            }]
+        },{
+            name: "old",
+            text: oldText
+        }];
+        return this.addPassiveMeta(node, 'repeal', meta);
+    },
+
     delHandler: function(button, markedElements) {
         var me = this,
             editorMeta = me.getDocumentMetadata(),
             langPrefix = editorMeta.langPrefix,
             metaDom = editorMeta.metadata.originalMetadata.metaDom,
             passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
-            modEl;
+            modEl, textualMod;
 
         var setMetadata = function(oldText) {
             Ext.each(markedElements, function(element) {
                 oldText = oldText || DomUtils.getTextOfNode(element);
-                var textModObj = {
-                    name: "textualMod",
-                    attributes: [{
-                        name: "type",
-                        value: "repeal"
-                    },{
-                        name: "period",
-                        value: "#"
-                    },{
-                        name: "eId",
-                        value: me.getTextualModId(passiveModifications)
-                    }],
-                    children: [{
-                        name: "source",
-                        attributes: [{
-                            name: langPrefix+"href",
-                            value: " "
-                        }]
-                    },{
-                        name: "destination",
-                        attributes: [{
-                            name: langPrefix+"href",
-                            value: "#"+element.getAttribute("internalid")
-                        }]
-                    },{
-                        name: "old",
-                        text: oldText
-                    }]
-                };
                 modEl = element;
-                textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
-                passiveModifications.appendChild(textualMod);
+                textualMod = me.addDelMeta(element, oldText);
             });
         };
-
 
         if ( DocProperties.documentState != 'diffEditingScenarioB' ) {
             setMetadata();
