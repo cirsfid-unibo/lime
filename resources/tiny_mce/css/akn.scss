@@ -284,3 +284,9 @@
         }
     }
 }
+
+// Reset secondEditor styles
+#tinymce.lime.secondEditor {
+    .del,
+    .ins { @include ResetInline; }
+}

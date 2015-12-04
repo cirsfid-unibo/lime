@@ -54,7 +54,14 @@
     }
 }
 
-
+@mixin ResetInline() {
+    background-color: rgba(0,0,0,0);
+    border: 0px;
+    border-radius: 0px;
+    &:before {
+        display: none;
+    }
+}
 
 
 @mixin Color ($hue) {
