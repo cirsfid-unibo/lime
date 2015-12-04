@@ -91,7 +91,7 @@ Ext.define('AknMain.Uri', {
             official: undefined,
             generation: undefined,
             component: undefined,
-            media: undefined,
+            media: 'xml',
             path: undefined
         };
         uri.work = this.uriFunctions.work.bind(uri),

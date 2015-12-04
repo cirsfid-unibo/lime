@@ -165,6 +165,13 @@ describe ('AknMain.Uri', function () {
         expect(uri.componenet).toEqual('main');
         expect(uri.media).toEqual('xml');
     });
+
+    it ('/akn/uy/bill/CRR/CRR/2000-03-26/Asunto4517/spa@2005-03-26/undefined.undefined', function () {
+        var uriStr = '/akn/uy/bill/CRR/CRR/2000-03-26/Asunto4517/spa@2005-03-26/undefined.undefined';
+        var uri = AknMain.Uri.parse(uriStr);
+        expect(uri.manifestation()).toEqual(uriStr+'.xml');
+    });
+    
 });
 
 
