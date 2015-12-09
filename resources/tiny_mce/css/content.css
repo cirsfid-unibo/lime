@@ -1561,9 +1561,15 @@
 #tinymce.lime .rref:before {
   content: "rref";
   width: 37px; }
-#tinymce.lime .ins[substitution]:before {
-  content: "substitution";
+#tinymce.lime .mod[data-modtype=insertion]:before {
+  content: "Insertion";
+  width: 67px; }
+#tinymce.lime .mod[data-modtype=substitution]:before, #tinymce.lime .ins[data-modtype=substitution]:before {
+  content: "Substitution";
   width: 85px; }
+#tinymce.lime .mod[data-modtype=repeal]:before {
+  content: "Repeal";
+  width: 49px; }
 
 #tinymce.lime.it .address:before {
   content: "indirizzo";
@@ -2090,7 +2096,7 @@
 #tinymce.lime.it .mod[data-modtype=insertion]:before {
   content: "Inserimento";
   width: 79px; }
-#tinymce.lime.it .mod[data-modtype=substitution]:before {
+#tinymce.lime.it .mod[data-modtype=substitution]:before, #tinymce.lime.it .ins[data-modtype=substitution]:before {
   content: "Sostituzione";
   width: 85px; }
 #tinymce.lime.it .mod[data-modtype=repeal]:before {
@@ -2610,9 +2616,15 @@
 #tinymce.lime.es .commonReport:before {
   content: "Debate Report / Informe";
   width: 151px; }
-#tinymce.lime.es .ins[substitution]:before {
+#tinymce.lime.es .mod[data-modtype=insertion]:before {
+  content: "Inserimento";
+  width: 79px; }
+#tinymce.lime.es .mod[data-modtype=substitution]:before, #tinymce.lime.es .ins[data-modtype=substitution]:before {
   content: "Sustituci├│n";
   width: 85px; }
+#tinymce.lime.es .mod[data-modtype=repeal]:before {
+  content: "Borrar";
+  width: 49px; }
 
 #tinymce {
   font-size: .9em;

@@ -239,39 +239,25 @@ Ext.define('LIME.controller.ModsMarkerController', {
         Ext.each(modsElements, function(element) {
             var modEls = element.querySelectorAll("["+hrefAttr+"]");
             var modType = element.getAttribute('type');
-            if(modType) {
-                var buttonCfg = Ext.Object.getValues(me.passiveModButtons).filter(function(cfg) {
-                    return cfg.modType == modType;
-                })[0];
-
-                Ext.each(modEls, function(modEl) {
-                    var href = modEl.getAttribute(hrefAttr);
-                    if(!Ext.isEmpty(href.trim())) {
-                        var id = (href.charAt(0) == "#") ? href.substring(1) : href;
-                        var editorEl = editorBody.querySelector("*[" + langPrefix + "eid='"+id+"']");
-                        if(editorEl && !noEffect) {
-                            var edElId = editorEl.getAttribute(DomUtils.elementIdAttribute);
-                            modEl.setAttribute(hrefAttr, href.replace(id, edElId));
-                            editorEl.removeAttribute(hrefAttr);
-                            if ( element.querySelector('.old') )  {
-                                var oldText = element.querySelector('.old').textContent;
-                                editorEl.setAttribute('data-old-text', oldText);
-                                // TODO: Understand if this is necessary
-                                /*if ( modType == 'repeal' ) {
-                                    editorEl.innerHTML = oldText;
-                                }*/
-                            }
-
-                            if(buttonCfg) {
-                                me.setElementStyles([editorEl], null, null, buttonCfg);
-                            }
+            if(!modType) return;
+            Ext.each(modEls, function(modEl) {
+                var href = modEl.getAttribute(hrefAttr);
+                if(!Ext.isEmpty(href.trim())) {
+                    var id = (href.charAt(0) == "#") ? href.substring(1) : href;
+                    var editorEl = editorBody.querySelector("*[" + langPrefix + "eid='"+id+"']");
+                    if(editorEl && !noEffect) {
+                        var edElId = editorEl.getAttribute(DomUtils.elementIdAttribute);
+                        modEl.setAttribute(hrefAttr, href.replace(id, edElId));
+                        editorEl.removeAttribute(hrefAttr);
+                        me.setModDataAttributes(editorEl, modType);
+                        if ( element.querySelector('.old') )  {
+                            var oldText = element.querySelector('.old').textContent;
+                            editorEl.setAttribute('data-old-text', oldText);
                         }
                     }
-                });
-            }
+                }
+            });
         });
-
-        //TODO:passive mods
         return returnMods;
     },
 
@@ -835,6 +821,10 @@ Ext.define('LIME.controller.ModsMarkerController', {
        me.activeModButtons = markerButtons;
     },
 
+    getOrCreatePathMetaDom: function(path) {
+        return this.getOrCreatePath(this.getDocumentMetadata().metadata.originalMetadata.metaDom, path);
+    },
+
     getOrCreatePath: function(dom, path) {
         var me = this, elements = path.split("/"), node,
             iterNode = dom, tmpNode;
@@ -926,12 +916,6 @@ Ext.define('LIME.controller.ModsMarkerController', {
         }
     },
 
-    getMetaDomPath: function(path) {
-        var me = this,
-            docMeta = me.getDocumentMetadata(),
-            metaDom = docMeta.metadata.originalMetadata.metaDom;
-        return me.getOrCreatePath(metaDom, path);
-    },
 
     objToDom: function(doc, obj) {
         var me = this, node, childNode;
@@ -1024,8 +1008,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },
 
     addActiveMeta: function(node, type, metaElements) {
-        var metaDom = this.getDocumentMetadata().metadata.originalMetadata.metaDom,
-            activeModifications = this.getOrCreatePath(metaDom, "analysis/activeModifications"),
+        var activeModifications = this.getOrCreatePathMetaDom("analysis/activeModifications"),
             hrefAttr = Language.getAttributePrefix()+"href";
 
         var standardMeta = [{
@@ -1045,7 +1028,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         metaElements = (metaElements) ? standardMeta.concat(metaElements) : standardMeta;
 
         var textModObj = this.buildTexModObj(type, metaElements, activeModifications);
-        var textualMod = this.objToDom(metaDom.ownerDocument, textModObj);
+        var textualMod = this.objToDom(activeModifications.ownerDocument, textModObj);
         activeModifications.appendChild(textualMod);
 
         this.setModDataAttributes(node, type);
@@ -1054,8 +1037,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },
 
     addPassiveMeta: function(node, type, metaElements) {
-        var metaDom = this.getDocumentMetadata().metadata.originalMetadata.metaDom,
-            passiveModifications = this.getOrCreatePath(metaDom, "analysis/passiveModifications"),
+        var passiveModifications = this.getOrCreatePathMetaDom("analysis/passiveModifications"),
             hrefAttr = Language.getAttributePrefix()+"href";
 
         var standardMeta = [{
@@ -1069,7 +1051,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         metaElements = (metaElements) ? standardMeta.concat(metaElements) : standardMeta;
 
         var textModObj = this.buildTexModObj(type, metaElements, passiveModifications);
-        var textualMod = this.objToDom(metaDom.ownerDocument, textModObj);
+        var textualMod = this.objToDom(passiveModifications.ownerDocument, textModObj);
         passiveModifications.appendChild(textualMod);
         return textualMod;
     },
@@ -1121,185 +1103,48 @@ Ext.define('LIME.controller.ModsMarkerController', {
         };
     },
 
+
     activeJoinHandler: function(button, markedElements, originalButton) {
         if(!markedElements.length) return;
-        var me = this,
-            docMeta = me.getDocumentMetadata(),
-            langPrefix = docMeta.langPrefix,
-            metaDom = docMeta.metadata.originalMetadata.metaDom,
-            activeModifications = me.getOrCreatePath(metaDom, "analysis/activeModifications"),
-            modEl = markedElements[0],
-            quotedEls = modEl.querySelectorAll("*[class~=quotedStructure], *[class~=quotedText]"),
-            refEl = Array.prototype.slice.call(modEl.querySelectorAll("*[class~=ref]")).filter(function(el) {
-                return (modEl == DomUtils.getFirstMarkedAncestor(el.parentNode));
-            })[0],
-            newHref = (quotedEls[0]) ? quotedEls[0].getAttribute(DomUtils.elementIdAttribute) : "",
-            oldHref = (quotedEls[1]) ? quotedEls[1].getAttribute(DomUtils.elementIdAttribute) : "",
-            destHref = (refEl) ? refEl.getAttribute(langPrefix+"href") : "";
-
-        var textModObj = {
-            name: "textualMod",
-            attributes: [{
-                name: "type",
-                value: "join"
-            },{
-                name: "period",
-                value: "#"
-            },{
-                name: "eId",
-                value: me.getTextualModId(activeModifications)
-            }],
-            children: [{
-                name: "source",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: "#"+modEl.getAttribute(DomUtils.elementIdAttribute)
-                }]
-            },{
-                name: "destination",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: "#"+destHref
-                }]
-            },{
-                name: "old",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: "#"+oldHref
-                }]
-            },{
-                name: "new",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: "#"+newHref
-                }]
-            }]
-        };
-        textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
-        activeModifications.appendChild(textualMod);
-        me.setElementStyles(markedElements, button, originalButton);
-        me.askForRenumbering(modEl, textualMod);
+        var modEl = markedElements[0];
+        var textualMod = this.activeCommonMeta(modEl, 'join');
+        this.askForRenumbering(modEl, textualMod);
     },
 
     activeSplitHandler: function(button, markedElements, originalButton) {
         if(!markedElements.length) return;
-        var me = this,
-            docMeta = me.getDocumentMetadata(),
-            langPrefix = docMeta.langPrefix,
-            metaDom = docMeta.metadata.originalMetadata.metaDom,
-            activeModifications = me.getOrCreatePath(metaDom, "analysis/activeModifications"),
-            modEl = markedElements[0],
-            quotedEls = modEl.querySelectorAll("*[class~=quotedStructure], *[class~=quotedText]"),
-            refEl = Array.prototype.slice.call(modEl.querySelectorAll("*[class~=ref]")).filter(function(el) {
-                return (modEl == DomUtils.getFirstMarkedAncestor(el.parentNode));
-            })[0],
-            newHref = (quotedEls[0]) ? quotedEls[0].getAttribute(DomUtils.elementIdAttribute) : "",
-            oldHref = (quotedEls[1]) ? quotedEls[1].getAttribute(DomUtils.elementIdAttribute) : "",
-            destHref = (refEl) ? refEl.getAttribute(langPrefix+"href") : "";
-
-
-        var textModObj = {
-            name: "textualMod",
-            attributes: [{
-                name: "type",
-                value: "split"
-            },{
-                name: "period",
-                value: "#"
-            },{
-                name: "eId",
-                value: me.getTextualModId(activeModifications)
-            }],
-            children: [{
-                name: "source",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: "#"+modEl.getAttribute(DomUtils.elementIdAttribute)
-                }]
-            },{
-                name: "destination",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: "#"+destHref
-                }]
-            },{
-                name: "old",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: "#"+oldHref
-                }]
-            },{
-                name: "new",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: "#"+newHref
-                }]
-            }]
-        };
-        textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
-        activeModifications.appendChild(textualMod);
-        me.setElementStyles(markedElements, button, originalButton);
-        me.askForRenumbering(modEl, textualMod);
+        var modEl = markedElements[0];
+        var textualMod = this.activeCommonMeta(modEl, 'split');
+        this.askForRenumbering(modEl, textualMod);
     },
 
     activeRenumberingHandler: function(button, markedElements, originalButton) {
         if(!markedElements.length) return;
-        var me = this,
-            docMeta = me.getDocumentMetadata(),
-            langPrefix = docMeta.langPrefix,
-            metaDom = docMeta.metadata.originalMetadata.metaDom,
-            activeModifications = me.getOrCreatePath(metaDom, "analysis/activeModifications"),
-            modEl = markedElements[0],
-            quotedEls = modEl.querySelectorAll("*[class~=quotedStructure], *[class~=quotedText]"),
-            refEl = Array.prototype.slice.call(modEl.querySelectorAll("*[class~=ref]")).filter(function(el) {
-                return (modEl == DomUtils.getFirstMarkedAncestor(el.parentNode));
-            })[0],
+        var modEl = markedElements[0];
+        this.activeCommonMeta(modEl, 'renumbering');
+    },
+
+    activeCommonMeta: function(node, type) {
+        var hrefAttr = Language.getAttributePrefix()+"href",
+            quotedEls = node.querySelectorAll("*[class~=quotedStructure], *[class~=quotedText]"),
             newHref = (quotedEls[0]) ? quotedEls[0].getAttribute(DomUtils.elementIdAttribute) : "",
-            oldHref = (quotedEls[1]) ? quotedEls[1].getAttribute(DomUtils.elementIdAttribute) : "",
-            destHref = (refEl) ? refEl.getAttribute(langPrefix+"href") : "";
+            oldHref = (quotedEls[1]) ? quotedEls[1].getAttribute(DomUtils.elementIdAttribute) : "";
 
-
-        var textModObj = {
-            name: "textualMod",
+        var meta = [{
+            name: "old",
             attributes: [{
-                name: "type",
-                value: "renumbering"
-            },{
-                name: "period",
-                value: "#"
-            },{
-                name: "eId",
-                value: me.getTextualModId(activeModifications)
-            }],
-            children: [{
-                name: "source",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: "#"+modEl.getAttribute(DomUtils.elementIdAttribute)
-                }]
-            },{
-                name: "destination",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: "#"+destHref
-                }]
-            },{
-                name: "old",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: "#"+oldHref
-                }]
-            },{
-                name: "new",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: "#"+newHref
-                }]
+                name: hrefAttr,
+                value: "#"+oldHref
             }]
-        };
-        textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
-        activeModifications.appendChild(textualMod);
-        me.setElementStyles(markedElements, button, originalButton);
+        },{
+            name: "new",
+            attributes: [{
+                name: hrefAttr,
+                value: "#"+newHref
+            }]
+        }];
+
+        return this.addActiveMeta(node, type, meta);
     },
 
     beforeInsertionHandler: function() {
@@ -1318,57 +1163,23 @@ Ext.define('LIME.controller.ModsMarkerController', {
             if ( focusedNode ){
                 var button = DomUtils.getButtonByElement(focusedNode);
                 me.insertionHandler(button, [focusedNode]);
-                me.setElementStyles([focusedNode], button, button, {
-                    shortLabel: button.shortLabel+" "+Locale.getString("inserted", me.getPluginName()),
-                    modType: 'inserted',
-                    elementStyle: "",
-                    labelStyle: "background-color: #75d6ff; border: 1px solid #44b4d5;"
-                });
             }
         }
     },
 
     insertionHandler: function(button, markedElements) {
-        var me = this,
-            docMeta = me.getDocumentMetadata(),
-            langPrefix = docMeta.langPrefix,
-            metaDom = docMeta.metadata.originalMetadata.metaDom,
-            passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
-            modEl;
-
-        Ext.each(markedElements, function(element) {
-            var textModObj = {
-                name: "textualMod",
-                attributes: [{
-                    name: "type",
-                    value: "insertion"
-                },{
-                    name: "period",
-                    value: "#"
-                },{
-                    name: "eId",
-                    value: me.getTextualModId(passiveModifications)
-                }],
-                children: [{
-                    name: "source",
-                    attributes: [{
-                        name: langPrefix+"href",
-                        value: " "
-                    }]
-                },{
-                    name: "destination",
-                    attributes: [{
-                        name: langPrefix+"href",
-                        value: "#"+element.getAttribute("internalid")
-                    }]
-                }]
-            };
-            textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
-            modEl = element;
-            passiveModifications.appendChild(textualMod);
-        });
+        var node = markedElements[0];
+        var meta = [{
+            name: "destination",
+            attributes: [{
+                name: Language.getAttributePrefix()+"href",
+                value: "#"+node.getAttribute(DomUtils.elementIdAttribute)
+            }]
+        }];
+        this.setModDataAttributes(node, "insertion");
+        var textualMod = this.addPassiveMeta(node, 'insertion', meta);
         if ( DocProperties.documentState != 'diffEditingScenarioB' ) {
-            me.askForRenumbering(modEl, textualMod);
+            this.askForRenumbering(node, textualMod);
         }
     },
 
@@ -2102,8 +1913,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             setMetadata();
             me.askForRenumbering(modEl, textualMod);
         } else if ( markedElements.length ) {
-            var formTitle = 'Insert the old text';
-            me.createAndShowFloatingForm(markedElements[0], formTitle, false, false, function(cmp, text) {
+            me.createAndShowFloatingForm(markedElements[0], Locale.getString("oldText", me.getPluginName()), false, false, function(cmp, text) {
                 setMetadata(text);
                 cmp.close();
             }, function(cmp) {
@@ -2114,61 +1924,35 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },
 
     updateSubsMetadata: function(node, oldText) {
-        var me = this, extNode = Ext.fly(node),
-            elId = extNode.dom.getAttribute(DomUtils.elementIdAttribute),
-            editorMeta = me.getDocumentMetadata(),
-            parent = extNode.up(".hcontainer"),
-            parentId = (parent) ? parent.getAttribute(DomUtils.elementIdAttribute) : elId,
-            langPrefix = editorMeta.langPrefix,
-            metaDom = editorMeta.metadata.originalMetadata.metaDom,
-            passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
-            query = "*[class='textualMod'][type='substitution'] *[class='new']["+langPrefix+"href='#"+elId+"']",
-            prevTextualMod = passiveModifications.querySelector(query), textualMod,
-            textModObj = {};
+        var hrefAttr = Language.getAttributePrefix()+"href",
+            elId = node.getAttribute(DomUtils.elementIdAttribute),
+            parent = this.ensureHcontainerNode(node),
+            destId = (parent) ? parent.getAttribute(DomUtils.elementIdAttribute) : elId,
+            passiveModifications = this.getOrCreatePathMetaDom("analysis/passiveModifications"),
+            query = "*[class='textualMod'][type='substitution'] *[class='new']["+hrefAttr+"='#"+elId+"']",
+            prevTextualMod = passiveModifications.querySelector(query);
 
-        textModObj = {
-            name: "textualMod",
+        if(prevTextualMod)
+            passiveModifications.removeChild(prevTextualMod.parentNode);
+
+        var meta = [{
+            name: "destination",
             attributes: [{
-                name: "type",
-                value: "substitution"
-            },{
-                name: "period",
-                value: "#"
-            },{
-                name: "eId",
-                value: me.getTextualModId(passiveModifications)
-            }],
-            children: [{
-                name: "source",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: " "
-                }]
-            },{
-                name: "destination",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: "#"+parentId
-                }]
-            },{
-                name: "old",
-                text: oldText
-            },{
-                name: "new",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: "#"+elId
-                }]
+                name: hrefAttr,
+                value: "#"+destId
             }]
-        };
+        },{
+            name: "old",
+            text: oldText
+        },{
+            name: "new",
+            attributes: [{
+                name: hrefAttr,
+                value: "#"+elId
+            }]
+        }];
 
-        textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
-        if(prevTextualMod) {
-            prevTextualMod = prevTextualMod.parentNode;
-            passiveModifications.replaceChild(textualMod, prevTextualMod);
-        } else {
-            passiveModifications.appendChild(textualMod);
-        }
+        return this.addPassiveMeta(node, 'substitution', meta);
     },
 
     updateRenumberingMetadata: function(node, oldText, renumberedNode) {
@@ -2392,33 +2176,16 @@ Ext.define('LIME.controller.ModsMarkerController', {
         var me = this, editor = me.getController("Editor"),
             oldText = formText,
             button = DocProperties.getFirstButtonByName("ins");
-            /*var panel = me.createAndShowFloatingForm(node, function(form, text) {
-                var oldText = DomUtils.replaceTextOfNode(form.relatedNode, text);
-                me.updateSubsMetadata(form.relatedNode, oldText);
-                form.destroy();
-                me.openedForm = null;
-            }, function(form) {
-                if(update) {
-                    var oldText = DomUtils.replaceTextOfNode(form.relatedNode, form.originalText);
-                    me.updateSubsMetadata(form.relatedNode, oldText);
-                } else {
-                    me.application.fireEvent(Statics.eventsNames.unmarkNodes, [form.relatedNode]);
-                }
-                form.destroy();
-                me.openedForm = null;
-            }, formText);*/
-        var panel = null;
 
         if ( DocProperties.documentState == 'diffEditingScenarioB' ) {
-            var formTitle = 'Insert the old text';
             var formText = false;
             if ( update ) {
                 formText = node.getAttribute('data-old-text');
             }
-            me.createAndShowFloatingForm(node, formTitle, formText, false, function(cmp, text) {
+            me.createAndShowFloatingForm(node, Locale.getString("oldText", me.getPluginName()), formText, false, function(cmp, text) {
                 me.updateSubsMetadata(node, text);
                 node.setAttribute('data-old-text', text);
-                me.setElementStyles([node], button, null, me.passiveModButtons.substitutionCustom);
+                me.setModDataAttributes(node, "substitution");
                 cmp.close();
             }, function(cmp) {
                 cmp.close();
@@ -2428,12 +2195,18 @@ Ext.define('LIME.controller.ModsMarkerController', {
             });
         } else {
             if(!update) {
-                //oldText = DomUtils.replaceTextOfNode(node, "  ");
-                oldText = DomUtils.getTextOfNode(node);
+                oldText = DomUtils.getTextOfNode(node).trim();
                 me.updateSubsMetadata(node, oldText);
-                me.setElementStyles([node], button, null, me.passiveModButtons.substitutionCustom);
+                me.setModDataAttributes(node, "substitution");
+                me.createAndShowFloatingForm(node, "Insert the new text", false, false, function(cmp, text) {
+                    node.textContent = text;
+                    cmp.close();
+                }, function(cmp) {
+                    cmp.close();
+                });
+            } else {
+                me.openedForm = me.createAndShowFloatingForm(node, Locale.getString("oldText", me.getPluginName()), oldText.trim(), true);
             }
-            panel = me.createAndShowFloatingForm(node, "The old text", oldText, true);
             Ext.defer(function() {
                 editor.getEditor().focus();
                 if(!update) {
@@ -2441,8 +2214,6 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 }
             }, 40);
         }
-
-        me.openedForm = panel;
     },
 
     createAndShowFloatingForm: function(node, title ,text, readOnly, onAccept, onCancel, customConfig) {
@@ -2508,11 +2279,8 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },
 
     substitutionUpdate: function(node, textMod) {
-        var me = this, oldEl = textMod.querySelector("*[class='old']"),
-            extEl = Ext.fly(node), nodeText = DomUtils.getTextOfNode(node);
-
-        //extEl.setHTML(DomUtils.getTextOfNode(oldEl));
-        me.createSubstitution(node, DomUtils.getTextOfNode(oldEl), true);
+        var oldEl = textMod.querySelector("*[class='old']");
+        this.createSubstitution(node, DomUtils.getTextOfNode(oldEl), true);
     },
 
     getAnalysisByNodeOrNodeId: function(node, nodeId) {
@@ -2567,6 +2335,8 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 case "insertion":
                     break;
                 case "repeal":
+                    if(textMod.parentNode.getAttribute("class") != "activeModifications")
+                        me.showOldText(node, DomUtils.getTextOfNode(textMod.querySelector("*[class='old']")));
                     break;
             }
         }
@@ -2649,6 +2419,10 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 Ext.log({level: "error"}, e);
             }
         });
+    },
+
+    showOldText: function(node, oldText) {
+        this.openedForm = this.createAndShowFloatingForm(node, Locale.getString("oldText", this.getPluginName()), oldText.trim(), true);
     },
 
     onRemoveController: function() {

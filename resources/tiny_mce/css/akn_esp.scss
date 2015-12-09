@@ -171,5 +171,7 @@
     .commonJudgement { @include Label('Juicio') }
     .commonReport { @include Label('Debate Report / Informe') }
 
-    .ins[substitution] { @include Label('Sustitución'); }
+    .mod[data-modtype=insertion] { @include Label('Inserimento'); }
+    .mod[data-modtype=substitution], .ins[data-modtype=substitution] { @include Label('Sustitución'); }
+    .mod[data-modtype=repeal] { @include Label('Borrar'); }
 }

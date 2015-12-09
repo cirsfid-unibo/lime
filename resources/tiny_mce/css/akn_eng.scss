@@ -158,5 +158,7 @@
     .ref              { @include Label('ref'); }
     .rref             { @include Label('rref'); }
 
-    .ins[substitution] { @include Label('substitution'); }
+    .mod[data-modtype=insertion] { @include Label('Insertion'); }
+    .mod[data-modtype=substitution], .ins[data-modtype=substitution] { @include Label('Substitution'); }
+    .mod[data-modtype=repeal] { @include Label('Repeal'); }
 }

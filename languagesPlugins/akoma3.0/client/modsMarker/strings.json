@@ -18,7 +18,8 @@
         "replaced": "replaced",
         "modType": "Modification type",
         "externalRef": "Set external ref",
-        "quotedType": "Type"
+        "quotedType": "Type",
+        "oldText": "The old text"
 	},
 	"it": {
 		"insertion": "Inserimento",
@@ -39,7 +40,8 @@
         "replaced": "sostituito",
         "modType": "Tipo modifica",
         "externalRef": "Aggiungi riferimento",
-        "quotedType": "Tipo"
+        "quotedType": "Tipo",
+        "oldText": "Testo precedente"
 	},
 	"es": {
 		"insertion": "Insertion",
@@ -60,6 +62,7 @@
         "replaced": "reemplazado",
         "modType": "Tipo de modificación",
         "externalRef": "Set external ref",
-        "quotedType": "Type"
+        "quotedType": "Type",
+        "oldText": "El texto anterior"
 	}
 }
