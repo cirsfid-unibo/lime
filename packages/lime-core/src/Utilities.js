@@ -164,23 +164,6 @@ Ext.define('LIME.Utilities', {
             };
     },
 
-
-    /**
-     * This function converts a Date object to an ISO compliant string
-     * taking care about the problems related to GMT.
-     * @param {Date} d The Date object (see MDN by Mozilla)
-     * @returns {String} The stringified date
-     */
-    toISOString : function(d) {
-        function pad(n) {
-            return n < 10 ? '0' + n : n
-        }
-        if(d.getFullYear){
-            return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) + 'Z'
-        }
-        return "";
-    },
-
     /**
      * This function convert a css string to a json object
      * @param {String} css The css string made of property-value pairs

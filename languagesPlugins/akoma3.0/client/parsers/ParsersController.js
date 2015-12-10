@@ -1953,7 +1953,7 @@ Ext.define('LIME.controller.ParsersController', {
         var me = this, editor = me.getController("Editor"), attrs = [],
             body = editor.getBody(), nodesToMark = [], button = DocProperties.getFirstButtonByName('ref');
 
-        var todayDate = date = Ext.Date.format(new Date(), 'Y-m-d');
+        var todayDate = Ext.Date.format(new Date(), 'Y-m-d');
         
         data.sort(function compare(a,b) {
             return b.ref.length - a.ref.length;

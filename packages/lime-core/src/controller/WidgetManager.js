@@ -54,6 +54,10 @@
 Ext.define('LIME.controller.WidgetManager', {
     extend : 'Ext.app.Controller',
 
+    requires: [
+        'AknMain.metadata.XmlSerializer'
+    ],
+
     views: ['widgets.MarkedElementWidget'],
     refs : [{
         selector: 'contextPanel',
@@ -306,17 +310,14 @@ Ext.define('LIME.controller.WidgetManager', {
      * @param {String} value
      * @param {Boolean} updateAttributes True to update the attributes of the widget and element
      * */
+     //TODO: move this to akn package
     updateWidgetData: function(widget, field, value, updateAttributes) {
         var originalName = field.origName;
         value = value || field.getValue();
         value = ( field.disabled ) ? "" : value;
         //check if field is a date and convert to the ISO format
-        if (Ext.isDate(value)) {
-            var newDate = Utilities.toISOString(value);
-            //get only the date without time
-            newDate = newDate.substr(0, newDate.indexOf("T"));
-            value = newDate;
-        }
+        if (Ext.isDate(value))
+            value = AknMain.metadata.XmlSerializer.normalizeDate(value);
         widget.ownData = widget.ownData || {};
         widget.ownData[originalName] = value || "";
         if (updateAttributes) {

@@ -142,13 +142,9 @@ Ext.define('AknMain.metadata.XmlSerializer', {
         return this.applyTemplate(data);
     },
 
+    // Returns the ISO string of the date, removing the time
     normalizeDate: function (date) {
         if (!date) return '';
-        function padding (n) { return n >= 10 ? n : '0' + n; }
-        return [
-            date.getFullYear(),
-            padding(date.getMonth() + 1),
-            padding(date.getDate())
-        ].join('-');
+        return date.toISOString().substring(0, 10);
     }
  });
