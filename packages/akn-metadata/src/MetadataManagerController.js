@@ -97,6 +97,11 @@ Ext.define('AknMetadata.MetadataManagerController', {
         }
     },
 
+    toggleMetadataButton: function(state) {
+        var btn = this.getMainToolbar().down("[cls='" + this.getBtnCls() + "']");
+        btn.toggle(state);
+    },
+
     removeMetadataButton : function() {
         var me = this, toolbar = me.getMainToolbar(),
             btn = toolbar.down("[cls='" + me.getBtnCls() + "']");
@@ -743,6 +748,15 @@ Ext.define('AknMetadata.MetadataManagerController', {
                         // what is record?
                     });
                     me.addRecord(grid, records);
+                }
+            },
+            'contextPanel': {
+                show: function(cmp) {
+                    if (cmp.down('[name=akn-metadata]').isVisible())
+                        me.toggleMetadataButton(true);
+                },
+                hide: function(cmp) {
+                    me.toggleMetadataButton(false);
                 }
             }
         });
