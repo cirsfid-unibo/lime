@@ -42,6 +42,7 @@
     .def { @include Label('definizione') }
     .del { @include Label('cancella') }
     .division { @include Label('divisione') }
+    .docAuthority { @include Label('autorità') }
     .docCommittee { @include Label('commissione') }
     .docDate { @include Label('data-doc') }
     .docIntroducer { @include Label('introduttore') }
@@ -125,7 +126,7 @@
     .recitals { @include Label('giustificazioni') }
     .ref { @include Label('riferimento') }
     .relatedDocument { @include Label('doc-collegato') }
-    .remark { @include Label('remark') }
+    .remark { @include Label('commento') }
     .resolutions { @include Label('risluzione') }
     .rmod { @include Label('intervallo-mod') }
     .role { @include Label('ruolo') }

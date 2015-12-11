@@ -1700,6 +1700,9 @@
 #tinymce.lime.it .division:before {
   content: "divisione";
   width: 67px; }
+#tinymce.lime.it .docAuthority:before {
+  content: "autorit├á";
+  width: 67px; }
 #tinymce.lime.it .docCommittee:before {
   content: "commissione";
   width: 79px; }
@@ -1950,8 +1953,8 @@
   content: "doc-collegato";
   width: 91px; }
 #tinymce.lime.it .remark:before {
-  content: "remark";
-  width: 49px; }
+  content: "commento";
+  width: 61px; }
 #tinymce.lime.it .resolutions:before {
   content: "risluzione";
   width: 73px; }

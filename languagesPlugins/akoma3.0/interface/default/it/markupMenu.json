@@ -179,6 +179,10 @@
         "label": "Divisione",
         "shortLabel": "divisione"
     },
+    "docAuthority": {
+        "label": "Autorità",
+        "shortLabel": "Autorità"
+    },
     "docCommittee": {
         "label": "Commissione",
         "shortLabel": "commissione"
@@ -524,8 +528,8 @@
         "shortLabel": "doc-collegato"
     },
     "remark": {
-        "label": "remark",
-        "shortLabel": "remark"
+        "label": "commento",
+        "shortLabel": "commento"
     },
     "resolutions": {
         "label": "Risoluzione",
