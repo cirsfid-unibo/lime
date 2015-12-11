@@ -452,8 +452,7 @@ Ext.define('LIME.Utilities', {
     },
 
     isValidDate: function(date) {
-        date = (Ext.isDate(date)) ? date : new Date(date);
-        return !isNaN(date.getTime());
+        return Ext.isDate(date) && !isNaN(date.getTime());
     },
 
     detectMarkingLang: function(xmlString) {

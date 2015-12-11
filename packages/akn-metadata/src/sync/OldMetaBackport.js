@@ -125,10 +125,14 @@ Ext.define('AknMetadata.sync.OldMetaBackport', {
         var uri = this.getUri();
         if (!uri) return;
         if (uri.date !== date || uri.version !== version) {
-            uri.date = AknMain.metadata.XmlSerializer.normalizeDate(date);
-            uri.version = AknMain.metadata.XmlSerializer.normalizeDate(version);
-            this.superUpdate('FRBRWork', 'FRBRdate', 'date', uri.date);
-            this.superUpdate('FRBRExpression', 'FRBRdate', 'date', uri.version);
+            if ( Utilities.isValidDate(date) ) {
+                uri.date = AknMain.metadata.XmlSerializer.normalizeDate(date);
+                this.superUpdate('FRBRWork', 'FRBRdate', 'date', uri.date);
+            }
+            if ( Utilities.isValidDate(version) ) {
+                uri.version = AknMain.metadata.XmlSerializer.normalizeDate(version);
+                this.superUpdate('FRBRExpression', 'FRBRdate', 'date', uri.version);
+            }
             this.updateUri(uri);
         }
     },

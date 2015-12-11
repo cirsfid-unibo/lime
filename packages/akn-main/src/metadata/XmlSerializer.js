@@ -145,6 +145,11 @@ Ext.define('AknMain.metadata.XmlSerializer', {
     // Returns the ISO string of the date, removing the time
     normalizeDate: function (date) {
         if (!date) return '';
-        return date.toISOString().substring(0, 10);
+        try {
+            return date.toISOString().substring(0, 10);
+        } catch(e) {
+            console.error('Invalid date: ', date, e);
+        }
+        return '';
     }
  });

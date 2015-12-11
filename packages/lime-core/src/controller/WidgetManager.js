@@ -316,7 +316,7 @@ Ext.define('LIME.controller.WidgetManager', {
         value = value || field.getValue();
         value = ( field.disabled ) ? "" : value;
         //check if field is a date and convert to the ISO format
-        if (Ext.isDate(value))
+        if (Utilities.isValidDate(value))
             value = AknMain.metadata.XmlSerializer.normalizeDate(value);
         widget.ownData = widget.ownData || {};
         widget.ownData[originalName] = value || "";

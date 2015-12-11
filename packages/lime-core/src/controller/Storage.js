@@ -51,7 +51,10 @@
  */
 Ext.define('LIME.controller.Storage', {
     extend : 'Ext.app.Controller',
-    // set the references for this controller
+
+    requires: [
+        'AknMain.metadata.XmlSerializer'
+    ],
 
     views: ['modal.newOpenfile.Main', 'modal.newSavefile.Main', 'modal.newSavefile.VersionSelector'],
 
@@ -81,8 +84,7 @@ Ext.define('LIME.controller.Storage', {
         },
         fieldName: "nationality",
         getValue: function() {
-            return ((DocProperties.frbr && DocProperties.frbr.work) ? DocProperties.frbr.work[this.fieldName] : false)
-                   || DocProperties.documentInfo["docLocale"];
+            return this.getMetaValue('country');
         }
     }, {
         text: Locale.strings.docTypeLabel,
@@ -92,14 +94,13 @@ Ext.define('LIME.controller.Storage', {
         },
         fieldName: 'docType',
         getValue: function() {
-            return DocProperties.documentInfo[this.fieldName];
+            return this.getMetaValue('type');
         }
     }, {
         text: Locale.strings.docProponent,
         fieldName: "docProponent",
-        getValue: function(uri) {
-            var meta = Ext.getStore('metadata').getMainDocument();
-            return meta.get('author');
+        getValue: function() {
+            return this.getMetaValue('author');
         }
     }, {
         text: Locale.strings.docDateLabel,
@@ -110,28 +111,16 @@ Ext.define('LIME.controller.Storage', {
             format: 'Y-m-d'
         },
         fieldName: 'date',
-        getValue: function(uri, meta) {
-            var date;
-            var dom = meta.originalMetadata.metaDom;
-            var frbrDate = dom.querySelector(".FRBRWork .FRBRdate");
-
-            if ( frbrDate ) {
-                date = frbrDate.getAttribute('date');
-            }
-
-            if (!date) {
-                return Ext.Date.format(new Date(), this.editor.format);
-            }
-            return date || "";
+        getValue: function() {
+            var date = this.getMetaValue('date');
+            date = (Utilities.isValidDate(date)) ? date : new Date();
+            return AknMain.metadata.XmlSerializer.normalizeDate(date);
         }
     },{
         text: Locale.strings.docNumberLabel,
         fieldName: 'number',
-        getValue: function(uri) {
-            var docUri = (uri) ? uri.split("/") : [],
-                value = (docUri.length) ? docUri[(docUri.length-3)] : false;
-            value = (value && !Utilities.isValidDate(value)) ? value : Ext.emptyString.toString();
-            return value || this.fieldName;
+        getValue: function() {
+            return this.getMetaValue('number');
         }
     },{
         text: Locale.strings.versionLabel,
@@ -141,23 +130,22 @@ Ext.define('LIME.controller.Storage', {
             xtype: "docVersionSelector",
             selectOnFocus: true
         },
-        getValue: function(uri, meta) {
-            var dom = meta.originalMetadata.metaDom;
-            var frbrDate = dom.querySelector(".FRBRExpression .FRBRdate");
-            var date = "";
-            if ( frbrDate ) {
-                date = frbrDate.getAttribute('date');
-            }
-            return DocProperties.documentInfo["docLang"]+"@"+date;
+        getValue: function() {
+            var date = this.getMetaValue('version');
+            date = (Utilities.isValidDate(date)) ? AknMain.metadata.XmlSerializer.normalizeDate(date) : '';
+            // Todo use an extract of Uri here
+            return this.getMetaValue('language')+'@'+date;
         }
     },{
         text: Locale.strings.fileLabel,
         fieldName: 'docName',
-        defaultValue: 'new',
-        getValue: function() {
-            return this.defaultValue;
-        }
+        defaultValue: 'new'
     }],
+
+    getMetaValue: function(key) {
+        var meta = Ext.getStore('metadata').getMainDocument();
+        return meta.get(key);
+    },
 
     /**
      * Simply close the window
@@ -550,12 +538,12 @@ Ext.define('LIME.controller.Storage', {
         var meta = editor.getDocumentMetadata();
 
         for (var i = 0; i < this.storageColumns.length; i++) {
-            value = Ext.emptyString.toString();
+            value = '';
             columnDescriptor = this.storageColumns[i];
             if (Ext.isFunction(columnDescriptor.getValue)) {
-                value = columnDescriptor.getValue(uri, meta);
+                value = columnDescriptor.getValue.bind(this)();
             }
-            value = value || columnDescriptor.defaultValue || Ext.emptyString.toString();
+            value = value || columnDescriptor.defaultValue || '';
             this.columnValues.push(value);
         }
     },
