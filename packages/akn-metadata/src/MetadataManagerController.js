@@ -752,7 +752,7 @@ Ext.define('AknMetadata.MetadataManagerController', {
             },
             'contextPanel': {
                 show: function(cmp) {
-                    if (cmp.down('[name=akn-metadata]').isVisible())
+                    if (cmp.down('[name=akn-metadata]') && cmp.down('[name=akn-metadata]').isVisible())
                         me.toggleMetadataButton(true);
                 },
                 hide: function(cmp) {

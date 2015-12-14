@@ -52,10 +52,6 @@
 Ext.define('LIME.controller.Storage', {
     extend : 'Ext.app.Controller',
 
-    requires: [
-        'AknMain.metadata.XmlSerializer'
-    ],
-
     views: ['modal.newOpenfile.Main', 'modal.newSavefile.Main', 'modal.newSavefile.VersionSelector'],
 
     refs : [{
@@ -114,7 +110,7 @@ Ext.define('LIME.controller.Storage', {
         getValue: function() {
             var date = this.getMetaValue('date');
             date = (Utilities.isValidDate(date)) ? date : new Date();
-            return AknMain.metadata.XmlSerializer.normalizeDate(date);
+            return Utilities.normalizeDate(date);
         }
     },{
         text: Locale.strings.docNumberLabel,
@@ -132,7 +128,7 @@ Ext.define('LIME.controller.Storage', {
         },
         getValue: function() {
             var date = this.getMetaValue('version');
-            date = (Utilities.isValidDate(date)) ? AknMain.metadata.XmlSerializer.normalizeDate(date) : '';
+            date = (Utilities.isValidDate(date)) ? Utilities.normalizeDate(date) : '';
             // Todo use an extract of Uri here
             return this.getMetaValue('language')+'@'+date;
         }

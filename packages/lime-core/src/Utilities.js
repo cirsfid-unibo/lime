@@ -455,6 +455,19 @@ Ext.define('LIME.Utilities', {
         return Ext.isDate(date) && !isNaN(date.getTime());
     },
 
+    // This is a temporary copy of AknMain.metadata.XmlSerializer.normalizeDate
+    // for using in core without AknMain.metadata.XmlSerializer dependency
+    // Returns the ISO string of the date, removing the time
+    normalizeDate: function (date) {
+        if (!date) return '';
+        try {
+            return date.toISOString().substring(0, 10);
+        } catch(e) {
+            console.error('Invalid date: ', date, e);
+        }
+        return '';
+    },
+
     detectMarkingLang: function(xmlString) {
         var name ;
         for(var i = 0; i < Config.languages.length; i++) {

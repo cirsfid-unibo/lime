@@ -54,10 +54,6 @@
 Ext.define('LIME.controller.WidgetManager', {
     extend : 'Ext.app.Controller',
 
-    requires: [
-        'AknMain.metadata.XmlSerializer'
-    ],
-
     views: ['widgets.MarkedElementWidget'],
     refs : [{
         selector: 'contextPanel',
@@ -317,7 +313,7 @@ Ext.define('LIME.controller.WidgetManager', {
         value = ( field.disabled ) ? "" : value;
         //check if field is a date and convert to the ISO format
         if (Utilities.isValidDate(value))
-            value = AknMain.metadata.XmlSerializer.normalizeDate(value);
+            value = Utilities.normalizeDate(value);
         widget.ownData = widget.ownData || {};
         widget.ownData[originalName] = value || "";
         if (updateAttributes) {

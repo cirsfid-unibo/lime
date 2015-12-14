@@ -126,11 +126,11 @@ Ext.define('AknMetadata.sync.OldMetaBackport', {
         if (!uri) return;
         if (uri.date !== date || uri.version !== version) {
             if ( Utilities.isValidDate(date) ) {
-                uri.date = AknMain.metadata.XmlSerializer.normalizeDate(date);
+                uri.date = Utilities.normalizeDate(date);
                 this.superUpdate('FRBRWork', 'FRBRdate', 'date', uri.date);
             }
             if ( Utilities.isValidDate(version) ) {
-                uri.version = AknMain.metadata.XmlSerializer.normalizeDate(version);
+                uri.version = Utilities.normalizeDate(version);
                 this.superUpdate('FRBRExpression', 'FRBRdate', 'date', uri.version);
             }
             this.updateUri(uri);
