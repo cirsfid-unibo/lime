@@ -1306,7 +1306,9 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 grid.editor = ed;
 
                 if ( markButton.name != toSplitButton.name ) {
-                    Ext.Msg.alert(Locale.strings.error, 'You have to select "'+toSplitButton.name+'" element');
+                    Ext.Msg.alert(Locale.strings.error, new Ext.Template(Locale.getString("haveToSelectElement", me.getPluginName())).apply({
+                        name : toSplitButton.name
+                    }));
                     return;
                 }
 
@@ -1315,7 +1317,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 } else {
                     var firstNode = body.querySelector('['+DomUtils.elementIdAttribute+'='+grid.store.getAt(0).get('id')+']');
                     if ( firstNode && DomUtils.getSiblingsFromNode(firstNode).indexOf(node) == -1 ) {
-                        Ext.Msg.alert(Locale.strings.error, "You can split only sibling nodes");
+                        Ext.Msg.alert(Locale.strings.error, Locale.getString("splitOnlySiblings", me.getPluginName()));
                         return;
                     }
                 }
@@ -1633,11 +1635,13 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     var firstNode = body.querySelector('['+DomUtils.elementIdAttribute+'='+grid.store.getAt(0).get('id')+']');
                     var toJoinButton = DocProperties.getFirstButtonByName(DomUtils.getNameByNode(firstNode));
                     if ( markButton.name != toJoinButton.name ) {
-                        Ext.Msg.alert(Locale.strings.error, 'You have to select "'+toJoinButton.name+'" element');
+                        Ext.Msg.alert(Locale.strings.error, new Ext.Template(Locale.getString("haveToSelectElement", me.getPluginName())).apply({
+                            name : toJoinButton.name
+                        }));
                         return;
                     }
                     if ( firstNode && DomUtils.getSiblingsFromNode(firstNode).indexOf(node) == -1 ) {
-                        Ext.Msg.alert(Locale.strings.error, "You can split only sibling nodes");
+                        Ext.Msg.alert(Locale.strings.error, Locale.getString("splitOnlySiblings", me.getPluginName()));
                         return;
                     }
                 }
@@ -1708,7 +1712,9 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     var grid = winCmp.down('grid');
 
                     if ( markButton.name != toJoinButton.name ) {
-                        Ext.Msg.alert(Locale.strings.error, 'You have to select "'+markButton.name+'" element');
+                        Ext.Msg.alert(Locale.strings.error, new Ext.Template(Locale.getString("haveToSelectElement", me.getPluginName())).apply({
+                            name : markButton.name
+                        }));
                         return;
                     }
 
@@ -1717,7 +1723,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     } else {
                         var firstNode = body.querySelector('['+DomUtils.elementIdAttribute+'='+grid.store.getAt(0).get('id')+']');
                         if ( firstNode && DomUtils.getSiblingsFromNode(firstNode).indexOf(node) == -1 ) {
-                            Ext.Msg.alert(Locale.strings.error, "You can join only sibling nodes");
+                            Ext.Msg.alert(Locale.strings.error, Locale.getString("splitOnlySiblings", me.getPluginName()));
                             return;
                         }
                     }
@@ -2125,7 +2131,9 @@ Ext.define('LIME.controller.ModsMarkerController', {
 
             if ( markButtonNameSecond && panel && panel.isVisible() ) {
                 if ( markButtonNameSecond != markButtonName ) {
-                     Ext.Msg.alert(Locale.strings.error, "You need to select a "+markButtonName);
+                     Ext.Msg.alert(Locale.strings.error, new Ext.Template(Locale.getString("haveToSelectElement", me.getPluginName())).apply({
+                        name : markButtonName
+                     }));
                      return;
                 }
                 var grid = panel.down('grid');

@@ -19,7 +19,9 @@
         "modType": "Modification type",
         "externalRef": "Set external ref",
         "quotedType": "Type",
-        "oldText": "The old text"
+        "oldText": "The old text",
+        "haveToSelectElement": "You have to select {name} element",
+        "splitOnlySiblings": "You can split only sibling nodes"
 	},
 	"it": {
 		"insertion": "Inserimento",
@@ -41,7 +43,9 @@
         "modType": "Tipo modifica",
         "externalRef": "Aggiungi riferimento",
         "quotedType": "Tipo",
-        "oldText": "Testo precedente"
+        "oldText": "Testo precedente",
+        "haveToSelectElement": "Devi selezionere un elemento {name}",
+        "splitOnlySiblings": "Puoi dividere solo elementi vicini"
 	},
 	"es": {
 		"insertion": "Insertion",
@@ -63,6 +67,8 @@
         "modType": "Tipo de modificación",
         "externalRef": "Set external ref",
         "quotedType": "Type",
-        "oldText": "El texto anterior"
+        "oldText": "El texto anterior",
+        "haveToSelectElement": "You have to select {name} element",
+        "splitOnlySiblings": "You can split only sibling nodes"
 	}
 }
