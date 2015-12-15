@@ -46,35 +46,13 @@
  */
  
 $rules = Array(
-    //"roman" => "(M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3}))",
-    "roman" => "\b[IVX]+\b",
-    "number" => "\d+|{{roman}}+|(U|Ú)NICO",
-    "book" => "/(?<![\w\.\,] )(?P<num>({{bookList}})\s*({{number}}\s*[º°\.]*))/",
-    "title" => "/(?<![\w\.\,] )(?P<num>({{titleList}})\s*({{number}}))/",
-    "section" => "/(?<![\w\.\,] )(?P<num>({{sectionList}})\s*({{number}}\s*[º°\.]*))/",
-    "chapter" => "/(?<![\w\.\,] )(?P<num>({{chapterList}})\s*({{number}}))/",
-    "article" => "/(?<![\w\.\,] )(?P<num>({{articleList}})\s*({{number}}\s*[º°\.]*)([ -]*{{latino}})?)\s*({{heading}})?/",
-
-    "heading" => "\([A-Z].+\)\.?",
-
-    "paragraph" => "/(?<![\w\.\,] ){{numparagraph}} +{{bodyitem}}/u",
-    //"numparagraph" => "\(*\b\d{1,2}[\)\.\-]",
-    "numparagraph" => "\b\d{1,2}[\.]|\b([IV]{1,3}-)\d{1,2}[\.]",
-
-    /*
-    "item" => "/(?<![\w\.\,] ){{numitem}} +{{bodyitem}}/u",
-    "numitem" => "\(*\b[A-Za-z]{1,2}[\)\.\-]",
-    "bodyitem" => "[\p{L}\p{N}\p{P}\p{S} ]+[\.;]?",
-    "hierarchy" => Array("book","title","chapter","section","article","paragraph","item")
-    */
-
-    "item1" => "/(?<![\w\.\,] ){{numitem1}} +{{bodyitem}}/u",
-    "item2" => "/(?<![\w\.\,] ){{numitem2}} +{{bodyitem}}/u",
-    "numitem1" => "\(*\b[A-Za-z]{1,2}[\)]",
-    "numitem2" => "\(*\b[0-9]{1,2}[\)]",
-    "bodyitem" => "[\p{L}\p{N}\p{P}\p{S} ]+[\.;]?",
-    "hierarchy" => Array("book","title","chapter","section","article","paragraph","item1","item2")
-
+    "preambleInitList" => Array(),
+    
+    					
+    "preambleEndList" => Array("CODEX STAN"),
+   
+    						   
+    "conclusionsInitList" => Array(),
 );
 
 ?>

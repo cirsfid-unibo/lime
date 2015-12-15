@@ -47,7 +47,7 @@
  
 $rules = Array(
     /*
-	 * PART
+     * PART
      * SECTION
      * SUBSECTION
      * PARAGRAPH
@@ -56,21 +56,20 @@ $rules = Array(
      * SUBCLAUSE
      * LIST
      * SUBLIST (iterata)
-	 */
+     */
     
     "hierarchy" => Array("part","section","subsection","paragraph","subparagraph","clause","subclause"),
 
     #"section" => "/(?<![\w\.\,] )(?P<num>({{number}}\s*\.[A-Z ]*))/",
     #"section" => "/(?P<num>([0-9]\.))/",
-    "section" => "/(?<![\w\.\,] ){{numparagraph}} +{{bodyitem}}/u",
+    "section" => "/(?<![\p{L}\.\,] ){{numparagraph}} +{{bodyitem}}/u",
 
     #"numsubsection" => "/[0-9]\.[0-9]/",
     #"subsection" => "/(?<![\w\.\,] ){{numsubsection}} +{{bodyitem}}/u",
-    "subsection" => "/(?<![\w\:\.\,\<\> ]{2})(?P<num>(\d\.\d)) /",
+    "subsection" => "/(?<![\p{L}\:\.\,\<\> ]{2})(?P<num>(\b([IV]{1,3}-)?\d{1,2}\.\d{1,2})) /",
 
-    "paragraph" => "/(?P<num>(\d\.\d\.\d)) /",
+    "paragraph" => "/(?<![\p{L}\:\.\,\<\> ]{2})(?P<num>(\b([IV]{1,3}-)?\d{1,2}\.\d{1,2}\.\d{1,2})) /",
+    "subparagraph" => "/(?<![\p{L}\:\.\,\<\> ]{2})(?P<num>(\b([IV]{1,3}-)?\d{1,2}\.\d{1,2}\.\d{1,2}\.\d{1,2})) /",
 
 
 );
-
-?>
