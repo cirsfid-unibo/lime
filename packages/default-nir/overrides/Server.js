@@ -48,13 +48,10 @@
 Ext.define('DefaultNir.Server', {
     override: 'LIME.Server',
 
-    nirConversionUrl: 'http://sinatra.cirsfid.unibo.it/node/xsltconverters/nir2akn',
-    // nirConversionUrl: 'http://localhost:9006/nir2akn',
-
     translateNir: function (nirXml, success, failure) {
-        Ext.Ajax.request({
+        this.request({
             method: 'POST',
-            url: this.nirConversionUrl,
+            url: '{nodeServer}/xml/nir2akn',
             rawData: JSON.stringify({ content:nirXml }),
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'
