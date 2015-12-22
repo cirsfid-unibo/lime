@@ -63,6 +63,7 @@ Ext.define('DefaultNir.Server', {
                 success(response.responseText);
             },
             failure: function (response) {
+                failure();
                 console.warn('Error translating NIR to AKN');
                 console.warn(response);
             }

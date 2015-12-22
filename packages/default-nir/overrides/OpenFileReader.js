@@ -55,6 +55,13 @@ Ext.define('DefaultNir.reader.OpenFileReader', {
                 el['name'] = 'marcatura';
             }
         })
+        res.sort(function(a,b) {
+            if (b.name < a.name)
+                return 1;
+            if (b.name > a.name)
+                return -1;
+            return 0;
+        });
         return res;
     }
 });

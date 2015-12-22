@@ -48,18 +48,18 @@ Ext.define('DefaultNir.NirUtils', {
     singleton : true,
     alternateClassName : 'NirUtils',
     
-    nirToHtml: function(nirXml, callback) {
+    nirToHtml: function(nirXml, callback, failure) {
         var me = this;
         Server.translateNir(nirXml, function (aknXml) {
-            me.aknToHtml(aknXml, callback);
-        });
+            me.aknToHtml(aknXml, callback, failure);
+        }, failure);
     },
 
-    aknToHtml: function(content, callback) {
+    aknToHtml: function(content, callback, failure) {
         var akn2html = Config.getLanguageTransformationFile("languageToLIME", 'akoma3.0');
         Server.applyXslt(content, akn2html, function (html) {
-            Ext.callback(callback, null, [html]);
-        });
+            Ext.callback(callback, null, [html, content]);
+        }, failure);
     },
 
     isNirContent: function(content) {

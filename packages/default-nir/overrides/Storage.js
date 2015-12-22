@@ -52,7 +52,7 @@ Ext.define('DefaultNir.controller.Storage', {
         this.storageColumns = [{
             text: Locale.strings.folderLabel,
             fieldName: "folder",
-            defaultValue: "my_documents"
+            defaultValue: "marcatura"
         },{
             text: 'Anno',
             defaultValue: new Date().getUTCFullYear() || 'new',

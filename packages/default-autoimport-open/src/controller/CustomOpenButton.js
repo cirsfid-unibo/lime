@@ -80,6 +80,7 @@ Ext.define('DefaultAutoimportOpen.controller.CustomOpenButton', {
         var me = this;
         this.getController('Storage').selectDocument({
             callback: function(data) {
+                me.startLoading();
                 var path = data.id;
                 var extension = path.substring(path.length - 3);
                 if(extension == 'pdf')
@@ -88,17 +89,29 @@ Ext.define('DefaultAutoimportOpen.controller.CustomOpenButton', {
                     me.onDocSelected(path);
                 else {
                     Server.getDocument(path, function (content) {
-                        // console.log(content);
                         if(typeof NirUtils !== 'undefined' && NirUtils.isNirContent(content))
                             me.onNirSelected(path, content);
                         else {
                             console.log('expecting akn');
                             me.onAknSelected(path);
                         }
+                    }, function() {
+                        me.stopLoading();
                     });
                 }
             }
         });
+    },
+
+    startLoading: function() {
+        this.application.fireEvent(Statics.eventsNames.progressStart, null, {
+            value : 0.1,
+            text : Locale.strings.progressBar.openingDocument
+        });
+    },
+
+    stopLoading: function() {
+        this.application.fireEvent(Statics.eventsNames.progressEnd);
     },
 
     onPdfSelected: function (path) {
@@ -116,6 +129,8 @@ Ext.define('DefaultAutoimportOpen.controller.CustomOpenButton', {
                 docMarkingLanguage: 'akoma3.0',
                 docLang: lang
             });
+        }, function() {
+            me.stopLoading();
         });
     },
 
@@ -128,11 +143,12 @@ Ext.define('DefaultAutoimportOpen.controller.CustomOpenButton', {
         console.log('onNirSelected', path);
         var me = this;
         //NirUtils.confirmAknTranslation(function () {
-            NirUtils.nirToHtml(content, function(html) {
+            NirUtils.nirToHtml(content, function(html, akn) {
             // Load the resulting Htmltoso document
                 Ext.GlobalEvents.fireEvent(Statics.eventsNames.loadDocument, {
                     docText: html,
-                    docMarkingLanguage: 'akoma3.0'
+                    docMarkingLanguage: 'akoma3.0',
+                    originalXml: akn
                 });
             });
         //});
