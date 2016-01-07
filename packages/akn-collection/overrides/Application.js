@@ -49,14 +49,15 @@ Ext.define('AknCollection.Application', {
     override: 'LIME.Application',
 
     requires: [
+        'AknCollection.Strings',
         'AknCollection.DocumentCollectionController',
         'AknCollection.NewDocumentCollection',
         'AknCollection.NewDocumentCollectionDropGrid'
     ],
 
     initControllers: function() {
+        Locale.setPluginStrings('akn-collection', AknCollection.Strings.strings);
         this.controllers.push('AknCollection.DocumentCollectionController');
-        Locale.getPackageStrings('akn-collection');
         this.callParent();
     }
 });

@@ -139,11 +139,7 @@ Ext.define('DefaultImport.controller.Import', {
 
     init : function() {
         var me = this;
-
-        Locale.getPackageStrings('default-import', function() {
-            me.initMenu();
-        });
-
+        me.initMenu();
         this.control({
             'menu [name=importDocument]' : {
                 click : function() {

@@ -49,6 +49,7 @@ Ext.define('AknMetadata.Application', {
     override: 'LIME.Application',
 
     requires: [
+        'AknMetadata.Strings',
         'AknMetadata.MetadataManagerController',
         'AknMetadata.sync.EditorSynchronizer',
         'AknMetadata.sync.OldMetaBackport',
@@ -58,7 +59,7 @@ Ext.define('AknMetadata.Application', {
     ],
 
     initControllers : function() {
-        Locale.getPackageStrings('akn-metadata');
+        Locale.setPluginStrings('akn-metadata', AknMetadata.Strings.strings);
         this.controllers.push('AknMetadata.MetadataManagerController');
         this.controllers.push('AknMetadata.sync.EditorSynchronizer');
         this.controllers.push('AknMetadata.sync.OldMetaBackport');

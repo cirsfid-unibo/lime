@@ -58,8 +58,6 @@ Ext.define('AknTabXmlPreview.Application', {
 
     initControllers : function() {
         this.controllers.push('AknTabXmlPreview.controller.AknPreviewController');
-
-        Locale.getPackageStrings('akn-tab-xml-preview');
         this.callParent();
     }
 });

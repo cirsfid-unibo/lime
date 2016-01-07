@@ -54,8 +54,6 @@ Ext.define('DefaultAutoimportOpen.Application', {
 
     initControllers : function() {
         this.controllers.push('DefaultAutoimportOpen.controller.CustomOpenButton');
-        
-        Locale.getPackageStrings('default-autoimport-open');
         this.callParent();
     }
 });

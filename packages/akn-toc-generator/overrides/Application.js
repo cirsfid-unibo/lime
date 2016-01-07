@@ -45,17 +45,17 @@
  */
 
 
-Ext.require([
-    'AknTocGenerator.TocGeneratorController'
-]);
-
 Ext.define('AknTocGenerator.Application', {
     override: 'LIME.Application',
 
-    initControllers : function() {
-        this.controllers.push('AknTocGenerator.TocGeneratorController');
+    requires: [
+        'AknTocGenerator.Strings',
+        'AknTocGenerator.TocGeneratorController'
+    ],
 
-        Locale.getPackageStrings('akn-toc-generator');
+    initControllers : function() {
+        Locale.setPluginStrings('akn-toc-generator', AknTocGenerator.Strings.strings);
+        this.controllers.push('AknTocGenerator.TocGeneratorController');
         this.callParent();
     }
 });

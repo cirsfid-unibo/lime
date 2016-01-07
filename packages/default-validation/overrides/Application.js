@@ -45,21 +45,19 @@
  */
 
 
-Ext.require([
-    'DefaultValidation.controller.XmlValidation'
-]);
-
 Ext.define('DefaultValidation.Application', {
     override: 'LIME.Application',
 
     requires: [
+        'DefaultValidation.Strings',
+        'DefaultValidation.controller.XmlValidation',
         'DefaultValidation.view.ValidationResultWindow'
     ],
 
     initControllers : function() {
+        Locale.setPluginStrings('default-validation', DefaultValidation.Strings.strings);
         this.controllers.push('DefaultValidation.controller.XmlValidation');
         
-        Locale.getPackageStrings('default-validation');
         this.callParent();
     }
 });

@@ -48,6 +48,7 @@ Ext.define('DefaultNir.Application', {
     override: 'LIME.Application',
 
     requires: [
+        'DefaultNir.Strings',
         'DefaultNir.NirUtils',
         'DefaultNir.controller.NirPreview',
         'DefaultNir.controller.AliasUrnSync',
@@ -55,10 +56,10 @@ Ext.define('DefaultNir.Application', {
     ],
 
     initControllers : function() {
+        Locale.setPluginStrings('default-nir', DefaultNir.Strings.strings);
         this.controllers.push('DefaultNir.controller.NirPreview');
         this.controllers.push('DefaultNir.controller.AliasUrnSync');
         
-        Locale.getPackageStrings('default-nir');
         this.callParent();
     }
 });

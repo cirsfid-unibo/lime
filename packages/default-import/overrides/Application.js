@@ -44,15 +44,16 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
-Ext.require([
-    'DefaultImport.controller.Import'
-]);
-
 Ext.define('DefaultImport.Application', {
     override: 'LIME.Application',
 
+    requires: [
+        'DefaultImport.Strings',
+        'DefaultImport.controller.Import'
+    ],
+
     initControllers : function() {
+        Locale.setPluginStrings('default-import', DefaultImport.Strings.strings);
         this.controllers.push('DefaultImport.controller.Import');
         this.callParent();
     }

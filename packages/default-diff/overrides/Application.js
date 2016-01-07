@@ -44,17 +44,14 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
-Ext.require([
-    'DefaultDiff.controller.DoubleDocSelector',
-    'DefaultDiff.controller.DualEditorSynchronizer',
-    'DefaultDiff.controller.XmlDiff'
-]);
-
 Ext.define('DefaultDiff.Application', {
     override: 'LIME.Application',
 
     requires: [
+        'DefaultDiff.Strings',
+        'DefaultDiff.controller.DoubleDocSelector',
+        'DefaultDiff.controller.DualEditorSynchronizer',
+        'DefaultDiff.controller.XmlDiff',
         'DefaultDiff.view.AmendingDiffMainTab',
         'DefaultDiff.view.ConsolidatingDiffMainTab',
         'DefaultDiff.view.DiffTab',
@@ -62,11 +59,11 @@ Ext.define('DefaultDiff.Application', {
     ],
 
     initControllers : function() {
+        Locale.setPluginStrings('default-diff', DefaultDiff.Strings.strings);
         this.controllers.push('DefaultDiff.controller.DoubleDocSelector');
         this.controllers.push('DefaultDiff.controller.DualEditorSynchronizer');
         this.controllers.push('DefaultDiff.controller.XmlDiff');
 
-        Locale.getPackageStrings('default-diff');
         this.callParent();
     }
 });

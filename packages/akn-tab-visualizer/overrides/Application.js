@@ -49,13 +49,14 @@ Ext.define('AknTabVisualizer.Application', {
     override: 'LIME.Application',
 
     requires: [
+        'AknTabVisualizer.Strings',
         'AknTabVisualizer.view.VisualPreviewMainTab',
         'AknTabVisualizer.visualizer.MainTab',
         'AknTabVisualizer.controller.MainTab'
     ],
 
     initControllers : function() {
-        Locale.getPackageStrings('akn-tab-visualizer');
+        Locale.setPluginStrings('akn-tab-visualizer', AknTabVisualizer.Strings.strings);
         this.callParent();
     }
 });
