@@ -17,7 +17,8 @@
         "akn-metadata",
         "akn-collection",
         "akn-tab-xml-preview",
-        "akn-tab-visualizer"
+        "akn-tab-visualizer",
+        "akn-toc-generator"
     ],
     "framework": "ext",
     "css": [

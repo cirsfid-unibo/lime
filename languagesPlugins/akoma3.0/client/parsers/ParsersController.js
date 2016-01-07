@@ -156,7 +156,8 @@ Ext.define('LIME.controller.ParsersController', {
             }
         };
         me.application.fireEvent("addMenuItem", me, {
-            menu : "editMenuButton"
+            menu : "editMenuButton",
+            posIndex: 0
         }, menu);
     },
 

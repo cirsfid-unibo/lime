@@ -1,4 +1,0 @@
-{
-    "views": ["SimplePagingToolbar", "TranslationMainTab"],
-    "controllers": ["TranslationMainTabController"]
-}

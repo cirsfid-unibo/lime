@@ -44,7 +44,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
- Ext.define('LIME.controller.TocGeneratorController', {
+ Ext.define('AknTocGenerator.TocGeneratorController', {
     extend : 'Ext.app.Controller',
 
     refs : [
@@ -52,7 +52,7 @@
     ],
 
     config : {
-        pluginName : "tocGenerator"
+        pluginName : "akn-toc-generator"
     },
     
     init : function() {

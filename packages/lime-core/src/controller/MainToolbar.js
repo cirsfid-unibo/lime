@@ -273,7 +273,7 @@ Ext.define('LIME.controller.MainToolbar', {
         var mainMenu = this.getMainToolbar(), newMenu,
             menu = mainMenu.down(config.menu+" menu"),
             refItem = config.before || config.after || config.replace,
-            refItemIndex = -1, posIndex = config.posIndex || -1;
+            refItemIndex = -1, posIndex = (config.posIndex === undefined) ? -1 : config.posIndex;
 
         if(menu && !menu.down("*[name="+menuConfig.name+"]")) {
             newMenu = menu.add(menuConfig);
