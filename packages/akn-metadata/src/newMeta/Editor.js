@@ -47,7 +47,7 @@
 // Metadata editor for the AknMain.metadata.Store
 // Todo: add validation/display errors
 Ext.define('AknMetadata.newMeta.Editor', {
-    extend: 'Ext.panel.Panel',
+    extend: 'Ext.tab.Panel',
     xtype: 'akn-metadata-editor',
 
     requires: [
@@ -60,16 +60,22 @@ Ext.define('AknMetadata.newMeta.Editor', {
         type: 'akn-metadata'
     },
 
-    layout: {
-        type: 'accordion',
-        titleCollapse: true,
-        animate: true,
-        fill: true
+    // ui: 'navigation',
+    tabPosition: 'left',
+    tabRotation: 0,
+    tabBar: {
+        border: false
+    },
+
+    defaults: {
+        textAlign: 'left',
+        bodyPadding: 15
     },
 
     items: [{
         xtype: 'metadataTab',
-        title: 'Work',
+        title: 'Document',
+        glyph: 'xf0f6@FontAwesome',
         items: [{
             xtype: 'datefield',
             fieldLabel: 'Work date',
@@ -109,11 +115,7 @@ Ext.define('AknMetadata.newMeta.Editor', {
             xtype: 'checkboxfield',
             boxLabel: 'Authoritative',
             bind: '{document.authoritative}'
-        }]
-    }, {
-        xtype: 'metadataTab',
-        title: 'Version',
-        items: [{
+        }, {
             xtype: 'combobox',
             store: 'DocumentLanguages',
             displayField: 'name',
@@ -129,55 +131,13 @@ Ext.define('AknMetadata.newMeta.Editor', {
             bind: '{document.author}'
         }]
     }, {
+        title: 'Events',
         xtype: 'metadataTab',
-        title: 'Manifestation',
-        items: []
+        glyph: 'xf073@FontAwesome',
     }, {
+        title: 'Workflow',
         xtype: 'metadataTab',
-        title: 'References',
-        layout: 'fit',
-        items: [{
-            xtype: 'gridpanel',
-            bind: {
-                store: '{document.references}'
-            },
-            columns: [
-                { text: 'Id', dataIndex: 'eid', editor: 'textfield', allowBlank: false },
-                {
-                    text: 'Type',
-                    dataIndex: 'type',
-                    editor: {
-                        xtype: 'combo',
-                        store: AknMain.metadata.Reference.validators.type[0].list
-                    },
-                    allowBlank: false
-                },
-                { text: 'Href', dataIndex: 'href', flex: 1, editor: 'textfield' },
-                { text: 'Name', dataIndex: 'showAs', editor: 'textfield' }
-            ],
-            plugins: {
-                ptype: 'cellediting',
-                clicksToEdit: 1
-            },
-            tools: [{
-                type: 'plus',
-                tooltip: 'Add a new reference',
-                callback: function (grid) {
-                    console.log('arguments', arguments);
-                    grid.getStore().add({});
-                }
-            }, {
-                type: 'minus',
-                tooltip: 'Remove selected references',
-                callback: function (grid) {
-                    console.log(grid.getSelection());
-                    grid.getStore().remove(grid.getSelection());
-                }
-            }]
-        }]
-    }, {
-        xtype: 'metadataTab',
-        title: 'Lifecycle',
+        glyph: 'xf160@FontAwesome',
         layout: 'fit',
         items: [{
             xtype: 'gridpanel',
@@ -226,6 +186,54 @@ Ext.define('AknMetadata.newMeta.Editor', {
                 }
             }]
         }]
+    }, {
+        title: 'Classification',
+        xtype: 'metadataTab',
+        glyph: 'xf200@FontAwesome'
+    }, {
+        title: 'References',
+        xtype: 'metadataTab',
+        glyph: 'xf08e@FontAwesome',
+        layout: 'fit',
+        items: [{
+            xtype: 'gridpanel',
+            bind: {
+                store: '{document.references}'
+            },
+            columns: [
+                { text: 'Id', dataIndex: 'eid', editor: 'textfield', allowBlank: false },
+                {
+                    text: 'Type',
+                    dataIndex: 'type',
+                    editor: {
+                        xtype: 'combo',
+                        store: AknMain.metadata.Reference.validators.type[0].list
+                    },
+                    allowBlank: false
+                },
+                { text: 'Href', dataIndex: 'href', flex: 1, editor: 'textfield' },
+                { text: 'Name', dataIndex: 'showAs', editor: 'textfield' }
+            ],
+            plugins: {
+                ptype: 'cellediting',
+                clicksToEdit: 1
+            },
+            tools: [{
+                type: 'plus',
+                tooltip: 'Add a new reference',
+                callback: function (grid) {
+                    console.log('arguments', arguments);
+                    grid.getStore().add({});
+                }
+            }, {
+                type: 'minus',
+                tooltip: 'Remove selected references',
+                callback: function (grid) {
+                    console.log(grid.getSelection());
+                    grid.getStore().remove(grid.getSelection());
+                }
+            }]
+        }]
     }]
 });
 
@@ -234,6 +242,6 @@ Ext.define('AknMetadata.newMeta.EditorTab', {
     scrollable: 'y',
     alias: 'widget.metadataTab',
     defaults: {
-        padding: '5 20'
+        padding: '0'
     }
 });
