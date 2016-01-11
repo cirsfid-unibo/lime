@@ -117,9 +117,9 @@ Ext.define('AknMetadata.sync.ImportController', {
                         FRBRManifestation: 'manifestation',
                         FRBRItem: 'item'
                     }[alias.parentNode.tagName]
-                }
+                };
                 store.aliases().add(data);
-            })
+            });
         }
 
         function importWork() {
@@ -144,6 +144,8 @@ Ext.define('AknMetadata.sync.ImportController', {
         }
 
         function importManifestation () {
+            store.set('component', 'main');
+            store.set('media', 'xml');
             store.setManifestationAuthor(getReference('//akn:FRBRManifestation/akn:FRBRauthor/@href'));
             store.setManifestationAuthorRole(getReference('//akn:FRBRManifestation/akn:FRBRauthor/@as'));
         }

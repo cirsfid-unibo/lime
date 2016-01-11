@@ -253,12 +253,19 @@ Ext.define('LIME.controller.Editor', {
     },
 
     getDocumentUri: function() {
-        var metadata = this.getDocumentMetadata();
-        var dom = metadata.originalMetadata.metaDom;
-        var frbrThis = dom.querySelector("div[class='FRBRManifestation'] div[class='FRBRthis']");
-        if ( frbrThis ) {
-            return frbrThis.getAttribute('value');
+        // Todo: this should be abstracted away from Lime core
+        try {
+            var uri = Ext.getStore('metadata').getMainDocument().getUri();
+            return uri.manifestation();
+        } catch (e) {
+            return this.getDocumentPath();
         }
+        // var metadata = this.getDocumentMetadata();
+        // var dom = metadata.originalMetadata.metaDom;
+        // var frbrThis = dom.querySelector("div[class='FRBRManifestation'] div[class='FRBRthis']");
+        // if ( frbrThis ) {
+        //     return frbrThis.getAttribute('value');
+        // }
     },
 
     getDocumentPath: function() {

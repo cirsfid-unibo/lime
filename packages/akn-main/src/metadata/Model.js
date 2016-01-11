@@ -77,8 +77,9 @@ Ext.define('AknMain.metadata.Document', {
         { name: 'version', type: 'date' },      // '2015-03-12'
         { name: 'official', type: 'string' },   // 'official'
         { name: 'generation', type: 'date' },   // '2015-03-12'
+        { name: 'component', type: 'string' },  // 'main'
         { name: 'media', type: 'string' },      // 'xml'
-        { name: 'path', type: 'string' },       // 'http://sinatra ... xml'
+        { name: 'path', type: 'string' },       // 'http://sinatra ... xml'componentcomponent
         { name: 'authoritative', type: 'boolean' },
         { name: 'prescriptive', type: 'boolean' },
 
@@ -132,6 +133,7 @@ Ext.define('AknMain.metadata.Document', {
         uri.version = normalize(this.get('version'));
         uri.official = this.get('official');
         uri.generation = normalize(this.get('generation'));
+        uri.component = this.get('component');
         uri.media = this.get('media');
         uri.path = this.get('path');
         return uri;

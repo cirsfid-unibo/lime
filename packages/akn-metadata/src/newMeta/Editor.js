@@ -78,8 +78,12 @@ Ext.define('AknMetadata.newMeta.Editor', {
         glyph: 'xf0f6@FontAwesome',
         items: [{
             xtype: 'datefield',
-            fieldLabel: 'Work date',
+            fieldLabel: 'Date',
             bind: '{document.date}'
+        }, {
+            xtype: 'datefield',
+            fieldLabel: 'Version date',
+            bind: '{document.version}'
         }, {
             xtype: 'textfield',
             fieldLabel: 'Number',
@@ -88,25 +92,20 @@ Ext.define('AknMetadata.newMeta.Editor', {
             xtype: 'combobox',
             store: 'Nationalities',
             displayField: 'name',
+            valueField: 'alpha-2',
             fieldLabel: 'Nation',
             bind: '{document.country}'
+        }, {
+            xtype: 'combobox',
+            store: 'DocumentLanguages',
+            displayField: 'name',
+            valueField: 'code',
+            fieldLabel: 'Language',
+            bind: '{document.language}'
         }, {
             xtype: 'textfield',
             fieldLabel: 'Author',
             bind: '{document.author}'
-        }, {
-            xtype: 'gridpanel',
-            bind: {
-                store: '{document.aliases}'
-            },
-            columns: [
-                { text: 'Value', dataIndex: 'value', flex: 1, editor: 'textfield', allowBlank: false },
-                { text: 'Name', dataIndex: 'name', editor: 'textfield' }
-            ],
-            plugins: {
-                ptype: 'rowediting',
-                clicksToEdit: 1
-            }
         }, {
             xtype: 'checkboxfield',
             boxLabel: 'Prescriptive',
@@ -116,33 +115,86 @@ Ext.define('AknMetadata.newMeta.Editor', {
             boxLabel: 'Authoritative',
             bind: '{document.authoritative}'
         }, {
-            xtype: 'combobox',
-            store: 'DocumentLanguages',
-            displayField: 'name',
-            fieldLabel: 'Language',
-            bind: '{document.language}'
-        }, {
-            xtype: 'datefield',
-            fieldLabel: 'Version date',
-            bind: '{document.date}'
-        }, {
-            xtype: 'textfield',
-            fieldLabel: 'Author',
-            bind: '{document.author}'
+            xtype: 'metadataeditortable',
+            title: 'Aliases',
+            hideHeaders: true,
+            bind: {
+                store: '{document.aliases}'
+            },
+            columns: [
+                { text: 'Value', dataIndex: 'value', flex: 1, editor: 'textfield', allowBlank: false }
+            ],
+            custom: {
+                level: function () { return 'work'; },
+                name: function () { return 'alias'; }
+            }
         }]
     }, {
         title: 'Events',
         xtype: 'metadataTab',
         glyph: 'xf073@FontAwesome',
+        items: [{
+            xtype: 'metadataeditortable',
+            bind: {
+                store: '{document.lifecycleEvents}'
+            },
+            columns:[
+                { text: 'Date', dataIndex: 'date', editor: 'datefield' },
+                {
+                    text: 'Source',
+                    dataIndex: 'source',
+                    flex: 1,
+                    renderer: function (r) {
+                        return r.data.showAs;
+                    },
+                    editor: {
+                        xtype: 'combo',
+                        store: [],
+                        listeners: {
+                            beforequery: function () {
+                                var documents = [];
+                                Ext.getStore('metadata').getMainDocument().references().each(function (r) {
+                                    documents.push(r);
+                                });
+                                this.setStore(documents.filter(function (r) {
+                                    return r.type === 'original' || r.type === 'TLCReference';
+                                }).map(function (r) {
+                                    return [r, r.data.showAs];
+                                }));
+                            },
+                            show: function () {
+                                console.log('show');
+                            }
+                        },
+                    }
+                },
+                {
+                    text: 'Type',
+                    dataIndex: 'type',
+                    editor: {
+                        xtype: 'combo',
+                        store: ['generation', 'amendment', 'repeal'],
+                        forceSelection: true
+                    }
+                }
+                // { name: 'source', reference: 'Reference' },
+                // { name: 'refers', type: 'string' },
+                // { name: 'original', type: 'boolean' },
+            ]
+        }],
+        custom: {
+            eid: function (context) { return 'e' + context.rowIdx; }
+        }
+
     }, {
         title: 'Workflow',
         xtype: 'metadataTab',
         glyph: 'xf160@FontAwesome',
         layout: 'fit',
         items: [{
-            xtype: 'gridpanel',
+            xtype: 'metadataeditortable',
             bind: {
-                store: '{document.lifecycleEvents}'
+                store: '{document.workflowStep}'
             },
             columns: [
                 { text: 'Id', dataIndex: 'eid', editor: 'textfield', allowBlank: false },
@@ -165,26 +217,7 @@ Ext.define('AknMetadata.newMeta.Editor', {
                         store: AknMain.metadata.LifecycleEvent.validators.type[0].list
                     }
                 }
-            ],
-            plugins: {
-                ptype: 'cellediting',
-                clicksToEdit: 1
-            },
-            tools: [{
-                type: 'plus',
-                tooltip: 'Add a new event',
-                callback: function (grid) {
-                    console.log('arguments', arguments);
-                    grid.getStore().add({});
-                }
-            }, {
-                type: 'minus',
-                tooltip: 'Remove selected events',
-                callback: function (grid) {
-                    console.log(grid.getSelection());
-                    grid.getStore().remove(grid.getSelection());
-                }
-            }]
+            ]
         }]
     }, {
         title: 'Classification',
@@ -196,7 +229,7 @@ Ext.define('AknMetadata.newMeta.Editor', {
         glyph: 'xf08e@FontAwesome',
         layout: 'fit',
         items: [{
-            xtype: 'gridpanel',
+            xtype: 'metadataeditortable',
             bind: {
                 store: '{document.references}'
             },
@@ -213,26 +246,7 @@ Ext.define('AknMetadata.newMeta.Editor', {
                 },
                 { text: 'Href', dataIndex: 'href', flex: 1, editor: 'textfield' },
                 { text: 'Name', dataIndex: 'showAs', editor: 'textfield' }
-            ],
-            plugins: {
-                ptype: 'cellediting',
-                clicksToEdit: 1
-            },
-            tools: [{
-                type: 'plus',
-                tooltip: 'Add a new reference',
-                callback: function (grid) {
-                    console.log('arguments', arguments);
-                    grid.getStore().add({});
-                }
-            }, {
-                type: 'minus',
-                tooltip: 'Remove selected references',
-                callback: function (grid) {
-                    console.log(grid.getSelection());
-                    grid.getStore().remove(grid.getSelection());
-                }
-            }]
+            ]
         }]
     }]
 });
@@ -244,4 +258,44 @@ Ext.define('AknMetadata.newMeta.EditorTab', {
     defaults: {
         padding: '0'
     }
+});
+
+// Custom Grid used inside the metadata editor.
+// - Add tools for adding and removing elements.
+// - Row editing.
+// - Allow setting model properties programmatically on row edit complete:
+//   functions in the 'custom' property are executed with the record context
+//   and added to the store.
+Ext.define('AknMetadata.newMeta.EditorTable', {
+    extend: 'Ext.grid.Panel',
+    alias: 'widget.metadataeditortable',
+    plugins: {
+        ptype: 'rowediting',
+        clicksToEdit: 1,
+        listeners: {
+            validateedit: function(editor, context) {
+                var custom = context.grid.custom || {};
+                Object.keys(custom).forEach(function (prop) {
+                    context.record.data[prop] = custom[prop](context);
+                    console.log('setting ', prop, ' to ', context.record.data[prop]);
+                });
+            }
+        }
+    },
+
+    tools: [{
+        type: 'plus',
+        tooltip: 'Add a new item',
+        callback: function (grid) {
+            console.log('arguments', arguments);
+            grid.getStore().add({});
+        }
+    }, {
+        type: 'minus',
+        tooltip: 'Remove selected items',
+        callback: function (grid) {
+            console.log(grid.getSelection());
+            grid.getStore().remove(grid.getSelection());
+        }
+    }]
 });
