@@ -154,75 +154,138 @@ function createEqualCellBox(firstCell, secondCell) {
 
 function applyJoins() {
     var joins = document.querySelectorAll("*[joined]");
-    console.log(joins);
+
     for (var i = 0; i < joins.length; i++) {
-        var el = joins[i], td = getParentByName(el, "td"), tr = td.parentNode;
-        var element = td.querySelector("*"), style = window.getComputedStyle(element), 
-        trStyle = window.getComputedStyle(tr), width = parseInt(style.getPropertyValue("width")), 
+        var el = joins[i], td = getParentByName(el, "td");
+
+        if (el.textContent == td.textContent)
+            drawTdJoin(td);
+        else
+            drawElJoin(el, td);
+    }
+}
+
+function drawTdJoin(td) {
+    var targetElement = td.querySelector("*"),
+        oppositeTdsBBox = getOppositeTdsBBox(td);
+
+    drawArrows(targetElement, td, oppositeTdsBBox, createArrowsJoin);
+}
+
+function getOppositeTdsBBox(td) {
+    var tds = getOppositeTds(td);
+
+    return getNodesBBox(tds);
+}
+
+function drawElJoin(el, td) {
+    var joinId = el.getAttribute('joined'),
+        nodesToJoin = document.querySelectorAll("*[joininto='"+joinId+"']"),
+        oppositeTdsBBox = getNodesBBox(nodesToJoin);
+
+    drawArrows(el, td, oppositeTdsBBox, createArrowsJoin);
+}
+
+function drawTdSplit(td) {
+    var targetElement = td.querySelector("*"),
+    oppositeTdsBBox = getOppositeTdsBBox(td);
+
+    drawArrows(targetElement, td, oppositeTdsBBox, createArrows);
+}
+
+function drawElSplit(el, td) {
+    var splitId = el.getAttribute('tosplit'),
+        nodesSplitted = document.querySelectorAll("*[splittedby='"+splitId+"']"),
+        oppositeTdsBBox = getNodesBBox(nodesSplitted);
+
+    drawArrows(el, td, oppositeTdsBBox, createArrows);
+}
+
+function drawArrows(el, td, oppositeTdsBBox, createArrowsFn) {
+    var style = window.getComputedStyle(el), 
+        width = parseInt(style.getPropertyValue("width")), 
         height = parseInt(style.getPropertyValue("height")), 
-        pos = getPos(element);
+        pos = getPos(el),
         tdPosInParent = getPosInParent(td);
 
-        var oppositeTdsBBox = getOppositeTdsBBox(td);
-        
-        var svgBoxSettings = {
-            pos : {
-                x : (tdPosInParent) ? oppositeTdsBBox.pos.x + oppositeTdsBBox.size.w: (pos.x + width),
-                y : oppositeTdsBBox.pos.y
-            },
-            size : {
-                w : (tdPosInParent) ? (pos.x - (oppositeTdsBBox.pos.x + oppositeTdsBBox.size.w)) : (oppositeTdsBBox.pos.x - (pos.x + width)),
-                h : oppositeTdsBBox.size.h
-            }
-        };
-
-        var svgBox = createArrowsBox(svgBoxSettings);
-        createArrowsJoin(svgBox, svgBoxSettings, {
-            pos : pos,
-            size : {
-                w : width,
-                h : height
-            },
-            direction: tdPosInParent
-        }, oppositeTdsBBox);
-        document.body.appendChild(svgBox);
+    if ( oppositeTdsBBox.size.h > height ) {
+        el.style.height = oppositeTdsBBox.size.h;
     }
+
+    var svgBoxSettings = {
+        pos : {
+            x : (tdPosInParent) ? oppositeTdsBBox.pos.x + oppositeTdsBBox.size.w: (pos.x + width),
+            y : oppositeTdsBBox.pos.y
+        },
+        size : {
+            w : (tdPosInParent) ? (pos.x - (oppositeTdsBBox.pos.x + oppositeTdsBBox.size.w)) : (oppositeTdsBBox.pos.x - (pos.x + width)),
+            h : oppositeTdsBBox.size.h
+        }
+    };
+
+    var svgBox = createArrowsBox(svgBoxSettings);
+    createArrowsFn(svgBox, svgBoxSettings, {
+        pos : pos,
+        size : {
+            w : width,
+            h : height
+        },
+        direction: tdPosInParent
+    }, oppositeTdsBBox);
+    document.body.appendChild(svgBox);
+}
+
+function getNodesBBox(nodes) {
+    var result = {}, sizesAndPos = [], minX, minY, totW = 0, totH = 0, prevYH;
+
+    for (var i = 0; i < nodes.length; i++) {
+        var targetEl = nodes[i];
+        targetEl = (targetEl.nodeName.toLowerCase() == 'td' && targetEl.firstElementChild) ?
+                        targetEl.firstElementChild : targetEl;
+
+        var pos = getPos(targetEl),
+            style = window.getComputedStyle(nodes[i]),
+            size = {
+                w : parseInt(style.getPropertyValue("width")),
+                h : parseInt(style.getPropertyValue("height"))
+            };
+
+        minX = (!minX || pos.x < minX) ? pos.x : minX;
+        minY = (!minY || pos.y < minY) ? pos.y : minY;
+
+        totW = (!totW || size.w > totW) ? size.w : totW;
+
+        totH += size.h;
+        totH = (prevYH) ? totH + pos.y - prevYH : totH;
+        sizesAndPos.push({
+            node : nodes[i],
+            pos : pos,
+            size : size
+        });
+        prevYH = pos.y + size.h;
+    }
+
+    result.pos = {
+        x : minX,
+        y : minY
+    };
+    result.size = {
+        w : totW,
+        h : totH
+    };
+    result.elements = sizesAndPos;
+    return result;
 }
 
 function applySplits() {
     var splitted = document.querySelectorAll("*[tosplit]");
-
     for (var i = 0; i < splitted.length; i++) {
-        var el = splitted[i], td = getParentByName(el, "td"), tr = td.parentNode;
-        var element = td.querySelector("*"), style = window.getComputedStyle(element), 
-        trStyle = window.getComputedStyle(tr), width = parseInt(style.getPropertyValue("width")), 
-        height = parseInt(style.getPropertyValue("height")), 
-        pos = getPos(element);
-        tdPosInParent = getPosInParent(td);
+        var el = splitted[i], td = getParentByName(el, "td");
 
-        var oppositeTdsBBox = getOppositeTdsBBox(td);
-        
-        var svgBoxSettings = {
-            pos : {
-                x : (tdPosInParent) ? oppositeTdsBBox.pos.x + oppositeTdsBBox.size.w: (pos.x + width),
-                y : oppositeTdsBBox.pos.y
-            },
-            size : {
-                w : (tdPosInParent) ? (pos.x - (oppositeTdsBBox.pos.x + oppositeTdsBBox.size.w)) : (oppositeTdsBBox.pos.x - (pos.x + width)),
-                h : oppositeTdsBBox.size.h
-            }
-        };
-
-        var svgBox = createArrowsBox(svgBoxSettings);
-        createArrows(svgBox, svgBoxSettings, {
-            pos : pos,
-            size : {
-                w : width,
-                h : height
-            },
-            direction: tdPosInParent
-        }, oppositeTdsBBox);
-        document.body.appendChild(svgBox);
+        if (el.textContent == td.textContent)
+            drawTdSplit(td);
+        else
+            drawElSplit(el, td);
     }
 }
 
@@ -274,6 +337,7 @@ function getParentByName(node, name) {
     return (iterNode && iterNode.nodeName.toLowerCase() == name) ? iterNode : false;
 }
 
+
 function getOppositeTds(td) {
     var elements = [], trs = [], nTr = (td.getAttribute("rowspan")) ? parseInt(td.getAttribute("rowspan")) : 1, 
         iterTr = getParentByName(td, "tr"), tdPosInParent = getPosInParent(td);
@@ -292,42 +356,6 @@ function getOppositeTds(td) {
         }
     }
     return elements;
-}
-
-function getOppositeTdsBBox(td) {
-    var tds = getOppositeTds(td), result = {}, sizesAndPos = [], minX, minY, totW = 0, totH = 0, prevYH;
-
-    for (var i = 0; i < tds.length; i++) {
-        var targetEl = (tds[i].firstElementChild) ? tds[i].firstElementChild : tds[i], style = window.getComputedStyle(tds[i]), pos = getPos(targetEl), size = {
-            w : parseInt(style.getPropertyValue("width")),
-            h : parseInt(style.getPropertyValue("height"))
-        };
-
-        minX = (!minX || pos.x < minX) ? pos.x : minX;
-        minY = (!minY || pos.y < minY) ? pos.y : minY;
-
-        totW = (!totW || size.w > totW) ? size.w : totW;
-
-        totH += size.h;
-        totH = (prevYH) ? totH + pos.y - prevYH : totH;
-        sizesAndPos.push({
-            node : tds[i],
-            pos : pos,
-            size : size
-        });
-        prevYH = pos.y + size.h;
-    }
-
-    result.pos = {
-        x : minX,
-        y : minY
-    };
-    result.size = {
-        w : totW,
-        h : totH
-    };
-    result.elements = sizesAndPos;
-    return result;
 }
 
 function createArrowsBox(settings) {

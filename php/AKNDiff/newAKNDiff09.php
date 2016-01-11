@@ -713,16 +713,19 @@ class newAKNDiff09 extends AKNDiff {
 				$pos = $this->getPosInParent($td);
 				$tr = $this->getParentByName($td, "tr");
 				$siblingTr = $tr->nextSibling;
+				$removedTd = FALSE;
 				for($i=0; $i < count($mod->destinations)-1; $i++) {
 					if($siblingTr) {
 						$tdToRemove = $siblingTr->childNodes->item($pos);
 						if($tdToRemove && $tdToRemove->getAttribute("blankcell")) {
+							$removedTd = TRUE;
 							$siblingTr->removeChild($tdToRemove);	
 						}
 					}
 					$siblingTr = $siblingTr->nextSibling;
 				}
-				$td->setAttribute("rowspan", count($mod->destinations));
+				if ($removedTd)
+					$td->setAttribute("rowspan", count($mod->destinations));
 			}
 		}
 	}
@@ -741,18 +744,22 @@ class newAKNDiff09 extends AKNDiff {
 			$pos = $this->getPosInParent($td);
 			$tr = $this->getParentByName($td, "tr");
 			$siblingTr = $tr->nextSibling;
+			$newTr = FALSE;
 			for($i=0; $i < $nodesToJoin->length-1; $i++) {
-				$newTr = $table->ownerDocument->createElement('tr');
-				if($siblingTr) {
-					$tr->parentNode->insertBefore($newTr, $siblingTr);	
-				} else {
-					$tr->parentNode->appendChild($newTr);
-				}
 				$nodeJoin = $nodesToJoin->item($i+1);
 				$tdJoin = $this->getParentByName($nodeJoin, "td");
-				$newTr->appendChild($tdJoin);
+				if ($nodeJoin && $tdJoin && $nodeJoin->nodeValue == $tdJoin->nodeValue) {
+					$newTr = $table->ownerDocument->createElement('tr');
+					if($siblingTr) {
+						$tr->parentNode->insertBefore($newTr, $siblingTr);	
+					} else {
+						$tr->parentNode->appendChild($newTr);
+					}
+					$newTr->appendChild($tdJoin);
+				}
 			}
-			$tdJoined->setAttribute("rowspan", $nodesToJoin->length);
+			if ($newTr)
+				$tdJoined->setAttribute("rowspan", $nodesToJoin->length);
 		}
 	}
 	
