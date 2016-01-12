@@ -237,23 +237,24 @@ Ext.define('LIME.controller.ModsMarkerController', {
 
         modsElements = metaDom.querySelectorAll("[class=passiveModifications] [class=textualMod]");
         Ext.each(modsElements, function(element) {
-            var modEls = element.querySelectorAll("["+hrefAttr+"]");
+            //TODO: check if destination href for substitution needs id update
+            var modEls = element.querySelectorAll("["+hrefAttr+"]:not(.old)");
             var modType = element.getAttribute('type');
             if(!modType) return;
             Ext.each(modEls, function(modEl) {
                 var href = modEl.getAttribute(hrefAttr);
-                if(!Ext.isEmpty(href.trim())) {
-                    var id = (href.charAt(0) == "#") ? href.substring(1) : href;
-                    var editorEl = editorBody.querySelector("*[" + langPrefix + "eid='"+id+"']");
-                    if(editorEl && !noEffect) {
-                        var edElId = editorEl.getAttribute(DomUtils.elementIdAttribute);
-                        modEl.setAttribute(hrefAttr, href.replace(id, edElId));
-                        editorEl.removeAttribute(hrefAttr);
-                        me.setModDataAttributes(editorEl, modType);
-                        if ( element.querySelector('.old') )  {
-                            var oldText = element.querySelector('.old').textContent;
-                            editorEl.setAttribute('data-old-text', oldText);
-                        }
+                if(!href.trim()) return;
+
+                var id = (href.charAt(0) == "#") ? href.substring(1) : href;
+                var editorEl = editorBody.querySelector("*[" + langPrefix + "eid='"+id+"']");
+                if(editorEl && !noEffect) {
+                    var edElId = editorEl.getAttribute(DomUtils.elementIdAttribute);
+                    modEl.setAttribute(hrefAttr, href.replace(id, edElId));
+                    editorEl.removeAttribute(hrefAttr);
+                    me.setModDataAttributes(editorEl, modType);
+                    if ( element.querySelector('.old') )  {
+                        var oldText = element.querySelector('.old').textContent;
+                        editorEl.setAttribute('data-old-text', oldText);
                     }
                 }
             });

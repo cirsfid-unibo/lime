@@ -252,14 +252,18 @@ class newAKNDiff09 extends AKNDiff {
 			if(count($nodes)) {
 				$firtPart = $nodes[0];
 				$lastPart = $nodes[count($nodes)-1];
-				if ( (strlen($firtPart["str"]) >  strlen($searchText)-10) || count($nodes) > 1) {
-					$wrapNode = $this->wrapTextNode($firtPart["node"], $firtPart["str"], $wrapperClass);
-					$siblings = $this->getNextSiblingsContaining($wrapNode, $lastPart["node"]);
-					foreach($siblings as $sibling) {
-						$wrapNode->appendChild($sibling);
-					}
-					$wrapNodes[] = $wrapNode;
+				$wrapNode = $this->wrapTextNode($firtPart["node"], $firtPart["str"], $wrapperClass);
+				$siblings = $this->getNextSiblingsContaining($wrapNode, $lastPart["node"]);
+				foreach($siblings as $sibling) {
+					$wrapNode->appendChild($sibling);
 				}
+
+				if ( $this->removeSpaces($wrapNode->nodeValue) == $this->removeSpaces($searchText) ) {
+					$wrapNodes[] = $wrapNode;
+				} else {
+					$this->unwrapNode($wrapNode, FALSE);
+				}
+
 			} else {
 				return FALSE;
 			}
@@ -382,12 +386,13 @@ class newAKNDiff09 extends AKNDiff {
 		}
 	}
 	
-	protected function unwrapNode($node) {
+	protected function unwrapNode($node, $addSpace=TRUE) {
 		$doc = $node->ownerDocument;
 		$parent = $node->parentNode;
 		$iterNode = $node->firstChild;
-		$parent->insertBefore($doc->createTextNode(" "), $node);
-		if($node->nextSibling) {
+		if ($addSpace)
+			$parent->insertBefore($doc->createTextNode(" "), $node);
+		if($node->nextSibling && $addSpace) {
 			$parent->insertBefore($doc->createTextNode(" "), $node->nextSibling);	
 		}
 		while($iterNode) {
@@ -787,171 +792,194 @@ class newAKNDiff09 extends AKNDiff {
 	}
 	
 	protected function applyMods($table) {
-		$xpath = new DOMXPath($table->ownerDocument);
-		$oldTds = $xpath->query("//*[@class='oldVersion']", $table);
-		
+		$xpath = new DOMXPath($table->ownerDocument);		
 		foreach($this->mods as $id => $mod) {
-			//echo $mod->type. " - ".$id." - ".$mod->previousId."->".$mod->old."<br>";
-			if($mod->previousId) {
-				// It's important to check first if there're nodes with parent = id and after check if contains
-				$originalNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId ='$id' or @parent = '$id']", $table);
-				$originalNodes = (!$originalNodes->length) ? $xpath->query("//*[@class='newVersion']//*[@akn_currentId ='$id' or contains(@parent, '$id')]", $table) : $originalNodes;
-				foreach($originalNodes as $node) {
-					if(preg_match("/\b$id/", $node->getAttribute("parent"))) {
-						$this->setAllAttribute(array($node), "parentOriginalId", $mod->previousId);						
-					}
-				}
-			}
+			if($mod->previousId)
+				$this->setPreviousIdAttr($mod, $xpath, $table);
 			
 			switch($mod->type) {
 				case "substitution":
-					$precedingText = FALSE;
-					$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId ='$id' or @akn_currentId ='$mod->destination' or contains(@parent, '$mod->destination')]", $table);
-					//echo $destNodes->length.' - '.$mod->old.' - '.$id.' - '.$mod->destination.'<br>';
-					$newNode = $xpath->query("(//*[@class='newVersion']//*[@akn_currentId ='$id' or contains(@parent, '$mod->destination')])[last()]", $table)->item(0);
-					if($newNode) {
-						$precedingText = $this->getPrecedingText($newNode);
-					}
-					if(!$destNodes->length && $mod->old) {
-						if($newNode) {
-							$parent = $newNode->parentNode;
-							$parentId = $parent->getAttribute('akn_currentId');
-							$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId ='$parentId']", $table);
-							
-							//echo $destNodes->length.' - '.$mod->old.' - '.$parentId.'<br>';
-
-							if (!$destNodes->length) {
-								$destNodes = $xpath->query("//*[@class='oldVersion']//*[contains(., '$precedingText')]", $table);
-							}
-						}
-					}
-
-					$subsNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId ='$id' or contains(@parent, '$id')]", $table);
-					//echo $mod->destination." - ".$destNodes->length. " - ".$id." - ".$mod->old." - ".$precedingText."<br>";					
-					if($mod->old && $destNodes->length) {
-						//$destNodes = ($destNodes->length) ? $destNodes : $oldTds;
-						if($this->findAndwrapTextNode($mod->old, $destNodes, $mod->type, $precedingText) === FALSE) {
-							$this->setAllAttribute($subsNodes, "class", "errorSubstitution");
-							$this->setAllAttribute($subsNodes, "data-old", $mod->old);
-							$this->setAllAttribute($subsNodes, "title", $mod->old." not found");
-						}
-					} else {
-						//echo $mod->destination." - ".$id." - ".$mod->old." - ".$precedingText."<br>";					
-						$this->setAllAttribute($destNodes, "class", $mod->type);	
-					}
-					$this->setAllAttribute($subsNodes, "class", $mod->type);
+					$this->applyModSubstitution($mod, $xpath, $table);
 					break;
 				case "insertion":
-					//TODO: controllare se va sempre bene il contains, se no fare un filtro dopo
-					$insNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId ='$id' or contains(@parent,'$id')]", $table);
-					$this->setAllAttribute($insNodes, "class", $mod->type);
+					$this->applyModInsertion($mod, $xpath, $table);
 					break;
 				case "renumbering":
-					$renumberingNodes = $xpath->query("//*[@class='newVersion']//*[@parentOriginalId and (@akn_currentId ='$id' or contains(@parent,'$id'))]", $table);
-					$this->setAllAttribute($renumberingNodes, "renumbering", "true");
+					$this->applyModRenumbering($mod, $xpath, $table);
 					break;
 				case "repeal":
-					$idCond = "";
-					$parentIdCond = "";
-					$targetNodes = $xpath->query("(//*[@class='newVersion']//*[@akn_currentId= '$mod->destination' or @akn_wId= '$mod->destination' or contains(@parent, '$mod->destination')])[last()]", $table);
-					//echo $targetNodes->length. " - ".$mod->destination." - ".$mod->old." - ".$targetNodes->item(0)->nodeName."<br>";
-
-					if($targetNodes->length) {
-						$firstTarget = $targetNodes->item(0);
-						$originalId = $firstTarget->getAttribute("akn_wId");
-						$parentWid = $firstTarget->getAttribute("parentWid");
-						$idCond = ($originalId) ? "contains(@parent, '$originalId') or " : $idCond;
-						//$firstTargetParent = $xpath->query("./ancestor::*[@parent or @parentOriginalId]", $firstTarget);
-						$targetParents = $xpath->query("./ancestor::*[contains(@class, 'container') or contains(@parentClass, 'container')]", $firstTarget);
-						//echo $mod->destination." - ".$mod->old." - ".$targetParents->length."!!<br>";
-						if($targetParents->length) {
-							$firstTargetParent = $targetParents->item($targetParents->length-1);
-							$parentWithWid = $this->getNodeWithAttribute($targetParents, "akn_wId");
-							$parentStatusRemoved = $this->getNodeWithAttribute($targetParents, "akn_status", "removed");
-							// $originalId = $firstTargetParent->getAttribute("parentOriginalId");
-							// $parentId = ($originalId) ? $originalId : $firstTargetParent->getAttribute("parent");
-							$parentId = $firstTargetParent->getAttribute("akn_currentId");
-							$parentAttr = $firstTargetParent->getAttribute("parent");
-							$idCond = ($parentId) ? "@akn_currentId = '$parentId' or $idCond" : $idCond;
-							$parentIdCond = ($parentAttr) ? "@parent = '$parentAttr'" : "";
-						}
-					}
-
-					$destNodes = $xpath->query("//*[@class='oldVersion']//*[$idCond contains(@parent, '$mod->destination') or contains(@parentWid, '$mod->destination')]", $table);
-					if (!$destNodes->length && $parentIdCond)
-						$destNodes = $xpath->query("//*[@class='oldVersion']//*[$parentIdCond]", $table);
-
-					if (!$destNodes->length && $parentWid)
-						$destNodes = $xpath->query("//*[@class='oldVersion']//*[contains(@parent, '$parentWid')]", $table);
-					// This may happen when the node is in quotedStructure so it hasn't parent or parentWid attributes
-					if (!$destNodes->length && $parentWithWid) {
-						$parentWid = $parentWithWid->getAttribute("akn_wId");
-						$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId = '$parentWid']", $table);
-						if (!$destNodes->length) {
-							// May be that wId is to old, now we try to rebuild it combining wId and eId
-							$parentWid = $this->rebuildwIdFromeId($parentWid, $parentWithWid->getAttribute("akn_eId"));
-							$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId = '$parentWid']", $table);
-						}
-					}
-
-					if (!$destNodes->length && $parentStatusRemoved) {
-						//TODO check if nodes are siblings
-						$oldNodes = $this->findOldNodes($parentStatusRemoved, $table);
-						if ($this->removeSpaces($mod->old) == $this->removeSpaces($this->getTextFromNodes($oldNodes))) {
-							$this->setAllAttribute($oldNodes, "class", "repeal");
-							break;
-						}
-					}
-
-					if($destNodes->length == 1 ) {
-						//$destNodes = ($destNodes->length) ? $destNodes : $oldTds;
-						if ( $parentStatusRemoved && $this->removeSpaces($mod->old) == $this->removeSpaces($destNodes->item(0)->textContent) ) {
-							// Set as removed the entire element
-							$this->setAllAttribute(array($destNodes->item(0)), "class", "repeal");
-							break;
-						}
-						if($mod->old) {
-							$repealNodes = $this->findAndwrapTextNode($mod->old, $destNodes, $mod->type);
-							if($repealNodes === FALSE) {
-								$this->setAllAttribute($targetNodes, "class", "errorRepeal");
-								$this->setAllAttribute($targetNodes, "data-old", $mod->old);
-							}	
-						} else if($destNodes->length == 1) {
-							$this->setAllAttribute($destNodes, "class", $mod->type);		
-						}
-					} else {
-						$this->setAllAttribute($destNodes, "class", $mod->type);
-					}
-					
+					$this->applyModRepeal($mod, $xpath, $table);
 					break;
 				case "split":
-					//echo $mod->type. " - ".$id." - ".$mod->oldHref."<br>";
-					if($mod->oldHref) {
-						$previousNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId= '$mod->oldHref' or contains(@parent, '$mod->oldHref')]", $table);
-						if($previousNodes->length) {
-							$this->setAllAttribute($previousNodes, "toSplit", "$id");
-							for($i=0; $i < count($mod->destinations); $i++) {
-								$destHref = $mod->destinations[$i];
-								$destNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId= '$destHref' or contains(@parent, '$destHref')]", $table);
-								$this->setAllAttribute($destNodes, "splittedBy", "$id");
-							}
-						}
-					}
+					$this->applyModSplit($mod, $xpath, $table);
 					break;
 				case "join":
-					//echo $mod->type. " - ".$id." - ".$mod->oldHref."<br>";
-					$dest = $mod->destination;
-					$previousNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId= '$dest' or contains(@parent, '$dest')]", $table);
-					if($previousNodes->length) {
-						$this->setAllAttribute($previousNodes, "joined", "$id");
-						for($i=0; $i < count($mod->olds); $i++) {
-							$oldHref = $mod->olds[$i];
-							$oldNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId= '$oldHref' or contains(@parent, '$oldHref')]", $table);
-							$this->setAllAttribute($oldNodes, "joinInto", "$id");
-						}
-					}
+					$this->applyModJoin($mod, $xpath, $table);
 					break;
 			}
+		}
+	}
+
+	protected function setPreviousIdAttr($mod, $xpath, $table) {
+		// It's important to check first if there're nodes with parent = id and after check if contains
+		$originalNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId ='$mod->id' or @parent = '$mod->id']", $table);
+		$originalNodes = (!$originalNodes->length) ? 
+							$xpath->query("//*[@class='newVersion']//*[@akn_currentId ='$mod->id' or contains(@parent, '$mod->id')]", $table) 
+							: $originalNodes;
+		foreach($originalNodes as $node) {
+			if(preg_match("/\b$mod->id/", $node->getAttribute("parent"))) {
+				$this->setAllAttribute(array($node), "parentOriginalId", $mod->previousId);						
+			}
+		}
+	}
+
+	protected function applyModSubstitution($mod, $xpath, $table) {
+		$precedingText = FALSE;
+		$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId ='$mod->id' or @akn_currentId ='$mod->destination' or contains(@parent, '$mod->destination')]", $table);
+		//echo $destNodes->length.' - '.$mod->old.' - '.$mod->id.' - '.$mod->destination.'<br>';
+		$newNode = $xpath->query("(//*[@class='newVersion']//*[@akn_currentId ='$mod->id' or contains(@parent, '$mod->destination')])[last()]", $table)->item(0);
+		if($newNode) {
+			$precedingText = $this->getPrecedingText($newNode);
+		}
+		if(!$destNodes->length && $mod->old) {
+			if($newNode) {
+				$parent = $newNode->parentNode;
+				$parentId = $parent->getAttribute('akn_currentId');
+				$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId ='$parentId']", $table);
+				
+				//echo $destNodes->length.' - '.$mod->old.' - '.$parentId.'<br>';
+
+				if (!$destNodes->length) {
+					$destNodes = $xpath->query("//*[@class='oldVersion']//*[contains(., '$precedingText')]", $table);
+				}
+			}
+		}
+
+		$subsNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId ='$mod->id' or contains(@parent, '$mod->id')]", $table);
+		//echo $mod->destination." - ".$destNodes->length. " - ".$mod->id." - ".$mod->old." - ".$precedingText."<br>";					
+		$this->setAllAttribute($subsNodes, "title", "Old string: ".$mod->old);
+		$this->setAllAttribute($subsNodes, "class", $mod->type);
+		if($mod->old && $destNodes->length) {
+			if($this->findAndwrapTextNode($mod->old, $destNodes, $mod->type, $precedingText) === FALSE) {
+				$this->setAllAttribute($subsNodes, "class", "errorSubstitution");
+				$this->setAllAttribute($subsNodes, "data-old", $mod->old);
+				$this->setAllAttribute($subsNodes, "title", $mod->old." not found");
+			}
+		} else {
+			//echo $mod->destination." - ".$mod->id." - ".$mod->old." - ".$precedingText."<br>";					
+			$this->setAllAttribute($destNodes, "class", $mod->type);	
+		}
+	}
+
+	protected function applyModInsertion($mod, $xpath, $table) {
+		//TODO: controllare se va sempre bene il contains, se no fare un filtro dopo
+		$insNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId ='$mod->id' or contains(@parent,'$mod->id')]", $table);
+		$this->setAllAttribute($insNodes, "class", $mod->type);
+	}
+
+	protected function applyModRenumbering($mod, $xpath, $table) {
+		$renumberingNodes = $xpath->query("//*[@class='newVersion']//*[@parentOriginalId and (@akn_currentId ='$mod->id' or contains(@parent,'$mod->id'))]", $table);
+		$this->setAllAttribute($renumberingNodes, "renumbering", "true");
+	}
+
+	protected function applyModSplit($mod, $xpath, $table) {
+		//echo $mod->type. " - ".$id." - ".$mod->oldHref."<br>";
+		if(!$mod->oldHref) return;
+
+		$previousNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId= '$mod->oldHref' or contains(@parent, '$mod->oldHref')]", $table);
+		if(!$previousNodes->length) return;
+
+		$this->setAllAttribute($previousNodes, "toSplit", "$mod->id");
+		for($i=0; $i < count($mod->destinations); $i++) {
+			$destHref = $mod->destinations[$i];
+			$destNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId= '$destHref' or contains(@parent, '$destHref')]", $table);
+			$this->setAllAttribute($destNodes, "splittedBy", "$mod->id");
+		}
+	}
+
+	protected function applyModJoin($mod, $xpath, $table) {
+		//echo $mod->type. " - ".$mod->id." - ".$mod->oldHref."<br>";
+		$dest = $mod->destination;
+		$previousNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId= '$dest' or contains(@parent, '$dest')]", $table);
+		if(!$previousNodes->length) return;
+
+		$this->setAllAttribute($previousNodes, "joined", "$mod->id");
+		for($i=0; $i < count($mod->olds); $i++) {
+			$oldHref = $mod->olds[$i];
+			$oldNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId= '$oldHref' or contains(@parent, '$oldHref')]", $table);
+			$this->setAllAttribute($oldNodes, "joinInto", "$mod->id");
+		}
+	}
+	
+
+	protected function applyModRepeal($mod, $xpath, $table) {
+		$idCond = "";
+		$parentIdCond = "";
+		$targetNodes = $xpath->query("(//*[@class='newVersion']//*[@akn_currentId= '$mod->destination' or @akn_wId= '$mod->destination' or contains(@parent, '$mod->destination')])[last()]", $table);
+		//echo $targetNodes->length. " - ".$mod->destination." - ".$mod->old." - ".$targetNodes->item(0)->nodeName."<br>";
+
+		if($targetNodes->length) {
+			$firstTarget = $targetNodes->item(0);
+			$originalId = $firstTarget->getAttribute("akn_wId");
+			$parentWid = $firstTarget->getAttribute("parentWid");
+			$idCond = ($originalId) ? "contains(@parent, '$originalId') or " : $idCond;
+			//$firstTargetParent = $xpath->query("./ancestor::*[@parent or @parentOriginalId]", $firstTarget);
+			$targetParents = $xpath->query("./ancestor::*[contains(@class, 'container') or contains(@parentClass, 'container')]", $firstTarget);
+			//echo "<br>".$mod->destination." - ".$mod->old." - ".$targetParents->length."!!<br>";
+			if($targetParents->length) {
+				$firstTargetParent = $targetParents->item($targetParents->length-1);
+				$parentWithWid = $this->getNodeWithAttribute($targetParents, "akn_wId");
+				$parentStatusRemoved = $this->getNodeWithAttribute($targetParents, "akn_status", "removed");
+				// $originalId = $firstTargetParent->getAttribute("parentOriginalId");
+				// $parentId = ($originalId) ? $originalId : $firstTargetParent->getAttribute("parent");
+				$parentId = $firstTargetParent->getAttribute("akn_currentId");
+				$parentAttr = $firstTargetParent->getAttribute("parent");
+				$idCond = ($parentId) ? "@akn_currentId = '$parentId' or $idCond" : $idCond;
+				$parentIdCond = ($parentAttr) ? "@parent = '$parentAttr'" : "";
+			}
+		}
+
+		if ($parentStatusRemoved) {
+			//TODO check if nodes are siblings
+			$oldNodes = $this->findOldNodes($parentStatusRemoved, $table);
+			if ($this->removeSpaces($mod->old) == $this->removeSpaces($this->getTextFromNodes($oldNodes))) {
+				$this->setAllAttribute($oldNodes, "class", "repeal");
+				return;
+			}
+		}
+
+		$destNodes = $xpath->query("//*[@class='oldVersion']//*[$idCond contains(@parent, '$mod->destination') or contains(@parentWid, '$mod->destination')]", $table);
+		if (!$destNodes->length && $parentIdCond)
+			$destNodes = $xpath->query("//*[@class='oldVersion']//*[$parentIdCond]", $table);
+		if (!$destNodes->length && $parentWid)
+			$destNodes = $xpath->query("//*[@class='oldVersion']//*[contains(@parent, '$parentWid')]", $table);
+		// This may happen when the node is in quotedStructure so it hasn't parent or parentWid attributes
+		if (!$destNodes->length && $parentWithWid) {
+			$parentWid = $parentWithWid->getAttribute("akn_wId");
+			$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId = '$parentWid']", $table);
+			if (!$destNodes->length) {
+				// May be that wId is to old, now we try to rebuild it combining wId and eId
+				$parentWid = $this->rebuildwIdFromeId($parentWid, $parentWithWid->getAttribute("akn_eId"));
+				$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId = '$parentWid']", $table);
+			}
+		}
+		if($destNodes->length == 1 ) {
+			if ( $parentStatusRemoved && $this->removeSpaces($mod->old) == $this->removeSpaces($destNodes->item(0)->textContent) ) {
+				// Set as removed the entire element
+				$this->setAllAttribute(array($destNodes->item(0)), "class", "repeal");
+				return;
+			}
+			if($mod->old) {
+				$repealNodes = $this->findAndwrapTextNode($mod->old, $destNodes, $mod->type);
+				if($repealNodes === FALSE) {
+					$this->setAllAttribute($targetNodes, "class", "errorRepeal");
+					$this->setAllAttribute($targetNodes, "data-old", $mod->old);
+				}	
+			} else if($destNodes->length == 1) {
+				$this->setAllAttribute($destNodes, "class", $mod->type);		
+			}
+		} else {
+			$this->setAllAttribute($destNodes, "class", $mod->type);
 		}
 	}
 
