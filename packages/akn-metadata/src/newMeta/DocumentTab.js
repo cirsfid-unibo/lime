@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 - Copyright holders CIRSFID and Department of
+ * Copyright (c) 2016 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
  *
  * Authors:
@@ -44,71 +44,66 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Metadata editor for the AknMain.metadata.Store
-// Todo: add validation/display errors
-Ext.define('AknMetadata.newMeta.Editor', {
-    extend: 'Ext.tab.Panel',
-    xtype: 'akn-metadata-editor',
-
+Ext.define('AknMetadata.newMeta.DocumentTab', {
+    extend: 'AknMetadata.newMeta.EditorTab',
+    xtype: 'akn-metadata-tab-document',
     requires: [
-        'AknMetadata.newMeta.Model',
-        'AknMetadata.newMeta.Controller',
-        'AknMetadata.newMeta.DocumentTab',
-        'AknMetadata.newMeta.LifecycleTab',
-        'AknMetadata.newMeta.WorkflowTab'
+        'AknMetadata.newMeta.EditorTab',
+        'AknMetadata.newMeta.EditorTable'
     ],
-
-    controller: 'akn-metadata',
-    viewModel: {
-        type: 'akn-metadata'
-    },
-
-    tabPosition: 'left',
-    tabRotation: 0,
-    tabBar: {
-        border: false
-    },
-
-    defaults: {
-        textAlign: 'left',
-        bodyPadding: 15
-    },
-
+    title: 'Document',
+    glyph: 'xf0f6@FontAwesome',
     items: [{
-        xtype: 'akn-metadata-tab-document'
+        xtype: 'datefield',
+        fieldLabel: 'Date',
+        bind: '{document.date}'
     }, {
-        xtype: 'akn-metadata-tab-lifecycle'
+        xtype: 'datefield',
+        fieldLabel: 'Version date',
+        bind: '{document.version}'
     }, {
-        xtype: 'akn-metadata-tab-workflow'
+        xtype: 'textfield',
+        fieldLabel: 'Number',
+        bind: '{document.name}'
     }, {
-        title: 'Classification',
-        xtype: 'metadataTab',
-        glyph: 'xf200@FontAwesome'
+        xtype: 'combobox',
+        store: 'Nationalities',
+        displayField: 'name',
+        valueField: 'alpha-2',
+        fieldLabel: 'Nation',
+        bind: '{document.country}'
     }, {
-        title: 'References',
-        xtype: 'metadataTab',
-        glyph: 'xf08e@FontAwesome',
-        layout: 'fit',
-        items: [{
-            xtype: 'metadataeditortable',
-            bind: {
-                store: '{document.references}'
-            },
-            columns: [
-                { text: 'Id', dataIndex: 'eid', editor: 'textfield', allowBlank: false },
-                {
-                    text: 'Type',
-                    dataIndex: 'type',
-                    editor: {
-                        xtype: 'combo',
-                        store: AknMain.metadata.Reference.validators.type[0].list
-                    },
-                    allowBlank: false
-                },
-                { text: 'Href', dataIndex: 'href', flex: 1, editor: 'textfield' },
-                { text: 'Name', dataIndex: 'showAs', editor: 'textfield' }
-            ]
-        }]
+        xtype: 'combobox',
+        store: 'DocumentLanguages',
+        displayField: 'name',
+        valueField: 'code',
+        fieldLabel: 'Language',
+        bind: '{document.language}'
+    }, {
+        xtype: 'textfield',
+        fieldLabel: 'Author',
+        bind: '{document.author}'
+    }, {
+        xtype: 'checkboxfield',
+        boxLabel: 'Prescriptive',
+        bind: '{document.prescriptive}'
+    }, {
+        xtype: 'checkboxfield',
+        boxLabel: 'Authoritative',
+        bind: '{document.authoritative}'
+    }, {
+        xtype: 'metadataeditortable',
+        title: 'Aliases',
+        hideHeaders: true,
+        bind: {
+            store: '{document.aliases}'
+        },
+        columns: [
+            { text: 'Value', dataIndex: 'value', flex: 1, editor: 'textfield', allowBlank: false }
+        ],
+        custom: {
+            level: function () { return 'work'; },
+            name: function () { return 'alias'; }
+        }
     }]
 });
-
