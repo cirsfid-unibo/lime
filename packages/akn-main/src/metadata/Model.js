@@ -205,7 +205,6 @@ Ext.define('AknMain.metadata.WorkflowStep', {
         { name: 'date', type: 'date' },
         { name: 'actor', reference: 'Reference' },
         { name: 'role', reference: 'Reference' },
-        { name: 'href', type: 'string' },
         { name: 'outcome', reference: 'Reference' }
     ]
 });

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 - Copyright holders CIRSFID and Department of
+ * Copyright (c) 2016 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
  *
  * Authors:
@@ -44,71 +44,60 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Metadata editor for the AknMain.metadata.Store
-// Todo: add validation/display errors
-Ext.define('AknMetadata.newMeta.Editor', {
-    extend: 'Ext.tab.Panel',
-    xtype: 'akn-metadata-editor',
-
+Ext.define('AknMetadata.newMeta.WorkflowTab', {
+    extend: 'AknMetadata.newMeta.EditorTab',
+    xtype: 'akn-metadata-tab-workflow',
     requires: [
-        'AknMetadata.newMeta.Model',
-        'AknMetadata.newMeta.Controller',
-        'AknMetadata.newMeta.DocumentTab',
-        'AknMetadata.newMeta.LifecycleTab',
-        'AknMetadata.newMeta.WorkflowTab'
+        'AknMetadata.newMeta.EditorTab',
+        'AknMetadata.newMeta.EditorTable',
+        'AknMetadata.newMeta.ReferenceCombo'
     ],
-
-    controller: 'akn-metadata',
-    viewModel: {
-        type: 'akn-metadata'
-    },
-
-    tabPosition: 'left',
-    tabRotation: 0,
-    tabBar: {
-        border: false
-    },
-
-    defaults: {
-        textAlign: 'left',
-        bodyPadding: 15
-    },
-
+    title: 'Workflow',
+    xtype: 'metadataTab',
+    glyph: 'xf160@FontAwesome',
+    layout: 'fit',
     items: [{
-        xtype: 'akn-metadata-tab-document'
-    }, {
-        xtype: 'akn-metadata-tab-lifecycle'
-    }, {
-        xtype: 'akn-metadata-tab-workflow'
-    }, {
-        title: 'Classification',
-        xtype: 'metadataTab',
-        glyph: 'xf200@FontAwesome'
-    }, {
-        title: 'References',
-        xtype: 'metadataTab',
-        glyph: 'xf08e@FontAwesome',
-        layout: 'fit',
-        items: [{
-            xtype: 'metadataeditortable',
-            bind: {
-                store: '{document.references}'
+        xtype: 'metadataeditortable',
+        bind: {
+            store: '{document.workflowSteps}'
+        },
+        columns: [
+            { text: 'Date', dataIndex: 'date', editor: 'datefield' },
+            {
+                text: 'Actor',
+                dataIndex: 'actor',
+                renderer: function (r) { return r && r.data ? r.data.showAs : r; },
+                editor: {
+                    xtype: 'akn-metadata-tab-referencecombo',
+                    filteredTypes: ['TLCPerson', 'TLCOrganization']
+                }
             },
-            columns: [
-                { text: 'Id', dataIndex: 'eid', editor: 'textfield', allowBlank: false },
-                {
-                    text: 'Type',
-                    dataIndex: 'type',
-                    editor: {
-                        xtype: 'combo',
-                        store: AknMain.metadata.Reference.validators.type[0].list
-                    },
-                    allowBlank: false
-                },
-                { text: 'Href', dataIndex: 'href', flex: 1, editor: 'textfield' },
-                { text: 'Name', dataIndex: 'showAs', editor: 'textfield' }
-            ]
-        }]
+            {
+                text: 'Role',
+                dataIndex: 'role',
+                renderer: function (r) { return r && r.data ? r.data.showAs : r; },
+                editor: {
+                    xtype: 'akn-metadata-tab-referencecombo',
+                    filteredTypes: ['TLCRole']
+                }
+            },
+            {
+                text: 'Outcome',
+                dataIndex: 'outcome',
+                renderer: function (r) { return r && r.data ? r.data.showAs : r; },
+                editor: {
+                    xtype: 'akn-metadata-tab-referencecombo',
+                    filteredTypes: ['TLCConcept']
+                }
+            }
+        ],
+        custom: {
+            eid: function (context) { return 'w' + context.rowIdx; }
+        },
+        referenceFix: {
+            actor: { defaultType: 'TLCOrganization', idPrefix: 'actor' },
+            role: { defaultType: 'TLCRole', idPrefix: 'role' },
+            outcome: { defaultType: 'TLCConcept', idPrefix: 'outcome' }
+        }
     }]
-});
-
+})

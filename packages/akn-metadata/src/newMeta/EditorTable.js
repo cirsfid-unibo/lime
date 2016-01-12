@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 - Copyright holders CIRSFID and Department of
+ * Copyright (c) 2016 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
  *
  * Authors:
@@ -44,71 +44,53 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Metadata editor for the AknMain.metadata.Store
-// Todo: add validation/display errors
-Ext.define('AknMetadata.newMeta.Editor', {
-    extend: 'Ext.tab.Panel',
-    xtype: 'akn-metadata-editor',
+// Custom Grid used inside the metadata editor.
+// - Add tools for adding and removing elements.
+// - Row editing.
+// - Allow setting model properties programmatically on row edit complete:
+//   functions in the 'custom' property are executed with the record context
+//   and added to the store. 'referenceFix' are passed throght the ReferenceCombo
+//   customSave function.
+Ext.define('AknMetadata.newMeta.EditorTable', {
+    extend: 'Ext.grid.Panel',
+    alias: 'widget.metadataeditortable',
 
-    requires: [
-        'AknMetadata.newMeta.Model',
-        'AknMetadata.newMeta.Controller',
-        'AknMetadata.newMeta.DocumentTab',
-        'AknMetadata.newMeta.LifecycleTab',
-        'AknMetadata.newMeta.WorkflowTab'
-    ],
+    requires: ['AknMetadata.newMeta.ReferenceCombo'],
 
-    controller: 'akn-metadata',
-    viewModel: {
-        type: 'akn-metadata'
+    plugins: {
+        ptype: 'rowediting',
+        clicksToEdit: 1,
+        listeners: {
+            validateedit: function(editor, context) {
+                console.log('validate edit', editor, context)
+                var custom = context.grid.custom || {};
+                Object.keys(custom).forEach(function (prop) {
+                    context.newValues[prop] = custom[prop](context);
+                });
+
+                var referenceFix = context.grid.referenceFix || {};
+                Object.keys(referenceFix).forEach(function (prop) {
+                    context.newValues[prop] =
+                        AknMetadata.newMeta.ReferenceCombo.customSave(prop, referenceFix[prop], context);
+                });
+            }
+        }
     },
 
-    tabPosition: 'left',
-    tabRotation: 0,
-    tabBar: {
-        border: false
-    },
-
-    defaults: {
-        textAlign: 'left',
-        bodyPadding: 15
-    },
-
-    items: [{
-        xtype: 'akn-metadata-tab-document'
+    tools: [{
+        type: 'plus',
+        tooltip: 'Add a new item',
+        callback: function (grid) {
+            console.log('arguments', arguments);
+            grid.getStore().add({});
+            // Todo: auto edit on add
+        }
     }, {
-        xtype: 'akn-metadata-tab-lifecycle'
-    }, {
-        xtype: 'akn-metadata-tab-workflow'
-    }, {
-        title: 'Classification',
-        xtype: 'metadataTab',
-        glyph: 'xf200@FontAwesome'
-    }, {
-        title: 'References',
-        xtype: 'metadataTab',
-        glyph: 'xf08e@FontAwesome',
-        layout: 'fit',
-        items: [{
-            xtype: 'metadataeditortable',
-            bind: {
-                store: '{document.references}'
-            },
-            columns: [
-                { text: 'Id', dataIndex: 'eid', editor: 'textfield', allowBlank: false },
-                {
-                    text: 'Type',
-                    dataIndex: 'type',
-                    editor: {
-                        xtype: 'combo',
-                        store: AknMain.metadata.Reference.validators.type[0].list
-                    },
-                    allowBlank: false
-                },
-                { text: 'Href', dataIndex: 'href', flex: 1, editor: 'textfield' },
-                { text: 'Name', dataIndex: 'showAs', editor: 'textfield' }
-            ]
-        }]
+        type: 'minus',
+        tooltip: 'Remove selected items',
+        callback: function (grid) {
+            console.log(grid.getSelection());
+            grid.getStore().remove(grid.getSelection());
+        }
     }]
 });
-
