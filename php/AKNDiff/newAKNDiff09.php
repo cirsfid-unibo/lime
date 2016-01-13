@@ -263,13 +263,12 @@ class newAKNDiff09 extends AKNDiff {
 				} else {
 					$this->unwrapNode($wrapNode, FALSE);
 				}
-
-			} else {
-				return FALSE;
 			}
+
 		}
-		
-		return ($wrapperClass === FALSE) ? $nodes : $wrapNodes;
+
+		$nodes = ($wrapperClass === FALSE) ? $nodes	: $wrapNodes;
+		return (count($nodes)) ? $nodes : FALSE;
 	}
 	
 	protected function wrapTextNode($tNode, $str, $class = "textWrapper", $caseSensitive = FALSE, $precedingText = FALSE) {

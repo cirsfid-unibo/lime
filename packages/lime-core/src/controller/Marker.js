@@ -353,7 +353,7 @@ Ext.define('LIME.controller.Marker', {
             return;
         }
 
-        var newElement = this.wrapRow(button, config);
+        var newElement = this.wrapRaw(button, config);
         var setCursorLocation = false;
         if ( !newElement.textContent.trim() ) {
             newElement.appendChild(newElement.ownerDocument.createTextNode("  "));
@@ -368,7 +368,7 @@ Ext.define('LIME.controller.Marker', {
         Ext.callback(config.callback, this, [button, [newElement]]);
     },
 
-    wrapRow: function(button, config) {
+    wrapRaw: function(button, config) {
         var isBlock = DomUtils.blockTagRegex.test(button.pattern.wrapperElement);
         var wrapper = (isBlock) ? this.wrapRange(button) : this.wrapRange(button, 'span');
         

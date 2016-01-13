@@ -263,16 +263,16 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },
 
     beforeContextMenuShow: function(menu, node) {
-        var me = this, 
+        var me = this,
             elementName = DomUtils.getElementNameByNode(node);
-        
+
         if(!elementName && node) {
             node = DomUtils.getFirstMarkedAncestor(node.parentNode);
             elementName = DomUtils.getElementNameByNode(node);
         }
 
         if (!node || !elementName) return;
-        
+
         switch(elementName) {
             case 'ref':
                 me.addRefContextMenuItem(node, menu);
@@ -304,7 +304,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },
 
     addModContextMenuItem: function(node, menu) {
-        var me = this, 
+        var me = this,
             meta = me.getAnalysisByNodeOrNodeId(node);
         if(!menu.down("*[name=modType]")) {
             var modType = (meta) ? meta.type : false;
@@ -391,7 +391,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
     getModExternalReferences: function(node) {
         // Get the outmost hcontainer parent
         var nodeWithRefs = AknMain.xml.Document.newDocument(node)
-                            .select("(./ancestor::*[contains(@class, 'hcontainer')])[1]")[0] 
+                            .select("(./ancestor::*[contains(@class, 'hcontainer')])[1]")[0]
                             || node.ownerDocumen;
         var references = Ext.Array.toArray(nodeWithRefs.querySelectorAll('.ref')).filter(function(refNode) {
             // Keep only the references that precedes the mod node
@@ -409,7 +409,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         var me = this,
             language = me.getController('Language'),
             markedParent = DomUtils.getFirstMarkedAncestor(node.parentNode);
-        
+
 
         if (!markedParent || DomUtils.getElementNameByNode(markedParent) != 'mod' ) {
             me.addExternalContextMenuItems(menu, node, name, markedParent);
@@ -423,7 +423,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         var getPosMenuChecked = function(textMod) {
             var posMenu = Ext.clone(me.posMenu),
                 destination = textMod.querySelector('*[class="destination"]'),
-                pos = (destination) ? 
+                pos = (destination) ?
                         language.nodeGetLanguageAttribute(destination, "pos").value : false;
 
             posMenu.items.filter(function(item) {
@@ -439,7 +439,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             langId = language.nodeGetLanguageAttribute(node, "eid"),
             modElement = textMod.querySelector("*[akn_href*="+elId+"], *[akn_href*="+langId.value+"]"),
             modType = (modElement) ? modElement.getAttribute("class") : "";
-            
+
         if(!menu.down("*[name=modType]")) {
             menu.add(['-', {
                 text : Locale.getString('quotedType', me.getPluginName()),
@@ -664,7 +664,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     buttonStyle: "background-color:#DBEADC;border-radius:3px",
                     handler: function(button) {
                         if ( DocProperties.documentState == 'diffEditingScenarioB' ) {
-                            me.splitHandlerB(button);
+                            me.splitHandlerConsolidation(button);
                         } else {
                             me.splitHandler(button);
                         }
@@ -675,7 +675,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
                     buttonStyle: "background-color:#DBEADC;border-radius:3px",
                     handler: function(button) {
                         if ( DocProperties.documentState == 'diffEditingScenarioB' ) {
-                            me.joinHandlerB(button);
+                            me.joinHandlerConsolidation(button);
                         } else {
                             me.joinHandler(button);
                         }
@@ -953,7 +953,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
     },
 
     setElementStyles: function(markedElements, button, originalButton, buttonCfg) {
-        var me = this, 
+        var me = this,
         buttonCfg = buttonCfg || me.activeModButtons[originalButton.name];
 
         Ext.each(markedElements, function(markedElement) {
@@ -1069,7 +1069,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
             quotedEls = node.querySelectorAll("*[class~=quotedStructure], *[class~=quotedText]");
             newHref = (quotedEls[0]) ? quotedEls[0].getAttribute(DomUtils.elementIdAttribute) : "",
             oldHref = (quotedEls[1]) ? quotedEls[1].getAttribute(DomUtils.elementIdAttribute) : "";
-        
+
         var meta = [{
             name: "old",
             attributes: [{
@@ -1286,7 +1286,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         }
     },
 
-    splitHandlerB: function(button) {
+    splitHandlerConsolidation: function(button) {
         var me = this,
             editor = me.getController("Editor"),
             body = document.querySelector('body');
@@ -1357,7 +1357,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
 
     ensureHcontainerNode: function(node) {
         if (!node) return;
-        if (!node.classList || !node.classList.contains('hcontainer')) 
+        if (!node.classList || !node.classList.contains('hcontainer'))
             return this.ensureHcontainerNode(node.parentNode);
         return node;
     },
@@ -1659,7 +1659,7 @@ Ext.define('LIME.controller.ModsMarkerController', {
         };
     },
 
-    joinHandlerB : function(button) {
+    joinHandlerConsolidation : function(button) {
         var me = this,
             editor = me.getController("Editor"),
             selection = editor.getSelectionObject(null, null, true),
@@ -1675,12 +1675,6 @@ Ext.define('LIME.controller.ModsMarkerController', {
 
             var registerJoin = function(data) {
                 joinedNode.setAttribute(me.getJoinAttr(), "true");
-                me.setElementStyles([joinedNode], markButton, markButton, {
-                    shortLabel: markButton.shortLabel+" "+Locale.getString("joined", me.getPluginName()),
-                    modType: me.getJoinAttr(),
-                    elementStyle: "",
-                    labelStyle: "background-color: #75d6ff; border: 1px solid #44b4d5;"
-                });
                 me.setJoinMetadata(joinedNode, data);
             };
 
@@ -1880,9 +1874,9 @@ Ext.define('LIME.controller.ModsMarkerController', {
                 me.addDelMeta(node, removedNode.textContent.trim());
             }
         };
-        
+
         var delButton = DocProperties.getFirstButtonByName('del');
-        afterDelMarked(me.getController('Marker').wrapRow(delButton));
+        afterDelMarked(me.getController('Marker').wrapRaw(delButton));
     },
 
     addDelMeta: function(node, oldText) {
