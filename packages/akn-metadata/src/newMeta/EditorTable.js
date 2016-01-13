@@ -59,6 +59,7 @@ Ext.define('AknMetadata.newMeta.EditorTable', {
 
     plugins: {
         ptype: 'rowediting',
+        pluginId: 'rowediting',
         clicksToEdit: 1,
         listeners: {
             validateedit: function(editor, context) {
@@ -82,8 +83,8 @@ Ext.define('AknMetadata.newMeta.EditorTable', {
         tooltip: 'Add a new item',
         callback: function (grid) {
             console.log('arguments', arguments);
-            grid.getStore().add({});
-            // Todo: auto edit on add
+            var record = grid.getStore().add({})[0];
+            grid.getPlugin("rowediting").startEdit(record);
         }
     }, {
         type: 'minus',

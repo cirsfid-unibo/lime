@@ -55,7 +55,9 @@ Ext.define('AknMetadata.newMeta.Editor', {
         'AknMetadata.newMeta.Controller',
         'AknMetadata.newMeta.DocumentTab',
         'AknMetadata.newMeta.LifecycleTab',
-        'AknMetadata.newMeta.WorkflowTab'
+        'AknMetadata.newMeta.WorkflowTab',
+        'AknMetadata.newMeta.ClassificationTab',
+        'AknMetadata.newMeta.ReferenceTab'
     ],
 
     controller: 'akn-metadata',
@@ -74,41 +76,12 @@ Ext.define('AknMetadata.newMeta.Editor', {
         bodyPadding: 15
     },
 
-    items: [{
-        xtype: 'akn-metadata-tab-document'
-    }, {
-        xtype: 'akn-metadata-tab-lifecycle'
-    }, {
-        xtype: 'akn-metadata-tab-workflow'
-    }, {
-        title: 'Classification',
-        xtype: 'metadataTab',
-        glyph: 'xf200@FontAwesome'
-    }, {
-        title: 'References',
-        xtype: 'metadataTab',
-        glyph: 'xf08e@FontAwesome',
-        layout: 'fit',
-        items: [{
-            xtype: 'metadataeditortable',
-            bind: {
-                store: '{document.references}'
-            },
-            columns: [
-                { text: 'Id', dataIndex: 'eid', editor: 'textfield', allowBlank: false },
-                {
-                    text: 'Type',
-                    dataIndex: 'type',
-                    editor: {
-                        xtype: 'combo',
-                        store: AknMain.metadata.Reference.validators.type[0].list
-                    },
-                    allowBlank: false
-                },
-                { text: 'Href', dataIndex: 'href', flex: 1, editor: 'textfield' },
-                { text: 'Name', dataIndex: 'showAs', editor: 'textfield' }
-            ]
-        }]
-    }]
+    items: [
+        { xtype: 'akn-metadata-tab-document' },
+        { xtype: 'akn-metadata-tab-lifecycle' },
+        { xtype: 'akn-metadata-tab-workflow' },
+        { xtype: 'akn-metadata-tab-classification' },
+        { xtype: 'akn-metadata-tab-reference' }
+    ]
 });
 

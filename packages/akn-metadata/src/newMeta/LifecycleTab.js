@@ -56,6 +56,7 @@ Ext.define('AknMetadata.newMeta.LifecycleTab', {
     glyph: 'xf073@FontAwesome',
     items: [{
         xtype: 'metadataeditortable',
+        title: 'Revisions',
         bind: {
             store: '{document.lifecycleEvents}'
         },

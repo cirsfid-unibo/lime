@@ -44,61 +44,57 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('AknMetadata.newMeta.WorkflowTab', {
+// Todo: add a tab for each element
+
+Ext.define('AknMetadata.newMeta.ReferenceTab', {
     extend: 'AknMetadata.newMeta.EditorTab',
-    xtype: 'akn-metadata-tab-workflow',
+    xtype: 'akn-metadata-tab-reference',
     requires: [
         'AknMetadata.newMeta.EditorTab',
         'AknMetadata.newMeta.EditorTable',
-        'AknMetadata.newMeta.ReferenceCombo'
+        'Ext.grid.feature.Grouping'
     ],
-    title: 'Workflow',
+    title: 'References',
     xtype: 'metadataTab',
-    glyph: 'xf160@FontAwesome',
+    glyph: 'xf08e@FontAwesome',
     layout: 'fit',
     items: [{
         xtype: 'metadataeditortable',
-        bind: {
-            store: '{document.workflowSteps}'
-        },
-        title: 'Steps',
+        features: [{
+            ftype:'grouping',
+            groupHeaderTpl: '{renderedGroupValue}'
+        }],
+        title: 'Persons',
+        bind: { store: '{document.references}' },
+        // hideHeaders: true,
         columns: [
-            { text: 'Date', dataIndex: 'date', editor: 'datefield' },
+            { text: 'Value', dataIndex: 'showAs', editor: 'textfield', allowBlank: false },
             {
-                text: 'Actor',
-                dataIndex: 'actor',
-                renderer: function (r) { return r && r.data ? r.data.showAs : r; },
-                editor: {
-                    xtype: 'akn-metadata-tab-referencecombo',
-                    filteredTypes: ['TLCPerson', 'TLCOrganization']
-                }
-            },
-            {
-                text: 'Role',
-                dataIndex: 'role',
-                renderer: function (r) { return r && r.data ? r.data.showAs : r; },
-                editor: {
-                    xtype: 'akn-metadata-tab-referencecombo',
-                    filteredTypes: ['TLCRole']
-                }
-            },
-            {
-                text: 'Outcome',
-                dataIndex: 'outcome',
-                renderer: function (r) { return r && r.data ? r.data.showAs : r; },
-                editor: {
-                    xtype: 'akn-metadata-tab-referencecombo',
-                    filteredTypes: ['TLCConcept']
-                }
+                text: 'Type',
+                dataIndex: 'type',
+                renderer: function (r) {
+                    switch (r) {
+                    case 'TLCPerson': return 'Person';
+                    default: return r;
+                    }
+                },
+                allowBlank: false,
+                hidden: true
             }
         ],
         custom: {
-            eid: function (context) { return 'w' + context.rowIdx; }
-        },
-        referenceFix: {
-            actor: { defaultType: 'TLCOrganization', idPrefix: 'actor' },
-            role: { defaultType: 'TLCRole', idPrefix: 'role' },
-            outcome: { defaultType: 'TLCConcept', idPrefix: 'outcome' }
+            eid: function (context) { return 'p' + context.rowIdx; } },
+            type: function () { return 'TLCPerson'; }
         }
-    }]
-})
+    ],
+
+    initComponent: function () {
+        // Crappy hack to enable grouping (Ext requires stores to be configured)
+        // I understand we're not using Ext stores the way they're supposed to be,
+        // but I'm left wondering whether or not there is a right way..
+        // It seems like every view should have it's own store, but I've found no
+        // way to share data between them apart from not using them as the data source.
+        Ext.getStore('metadata').getMainDocument().references().setGroupField('type');
+        this.callParent(arguments);
+    }
+});

@@ -44,61 +44,28 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('AknMetadata.newMeta.WorkflowTab', {
+Ext.define('AknMetadata.newMeta.ClassificationTab', {
     extend: 'AknMetadata.newMeta.EditorTab',
-    xtype: 'akn-metadata-tab-workflow',
+    xtype: 'akn-metadata-tab-classification',
     requires: [
         'AknMetadata.newMeta.EditorTab',
-        'AknMetadata.newMeta.EditorTable',
-        'AknMetadata.newMeta.ReferenceCombo'
+        'AknMetadata.newMeta.EditorTable'
     ],
-    title: 'Workflow',
-    xtype: 'metadataTab',
-    glyph: 'xf160@FontAwesome',
-    layout: 'fit',
+    title: 'Classification',
+    glyph: 'xf200@FontAwesome',
     items: [{
         xtype: 'metadataeditortable',
         bind: {
-            store: '{document.workflowSteps}'
+            store: '{document.classificationKeywords}'
         },
-        title: 'Steps',
+        title: 'Keywords',
+        hideHeaders: true,
         columns: [
-            { text: 'Date', dataIndex: 'date', editor: 'datefield' },
-            {
-                text: 'Actor',
-                dataIndex: 'actor',
-                renderer: function (r) { return r && r.data ? r.data.showAs : r; },
-                editor: {
-                    xtype: 'akn-metadata-tab-referencecombo',
-                    filteredTypes: ['TLCPerson', 'TLCOrganization']
-                }
-            },
-            {
-                text: 'Role',
-                dataIndex: 'role',
-                renderer: function (r) { return r && r.data ? r.data.showAs : r; },
-                editor: {
-                    xtype: 'akn-metadata-tab-referencecombo',
-                    filteredTypes: ['TLCRole']
-                }
-            },
-            {
-                text: 'Outcome',
-                dataIndex: 'outcome',
-                renderer: function (r) { return r && r.data ? r.data.showAs : r; },
-                editor: {
-                    xtype: 'akn-metadata-tab-referencecombo',
-                    filteredTypes: ['TLCConcept']
-                }
-            }
+            { text: 'Keyword', dataIndex: 'value', flex: 1, editor: 'textfield' }
         ],
         custom: {
-            eid: function (context) { return 'w' + context.rowIdx; }
-        },
-        referenceFix: {
-            actor: { defaultType: 'TLCOrganization', idPrefix: 'actor' },
-            role: { defaultType: 'TLCRole', idPrefix: 'role' },
-            outcome: { defaultType: 'TLCConcept', idPrefix: 'outcome' }
+            showAs: function (context) { return context.newValues.value; },
+            dictionary: function () { return '#lime'; }
         }
     }]
-})
+});
