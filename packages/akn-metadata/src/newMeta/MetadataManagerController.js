@@ -57,9 +57,30 @@ Ext.define('AknMetadata.newMeta.MetadataManagerController', {
 
         var cmp = Ext.create(AknMetadata.newMeta.Editor, {
             name: 'metaManagerPanel',
+            itemId: 'metaManagerPanel',
             autoDestroy: false,
             groupName: 'akn-metadata'
         });
+
+
+        var me = this;
+        this.control({
+            '[itemId=metaManagerPanel]': {
+                render: function(cmp) {
+                    cmp.up('tabpanel').tabBar.hide()
+                }
+            },
+            'contextPanel': {
+                show: function(cmp) {
+                    if (cmp.down('[name=akn-metadata]') && cmp.down('[name=akn-metadata]').isVisible())
+                        me.toggleMetadataButton(true);
+                },
+                hide: function(cmp) {
+                    me.toggleMetadataButton(false);
+                }
+            }
+        });
+
         this.application.fireEvent(Statics.eventsNames.addContextPanelTab, cmp);
         return cmp;
     },
@@ -81,5 +102,10 @@ Ext.define('AknMetadata.newMeta.MetadataManagerController', {
                 }
             });
         }
+    },
+
+    toggleMetadataButton: function(state) {
+        var btn = this.getToolbar().down("[cls='editorTabButton openMetadataBtn']");
+        btn.toggle(state);
     }
 });
