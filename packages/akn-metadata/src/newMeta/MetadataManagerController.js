@@ -44,60 +44,42 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('AknMetadata.newMeta.WorkflowTab', {
-    extend: 'AknMetadata.newMeta.EditorTab',
-    xtype: 'akn-metadata-tab-workflow',
-    requires: [
-        'AknMetadata.newMeta.EditorTab',
-        'AknMetadata.newMeta.EditorTable',
-        'AknMetadata.newMeta.ReferenceCombo'
+Ext.define('AknMetadata.newMeta.MetadataManagerController', {
+    extend: 'Ext.app.Controller',
+    requires: ['AknMetadata.newMeta.Editor'],
+
+    refs : [
+        { ref: 'toolbar', selector: 'main tabbar'}
     ],
-    title: 'Workflow',
-    glyph: 'xf160@FontAwesome',
-    layout: 'fit',
-    items: [{
-        xtype: 'metadataeditortable',
-        bind: {
-            store: '{document.workflowSteps}'
-        },
-        title: 'Steps',
-        columns: [
-            { text: 'Date', dataIndex: 'date', editor: 'datefield' },
-            {
-                text: 'Actor',
-                dataIndex: 'actor',
-                renderer: function (r) { return r && r.data ? r.data.showAs : r; },
-                editor: {
-                    xtype: 'akn-metadata-tab-referencecombo',
-                    filteredTypes: ['TLCPerson', 'TLCOrganization']
+
+    init: function() {
+        this.application.on(Statics.eventsNames.afterLoad, this.addMetadataButton, this);
+
+        var cmp = Ext.create(AknMetadata.newMeta.Editor, {
+            name: 'metaManagerPanel',
+            autoDestroy: false,
+            groupName: 'akn-metadata'
+        });
+        this.application.fireEvent(Statics.eventsNames.addContextPanelTab, cmp);
+        return cmp;
+    },
+
+    addMetadataButton: function () {
+        var me = this, toolbar = me.getToolbar();
+        if (!toolbar.down("[cls='editorTabButton openMetadataBtn']")) {
+            toolbar.add({xtype: 'tbfill'});
+            toolbar.add({
+                xtype: 'button',
+                enableToggle: true,
+                cls : 'editorTabButton openMetadataBtn',
+                margin : '0 10 0 0',
+                text : Locale.getString('title', 'akn-metadata'),
+                listeners : {
+                    click : function (btn) {
+                        me.application.fireEvent(Statics.eventsNames.openCloseContextPanel, btn.pressed, 'akn-metadata');
+                    }
                 }
-            },
-            {
-                text: 'Role',
-                dataIndex: 'role',
-                renderer: function (r) { return r && r.data ? r.data.showAs : r; },
-                editor: {
-                    xtype: 'akn-metadata-tab-referencecombo',
-                    filteredTypes: ['TLCRole']
-                }
-            },
-            {
-                text: 'Outcome',
-                dataIndex: 'outcome',
-                renderer: function (r) { return r && r.data ? r.data.showAs : r; },
-                editor: {
-                    xtype: 'akn-metadata-tab-referencecombo',
-                    filteredTypes: ['TLCConcept']
-                }
-            }
-        ],
-        custom: {
-            eid: function (context) { return 'w' + context.rowIdx; }
-        },
-        referenceFix: {
-            actor: { defaultType: 'TLCOrganization', idPrefix: 'actor' },
-            role: { defaultType: 'TLCRole', idPrefix: 'role' },
-            outcome: { defaultType: 'TLCConcept', idPrefix: 'outcome' }
+            });
         }
-    }]
-})
+    }
+});

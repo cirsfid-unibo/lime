@@ -55,7 +55,6 @@ Ext.define('AknMetadata.newMeta.ReferenceTab', {
         'Ext.grid.feature.Grouping'
     ],
     title: 'References',
-    xtype: 'metadataTab',
     glyph: 'xf08e@FontAwesome',
     layout: 'fit',
     items: [{
@@ -69,22 +68,35 @@ Ext.define('AknMetadata.newMeta.ReferenceTab', {
         // hideHeaders: true,
         columns: [
             { text: 'Value', dataIndex: 'showAs', editor: 'textfield', allowBlank: false },
+            { text: 'Reference', dataIndex: 'href', editor: 'textfield', flex: 1, allowBlank: true },
             {
+                flex: 1,
                 text: 'Type',
                 dataIndex: 'type',
                 renderer: function (r) {
                     switch (r) {
                     case 'TLCPerson': return 'Person';
+                    case 'TLCOrganization': return 'Organization';
+                    case 'TLCConcept': return 'Concept';
+                    case 'TLCObject': return 'Object';
+                    case 'TLCEvent': return 'Event';
+                    case 'TLCLocation': return 'Location';
+                    case 'TLCProcess': return 'Process';
+                    case 'TLCRole': return 'Role';
+                    case 'TLCTerm': return 'Term';
+                    case 'TLCReference': return 'Reference';
                     default: return r;
                     }
                 },
-                allowBlank: false,
-                hidden: true
+                editor: {
+                    xtype: 'combo',
+                    store: ['TLCPerson', 'TLCOrganization', 'TLCConcept', 'TLCObject', 'TLCEvent', 'TLCLocation', 'TLCProcess', 'TLCRole', 'TLCTerm', 'TLCReference'],
+                    forceSelection: true
+                }
             }
         ],
         custom: {
-            eid: function (context) { return 'p' + context.rowIdx; } },
-            type: function () { return 'TLCPerson'; }
+            eid: function (context) { return 'r' + context.rowIdx; } }
         }
     ],
 
