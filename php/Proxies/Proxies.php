@@ -2,40 +2,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -44,23 +44,23 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-	
+
 	/**
 	 * This class is the class that supplies all the proxies needed by the editor
 	 * @package Proxies
 	 * @author Luca Cervone <cervoneluca@gmail.com>
 	*/
 	class Proxies {
-		
+
 		// the requested service
-		private $_requestedService; 
-		
+		private $_requestedService;
+
 		// the parameters to give to the requested service
-		private $_params; 
-		
+		private $_params;
+
 		// the service instance
 		private $_service;
-		
+
 		/**
 		 * Create the proxies object
 		 * @return The Proxy Object
@@ -71,10 +71,10 @@
 		{
 			// save the name of the requested service
 			$this->_requestedService = $requestedService;
-			
+
 			// save the params that will be given to the requested service
-			$this->_params = $params; 
-			
+			$this->_params = $params;
+
 			// create the requested service instance
 			switch($this->_requestedService)
 			{
@@ -94,8 +94,8 @@
 					$this->_service = new Proxies_Services_AutosaveFile($this->_params);
 					break;
                 case 'SAVE_FILE':
-                    $this->_service = new Proxies_Services_SaveFile($this->_params);              
-                    break; 
+                    $this->_service = new Proxies_Services_SaveFile($this->_params);
+                    break;
 				case 'USER_MANAGER':
 					header("Content-Type: application/json");
 					$this->_service = new Proxies_Services_UserManager($this->_params);
@@ -107,7 +107,7 @@
 				case 'XSLT_TRANSFORM':
 				//	header("Content-Type: text/xml");
 					$this->_service = new Proxies_Services_XSLTTransform($this->_params);
-					break; 
+					break;
 				case 'AKN_TO_PDF':
 					header("Content-Type: application/json");
 					$this->_service = new Proxies_Services_AknToPdf($this->_params);
@@ -139,6 +139,10 @@
 				case 'FILE_TO_HTML':
 					header("Content-Type: application/json"); // TODO if set to any other type the result is wrapped into a <pre> tag
 					$this->_service = new Proxies_Services_FileToHtml($this->_params);
+					break;
+				case 'FILE_TO_TXT':
+					header("Content-Type: application/json");
+					$this->_service = new Proxies_Services_FileToTxt($this->_params);
 					break;
 				case 'UPLOAD':
 					$this->_service = new Proxies_Services_Upload($this->_params);
@@ -177,7 +181,7 @@
 					$this->_service = new Proxies_Services_PublishDoc($this->_params);
 					break;
 			}
-			
+
 		}
 
 		/**
@@ -189,5 +193,5 @@
 			// return the service results
 			return $this->_service->getResults();
 		}
-		
-	}	
+
+	}

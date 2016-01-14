@@ -44,80 +44,17 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- * This controller manages the progress window.
- *  */
+Ext.define('AknAnonym.Application', {
+    override: 'LIME.Application',
 
-Ext.define('LIME.controller.ProgressWindow', {
-    extend : 'Ext.app.Controller',
-    // set the references for this controller
-    views : ['ProgressWindow'],
+    requires: [
+        'AknAnonym.Strings',
+        'AknAnonym.Controller'
+    ],
 
-    refs : [{
-        // the open document button
-        selector : 'progressWindow',
-        ref : 'progressWindow'
-    }],
-
-    progressStep: 0.05,
-
-    //TODO: remove start only update
-
-    /**
-     * This function starts a progress bar window
-     * @param {String} [title] The title of window
-     * @param {Object} [progress] Init progress of the bar with value and text
-     */
-    progressStart: function(title, progress) {
-       var progressWindow = this.getProgressWindow();
-
-       //Set the passed title to the window
-       if (title && Ext.isString(title)) {
-           progressWindow.setTitle(title);
-       }
-       //Se the passed progress or empty progress
-       if (!(progress && progress.value && progress.text)) {
-           this.progressRawUpdate(0, Ext.emptyString, false);
-       } else {
-           this.progressRawUpdate(progress.value, progress.text);
-       }
-       progressWindow.show();
-    },
-
-    /**
-     * Update the opened progress bar
-     * @param {Number} value New value to set
-     * @param {String} text New text of the progress
-     * @param {Boolean} animation
-     */
-    progressRawUpdate: function(value, text, animation) {
-        var progressWindow = this.getProgressWindow(),
-            progressBar = progressWindow.down("progressbar");
-
-        progressBar.updateProgress(value, (Ext.isString(text)) ? text : null, animation);
-    },
-
-    progressUpdate: function(text) {
-        var progressWindow = this.getProgressWindow(),
-            progressBar = progressWindow.down("progressbar");
-
-        this.progressRawUpdate(progressBar.value+this.progressStep, text, true);
-    },
-
-    /**
-     * Ends the started progress
-     */
-    progressEnd: function() {
-        var progressWindow = this.getProgressWindow(),
-            progressBar = progressWindow.down("progressbar");
-
-        progressWindow.hide();
-    },
-
-    init : function() {
-        //Listening progress events
-        this.application.on(Statics.eventsNames.progressStart, this.progressStart, this);
-        this.application.on(Statics.eventsNames.progressUpdate, this.progressUpdate, this);
-        this.application.on(Statics.eventsNames.progressEnd, this.progressEnd, this);
+    initControllers : function() {
+        Locale.setPluginStrings('akn-anonymization', AknAnonym.Strings.strings);
+        this.controllers.push('AknAnonym.Controller');
+        this.callParent();
     }
 });
