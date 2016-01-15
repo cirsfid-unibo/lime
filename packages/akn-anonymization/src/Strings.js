@@ -49,14 +49,24 @@
 
     strings: {
         "en": {
+            "anonymizeDocument": "Anonymize document",
+            "anonymizeDocumentTooltip": "Upload a document to anonymize it",
             "selectDocument": "Select document",
-            "selectDocumentExplanation": "Select a document using the form above or drag and drop your file here"
+            "selectDocumentExplanation": "Select a document using the form above or drag and drop your file here",
+            "callingService": "Processing",
+            "waiting": [
+                "Waiting...", "Waiting....", "Waiting....."
+            ]
         },
         "it": {
             "anonymizeDocument": "Anonimizza documento",
             "anonymizeDocumentTooltip": "Carica un documento per anonimizzarlo",
             "selectDocument": "Seleziona il documento",
-            "selectDocumentExplanation": "Seleziona un documento usando il form qui sopra o trascinalo qui"
+            "selectDocumentExplanation": "Seleziona un documento usando il form qui sopra o trascinalo qui",
+            "callingService": "Elaborazione in corso",
+            "waiting": [
+                "Attendere...", "Attendere....", "Attendere.....", "Un po' di pazienza...", "Ancora un po' di pazienza..."
+            ]
         }
     }
 });

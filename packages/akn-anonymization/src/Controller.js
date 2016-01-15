@@ -87,16 +87,19 @@ Ext.define('AknAnonym.Controller', {
     },
 
     uploadFinished: function(content, request) {
-        this.application.fireEvent(Statics.eventsNames.progressEnd);
+        this.progressEnd();
         if (request.response.success)
             this.callingNER(content, this.handleNERres.bind(this));
     },
 
     callingNER: function(content, success) {
-        Ext.Ajax.request({
+        var me = this;
+        me.progressUpdate();
+        Server.request({
             method: 'POST',
-            url: 'http://localhost/test/aknTest.php',
+            url: '{phpServer}LawNer/proxy.php',
             rawData: content,
+            timeout: 600000, // 10 minutes, LawNer service is very very slow
             headers: {
                 'Content-Type': 'text/plain;charset=utf-8'
             },
@@ -104,14 +107,43 @@ Ext.define('AknAnonym.Controller', {
                 success(response.responseText);
             },
             failure: function (response) {
+                me.progressEnd();
                 console.warn('Error callingNER');
                 console.warn(response);
             }
         });
     },
 
+    progressUpdate: function() {
+        var waitingStrings = Locale.getString("waiting", this.getPluginName());
+        if (!this.progressStart) {
+            this.progressStart = true;
+            this.progressStrIndex = 0;
+            this.application.fireEvent(Statics.eventsNames.progressStart, Locale.getString("callingService", this.getPluginName()), {
+                text: waitingStrings[0],
+                value: 0.2
+            });
+            // Fake progress every 5 seconds
+            this.progressInterval = setInterval(this.progressUpdate.bind(this), 5000);
+            return;
+        }
+
+        this.progressStrIndex = this.progressStrIndex || 0;
+        this.progressStrIndex = (this.progressStrIndex+1)%waitingStrings.length;
+        console.log("Progress update", this.progressStrIndex);
+        this.application.fireEvent(Statics.eventsNames.progressUpdate, waitingStrings[this.progressStrIndex], 0.01);
+    },
+
+    progressEnd: function() {
+        this.progressStart = false;
+        clearInterval(this.progressInterval);
+        this.application.fireEvent(Statics.eventsNames.progressEnd);
+    },
+
     handleNERres: function(xml) {
         var me = this;
+        this.progressEnd();
+        console.log(xml);
         me.aknToHtml(xml, function(html) {
             me.loadDocument(html, 'akoma3.0', 'ita', xml);
         });

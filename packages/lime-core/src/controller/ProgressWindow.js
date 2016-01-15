@@ -97,11 +97,12 @@ Ext.define('LIME.controller.ProgressWindow', {
         progressBar.updateProgress(value, (Ext.isString(text)) ? text : null, animation);
     },
 
-    progressUpdate: function(text) {
+    progressUpdate: function(text, step) {
         var progressWindow = this.getProgressWindow(),
             progressBar = progressWindow.down("progressbar");
 
-        this.progressRawUpdate(progressBar.value+this.progressStep, text, true);
+        step = (step === undefined) ? this.progressStep : step;
+        this.progressRawUpdate(progressBar.value+step, text, true);
     },
 
     /**
