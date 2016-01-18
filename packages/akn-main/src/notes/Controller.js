@@ -44,16 +44,22 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('LIME.controller.NotesManagerController', {
+Ext.define('AknMain.notes.Controller', {
     extend : 'Ext.app.Controller',
 
     config : {
-        pluginName : "notesManager",
         authorialNoteClass : 'authorialNote',
         changePosAttr: 'chposid',
         changePosTargetAttr: 'chpos_id',
         refToAttribute: 'refto',
         notesContainerCls: 'notesContainer'
+    },
+
+    init : function() {
+        var me = this;
+        //Listening progress events
+        me.application.on(Statics.eventsNames.afterLoad, me.beforeProcessNotes, me);
+        me.application.on(Statics.eventsNames.nodeAttributesChanged, me.nodeChangedAttributes, me);
     },
 
     processNotes : function(editorBody) {
@@ -203,12 +209,5 @@ Ext.define('LIME.controller.NotesManagerController', {
                 }); 
             }
         }
-    },
-
-    init : function() {
-        var me = this;
-        //Listening progress events
-        me.application.on(Statics.eventsNames.afterLoad, me.beforeProcessNotes, me);
-        me.application.on(Statics.eventsNames.nodeAttributesChanged, me.nodeChangedAttributes, me);
     }
 });

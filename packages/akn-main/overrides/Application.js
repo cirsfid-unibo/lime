@@ -50,11 +50,13 @@ Ext.define('AknMain.Application', {
     requires: [
         'AknMain.parsers.Num',
         'AknMain.metadata.Store',
-        'AknMain.Reference'
+        'AknMain.Reference',
+        'AknMain.notes.Controller',
     ],
 
     init: function () {
         Ext.create('AknMain.metadata.Store');
+        this.controllers.push('AknMain.notes.Controller');
         this.callParent(arguments);
     }
 });
