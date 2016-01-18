@@ -47,6 +47,10 @@
 Ext.define('AknAnonym.Controller', {
     extend : 'Ext.app.Controller',
 
+    requires: [
+        'AknMain.xml.Document'
+    ],
+
     config: {
         pluginName: "akn-anonymization"
     },
@@ -144,9 +148,18 @@ Ext.define('AknAnonym.Controller', {
         var me = this;
         this.progressEnd();
         console.log(xml);
-        me.aknToHtml(xml, function(html) {
+        me.aknToHtml(me.anonymizeAkn(xml), function(html) {
             me.loadDocument(html, 'akoma3.0', 'ita', xml);
         });
+    },
+
+    anonymizeAkn: function(xml) {
+        var akn = AknMain.xml.Document.parse(xml, 'akn');
+        akn.select('//akn:party | //akn:person').forEach(function(node) {
+            // Remove all letters but initials
+            node.textContent = node.textContent.replace(/(\w)\w+/gi,'$1').replace(/\s/g, '');
+        });
+        return akn.getXml('/');
     },
 
     aknToHtml: function(content, callback, failure) {
