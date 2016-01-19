@@ -54,7 +54,7 @@ Ext.define('AknMetadata.newMeta.ReferenceTab', {
         'AknMetadata.newMeta.EditorTable',
         'Ext.grid.feature.Grouping'
     ],
-    title: 'References',
+    title: Locale.getString('references', 'akn-metadata'),
     glyph: 'xf08e@FontAwesome',
     layout: 'fit',
     items: [{
@@ -63,15 +63,15 @@ Ext.define('AknMetadata.newMeta.ReferenceTab', {
             ftype:'grouping',
             groupHeaderTpl: '{renderedGroupValue}'
         }],
-        title: 'Persons',
+        title: Locale.getString('references', 'akn-metadata'),
         bind: { store: '{document.references}' },
         // hideHeaders: true,
         columns: [
-            { text: 'Value', dataIndex: 'showAs', editor: 'textfield', allowBlank: false },
-            { text: 'Reference', dataIndex: 'href', editor: 'textfield', flex: 1, allowBlank: true },
+            { text: Locale.getString('value', 'akn-metadata'), dataIndex: 'showAs', editor: 'textfield', allowBlank: false },
+            { text: Locale.getString('reference', 'akn-metadata'), dataIndex: 'href', editor: 'textfield', flex: 1, allowBlank: true },
             {
                 flex: 1,
-                text: 'Type',
+                text: Locale.getString('type', 'akn-metadata'),
                 dataIndex: 'type',
                 renderer: function (r) {
                     switch (r) {

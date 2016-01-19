@@ -61,7 +61,6 @@ Ext.define('AknMetadata.newMeta.Controller', {
     },
 
     refreshStore: function () {
-        console.info('refresh');
         this.getViewModel().setData({
             document: Ext.getStore('metadata').getMainDocument()
         });

@@ -80,7 +80,7 @@ Ext.define('AknMetadata.newMeta.EditorTable', {
 
     tools: [{
         type: 'plus',
-        tooltip: 'Add a new item',
+        tooltip: Locale.getString('addItem', 'akn-metadata'),
         callback: function (grid) {
             console.log('arguments', arguments);
             var record = grid.getStore().add({})[0];
@@ -88,7 +88,7 @@ Ext.define('AknMetadata.newMeta.EditorTable', {
         }
     }, {
         type: 'minus',
-        tooltip: 'Remove selected items',
+        tooltip: Locale.getString('removeItem', 'akn-metadata'),
         callback: function (grid) {
             console.log(grid.getSelection());
             grid.getStore().remove(grid.getSelection());

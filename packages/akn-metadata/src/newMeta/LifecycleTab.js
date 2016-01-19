@@ -52,18 +52,18 @@ Ext.define('AknMetadata.newMeta.LifecycleTab', {
         'AknMetadata.newMeta.EditorTable',
         'AknMetadata.newMeta.ReferenceCombo'
     ],
-    title: 'Events',
+    title: Locale.getString('events', 'akn-metadata'),
     glyph: 'xf073@FontAwesome',
     items: [{
         xtype: 'metadataeditortable',
-        title: 'Revisions',
+        title: Locale.getString('revisions', 'akn-metadata'),
         bind: {
             store: '{document.lifecycleEvents}'
         },
         columns: [
-            { text: 'Date', dataIndex: 'date', editor: 'datefield' },
+            { text: Locale.getString('date', 'akn-metadata'), dataIndex: 'date', editor: 'datefield' },
             {
-                text: 'Source',
+                text: Locale.getString('source', 'akn-metadata'),
                 dataIndex: 'source',
                 flex: 1,
                 renderer: function (r) { return r && r.data ? r.data.showAs : r; },
@@ -73,7 +73,7 @@ Ext.define('AknMetadata.newMeta.LifecycleTab', {
                 }
             },
             {
-                text: 'Type',
+                text: Locale.getString('type', 'akn-metadata'),
                 dataIndex: 'type',
                 editor: {
                     xtype: 'combo',

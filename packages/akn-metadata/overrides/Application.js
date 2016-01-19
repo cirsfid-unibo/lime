@@ -59,7 +59,6 @@ Ext.define('AknMetadata.Application', {
     ],
 
     initControllers : function() {
-        Locale.setPluginStrings('akn-metadata', AknMetadata.Strings.strings);
         this.controllers.push('AknMetadata.newMeta.MetadataManagerController');
         this.controllers.push('AknMetadata.sync.EditorSynchronizer');
         this.controllers.push('AknMetadata.sync.OldMetaBackport');

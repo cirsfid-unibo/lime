@@ -51,14 +51,14 @@ Ext.define('AknMetadata.newMeta.ClassificationTab', {
         'AknMetadata.newMeta.EditorTab',
         'AknMetadata.newMeta.EditorTable'
     ],
-    title: 'Classification',
+    title: Locale.getString('classification', 'akn-metadata'),
     glyph: 'xf200@FontAwesome',
     items: [{
         xtype: 'metadataeditortable',
         bind: {
             store: '{document.classificationKeywords}'
         },
-        title: 'Keywords',
+        title: Locale.getString('keywords', 'akn-metadata'),
         hideHeaders: true,
         columns: [
             { text: 'Keyword', dataIndex: 'value', flex: 1, editor: 'textfield' }

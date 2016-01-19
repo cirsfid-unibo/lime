@@ -51,7 +51,7 @@ Ext.define('AknMain.Application', {
         'AknMain.parsers.Num',
         'AknMain.metadata.Store',
         'AknMain.Reference',
-        'AknMain.notes.Controller',
+        'AknMain.notes.Controller'
     ],
 
     init: function () {

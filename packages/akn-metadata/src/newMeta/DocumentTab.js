@@ -51,49 +51,49 @@ Ext.define('AknMetadata.newMeta.DocumentTab', {
         'AknMetadata.newMeta.EditorTab',
         'AknMetadata.newMeta.EditorTable'
     ],
-    title: 'Document',
+    title: Locale.getString('document', 'akn-metadata'),
     glyph: 'xf0f6@FontAwesome',
     items: [{
         xtype: 'datefield',
-        fieldLabel: 'Date',
+        fieldLabel: Locale.getString('date', 'akn-metadata'),
         bind: '{document.date}'
     }, {
         xtype: 'datefield',
-        fieldLabel: 'Version date',
+        fieldLabel: Locale.getString('versionDate', 'akn-metadata'),
         bind: '{document.version}'
     }, {
         xtype: 'textfield',
-        fieldLabel: 'Number',
+        fieldLabel: Locale.getString('number', 'akn-metadata'),
         bind: '{document.name}'
     }, {
         xtype: 'combobox',
         store: 'Nationalities',
         displayField: 'name',
         valueField: 'alpha-2',
-        fieldLabel: 'Nation',
+        fieldLabel: Locale.getString('nation', 'akn-metadata'),
         bind: '{document.country}'
     }, {
         xtype: 'combobox',
         store: 'DocumentLanguages',
         displayField: 'name',
         valueField: 'code',
-        fieldLabel: 'Language',
+        fieldLabel: Locale.getString('language', 'akn-metadata'),
         bind: '{document.language}'
     }, {
         xtype: 'textfield',
-        fieldLabel: 'Author',
+        fieldLabel: Locale.getString('author', 'akn-metadata'),
         bind: '{document.author}'
     }, {
         xtype: 'checkboxfield',
-        boxLabel: 'Prescriptive',
+        boxLabel: Locale.getString('prescriptive', 'akn-metadata'),
         bind: '{document.prescriptive}'
     }, {
         xtype: 'checkboxfield',
-        boxLabel: 'Authoritative',
+        boxLabel: Locale.getString('authoritative', 'akn-metadata'),
         bind: '{document.authoritative}'
     }, {
         xtype: 'metadataeditortable',
-        title: 'Aliases',
+        title: Locale.getString('aliases', 'akn-metadata'),
         hideHeaders: true,
         bind: {
             store: '{document.aliases}'

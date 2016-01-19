@@ -52,7 +52,7 @@ Ext.define('AknMetadata.newMeta.WorkflowTab', {
         'AknMetadata.newMeta.EditorTable',
         'AknMetadata.newMeta.ReferenceCombo'
     ],
-    title: 'Workflow',
+    title: Locale.getString('workflow', 'akn-metadata'),
     glyph: 'xf160@FontAwesome',
     layout: 'fit',
     items: [{
@@ -60,11 +60,11 @@ Ext.define('AknMetadata.newMeta.WorkflowTab', {
         bind: {
             store: '{document.workflowSteps}'
         },
-        title: 'Steps',
+        title: Locale.getString('steps', 'akn-metadata'),
         columns: [
-            { text: 'Date', dataIndex: 'date', editor: 'datefield' },
+            { text: Locale.getString('date', 'akn-metadata'), dataIndex: 'date', editor: 'datefield' },
             {
-                text: 'Actor',
+                text: Locale.getString('actor', 'akn-metadata'),
                 dataIndex: 'actor',
                 renderer: function (r) { return r && r.data ? r.data.showAs : r; },
                 editor: {
@@ -73,7 +73,7 @@ Ext.define('AknMetadata.newMeta.WorkflowTab', {
                 }
             },
             {
-                text: 'Role',
+                text: Locale.getString('role', 'akn-metadata'),
                 dataIndex: 'role',
                 renderer: function (r) { return r && r.data ? r.data.showAs : r; },
                 editor: {
@@ -82,7 +82,7 @@ Ext.define('AknMetadata.newMeta.WorkflowTab', {
                 }
             },
             {
-                text: 'Outcome',
+                text: Locale.getString('outcome', 'akn-metadata'),
                 dataIndex: 'outcome',
                 renderer: function (r) { return r && r.data ? r.data.showAs : r; },
                 editor: {
