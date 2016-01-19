@@ -67,6 +67,7 @@ Ext.define('DefaultNir.controller.NirPreview', {
 
 
     init: function() {
+        this.application.on(Statics.eventsNames.afterLoad, this.showPreview, this);
         this.control({
             'nirPreviewMainTab' : {
                 activate: this.showPreview
@@ -146,13 +147,5 @@ Ext.define('DefaultNir.controller.NirPreview', {
             var downloadManager = me.getDownloadManager();
             downloadManager.fireEvent(downloadManager.eventActivate, Utilities.getAjaxUrl(), params);
         });
-    },
-
-    onInitPlugin: function() {
-        this.application.on(Statics.eventsNames.afterLoad, this.showPreview, this);
-    },
-
-    onRemoveController: function() {
-        this.application.removeListener(Statics.eventsNames.afterLoad, this.showPreview, this);
     }
 });

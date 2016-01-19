@@ -1041,7 +1041,6 @@ Ext.define('LIME.controller.Editor', {
         if (!this.undoButtons['lime-undo']) return;
         if (!this.undoButtons['lime-redo']) return;
         var undoManager = this.getController('UndoManager');
-        console.info(undoManager.currentLevel, undoManager.checkpoints);
         this.undoButtons['lime-undo'].disabled(!undoManager.canUndo());
         this.undoButtons['lime-redo'].disabled(!undoManager.canRedo());
     },

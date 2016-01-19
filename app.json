@@ -9,6 +9,7 @@
         "lime-core",
 
         "default-import",
+        "default-export",
         "default-autoimport-open",
         "default-validation",
         "default-diff",
@@ -18,6 +19,7 @@
         "akn-collection",
         "akn-tab-xml-preview",
         "akn-tab-visualizer",
+        "akn-automatic-markup",
         "akn-toc-generator"
     ],
     "framework": "ext",

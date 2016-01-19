@@ -1,4 +1,0 @@
-{
-	"views": ["JNdiffMainTab"],
-	"controllers": ["XmlJNDiffController"]
-}
