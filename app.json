@@ -13,6 +13,7 @@
         "default-autoimport-open",
         "default-validation",
         "default-diff",
+        "default-pdf",
 
         "akn-main",
         "akn-metadata",
@@ -20,7 +21,8 @@
         "akn-tab-xml-preview",
         "akn-tab-visualizer",
         "akn-automatic-markup",
-        "akn-toc-generator"
+        "akn-toc-generator",
+        "akn-mods-marker"
     ],
     "framework": "ext",
     "css": [

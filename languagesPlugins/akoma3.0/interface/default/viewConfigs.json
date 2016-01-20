@@ -9,7 +9,7 @@
         "commentsMainTab",
         "translationMainTab",
         "jnDiffMainTab",
-        "newPdfPreviewMainTab",
+        "pdfFopPreviewMainTab",
         "nirPreviewMainTab",
         "visualPreviewMainTab",
         "consolidationMainTab"

@@ -76,7 +76,7 @@ Ext.define('LIME.Config', {
     
     customDefaultControllers : [],
     
-    allLanguages: [{name: "default"}],
+    allLanguages: [],
     
     languages:[],
     
