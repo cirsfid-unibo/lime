@@ -44,24 +44,27 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.require('LIME.Application', function () {
-    Ext.application({
-        name: 'LIME',
-        extend: 'LIME.Application',
-
-        launch : function() {
-            // First call the parent launch method
-            this.callParent();
-
-            // Prevent going back in the browser history when pressing backspace
-            Ext.getDoc().on('keydown', function(e, t) {
-                if (e.getKey() == e.BACKSPACE && (!/^input|textarea$/i.test(t.tagName)))
-                    e.stopEvent();
+(function () {
+    function startApp() {
+        Ext.require('LIME.Application', function () {
+            Ext.application({
+                name: 'LIME',
+                extend: 'LIME.Application',
+                launch : function() {
+                    this.callParent();
+                    // Remove the loading icon
+                    var loadingDiv = document.querySelector("#loading");
+                    loadingDiv.parentNode.removeChild(loadingDiv);
+                }
             });
+        });
+    }
 
-            // Remove the loading icon
-            var loadingDiv = document.querySelector("#loading");
-            loadingDiv.parentNode.removeChild(loadingDiv);
-        }
+    Ext.require(['LIME.Locale', 'LIME.Config', 'LIME.Utilities'], function() {
+        // Waiting Locale and Config to complete the asynchrounus requests
+        Utilities.events.delayUntil(function() {
+            return Locale.isReady && Config.isReady;
+        }, startApp);
     });
-});
+}());
+

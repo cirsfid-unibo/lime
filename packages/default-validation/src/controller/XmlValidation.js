@@ -111,7 +111,7 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
         }
 
         Ext.Ajax.request({
-            url : Utilities.getAjaxUrl(),
+            url : Server.getAjaxUrl(),
             method : 'POST',
             // send the content of the editor
             params : {

@@ -1,4 +1,10 @@
 {
-    "nodeServer": "http://sinatra.cirsfid.unibo.it/node/aknservices",
-    "phpServer": "php/"
+    "languages": [{"name":"akoma3.0"}],
+    "fieldsDefaults": {
+        "docLocale": "it"
+    },
+    "server": {
+        "node": "http://sinatra.cirsfid.unibo.it/node/aknservices",
+        "php": "php/"
+    }
 }

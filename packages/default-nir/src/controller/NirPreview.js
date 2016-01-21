@@ -145,7 +145,7 @@ Ext.define('DefaultNir.controller.NirPreview', {
             };
 
             var downloadManager = me.getDownloadManager();
-            downloadManager.fireEvent(downloadManager.eventActivate, Utilities.getAjaxUrl(), params);
+            downloadManager.fireEvent(downloadManager.eventActivate, Server.getAjaxUrl(), params);
         });
     }
 });

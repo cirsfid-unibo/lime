@@ -49,39 +49,28 @@ Ext.define('LIME.Server', {
     singleton: true,
     alternateClassName: 'Server',
     requires: [
-        'Statics',
-        'Utilities'
+        'Statics'
     ],
 
-    isReady: false,
-    nodeServer: null,
-    phpServer: null,
+    config: {
+        nodeServer : null,
+        phpServer: null
+    },
 
-    constructor: function () {
-        var me = this;
-        Ext.Ajax.request({
-            url: 'config.json',
-            success: function (response) {
-                var config = JSON.parse(response.responseText);
-                me.phpServer = config.phpServer;
-                me.nodeServer = config.nodeServer;
-                me.isReady = true;
-            }
-        });
-        return this.callParent(arguments);
+    constructor: function() {
+        this.initConfig();
     },
 
     // Like Ext.Ajax.request, but delayed until we've loaded server config.
     // Replaces {nodeServer} and {phpServer} in config.url
     request: function (config) {
         var me = this;
-        Utilities.events.delayUntil(function () {
-            return me.isReady;
-        }, function () {
-            config.url = config.url.replace('{nodeServer}', me.nodeServer);
-            config.url = config.url.replace('{phpServer}', me.phpServer);
-            Ext.Ajax.request(config);
-        });
+        if (!me.getNodeServer() || !me.getPhpServer())
+            return console.error('Server is not configurated yet!');
+
+        config.url = config.url.replace('{nodeServer}', me.getNodeServer());
+        config.url = config.url.replace('{phpServer}', me.getPhpServer());
+        Ext.Ajax.request(config);
     },
 
     // Request with authorization headers
@@ -220,7 +209,7 @@ Ext.define('LIME.Server', {
                 var url;
                 try {
                     url = JSON.parse(response.responseText).url;
-                    url = me.nodeServer + url.substring(url.indexOf('/documentsdb/'));
+                    url = me.getNodeServer() + url.substring(url.indexOf('/documentsdb/'));
                 } catch (e) {
                     console.warn('Error exporting file');
                     console.warn(response.responseText);
@@ -276,7 +265,7 @@ Ext.define('LIME.Server', {
         }
         this.request({
             // the url of the web service
-            url: this.phpServer+'Services.php',
+            url: '{phpServer}Services.php',
             method: 'POST',
             params: params,
             scope: this,
@@ -325,5 +314,28 @@ Ext.define('LIME.Server', {
                 };
             }
         }, failure, this);
+    },
+
+    /**
+     * Return a well formed url that contains the given arguments
+     * properly encoded (to be set into the url).
+     * @param {Array} params The parameters to be set into the url
+     * @returns {String} The final url
+     */
+    getAjaxUrl : function(params) {
+        // get the url for the requested service
+        var requestedServiceUrl = this.getPhpServer() + 'Services.php?';
+
+        // itereate through the params
+        for (param in params) {
+            // create the request url
+            requestedServiceUrl = requestedServiceUrl + param + '=' + encodeURI(params[param]) + '&';
+        }
+
+        // cut the last & character of the string
+        requestedServiceUrl = requestedServiceUrl.substring(0, requestedServiceUrl.length - 1);
+
+        // return the url
+        return requestedServiceUrl;
     }
 });

@@ -2971,7 +2971,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             sendString = sendString.replace(/<br[^>]*>/g, "\n\n");
             Ext.Ajax.request({
                 // the url of the web service
-                url : Server.phpServer+config.url,
+                url : Server.getPhpServer()+config.url,
                 timeout : me.parserAjaxTimeOut,
                 // set the method
                 method : config.method,

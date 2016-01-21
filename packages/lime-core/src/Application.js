@@ -44,9 +44,6 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
-// Todo: remove Locale and Config references in files all around
-Ext.syncRequire(['LIME.Locale', 'LIME.Config']);
 Ext.define('LIME.Application', {
     name: 'LIME',
 
@@ -128,20 +125,13 @@ Ext.define('LIME.Application', {
     ],
 
     launch : function() {
-        // Calling the secure launch that launches the app only if all files are loaded
-        this.secureLaunch();
-    },
+        // Prevent going back in the browser history when pressing backspace
+        Ext.getDoc().on('keydown', function(e, t) {
+            if (e.getKey() == e.BACKSPACE && (!/^input|textarea$/i.test(t.tagName)))
+                e.stopEvent();
+        });
 
-    /**
-     * This function loads the MarkupLanguages store and creates
-     * the application viewport when the configuration is finished
-     * */
-    secureLaunch: function() {
-        if (!Config.loadedFinish) {
-            Ext.defer(this.secureLaunch, 100, this);
-        } else {
-            this.getStore('MarkupLanguages').loadData(Config.languages);
-            Ext.create('LIME.view.Viewport');
-        }
+        this.getStore('MarkupLanguages').loadData(Config.languages);
+        Ext.create('LIME.view.Viewport');
     }
 });

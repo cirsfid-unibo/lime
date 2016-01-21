@@ -82,7 +82,7 @@ Ext.define('AknAnonym.Controller', {
                 title : Locale.getString("anonymizeDocument", me.getPluginName()),
                 uploadCallback : me.uploadFinished,
                 callbackScope: me,
-                uploadUrl : Utilities.getAjaxUrl(),
+                uploadUrl : Server.getAjaxUrl(),
                 uploadParams : {
                     requestedService: "FILE_TO_TXT"
                 }

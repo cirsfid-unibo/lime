@@ -129,7 +129,7 @@ Ext.define('LIME.ux.akoma3.Language', {
         //Calling the translate service
         Ext.Ajax.request({
             // the url of the web service
-            url : Utilities.getAjaxUrl(),
+            url : Server.getAjaxUrl(),
             method : 'POST',
             // send the content in XML format
             params : params,

@@ -71,28 +71,6 @@ Ext.define('LIME.controller.CustomizationManager', {
 
     onLanguageLoaded : function() {
         this.customCallbacks = {};
-        this.loadControllers(Config.customControllers);
-    },
-
-    loadControllers : function(controllers) {
-        var me = this,
-            controllers = controllers || [];
-
-        if (controllers) {
-            Ext.each(controllers, function(controller) {
-                // Don't run this code on View Controllers since it would
-                // rise an exception.
-                if (controller.indexOf('VController') != -1) return;
-                try {
-                    var cntr = me.getController(controller);
-                    //TODO: hide application and make custom fire event
-                    Ext.callback(cntr.onInitPlugin, cntr);
-                } catch (e) {
-                    console.log('Error loading controller ', controller);
-                    console.log(e);
-                }
-            });
-        }
     },
 
     callCallback : function(cmp, name) {
@@ -135,14 +113,6 @@ Ext.define('LIME.controller.CustomizationManager', {
             me.customMenuItems[controller.id] = me.customMenuItems[controller.id] || [];
             me.customMenuItems[controller.id].push(item);
         }
-    },
-
-    removeCustomMenuItems: function(controller) {
-        var me = this;
-        Ext.each(me.customMenuItems[controller.id], function(item) {
-            item.parentMenu.remove(item);
-        });
-        me.customMenuItems[controller.id] = [];
     },
 
     createSecondEditor: function() {
@@ -317,28 +287,6 @@ Ext.define('LIME.controller.CustomizationManager', {
         me.application.on(Statics.eventsNames.addMenuItem, me.addMenuItem, me);
         me.application.on(Statics.eventsNames.enableDualEditorMode, me.enableDualEditorMode, me);
         me.application.on(Statics.eventsNames.afterLoad, me.afterDocumentLoaded, me);
-
-
-        Config.beforeSetLanguage = function(lang, callback) {
-            if (Config.customControllers) {
-                Ext.each(Config.customControllers, function(controller) {
-                    var cntr = me.getController(controller);
-                    me.removeCustomMenuItems(cntr);
-                    Ext.callback(cntr.onRemoveController, cntr);
-                });
-            }
-            Ext.callback(callback);
-        };
-
-        var loadDefaultPlugin = function () {
-            me.loadControllers(Config.customDefaultControllers);
-        }
-
-        if (Config.loaded) {
-            loadDefaultPlugin();
-        } else {
-            Config.afterDefaultLoaded = loadDefaultPlugin;
-        }
 
         me.control({
             'markingMenu' : {

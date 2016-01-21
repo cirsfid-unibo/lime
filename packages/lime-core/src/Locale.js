@@ -52,7 +52,8 @@ Ext.define('LIME.Locale', {
         lang : 'it',
         defaultLang: 'en'
     },
-    
+
+    isReady: false,
     strings: {},
     pStrings: {},
 
@@ -102,6 +103,7 @@ Ext.define('LIME.Locale', {
             success : function(response, opts) {
                 try {
                     this.strings = Ext.decode(response.responseText);
+                    this.isReady = true;
                 } catch(e) {
                     alert("Fatal error on loading localization files");
                 }

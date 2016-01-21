@@ -56,43 +56,26 @@ Ext.define('LIME.Config', {
 
     extensionScripts : ['LoadPlugin', 'Language', 'SavePlugin', 'TranslatePlugin'],
 
-    language : 'default',
+    language : '',
 
     pluginBaseDir : 'languagesPlugins',
 
     pluginClientLibs : 'client',
-
-    pluginServerLibs : 'server',
     
     pluginStructureFile : 'structure.json',
-    
-    pluginClientStructureFile: 'structure.json',
-    
-    pluginClientStringsFile: 'strings.json',
     
     pluginStructure : {},
     
     customizationViews : {},
     
-    customDefaultControllers : [],
-    
-    allLanguages: [],
-    
     languages:[],
     
     fieldsDefaults: {},
 
-    // Indicates whether the default language/plugin was loaded.
-    loaded: false,
-
-    loadedFinish: false,
+    isReady: false,
 
     constructor: function() {
-        var me = this;
-        me.initConfig();
-        Ext.defer(function() {
-            me.load();
-        }, 100);
+        this.load();
     },
 
     getDependences : function() {
@@ -103,30 +86,19 @@ Ext.define('LIME.Config', {
 
     load : function() {
         var me = this;
-
-        Ext.Loader.setPath(this.uxPath, this.getPluginLibsPath());
-        Ext.syncRequire(this.getDependences());
         // Loading the language plugin configuration file
         Ext.Ajax.request({
-            url : 'languagesPlugins/config.json',
-            async: false,
-            scope: this,
+            url : 'config.json',
             success : function(response, opts) {
-                var jsonData;
                 try {
-                    jsonData = Ext.decode(response.responseText, true);
+                    var jsonData = Ext.decode(response.responseText, true);
                     if(jsonData) {
-                        Ext.Array.push(me.allLanguages, jsonData.languages);
-                        me.languages = jsonData.languages;
-                        me.fieldsDefaults = (jsonData.fieldsDefaults) ? jsonData.fieldsDefaults : me.fieldsDefaults;
+                        me.setConfigs(jsonData);
                         // Load the plugin structure
                         me.loadPluginStructure();
-                        me.loadLanguage(function() {
-                            me.loaded = true;
-                            Ext.callback(me.afterDefaultLoaded);
-                        });
+                        me.isReady = true;
                     } else {
-                        Ext.log({level: "error"}, "language config (languagesPlugins/config.json) decode error!");                        
+                        Ext.log({level: "error"}, "config (config.json) decode error!");                        
                     }
                 } catch(e) {
                     Ext.log({level: "error"}, e);
@@ -140,9 +112,20 @@ Ext.define('LIME.Config', {
             }
         });
     },
+
+    setConfigs: function(data) {
+        this.languages = data.languages;
+        this.fieldsDefaults = (data.fieldsDefaults) ? data.fieldsDefaults : this.fieldsDefaults;
+        this.setServerConfig(data.server);
+    },
+
+    setServerConfig: function(data) {
+        Server.setNodeServer(data.node);
+        Server.setPhpServer(data.php);
+    },
     
     loadPluginStructure : function(){
-        Ext.each(this.allLanguages, function(language) {
+        Ext.each(this.languages, function(language) {
             var lang = language.name,
                 requestUrl = this.getPluginStructureUrl(lang);
             Ext.Ajax.request({
@@ -181,8 +164,11 @@ Ext.define('LIME.Config', {
             });
 
             if(!Ext.isEmpty(urls)) {
+                // TODO: understand if filterUrls is essential
                 Server.filterUrls(urls, false, function(newUrls) {
                     langConf.transformationUrls = {};
+                    if (urls.length != newUrls.length)
+                        console.error('Not found all transformation files!', urls);
                     Ext.each(newUrls, function(obj) {
                         langConf.transformationUrls[obj.name] = obj.url;
                     });
@@ -195,17 +181,14 @@ Ext.define('LIME.Config', {
         var me = this, counter,
             callingCallback = function() {
                 if(!--counter) {
-                    var newCallback = function() {
-                        me.loadedFinish = true;
-                        Ext.callback(callback, me);    
-                    };
-                    me.loadClientPlugins(newCallback);
+                    me.isReady = true;
+                    Ext.callback(callback, me);
                 } else {
-                    me.loadedFinish = false;
+                    me.isReady = false;
                 }
             }, scriptToLoad = Ext.Array.clone(this.extensionScripts), 
             langConf = this.getLanguageConfig();
-        me.initClientPlugins();
+
         // Temporary solution to remove loaded class    
         if (this.customScript) {
             Ext.each(this.customScript, function(name) {
@@ -241,90 +224,6 @@ Ext.define('LIME.Config', {
         });
     },
     
-    loadClientPlugins: function(callback) {
-        var me = this, langConf = this.getLanguageConfig(), counter,
-            callingCallback = function() {
-                if(!--counter) {
-                    Ext.callback(callback, me);
-                }
-            };
-        if (langConf && langConf.plugins && langConf.plugins.length) {
-            counter = langConf.plugins.length;
-            Ext.each(langConf.plugins, function(plugin) {
-                me.loadClientPlugin(plugin, callingCallback);
-            });   
-        } else {
-            Ext.callback(callback, me);
-        }
-    },
-    
-    initClientPlugins: function() {
-        this.customControllers = [];
-        this.customizationViews = {};
-    },
-    
-    loadClientPlugin: function(name, callback) {
-        var me = this, pluginDirUrl = me.getPluginLibsPath() + '/' + name + '/',
-            structureUrl = pluginDirUrl+me.pluginClientStructureFile, counter, langConf = me.getLanguageConfig(),
-            callingCallback = function() {
-                if(!--counter) {
-                    Ext.callback(callback, me);  
-                }
-            };
-            
-        me.setPluginUrl(name, pluginDirUrl);
-        
-        Ext.Ajax.request({
-           async : false,
-           url : structureUrl,
-           scope : me,
-           success : function(response) {
-               var data = Ext.decode(response.responseText, true),
-                   scriptToLoad = [];
-                if(data) {
-                    
-                    if (data.views) {
-                        Ext.Array.push(scriptToLoad, data.views);    
-                    }
-                    if (data.controllers) {
-                        if(langConf.name == "default") {
-                            Ext.Array.push(me.customDefaultControllers, data.controllers);
-                        } else {
-                            Ext.Array.push(me.customControllers, data.controllers);    
-                        }
-                        Ext.Array.push(scriptToLoad, data.controllers);    
-                    }
-                    me.loadClientPluginStrings(name, pluginDirUrl);
-                    counter = scriptToLoad.length;
-                    Ext.each(scriptToLoad, function(script) {
-                        var url = pluginDirUrl + script + '.js';
-                        me.loadScript(url, callingCallback, callingCallback);
-                    }, me);
-                } else {
-                    Ext.log({level: "error"}, "Error loading structure of plugin: "+name);
-                    Ext.callback(callback, me);
-                }
-                
-           },
-           failure: function() {
-                Ext.callback(callback, me);
-           }
-        });
-    },
-    
-    loadClientPluginStrings: function(name, pluginDirUrl) {
-        var stringsUrl = pluginDirUrl+this.pluginClientStringsFile;
-        Ext.Ajax.request({
-           async : false,
-           url : stringsUrl,
-           scope : this,
-           success : function(response) {
-               var data = Ext.decode(response.responseText, true);
-               Locale.setPluginStrings(name, data);
-           }
-        });
-    },
-    
     addCustomView : function(view) {
         var viewToCustomize = view.getViewToCustomize();
         if(viewToCustomize) {
@@ -333,21 +232,8 @@ Ext.define('LIME.Config', {
         }
     },
     
-    setPluginUrl: function(name, relativeUrl) {
-        var me = this;
-        me.pluginUrls = me.pluginUrls || {};
-        me.pluginUrls[name] = {
-            relative: relativeUrl,
-            absolute: me.getAppUrl()+relativeUrl
-        };
-    },
-    
     getAppUrl: function() {
         return window.location.origin+window.location.pathname;
-    },
-    
-    getPluginUrl: function(name) {
-        return this.pluginUrls[name];
     },
     
     getLanguageTransformationFiles: function(lang) {
@@ -379,20 +265,11 @@ Ext.define('LIME.Config', {
     setLanguage : function(language, callback) {
         var me = this,
             wrapperCallback = function() {
-                me.loaded = true;
                 Ext.callback(callback, me);
             };
         if(me.language != language) {
-            me.loaded = false;
             me.language = language;
-            if(Ext.isFunction(this.beforeSetLanguage)) {
-                var callB = Ext.bind(function() {
-                    me.loadLanguage(wrapperCallback);
-                }, me);
-                this.beforeSetLanguage(language, callB);
-            } else {
-                this.loadLanguage(wrapperCallback);    
-            }
+            me.loadLanguage(wrapperCallback);    
         } else {
             Ext.callback(wrapperCallback, me);
         }

@@ -120,7 +120,7 @@ Ext.define('DefaultImport.controller.Import', {
                 title : Locale.getString("importDocument", me.getPluginName()),
                 uploadCallback : me.uploadFinished,
                 callbackScope: me,
-                uploadUrl : Utilities.getAjaxUrl(),
+                uploadUrl : Server.getAjaxUrl(),
                 uploadParams : {
                     requestedService: me.getImportServiceName(),
                     transformFile: (transformFile) ? transformFile : ""

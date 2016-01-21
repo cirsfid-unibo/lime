@@ -54,10 +54,6 @@ Ext.define('LIME.Utilities', {
     singleton : true,
     alternateClassName : 'Utilities',
 
-    requires: [
-        // 'Server'
-    ],
-
     /**
      * @property {String} buttonFieldDefault
      * TODO
@@ -83,29 +79,6 @@ Ext.define('LIME.Utilities', {
         elementName : function(config) {
             return (config.elName);
         }
-    },
-
-    /**
-     * Return a well formed url that contains the given arguments
-     * properly encoded (to be set into the url).
-     * @param {Array} params The parameters to be set into the url
-     * @returns {String} The final url
-     */
-    getAjaxUrl : function(params) {
-        // get the url for the requested service
-        var requestedServiceUrl = Server.phpServer + 'Services.php?';
-
-        // itereate through the params
-        for (param in params) {
-            // create the request url
-            requestedServiceUrl = requestedServiceUrl + param + '=' + encodeURI(params[param]) + '&';
-        }
-
-        // cut the last & character of the string
-        requestedServiceUrl = requestedServiceUrl.substring(0, requestedServiceUrl.length - 1);
-
-        // return the url
-        return requestedServiceUrl;
     },
 
     /**
@@ -444,11 +417,6 @@ Ext.define('LIME.Utilities', {
 
     getLastItem: function(array) {
         return array[array.length-1];
-    },
-
-    filterUrls: function(reqUrls, content, success, failure, scope) {
-        console.warn('Utilities.filterUrls is deprecated, use Server.filterUrls');
-        return Server.filterUrls(reqUrls, content, success, failure, scope);
     },
 
     isValidDate: function(date) {

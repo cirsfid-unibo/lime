@@ -77,7 +77,7 @@ Ext.define('AknPdfFop.Controller', {
         var me = this, pdfTab = me.getPdf(), viewport = me.getAppViewport();
         viewport.setLoading(true);
         Ext.Ajax.request({
-            url : Utilities.getAjaxUrl(),
+            url : Server.getAjaxUrl(),
             method : 'POST',
             // send the content in html format
             params : {

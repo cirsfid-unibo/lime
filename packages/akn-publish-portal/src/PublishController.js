@@ -104,7 +104,7 @@ Ext.define('LIME.controller.PublishController', {
             });
 
         Ext.Ajax.request({
-            url : Utilities.getAjaxUrl(),
+            url : Server.getAjaxUrl(),
             params : params,
             callback : callback
         });

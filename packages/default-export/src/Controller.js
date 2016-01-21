@@ -70,7 +70,7 @@ Ext.define('DefaultExport.Controller', {
             },
             'menu [name=exportHtmlButton]': {
                 click: function() {
-                    me.exportDocument(Utilities.getAjaxUrl(), {
+                    me.exportDocument(Server.getAjaxUrl(), {
                         requestedService: Statics.services.htmlExport
                     });
                 }
@@ -83,13 +83,13 @@ Ext.define('DefaultExport.Controller', {
                             requestedService: Statics.services.pdfExport,
                             source: editor.getDocHtml()
                         };
-                    downloadManager.fireEvent(downloadManager.eventActivate, Utilities.getAjaxUrl(), parameters);
+                    downloadManager.fireEvent(downloadManager.eventActivate, Server.getAjaxUrl(), parameters);
                 }
             },
             'menu [name=exportEbookButton]': {
                 click: function() {
                     //TODO: set the right title of document
-                    me.exportDocument(Utilities.getAjaxUrl(), {
+                    me.exportDocument(Server.getAjaxUrl(), {
                         requestedService: Statics.services.aknToEpub,
                         lang: DocProperties.getLang(),
                         title: 'LIME ebook'

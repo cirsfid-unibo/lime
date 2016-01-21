@@ -82,7 +82,7 @@ Ext.define('DefaultPdf.Controller', {
         
         viewport.setLoading(true);
         Ext.Ajax.request({
-            url : Utilities.getAjaxUrl(),
+            url : Server.getAjaxUrl(),
             method : 'POST',
             // send the content in html format
             params : {
