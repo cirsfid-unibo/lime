@@ -54,6 +54,7 @@
             "selectDocument": "Select document",
             "selectDocumentExplanation": "Select a document using the form above or drag and drop your file here",
             "callingService": "Processing",
+            "errorService": "Error calling service, try again",
             "waiting": [
                 "Waiting...", "Waiting....", "Waiting....."
             ]
@@ -64,6 +65,7 @@
             "selectDocument": "Seleziona il documento",
             "selectDocumentExplanation": "Seleziona un documento usando il form qui sopra o trascinalo qui",
             "callingService": "Elaborazione in corso",
+            "errorService": "Il servizio ha restituito un errore, riprova più tardi",
             "waiting": [
                 "Attendere...", "Attendere....", "Attendere.....", "Un po' di pazienza...", "Ancora un po' di pazienza..."
             ]

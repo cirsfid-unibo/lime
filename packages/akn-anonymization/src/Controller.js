@@ -148,6 +148,10 @@ Ext.define('AknAnonym.Controller', {
         var me = this;
         this.progressEnd();
         console.log(xml);
+        // Tricky checking if the input is an akomaNtoso
+        if ( xml.indexOf('<akomaNtoso') == -1 )
+            return Ext.Msg.alert(Locale.getString('error'), Locale.getString("errorService", me.getPluginName()));
+
         me.aknToHtml(me.anonymizeAkn(xml), function(html) {
             me.loadDocument(html, 'akoma3.0', 'ita', xml);
         });
@@ -155,11 +159,30 @@ Ext.define('AknAnonym.Controller', {
 
     anonymizeAkn: function(xml) {
         var akn = AknMain.xml.Document.parse(xml, 'akn');
-        akn.select('//akn:party | //akn:person').forEach(function(node) {
-            // Remove all letters but initials
-            node.textContent = node.textContent.replace(/(\w)\w+/gi,'$1').replace(/\s/g, '');
-        });
+        //TODO: anonymize addresses, identification, codifceFiscale
+        //IF #minor THEN anonimize(ALL x (person(x) AND NOT(judges(x))) AND anonimize (ALL y,z,k (address(y) OR identificationID(z) OR codiceFiscale(k))
+        //IF #abusoSessuale THEN anonimize(ALL x (person(x) AND NOT(judges(x))) AND anonimize (ALL y,z,k (address(y) OR identificationID(z) OR codiceFiscale(k))
+        if ( akn.select('//akn:concept[@refersTo="#minor"] | //akn:person[@as="#minor"]').length || 
+             akn.select('//akn:concept[@refersTo="#abusoSessuale" or @refersTo="#delittoViolenzaSessuale"]').length ) {
+            akn.select('//akn:party | //akn:person').filter(function(node) {
+                return !akn.select('//akn:judge[@refersTo="'+node.getAttribute('refersTo')+'"]').length;
+            }).filter(function(node) {
+                return akn.select('//akn:party[@refersTo="'+node.getAttribute('refersTo')+'"]').length;
+            }).forEach(this.anonymizeNode);
+        } 
+        //IF #hiv THEN anonimize(ALL x (person(x) and party(x)))
+        else if (akn.select('//akn:concept[@refersTo="#hiv"]').length) {
+            akn.select('//akn:party | //akn:person').filter(function(node) {
+                return akn.select('//akn:party[@refersTo="'+node.getAttribute('refersTo')+'"]').length;
+            }).forEach(this.anonymizeNode);
+        }
+
         return akn.getXml('/');
+    },
+
+    anonymizeNode: function(node) {
+        // Remove all letters but initials
+        node.textContent = node.textContent.replace(/(\w)\w+/gi,'$1').replace(/\s/g, '');
     },
 
     aknToHtml: function(content, callback, failure) {
