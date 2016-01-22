@@ -1681,8 +1681,30 @@ Ext.define('AknModsMarker.Controller', {
                 cmp.close();
             };
 
+            var insertRemovedNode = function() {
+                // Creating the 'del' node
+                var del = joinedNode.ownerDocument.createElement('span');
+                DomUtils.insertAfter(del, joinedNode);
+
+                var wrapNode = DomUtils.wrapNode(del, joinedNode.tagName);
+                wrapNode.setAttribute(Language.getAttributePrefix()+'status', 'removed');
+
+                me.application.fireEvent('markingRequest', DocProperties.getFirstButtonByName('del'), {
+                    silent : true,
+                    noEvent : true,
+                    nodes : [del]
+                });
+                me.application.fireEvent('markingRequest', DocProperties.getFirstButtonByName(DomUtils.getNameByNode(joinedNode)), {
+                    silent : true,
+                    noEvent : true,
+                    nodes : [wrapNode]
+                });
+            };
+
             var registerJoin = function(data) {
                 joinedNode.setAttribute(me.getJoinAttr(), "true");
+                // Insert a "removed" node for every joined node except the first
+                data.slice(1).forEach(insertRemovedNode);
                 me.setJoinMetadata(joinedNode, data);
             };
 
