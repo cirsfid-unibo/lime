@@ -404,6 +404,7 @@ class newAKNDiff09 extends AKNDiff {
 	}
 	
 	protected function setAllAttribute($nodes, $attribute, $value, $append = TRUE) {
+		$attValue = $value;
 		foreach($nodes as $node) {
 			if ($append) {
 				$oldValue = $node->getAttribute($attribute);
@@ -862,7 +863,7 @@ class newAKNDiff09 extends AKNDiff {
 			if($this->findAndwrapTextNode($mod->old, $destNodes, $mod->type, $precedingText) === FALSE) {
 				$this->setAllAttribute($subsNodes, "class", "errorSubstitution");
 				$this->setAllAttribute($subsNodes, "data-old", $mod->old);
-				$this->setAllAttribute($subsNodes, "title", $mod->old." not found");
+				$this->setAllAttribute($subsNodes, "title", $mod->old." not found", FALSE);
 			}
 		} else {
 			//echo $mod->destination." - ".$mod->id." - ".$mod->old." - ".$precedingText."<br>";					
@@ -1253,6 +1254,21 @@ class newAKNDiff09 extends AKNDiff {
 		$this->html_old = new DOMDocument();
 		$this->html_old->loadXML($html);
 	}
+
+	protected function getBodyNode($node) {
+		$finder = new DomXPath($node);
+		$docType = $this->getDocType($node);
+		$bodyName = ($docType == 'doc') ? 'mainBody' : 'body';
+		$bodyNode = $finder->query("//*[@class and contains(concat(' ', normalize-space(@class), ' '), ' $bodyName ')]");
+		return $bodyNode->item(0);
+	}
+
+	protected function getDocType($node) {
+		$finder = new DomXPath($node);
+		$docClass = $finder->query("//*[*/@class = 'meta']/@class")->item(0)->value;
+		$docClass = explode(" ", $docClass);
+		return array_pop($docClass);
+	}
 	
 	public function render() {
 		if ($this->xml_new && $this->xml_old) {
@@ -1289,12 +1305,9 @@ class newAKNDiff09 extends AKNDiff {
 			///////////////////////////////////////////////////////
 			///////////////////////////////////////////////////////
 			
-			$finder = new DomXPath($this->html_new);
-			$classname="body";
-			$contentLeft = $finder->query("//*[@class and contains(concat(' ', normalize-space(@class), ' '), ' $classname ')]")->item(0);
-			$finder = new DomXPath($this->html_old);
-			$contentRight = $finder->query("//*[@class and contains(concat(' ', normalize-space(@class), ' '), ' $classname ')]")->item(0);
-			
+			$contentLeft = $this->getBodyNode($this->html_new);
+			$contentRight = $this->getBodyNode($this->html_old);
+
 			$this->tableDOM = new DOMDocument();
 			$this->tableRoot = $this->tableDOM->createElement('table');
 			
