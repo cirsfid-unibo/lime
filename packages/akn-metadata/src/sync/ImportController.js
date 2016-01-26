@@ -77,6 +77,8 @@ Ext.define('AknMetadata.sync.ImportController', {
 
         function main () {
             importReferences();
+            importLifecycleEvents();
+            importWorkflowSteps();
             importAliases();
 
             importWork();
@@ -103,6 +105,39 @@ Ext.define('AknMetadata.sync.ImportController', {
                     showAs: reference.getAttribute('showAs')
                 }
                 store.references().add(data);
+            });
+        }
+
+        function importLifecycleEvents() {
+            var xpath = '//akn:lifecycle/akn:eventRef';
+            akn.select(xpath).forEach(function (event, index) {
+                var xpathIndex = xpath+'['+(index+1)+']';
+                var data = {
+                    eid: event.getAttribute('eId'),
+                    type: event.getAttribute('type'),
+                    href: event.getAttribute('href'),
+                    showAs: event.getAttribute('showAs'),
+                    date: new Date(event.getAttribute('date')),
+                    source: getReference(xpathIndex+'/@source'),
+                    refers: getReference(xpathIndex+'/@refersTo')
+                }
+                store.lifecycleEvents().add(data);
+            });
+        }
+
+        function importWorkflowSteps() {
+            var xpath = '//akn:workflow/akn:step';
+            akn.select(xpath).forEach(function (step, index) {
+                var xpathIndex = xpath+'['+(index+1)+']';
+                var data = {
+                    eid: step.getAttribute('eId'),
+                    date: new Date(step.getAttribute('date')),
+                    actor: getReference(xpathIndex+'/@actor'),
+                    role: getReference(xpathIndex+'/@as'),
+                    outcome: getReference(xpathIndex+'/@outcome'),
+                    refers: getReference(xpathIndex+'/@refersTo')
+                }
+                store.workflowSteps().add(data);
             });
         }
 

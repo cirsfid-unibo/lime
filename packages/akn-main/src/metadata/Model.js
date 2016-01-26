@@ -188,7 +188,7 @@ Ext.define('AknMain.metadata.LifecycleEvent', {
         { name: 'eid', type: 'string' },
         { name: 'date', type: 'date' },
         { name: 'source', reference: 'Reference' },
-        { name: 'refers', type: 'string' },
+        { name: 'refers', reference: 'Reference' },
         { name: 'original', type: 'boolean' },
         { name: 'type', type: 'string' }
     ],
@@ -205,7 +205,8 @@ Ext.define('AknMain.metadata.WorkflowStep', {
         { name: 'date', type: 'date' },
         { name: 'actor', reference: 'Reference' },
         { name: 'role', reference: 'Reference' },
-        { name: 'outcome', reference: 'Reference' }
+        { name: 'outcome', reference: 'Reference' },
+        { name: 'refers', reference: 'Reference' }
     ]
 });
 
