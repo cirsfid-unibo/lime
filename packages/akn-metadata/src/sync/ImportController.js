@@ -79,6 +79,7 @@ Ext.define('AknMetadata.sync.ImportController', {
             importReferences();
             importLifecycleEvents();
             importWorkflowSteps();
+            importClassificationKeywords();
             importAliases();
 
             importWork();
@@ -138,6 +139,19 @@ Ext.define('AknMetadata.sync.ImportController', {
                     refers: getReference(xpathIndex+'/@refersTo')
                 }
                 store.workflowSteps().add(data);
+            });
+        }
+
+        function importClassificationKeywords() {
+            var xpath = '//akn:classification/akn:keyword';
+            akn.select(xpath).forEach(function (keyword, index) {
+                var data = {
+                    value: keyword.getAttribute('value'),
+                    showAs: keyword.getAttribute('showAs'),
+                    dictionary: keyword.getAttribute('dictionary'),
+                    href: keyword.getAttribute('href')
+                }
+                store.classificationKeywords().add(data);
             });
         }
 

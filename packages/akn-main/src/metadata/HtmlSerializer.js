@@ -53,7 +53,7 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         'AknMain.metadata.XmlSerializer'
     ],
 
-    template: [
+    template: new Ext.XTemplate(
         '<div class="meta">',
         // identification
         '   <div class="identification" source="#{source}">',
@@ -64,9 +64,7 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         '           <div class="FRBRalias" value="{value}" name="{name}"/>',
         '</tpl></tpl>' +
         '           <div class="FRBRdate" date="{date}" name=""/>',
-        '<tpl if="workAuthor">' +
         '           <div class="FRBRauthor" href="#{workAuthor}" as="#{workAuthorRole}"/>',
-        '</tpl>' +
         '           <div class="FRBRcountry" value="{country}"/>',
         '       </div>',
         '       <div class="FRBRExpression">',
@@ -75,9 +73,7 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         '<tpl for="aliases"><tpl if="level==\'expression\'">' +
         '           <div class="FRBRalias" value="{value}" name="{name}"/>',
         '</tpl></tpl>' +
-        '<tpl if="expressionAuthor">' +
         '           <div class="FRBRauthor" href="#{expressionAuthor}" as="#{expressionAuthorRole}"/>',
-        '</tpl>' +
         '          <div class="FRBRdate" date="{version}" name=""/>',
         '          <div class="FRBRlanguage" language="{language}"/>',
         '       </div>',
@@ -87,25 +83,31 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         '<tpl for="aliases"><tpl if="level==\'manifestation\'">' +
         '           <div class="FRBRalias" value="{value}" name="{name}"/>',
         '</tpl></tpl>' +
-        '<tpl if="manifestationAuthor">' +
         '           <div class="FRBRauthor" href="#{manifestationAuthor}" as="#{manifestationAuthorRole}"/>',
-        '</tpl>' +
         '           <div class="FRBRdate" date="{today}" name=""/>',
         '       </div>',
         '   </div>',
         // Publication
+        '<tpl if="pubblicationDate">' +
         '   <div class="publication" date="{pubblicationDate}" name="{pubblicationName}"',
         '                showAs="{pubblicationShowAs}" number="{pubblicationNumber}"/>',
+        '</tpl>' +
+        // Classification
+        '   <div class="classification" source="#{source}">',
+        '<tpl for="classificationKeywords">' +
+        '        <div class="keyword" value="{value}" showAs="{showAs}" dictionary="{dictionary}" {[this.uriAttrOpt("href", values.href)]} />',
+        '</tpl>' +
+        '   </div>',
         // LifeCycle
         '   <div class="lifecycle" source="#{source}">',
         '<tpl for="lifecycleEvents">' +
-        '        <div class="eventRef" source="#{source}" type="{type}" eId="{eid}" date="{date}" refersTo="#{refers}"/>',
+        '        <div class="eventRef" source="#{source}" type="{type}" eId="{eid}" date="{date}" {[this.uriAttrOpt("refersTo", values.refers)]}/>',
         '</tpl>' +
         '   </div>',
         // Workflow
         '   <div class="workflow" source="#{source}">',
         '<tpl for="workflowSteps">' +
-        '        <div class="step" date="{date}" as="#{role}" actor="#{actor}" outcome="#{outcome}" refersTo="#{refers}"/>',
+        '        <div class="step" date="{date}" {[this.uriAttrOpt("as", values.role)]} {[this.uriAttrOpt("actor", values.actor)]} {[this.uriAttrOpt("outcome", values.outcome)]} {[this.uriAttrOpt("refersTo", values.refers)]}/>',
         '</tpl>' +
         '   </div>',
         // References
@@ -115,13 +117,18 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         '</tpl>' +
         '   </div>',
 
-        '</div>'
-    ],
+        '</div>', 
+        {
+            uriAttrOpt: function(attr, value) {
+                attrVal = (value && value.startsWith('/')) ? value : '#'+value;
+                return value ? attr+'="'+attrVal+'"' : '';
+            }
+        }
+    ),
 
     constructor: function () {
-        var template = new AknMain.utilities.Template(this.template);
         this.applyTemplate = function (data) {
-            return template.apply(data);
+            return this.template.apply(data);
         };
         return this.callParent(arguments);
     },
@@ -163,6 +170,7 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         data.aliases = mapData(model.aliases());
         data.lifecycleEvents = mapData(model.lifecycleEvents()).map(mapEvent);
         data.workflowSteps = mapData(model.workflowSteps()).map(mapStep);
+        data.classificationKeywords = mapData(model.classificationKeywords());
 
         var uri = model.getUri();
         data.uri = {
