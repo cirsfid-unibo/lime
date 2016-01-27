@@ -224,23 +224,6 @@
 					"@value": ""
 				}
 			}
-		},
-		"publication": {
-			"@name": "",
-			"@date": "",
-			"@number": "",
-			"@showAs": ""
-		},
-		"references": {
-			"@source": "",
-			"!possibleChildren": {
-				"names": ["original", "TLCPerson", "TLCOrganization", "TLCConcept", "TLCObject", "TLCEvent", "TLCLocation", "TLCProcess", "TLCRole", "TLCTerm", "TLCReference"],
-				"attributes": {
-					"@eId": "",
-					"@akn_href": "",
-					"@akn_showAs": ""
-				}
-			}
 		}
 	}
 }

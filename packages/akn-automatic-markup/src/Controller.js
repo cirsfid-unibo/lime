@@ -698,18 +698,12 @@ Ext.define('AknAutomaticMarkup.Controller', {
             var text = DomUtils.getTextOfNode(node);
                 id = text.replace(/\s/g, "").toLowerCase().trim();
             node.setAttribute(attr, "#"+id);
-            me.addMetaItem("references", {
-                name: "TLCLocation",
-                attributes: [{
-                    name: "showAs",
-                    value: text
-                },{
-                    name: prefix+"href",
-                    value: "/ontology/location/"+DocProperties.documentInfo.docLocale+"/"+id
-                },{
-                    name: "eId",
-                    value: id
-                }]
+
+            me.addMetaReference({
+                eid: id,
+                type: "TLCLocation",
+                href: "/ontology/location/"+DocProperties.documentInfo.docLocale+"/"+id,
+                showAs: text
             });
         });
     },
@@ -838,19 +832,10 @@ Ext.define('AknAutomaticMarkup.Controller', {
         return wrapper;
     },
 
-    addMetaItem: function(parent, config) {
-        var docMeta = this.getController("Editor").getDocumentMetadata(),
-        metaDom = docMeta.originalMetadata.metaDom,
-        parent = metaDom.querySelector('[class~="'+parent+'"]');
-
-        if( parent ) {
-            var metaNode = this.objToDom(metaDom.ownerDocument, config),
-                id = metaNode.getAttribute('eId');
-
-            if ( !id || !parent.querySelector('[eId="'+id+'"]') ) {
-                parent.appendChild(metaNode);
-            }
-        }
+    addMetaReference: function(data) {
+        var store = Ext.getStore('metadata').getMainDocument();
+        if ( !store.references().findRecord('eid', data.eid, 0, false, false, true) )
+            store.references().add(data);
     },
 
     addRoleMetadata: function(nodes) {
@@ -860,18 +845,12 @@ Ext.define('AknAutomaticMarkup.Controller', {
             var text = DomUtils.getTextOfNode(node);
                 id = text.replace(/\s/g, "").toLowerCase().trim();
             node.setAttribute(attr, "#"+id);
-            me.addMetaItem("references", {
-                name: "TLCRole",
-                attributes: [{
-                    name: "showAs",
-                    value: text
-                },{
-                    name: prefix+"href",
-                    value: "/ontology/roles/"+DocProperties.documentInfo.docLocale+"/"+id
-                },{
-                    name: "eId",
-                    value: id
-                }]
+
+            me.addMetaReference({
+                eid: id,
+                type: "TLCRole",
+                href: "/ontology/roles/"+DocProperties.documentInfo.docLocale+"/"+id,
+                showAs: text
             });
         });
     },
@@ -883,18 +862,12 @@ Ext.define('AknAutomaticMarkup.Controller', {
             var text = DomUtils.getTextOfNode(node);
                 id = text.replace(/\s/g, "").toLowerCase().trim();
             node.setAttribute(attr, "#"+id);
-            me.addMetaItem("references", {
-                name: "TLCOrganization",
-                attributes: [{
-                    name: "showAs",
-                    value: text
-                },{
-                    name: prefix+"href",
-                    value: "/ontology/organizations/"+DocProperties.documentInfo.docLocale+"/"+id
-                },{
-                    name: "eId",
-                    value: id
-                }]
+
+            me.addMetaReference({
+                eid: id,
+                type: "TLCOrganization",
+                href: "/ontology/organizations/"+DocProperties.documentInfo.docLocale+"/"+id,
+                showAs: text
             });
         });
     },
@@ -920,18 +893,11 @@ Ext.define('AknAutomaticMarkup.Controller', {
             node.setAttribute(prefix+"as", asAttribute);
             node.setAttribute(attr, "#"+id);
 
-            me.addMetaItem("references", {
-                name: "TLCPerson",
-                attributes: [{
-                    name: "showAs",
-                    value: text
-                },{
-                    name: prefix+"href",
-                    value: "/ontology/persons/"+DocProperties.documentInfo.docLocale+"/"+id
-                },{
-                    name: "eId",
-                    value: id
-                }]
+            me.addMetaReference({
+                eid: id,
+                type: "TLCPerson",
+                href: "/ontology/persons/"+DocProperties.documentInfo.docLocale+"/"+id,
+                showAs: text
             });
         });
     },

@@ -194,32 +194,6 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
            me.setMetaAttribute(tmpNode, "value", params.docLocale);
            tmpNode = params.metaDom.querySelector("*[class=FRBRExpression] *[class=FRBRlanguage]");
            me.setMetaAttribute(tmpNode, "language", params.docLang);
-
-           tmpNode = params.metaDom.querySelector("*[class=publication]");
-           me.setMetaAttribute(tmpNode, "date", date);
-
-           tmpNode = params.metaDom.querySelector("*[class=references]");
-
-           var person = {
-                name: "TLCPerson",
-                attributes: [{
-                    name: "eId",
-                    value: "limeEditor"
-                },{
-                    name: "akn_href",
-                    value: "/lime.cirsfid.unibo.it"
-                },{
-                    name: "showAs",
-                    value: "LIME editor"
-                }]
-            };
-            
-            if(tmpNode) {
-                personNode = me.objToDom(params.metaDom.ownerDocument, person);
-                if ( !tmpNode.querySelector('[eId=limeEditor]') ) {
-                    tmpNode.appendChild(personNode);
-                }
-            }
         }
     },
 

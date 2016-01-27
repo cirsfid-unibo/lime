@@ -75,10 +75,27 @@
                 oldNode.parentNode.replaceChild(node, oldNode);
                 lastInsertedNode = node;
             }
-            else if (lastInsertedNode)
-                lastInsertedNode = DomUtils.insertAfter(node, lastInsertedNode);
+            else if (lastInsertedNode) {
+                DomUtils.insertAfter(node, lastInsertedNode);
+                lastInsertedNode = node;
+            }
             else
                 lastInsertedNode = metaNode.appendChild(node);
+        });
+
+        this.removeInconsistentElements(metaNode);
+    },
+
+    removeInconsistentElements: function(node) {
+        var doc = AknMain.xml.Document.newDocument(node);
+        var query = '//*[@class="classification" or '+
+                    '@class="lifecycle" or '+
+                    '@class="workflow" or '+
+                    '@class="references"]'+
+                    '[not(child::*)]';
+
+        doc.select(query).forEach(function(node) {
+            node.parentNode.removeChild(node);
         });
     }
  });

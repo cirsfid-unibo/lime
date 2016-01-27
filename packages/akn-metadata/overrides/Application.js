@@ -52,7 +52,6 @@ Ext.define('AknMetadata.Application', {
         'AknMetadata.Strings',
         'AknMetadata.newMeta.MetadataManagerController',
         'AknMetadata.sync.EditorSynchronizer',
-        'AknMetadata.sync.OldMetaBackport',
         'AknMetadata.sync.ImportController',
         'AknMetadata.tagAttributes.Controller',
         'AknMetadata.newMeta.Window'
@@ -61,7 +60,6 @@ Ext.define('AknMetadata.Application', {
     initControllers : function() {
         this.controllers.push('AknMetadata.newMeta.MetadataManagerController');
         this.controllers.push('AknMetadata.sync.EditorSynchronizer');
-        this.controllers.push('AknMetadata.sync.OldMetaBackport');
         this.controllers.push('AknMetadata.sync.ImportController');
         this.controllers.push('AknMetadata.tagAttributes.Controller');
 
