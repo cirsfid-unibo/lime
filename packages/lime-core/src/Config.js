@@ -189,20 +189,6 @@ Ext.define('LIME.Config', {
             }, scriptToLoad = Ext.Array.clone(this.extensionScripts), 
             langConf = this.getLanguageConfig();
 
-        // Temporary solution to remove loaded class    
-        if (this.customScript) {
-            Ext.each(this.customScript, function(name) {
-                delete window[name];
-                delete window[name+'Custom'];
-            });
-            this.customScript = [];
-        }
-        if (langConf) {
-            if (langConf.customViews) {
-                this.customScript = langConf.customViews;
-                Ext.Array.push(scriptToLoad, langConf.customViews);    
-            }
-        }
         Ext.Loader.setPath(this.uxPath, this.getPluginLibsPath());
         counter = scriptToLoad.length;
         // Load app's components

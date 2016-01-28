@@ -65,7 +65,6 @@ Ext.define('LIME.Statics', {
      */
     metadata : {
         containerClass : 'metadata',
-        frbrClass : 'frbr',
         internalClass : 'internalMetadata'
     },
 
@@ -102,7 +101,6 @@ Ext.define('LIME.Statics', {
          beforeSave : 'beforeSave',
          afterSave : 'afterSave',
          saveDocument : 'saveDocument',
-         frbrChanged: 'frbrChanged',
          beforeLoad: 'beforeLoad',
          afterLoad: 'afterLoad',
          documentLoaded: 'documentLoaded',

@@ -260,12 +260,6 @@ Ext.define('LIME.controller.Editor', {
         } catch (e) {
             return this.getDocumentPath();
         }
-        // var metadata = this.getDocumentMetadata();
-        // var dom = metadata.originalMetadata.metaDom;
-        // var frbrThis = dom.querySelector("div[class='FRBRManifestation'] div[class='FRBRthis']");
-        // if ( frbrThis ) {
-        //     return frbrThis.getAttribute('value');
-        // }
     },
 
     getDocumentPath: function() {

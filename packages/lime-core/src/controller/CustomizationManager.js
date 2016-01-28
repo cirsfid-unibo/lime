@@ -258,12 +258,6 @@ Ext.define('LIME.controller.CustomizationManager', {
                 language.beforeLoad(config, function(newConfig) {
                     me.secondDocumentConfig = newConfig;
                     editorController.loadDocument(newConfig.docText, newConfig.docId, secondEditor, true);
-                    if(newConfig.metaDom) {
-                        var manifestationUri = newConfig.metaDom.querySelector("*[class=FRBRManifestation] *[class=FRBRuri]");
-                        if(manifestationUri) {
-                            me.getUri().setUri(manifestationUri.getAttribute("value"));
-                        }
-                    }
                     storage.openDocument(dualConfig.editableDoc);
                 }, true);
             });

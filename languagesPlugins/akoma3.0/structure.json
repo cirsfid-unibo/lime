@@ -151,79 +151,8 @@
             ]
         }
 	],
-
-	"customViews": ["MarkingMenu"],
 	"transformationFiles": {
 		"languageToLIME": "AknToXhtml.xsl",
 		"LIMEtoLanguage": "HtmlToAkn.xsl"
-	},
-	"metaTemplate": {
-		"identification": {
-			"@source": "",
-			"FRBRWork": {
-				"FRBRthis": {
-					"@value": ""
-				},
-				"FRBRuri": {
-					"@value": ""
-				},
-				"FRBRalias": {
-					"@value": "",
-					"@name": ""
-				},
-				"FRBRdate": {
-					"@date": "",
-					"@name": ""
-				},
-				"FRBRauthor": {
-					"@akn_href": "",
-					"@as": ""
-				},
-				"FRBRcountry": {
-					"@value": ""
-				},
-				"FRBRnumber": {
-					"@value": ""
-				}
-			},
-			"FRBRExpression": {
-				"FRBRthis": {
-					"@value": ""
-				},
-				"FRBRuri": {
-					"@value": ""
-				},
-				"FRBRdate": {
-					"@date": "",
-					"@name": ""
-				},
-				"FRBRauthor": {
-					"@akn_href": "",
-					"@as": ""
-				},
-				"FRBRlanguage": {
-					"@language": ""
-				}
-			},
-			"FRBRManifestation": {
-				"FRBRthis": {
-					"@value": ""
-				},
-				"FRBRuri": {
-					"@value": ""
-				},
-				"FRBRdate": {
-					"@date": "",
-					"@name": ""
-				},
-				"FRBRauthor": {
-					"@akn_href": "",
-					"@as": ""
-				},
-				"FRBRformat": {
-					"@value": ""
-				}
-			}
-		}
 	}
 }

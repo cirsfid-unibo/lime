@@ -136,88 +136,6 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
         Ext.each(params.docDom.querySelectorAll('span.noteRefNumber'), function(node) {
             node.parentNode.removeChild(node);
         });
-
-        me.insertFrbrData(params);
-    },
-
-    insertFrbrData: function(params) {
-        var me = this,
-            nodes, date = Ext.Date.format(new Date(), 'Y-m-d'),
-            tmpNode, author = "#limeEditor", workUri, workUriTpl,
-            expUri, expUriTpl, manUri, manUriTpl;
-
-        if(params.metaDom) {
-           workUriTpl = new Ext.Template(Language.getUriPrefix()+'/{docLocale}/{docType}/{date}');
-           workUri = workUriTpl.apply(Ext.merge(params, {
-                date: date
-           }));
-           expUriTpl = new Ext.Template('{workUri}/{lang}@');
-           expUri = expUriTpl.apply({
-                workUri: workUri,
-                lang: params.docLang
-           });
-           manUriTpl = new Ext.Template('{expUri}/main.xml');
-           manUri = manUriTpl.apply({
-                expUri: expUri
-           });
-
-           tmpNode = params.metaDom.querySelector("*[class=FRBRWork] *[class=FRBRuri]");
-           me.setMetaAttribute(tmpNode, "value", workUri);
-           tmpNode = params.metaDom.querySelector("*[class=FRBRWork] *[class=FRBRthis]");
-           me.setMetaAttribute(tmpNode, "value", workUri);
-
-           tmpNode = params.metaDom.querySelector("*[class=FRBRExpression] *[class=FRBRuri]");
-           me.setMetaAttribute(tmpNode, "value", expUri);
-           tmpNode = params.metaDom.querySelector("*[class=FRBRExpression] *[class=FRBRthis]");
-           me.setMetaAttribute(tmpNode, "value", expUri);
-
-           tmpNode = params.metaDom.querySelector("*[class=FRBRManifestation] *[class=FRBRuri]");
-           me.setMetaAttribute(tmpNode, "value", manUri);
-           tmpNode = params.metaDom.querySelector("*[class=FRBRManifestation] *[class=FRBRthis]");
-           me.setMetaAttribute(tmpNode, "value", manUri);
-
-           nodes = params.metaDom.querySelectorAll("*[class=FRBRdate]");
-           Ext.each(nodes, function(node) {
-                me.setMetaAttribute(node, "date", date);
-           });
-
-           tmpNode = params.metaDom.querySelector("*[class=FRBRWork] *[class=FRBRauthor]");
-           me.setMetaAttribute(tmpNode, "akn_href", '#author');
-           me.setMetaAttribute(tmpNode, "as", '#author');
-           nodes = params.metaDom.querySelectorAll("*[class=FRBRauthor]");
-           Ext.each(nodes, function(node) {
-                me.setMetaAttribute(node, "akn_href", author);
-                me.setMetaAttribute(node, "as", author);
-           });
-
-           tmpNode = params.metaDom.querySelector("*[class=FRBRWork] *[class=FRBRcountry]");
-           me.setMetaAttribute(tmpNode, "value", params.docLocale);
-           tmpNode = params.metaDom.querySelector("*[class=FRBRExpression] *[class=FRBRlanguage]");
-           me.setMetaAttribute(tmpNode, "language", params.docLang);
-        }
-    },
-
-    objToDom: function(doc, obj) {
-        var me = this, node, childNode;
-        if(obj.name) {
-            node = doc.createElement("div");
-            node.setAttribute("class", obj.name);
-            Ext.each(obj.attributes, function(attribute) {
-                node.setAttribute(attribute.name, attribute.value);
-            });
-            if(!Ext.isEmpty(obj.text)) {
-                childNode = doc.createTextNode(obj.text);
-                node.appendChild(childNode);               
-            } else {
-                Ext.each(obj.children, function(child) {
-                    childNode = me.objToDom(doc, child);
-                    if(childNode) {
-                        node.appendChild(childNode);
-                    }
-                });    
-            }
-        }
-        return node;
     },
 
     setMetaAttribute: function(node, name, value) {
@@ -284,11 +202,9 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
     },
     
     createBlankMeta: function() {
-        var meta = Utilities.jsonToHtml(Config.getLanguageConfig().metaTemplate);
-        if(meta) {
-            meta.setAttribute('class', this.getMetadataClass());
-            return meta;
-        }
+        var meta = document.createElement('div');
+        meta.setAttribute('class', this.getMetadataClass());
+        return meta;
     },
     
     /*

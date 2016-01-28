@@ -103,16 +103,6 @@ Ext.define('LIME.DocProperties', {
     },
 
     /**
-     * @property {Object} frbrTemplate
-     * FRBR metadata
-     */
-    frbrTemplate : {
-        work : null,
-        expression : null,
-        manifestation : null
-    },
-
-    /**
      * @property {Object} markedElements
      * This object contains information about marked elements.
      */
@@ -270,28 +260,11 @@ Ext.define('LIME.DocProperties', {
     },
 
     /**
-     * This function updates the frbr property
-     * @param {Object} values The new frbr object
-     */
-    setFrbr : function(values) {
-        var newFrbr = Ext.Object.merge(this.frbr, values);
-        this.frbr = newFrbr;
-    },
-
-    /**
      * This function clears and initializes metadata objects
      * @param {Object} app The new frbr object
      */
     clearMetadata : function(app) {
         this.initVars();
-        app.fireEvent(Statics.eventsNames.frbrChanged);
-    },
-
-    getDocumentUri : function() {
-        if (this.frbr && this.frbr.manifestation) {
-            return this.frbr.manifestation.FRBRuri;
-        }
-        return;
     },
 
     insertChildInOrder: function(parent, child, parentStructure, childStructure) {
@@ -407,9 +380,7 @@ Ext.define('LIME.DocProperties', {
     },
 
     initVars : function() {
-        this.frbr = Ext.clone(this.frbrTemplate);
         this.documentInfo = Ext.clone(this.documentInfoTemplate);
-        this.frbrDom = null;
     },
 
     constructor : function() {

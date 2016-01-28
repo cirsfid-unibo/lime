@@ -63,7 +63,7 @@ Ext.define('LIME.controller.Language', {
         selector: 'main'
     }],
 
-    processTranslateRequest: function(callback, config, cmp, frbrDom) {
+    processTranslateRequest: function(callback, config, cmp, metaNode) {
         var me = this,
             html = me.getHtmlToTranslate();
 
@@ -75,10 +75,10 @@ Ext.define('LIME.controller.Language', {
         Ext.callback(callback, this, [html]);
     },
 
-    getHtmlToTranslate: function(config, cmp, frbrDom) {
+    getHtmlToTranslate: function(config, cmp, metaNode) {
         var newConfig = this.beforeTranslate(config, cmp) || config;
 
-        return this.prepareToTranslate(newConfig, frbrDom);
+        return this.prepareToTranslate(newConfig, metaNode);
     },
 
     /**
@@ -88,7 +88,7 @@ Ext.define('LIME.controller.Language', {
      * changes the content of a view.
      * @param {Object} params
      */
-    prepareToTranslate : function(params, frbrDom) {
+    prepareToTranslate : function(params, metaNode) {
         var me = this,
             editorController = this.getController("Editor"),
             tmpElement = params.docDom,
@@ -99,7 +99,7 @@ Ext.define('LIME.controller.Language', {
             counters = {};
 
         me.aknIdMapping = {};
-        me.appendMetadata(tmpElement, frbrDom);
+        me.appendMetadata(tmpElement, metaNode);
 
         // TODO: decide if this part is general for all languages or specific
         try {
@@ -182,11 +182,15 @@ Ext.define('LIME.controller.Language', {
     },
 
     appendMetadata: function(node, meta) {
-        meta = meta || DocProperties.frbrDom;
+        var root = node.querySelector("*["+DocProperties.docIdAttribute+"]")
+                    || node.querySelector(".document");
+
+        if (!meta) {
+            var docMeta = DocProperties.docsMeta[root.getAttribute(DocProperties.docIdAttribute)];
+            meta = docMeta && docMeta.metaDom;
+        }
 
         if (meta) {
-            var root = node.querySelector("*["+DocProperties.docIdAttribute+"]")
-                        || node.querySelector(".document");
             var metaDom = Ext.clone(meta);
             metaDom.setAttribute("class", "meta");
             if (root && !root.querySelector("*[class*=meta]")) {
@@ -285,97 +289,6 @@ Ext.define('LIME.controller.Language', {
         return newId;
     },
 
-    parseFrbrMetadata : function(dom, noSideEffects) {
-        var frbr, frbrDom = Ext.fly(dom);
-        frbr = (noSideEffects) ? {} : DocProperties.frbr;
-        frbr.work = {};
-        frbr.expression = {};
-        frbr.manifestation = {};
-
-        var nationality = frbrDom.down('*[class=FRBRWork] *[class=FRBRcountry]', true);
-        if (nationality) {
-            frbr.work.nationality = nationality.getAttribute('value');
-        }
-        var workDate = frbrDom.down('*[class=FRBRWork] *[class=FRBRdate]', true);
-        if (workDate) {
-            frbr.work.date = new Date(workDate.getAttribute('date'));
-        }
-
-        var workUri = frbrDom.down('*[class=FRBRWork] *[class=FRBRuri]', true);
-        if (workUri) {
-            frbr.work.FRBRuri = workUri.getAttribute('value');
-        }
-
-        var expLang = frbrDom.down('*[class=FRBRExpression] *[class=FRBRlanguage]', true);
-        if (expLang) {
-            frbr.expression.docLang = expLang.getAttribute('language');
-        }
-
-        var expDate = frbrDom.down('*[class=FRBRExpression] *[class=FRBRdate]', true);
-        if (expDate) {
-            frbr.expression.date = new Date(expDate.getAttribute('date'));
-        }
-
-        var expUri = frbrDom.down('*[class=FRBRExpression] *[class=FRBRuri]', true);
-        if (expUri) {
-            frbr.expression.FRBRuri = expUri.getAttribute('value');
-        }
-
-        var manDate = frbrDom.down('*[class=FRBRManifestation] *[class=FRBRdate]', true);
-        if (manDate) {
-            frbr.manifestation.date = new Date(manDate.getAttribute('date'));
-        }
-
-        var manUri = frbrDom.down('*[class=FRBRManifestation] *[class=FRBRuri]', true);
-        if (manUri) {
-            frbr.manifestation.FRBRuri = manUri.getAttribute('value');
-        }
-
-        if(!noSideEffects) {
-            if ( DocProperties.frbrDom ) {
-                if ( frbr.work.FRBRuri ) {
-                    workUri = DocProperties.frbrDom.querySelector('.FRBRWork .FRBRuri');
-                    if ( workUri ) {
-                        workUri.setAttribute('value', frbr.work.FRBRuri);
-                    }
-                }
-
-                if ( frbr.expression.FRBRuri ) {
-                    expUri = DocProperties.frbrDom.querySelector('.FRBRExpression .FRBRuri');
-                    if ( expUri ) {
-                        var expThisUri = DocProperties.frbrDom.querySelector('.FRBRExpression .FRBRthis');
-                        expUri.setAttribute('value', frbr.expression.FRBRuri);
-                        if ( expThisUri ) {
-                            expThisUri.setAttribute('value', frbr.expression.FRBRuri);
-                        }
-                    }
-                }
-
-                if ( frbr.manifestation.FRBRuri ) {
-                    manUri = DocProperties.frbrDom.querySelector('.FRBRManifestation .FRBRuri');
-                    if ( manUri ) {
-                        var manThisUri = DocProperties.frbrDom.querySelector('.FRBRManifestation .FRBRthis');
-                        manUri.setAttribute('value', frbr.manifestation.FRBRuri);
-                        if ( manThisUri ) {
-                            manThisUri.setAttribute('value', frbr.manifestation.FRBRuri);
-                        }
-                    }
-                }
-                if ( manDate ) {
-                    var date = manDate.getAttribute('date');
-                    manDate = DocProperties.frbrDom.querySelector('.FRBRManifestation .FRBRdate');
-                    if ( manDate ) {
-                        manDate.setAttribute('date', date);
-                    }
-                }
-            } else {
-                DocProperties.frbrDom = dom;
-            }
-            this.application.fireEvent(Statics.eventsNames.frbrChanged);
-        }
-        return frbr;
-    },
-
     getLanguagePrefix: function() {
         return Language.getAttributePrefix();
     },
@@ -400,7 +313,6 @@ Ext.define('LIME.controller.Language', {
         if (beforeLoad && !newParams.beforeLoaded) {
             if ( !noSideEffects ) {
                 DocProperties.docsMeta = {};
-                DocProperties.frbrDom = null;
             }
 
             if (params.docText) {
@@ -434,16 +346,7 @@ Ext.define('LIME.controller.Language', {
                 }
 
                 if(newParams.docDom) {
-                    /*try {
-                        console.log(newParams.docDom.firstChild);
-                        docText = editorController.serialize(newParams.docDom.firstChild);
-                    } catch(e) {
-                        docText = "";
-                    }*/
                     params.docText = DomUtils.serializeToString(newParams.docDom);
-                }
-                if (newParams.metaDom && !noSideEffects) {
-                    this.parseFrbrMetadata(newParams.metaDom);
                 }
             } else {
                 newParams = params;

@@ -116,7 +116,7 @@ Ext.define('LIME.controller.Storage', {
         text: Locale.strings.docNumberLabel,
         fieldName: 'number',
         getValue: function() {
-            return this.getMetaValue('number');
+            return this.getMetaValue('name');
         }
     },{
         text: Locale.strings.versionLabel,
@@ -435,7 +435,6 @@ Ext.define('LIME.controller.Storage', {
         this.saveDocument(function () {
             relatedWindow.close();
             var docName = "";
-            try { docName = DocProperties.frbr.manifestation.docName; } catch (e) {};
             Ext.Msg.alert({
                 title: Locale.strings.saveAs,
                 msg:  new Ext.Template(Locale.strings.savedToTpl).apply({
@@ -447,16 +446,10 @@ Ext.define('LIME.controller.Storage', {
     },
 
     updateDocProperties: function(values) {
-        var meta = Ext.getStore('metadata').getMainDocument();
-        var frbrValues = {}, separator = "@", versionDate, versionLang;
+        var meta = Ext.getStore('metadata').getMainDocument(),
+            separatorPos = values.version.indexOf("@");
 
-        var separatorPos = values.version.indexOf(separator);
-        if (separatorPos != -1) {
-            versionDate = values.version.substring(separatorPos+1);
-            versionLang = values.version.substring(0, separatorPos);
-        } else {
-            versionLang = values.version;
-        }
+        var versionDate = (separatorPos != -1) ? values.version.substring(separatorPos+1) : '';
 
         var docDate = new Date(values.date);
         if (!isNaN(docDate.getTime())) {
@@ -471,26 +464,9 @@ Ext.define('LIME.controller.Storage', {
         if (values.docProponent) {
             meta.set('author', values.docProponent);
         }
-        
-        frbrValues.work = {
-            nationality: values.nationality,
-            docType: values.docType,
-            date: values.date,
-            docNumber: values.docNumber
-        };
-        frbrValues.expression = {
-            date: versionDate,
-            docLang: versionLang
-        };
-
-        frbrValues.manifestation = {
-            docName: values.docName
-        };
-
-        DocProperties.setDocumentInfo({
-            folder: values.folder
-        });
-        DocProperties.setFrbr(frbrValues);
+        if (values.number) {
+            meta.set('name', values.number);   
+        }
     },
 
     // Save the currenly opened document and call callback on success.
@@ -527,7 +503,6 @@ Ext.define('LIME.controller.Storage', {
         this.columnValues = [];
         var editor = this.getController('Editor');
         var uri = editor.getDocumentUri();
-        var meta = editor.getDocumentMetadata();
 
         for (var i = 0; i < this.storageColumns.length; i++) {
             value = '';

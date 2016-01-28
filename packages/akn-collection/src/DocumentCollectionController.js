@@ -429,6 +429,7 @@ Ext.define('AknCollection.DocumentCollectionController', {
         return completeSnapshotDom;
     },
 
+    // TODO: porting to the new metadata
     getDocumentsFromSnapshot: function(snapshot) {
         var domDocs, documents = [], metaConf = DocProperties.docsMeta;
         if (snapshot && snapshot.dom) {

@@ -255,12 +255,6 @@ Ext.define('AknConsolidation.ConsolidationController', {
                 language.beforeLoad(config, function(newConfig) {
                     me.secondDocumentConfig = newConfig;
                     editorController.loadDocument(newConfig.docText, newConfig.docId, secondEditor.down('tinymcefield'), true);
-                    if(newConfig.metaDom) {
-                        var manifestationUri = newConfig.metaDom.querySelector("*[class=FRBRManifestation] *[class=FRBRuri]");
-                        // if(manifestationUri) {
-                        //     secondEditor.down("mainEditorUri").setUri(manifestationUri.getAttribute("value"));
-                        // }
-                    }
                     me.manageAfterLoad = function() {
                         var newId = dualConfig.editableDoc.replace("/diff/", "/diff_modified/");
                         DocProperties.documentInfo.docId = newId;

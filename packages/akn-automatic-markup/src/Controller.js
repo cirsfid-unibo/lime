@@ -1058,29 +1058,6 @@ Ext.define('AknAutomaticMarkup.Controller', {
         return nodes;
     },
 
-    objToDom: function(doc, obj) {
-        var me = this, node, childNode;
-        if(obj.name) {
-            node = doc.createElement("div");
-            node.setAttribute("class", obj.name);
-            Ext.each(obj.attributes, function(attribute) {
-                node.setAttribute(attribute.name, attribute.value);
-            });
-            if(!Ext.isEmpty(obj.text)) {
-                childNode = doc.createTextNode(obj.text);
-                node.appendChild(childNode);
-            } else {
-                Ext.each(obj.children, function(child) {
-                    childNode = me.objToDom(doc, child);
-                    if(childNode) {
-                        node.appendChild(childNode);
-                    }
-                });
-            }
-        }
-        return node;
-    },
-
     parseDocTypes : function(docTypes, node) {
         var me = this, app = me.application,
             editor = me.getController("Editor"),

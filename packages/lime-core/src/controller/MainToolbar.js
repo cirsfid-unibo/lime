@@ -246,7 +246,6 @@ Ext.define('LIME.controller.MainToolbar', {
 
     onLanguageLoaded: function() {
         var me = this, main = me.getMain(),
-            customViews = Config.getLanguageConfig().customViews,
             openViews = User.preferences.views; // Get the open views from the preferences
 
         me.setAllowedViews();
