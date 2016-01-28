@@ -50,6 +50,18 @@
 Ext.define('AknMetadata.sync.EditorSynchronizer', {
     extend: 'Ext.app.Controller',
 
+    listen: {
+        store: {
+            '#metadata': {
+                update: 'onMetadataUpdate'
+            }
+        }
+    },
+
+    onMetadataUpdate: function (store, record, operation, fields) {
+        this.getController('Editor').showDocumentIdentifier();
+    },
+
     init: function () {
         this.application.on({
             nodeChangedExternally: this.onNodeMarked.bind(this),
