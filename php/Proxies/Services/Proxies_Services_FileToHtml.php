@@ -74,8 +74,6 @@ class Proxies_Services_FileToHtml implements Proxies_Services_Interface
 		  		$this->_filePath = $_FILES['file']['tmp_name'];
 				$this->_fileName = $_FILES['file']['name'];
 				$this->_fileSize = $_FILES['file']['size'];
-                $this->cleaningXslDom = new DOMDocument();
-                $this->cleaningXslDom->load($this->cleaningXsl);
 		} else if (isset($params['fileExistPath']) && $params['fileExistPath']) {
 			// Crappy code to allow to specify file url.
 			$url = EXIST_URL.'rest'.$params['fileExistPath'];
@@ -84,10 +82,16 @@ class Proxies_Services_FileToHtml implements Proxies_Services_Interface
 			file_put_contents($this->_filePath, fopen($url, 'r'));
 			$this->_delete = TRUE;
 			$this->_fileSize = 42;
-            $this->cleaningXslDom = new DOMDocument();
-            $this->cleaningXslDom->load($this->cleaningXsl);
 		}
 		$this->_transformFile = (isset($params['transformFile']) && $params['transformFile']) ? realpath(LIMEROOT."/".$params['transformFile']) : FALSE;
+		$this->_cleanXslCustom = (isset($params['cleanXsl']) && $params['cleanXsl']) ? $params['cleanXsl'] : FALSE;
+		$this->loadCleaningXsl($this->_cleanXslCustom);
+	}
+
+	private function loadCleaningXsl($xsl=FALSE) {
+		$xsl = $xsl ?: $this->cleaningXsl;
+		$this->cleaningXslDom = new DOMDocument();
+		$this->cleaningXslDom->load($xsl);
 	}
 
 	/**

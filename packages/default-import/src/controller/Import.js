@@ -112,7 +112,6 @@ Ext.define('DefaultImport.controller.Import', {
     importDocument : function() {
         // Create a window with a form where the user can select a file
         var me = this,
-            transformFile = me.getTransformationFile(),
             uploaderView = Ext.widget('uploader', {
                 buttonSelectLabel : Locale.getString("selectDocument", me.getPluginName()),
                 buttonSubmitLabel : Locale.getString("importDocument", me.getPluginName()),
@@ -121,20 +120,20 @@ Ext.define('DefaultImport.controller.Import', {
                 uploadCallback : me.uploadFinished,
                 callbackScope: me,
                 uploadUrl : Server.getAjaxUrl(),
-                uploadParams : {
-                    requestedService: me.getImportServiceName(),
-                    transformFile: (transformFile) ? transformFile : ""
-                }
+                uploadParams : me.getUploadParams()
             });
         uploaderView.show();
     },
 
-    getTransformationFile: function() {
-        return Config.getLanguageTransformationFile("languageToLIME");
+    getUploadParams: function() {
+        return {
+            requestedService: Statics.services.fileToHtml,
+            transformFile: this.getTransformationFile()
+        }
     },
 
-    getImportServiceName: function() {
-        return Statics.services.fileToHtml;
+    getTransformationFile: function() {
+        return Config.getLanguageTransformationFile("languageToLIME");
     },
 
     init : function() {
