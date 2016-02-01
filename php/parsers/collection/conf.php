@@ -45,56 +45,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-require_once("utils.php");
-require_once("MetaParser.php");
-
-$parser = (isset($_POST["parser"]) && !empty($_POST["parser"])) ? $_POST["parser"] : 'document';
-$lang = (isset($_POST["lang"]) && !empty($_POST["lang"])) ? $_POST["lang"] : NULL;
-$docType = (isset($_POST["doctype"]) && !empty($_POST["doctype"])) ? $_POST["doctype"] : NULL;
-$content = (isset($_POST["content"]) && !empty($_POST["content"])) ? $_POST["content"] : NULL;
-
-if($parser && $lang && $docType && $content) {
-	$metaParser = new MetaParser($lang, $docType, $content);
-	switch ($parser) {
-		case 'document':
-			echo $metaParser->parseDocument();
-			break;
-		case 'enactingFormula':
-			echo json_encode($metaParser->parseEnactingFormula());
-			break;
-		case 'body':
-			echo json_encode($metaParser->parseBody());
-			break;
-		case 'date':
-			echo $metaParser->parseDate();
-			break;
-		case 'docnum':
-			echo $metaParser->parseDocNum();
-			break;
-		case 'doctype':
-			echo $metaParser->parseDocType();
-			break;
-		case 'collection':
-			echo $metaParser->parseCollection();
-			break;
-		case 'list':
-			echo $metaParser->parseList();
-			break;
-		case 'quote':
-			echo $metaParser->parseQuote();
-			break;
-		case 'reference':
-			echo $metaParser->parseReference();
-			break;
-		case 'structure':
-			echo json_encode($metaParser->parseStructure());
-			break;
-		default:
-			http_response_code(406);
-			break;
-	}
-} else {
-	http_response_code(406);
-}
+ $rules = Array(
+	"main" => "/<[\w=\" ]+>VOLUME I+<[\w\/]+>/",
+);
 
 ?>

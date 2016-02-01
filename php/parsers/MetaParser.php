@@ -55,6 +55,7 @@ require_once("reference/ReferenceParser.php");
 require_once("authority/AuthorityParser.php");
 require_once("location/LocationParser.php");
 require_once("enactingFormula/FormulaParser.php");
+require_once("collection/CollectionParser.php");
 
 class MetaParser {
     
@@ -103,6 +104,11 @@ class MetaParser {
         $parser = new StructureParser($this->lang, $this->docType);
         return $parser->parse($this->content);
     }
+
+    public function parseCollection() {
+        $parser = new CollectionParser($this->lang, $this->docType);
+        return $parser->parse($this->content);
+    }    
 
     public function parseBody(&$completeResult) {
         $this->body = end($this->getElementsByName("body", $completeResult));

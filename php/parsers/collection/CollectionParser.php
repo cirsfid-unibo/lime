@@ -45,56 +45,54 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-require_once("utils.php");
-require_once("MetaParser.php");
+require_once(dirname(__FILE__)."/../utils.php");
 
-$parser = (isset($_POST["parser"]) && !empty($_POST["parser"])) ? $_POST["parser"] : 'document';
-$lang = (isset($_POST["lang"]) && !empty($_POST["lang"])) ? $_POST["lang"] : NULL;
-$docType = (isset($_POST["doctype"]) && !empty($_POST["doctype"])) ? $_POST["doctype"] : NULL;
-$content = (isset($_POST["content"]) && !empty($_POST["content"])) ? $_POST["content"] : NULL;
+class CollectionParser {
+    
+    public $lang, $docType;
+    private $parserRules = array();
+    
+    public function __construct($lang, $docType) {
+        $this->lang = $lang;
+        $this->docType = $docType;
+        $this->dirName = dirname(__FILE__);
 
-if($parser && $lang && $docType && $content) {
-	$metaParser = new MetaParser($lang, $docType, $content);
-	switch ($parser) {
-		case 'document':
-			echo $metaParser->parseDocument();
-			break;
-		case 'enactingFormula':
-			echo json_encode($metaParser->parseEnactingFormula());
-			break;
-		case 'body':
-			echo json_encode($metaParser->parseBody());
-			break;
-		case 'date':
-			echo $metaParser->parseDate();
-			break;
-		case 'docnum':
-			echo $metaParser->parseDocNum();
-			break;
-		case 'doctype':
-			echo $metaParser->parseDocType();
-			break;
-		case 'collection':
-			echo $metaParser->parseCollection();
-			break;
-		case 'list':
-			echo $metaParser->parseList();
-			break;
-		case 'quote':
-			echo $metaParser->parseQuote();
-			break;
-		case 'reference':
-			echo $metaParser->parseReference();
-			break;
-		case 'structure':
-			echo json_encode($metaParser->parseStructure());
-			break;
-		default:
-			http_response_code(406);
-			break;
-	}
-} else {
-	http_response_code(406);
+        $this->loadConfiguration();
+    }
+
+    public function parse($content, $jsonOutput = FALSE) {
+        $return = array();
+		if($this->lang && $this->docType && !empty($this->parserRules)) {
+			$resolved = resolveRegex($this->parserRules['main'],$this->parserRules,$this->lang, $this->docType, $this->dirName);
+			$success = 	preg_match_all($resolved["value"], $content, $result, PREG_OFFSET_CAPTURE);
+			if ($success) {
+				for ($i = 0; $i < $success; $i++) {
+                    $match = $result[0][$i][0];
+                    $offset = $result[0][$i][1];
+					$entry = Array (
+						"header" => $match,
+						"start" => $offset,
+                        "end" => $offset+strlen($match)
+					);
+					
+					$return[] = $entry;
+				}
+			}
+		} else {
+			$return = Array('success' => FALSE);
+		}
+
+        $ret = array("response" => $return);
+        if($jsonOutput) {
+            return json_encode($ret);    
+        } else {
+            return $ret;
+        }
+    }
+
+    public function loadConfiguration() {
+        $this->parserRules = importParserConfiguration($this->lang,$this->docType, $this->dirName);
+    }
 }
 
 ?>
