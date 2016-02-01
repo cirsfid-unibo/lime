@@ -183,7 +183,6 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
         }  else {
             meta = doc.querySelector("*[class=" + this.getMetadataClass() + "]");
             result = {}, ownDoc = doc.ownerDocument;
-            result.docType = DomUtils.getDocTypeByNode(doc);
             if (meta && meta.parentNode) {
                 var language = meta.querySelector("*[class=FRBRlanguage]"),
                     country = meta.querySelector("*[class=FRBRcountry]");
@@ -196,7 +195,9 @@ Ext.define('LIME.ux.akoma3.LoadPlugin', {
                 }
                 result.metaDom = meta.parentNode.removeChild(meta);
             }
-        }         
+        }
+        if (doc)
+            result.docType = DomUtils.getDocTypeByNode(doc);         
         
         return result;
     },

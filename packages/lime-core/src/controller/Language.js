@@ -190,12 +190,16 @@ Ext.define('LIME.controller.Language', {
             meta = docMeta && docMeta.metaDom;
         }
 
-        if (meta) {
+        if (meta && root) {
             var metaDom = Ext.clone(meta);
             metaDom.setAttribute("class", "meta");
-            if (root && !root.querySelector("*[class*=meta]")) {
+            
+            var prevMeta = root.querySelector("*[class*=meta]");
+            if (!prevMeta) 
                 root.insertBefore(metaDom, root.firstChild);
-            }
+            else
+                prevMeta.parentNode.replaceChild(metaDom, prevMeta);
+
             return metaDom;
         }
     },
@@ -309,6 +313,7 @@ Ext.define('LIME.controller.Language', {
             newParams = params,
             newFn, docDom, docText,
             parser = new DOMParser(), doc, docCounters = {}, openedDocumentsData = [];
+
         // Checking that before load will be called just one time per document
         if (beforeLoad && !newParams.beforeLoaded) {
             if ( !noSideEffects ) {
@@ -351,6 +356,11 @@ Ext.define('LIME.controller.Language', {
             } else {
                 newParams = params;
             }
+        } else {
+            Ext.Object.each(DocProperties.docsMeta, function(index, obj) {
+                obj.docLang = obj.docLang || params.docLang;
+                obj.docLocale = obj.docLocale || params.docLocale;
+            });
         }
         callback(newParams);
     },

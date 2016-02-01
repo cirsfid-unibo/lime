@@ -57,7 +57,7 @@
         var metaNode = this.callParent(arguments);
 
         // if the meta are related to the main document
-        if (metaNode && metaNode.parentNode.hasAttribute(DocProperties.docIdAttribute))
+        if (metaNode && metaNode.parentNode && metaNode.parentNode.hasAttribute(DocProperties.docIdAttribute))
             this.overwriteMetadata(metaNode);
     },
 
