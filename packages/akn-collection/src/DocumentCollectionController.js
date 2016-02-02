@@ -159,7 +159,7 @@ Ext.define('AknCollection.DocumentCollectionController', {
                 if (docId != 0 && metaConf[docId] && metaConf[docId].metaDom) {
                     metaDom = Ext.clone(metaConf[docId].metaDom);
                     metaDom.setAttribute("class", "meta");
-                    if ( doc.firstChild && !Ext.fly(doc.firstChild).is('.meta') ) {
+                    if ( doc.firstChild && Ext.fly(doc.firstChild) && !Ext.fly(doc.firstChild).is('.meta') ) {
                         doc.insertBefore(metaDom, doc.firstChild);
                     }
                 }

@@ -62,8 +62,9 @@
             'editMenuButton menu': {
                 show: function() {
                     var genTocBtn = this.getGenerateTocButton();
+                    var body = this.getController('Editor').getBody();
 
-                    if ( Ext.isEmpty(DocProperties.getMarkedElementsByName(Language.getBodyName())) ) {
+                    if ( !body.querySelector('[class~="'+Language.getBodyName()+'"]') ) {
                         genTocBtn.disable();
                         genTocBtn.setTooltip(Locale.getString("noPreambleFound", this.getPluginName()));
                     } else {
@@ -98,26 +99,42 @@
         } else {
             data = this.findTocDataFromNode(this.getController('Editor').getBody(), 4);
         }
-        
         this.moveTocNodeToPreamble(this.markToc(data.filter(function(obj) {
             return obj.info;
         })));
-
     },
 
     findTocDataFromNodeCollection: function(root) {
+        var me = this;
         var body = root.querySelector('.collectionBody');
 
-        return Ext.Array.toArray(body.querySelectorAll('.documentRef')).map(function(node) {
+        var docs = Ext.Array.toArray(body.querySelectorAll('.documentRef')).map(function(node) {
             var button = DomUtils.getButtonByElement(node);
+            var ref = node.getAttribute('akn_href');
+            var doc = root.querySelector("*[class~='components'] *[akn_eId="+ref.substring(1)+"] *[class*="+DocProperties.documentBaseClass+"]");
             return {
                 node: node,
+                doc: doc,
                 button: button,
                 name: button.name,
-                info: node.textContent,
-                parents: 1
+                info: node.textContent.trim() || ref,
+                parents: 0
             }
         });
+
+        var data = [];
+        docs.forEach(function(obj) {
+            data.push(obj);
+            if (obj.doc)
+                data = data.concat(me.findTocDataFromNode(obj.doc, 2)).filter(function(chObj) {
+                    return !chObj.node.classList.contains('item');
+                }).map(function(chObj) {
+                    chObj.parents++;
+                    return chObj;
+                });
+        });
+
+        return data;
     },
 
     findTocDataFromNode: function(root, depth) {
@@ -129,6 +146,7 @@
                     return true;
                 }
             });
+
             return {
                 node: node,
                 parents: parents.length
@@ -162,7 +180,7 @@
             tocItemConfig = DocProperties.getChildConfigByName(DocProperties.getFirstButtonByName('toc'), 'tocItem'),
             tocItems = [],
             marker = this.getController("Marker");
-        //console.log(data);
+
         var tocNode = Ext.DomHelper.createDom({
             tag : 'div',
             cls : DomUtils.tempParsingClass
@@ -180,7 +198,7 @@
             tocNode.appendChild(tocItemNode);
         });
 
-        var body = DocProperties.getMarkedElementsByName(Language.getBodyName())[0].htmlElement;
+        var body = this.getController('Editor').getBody().querySelector('[class~="'+Language.getBodyName()+'"]');
         body.parentNode.insertBefore(tocNode, body);
 
         marker.autoWrap(tocItemConfig, {
