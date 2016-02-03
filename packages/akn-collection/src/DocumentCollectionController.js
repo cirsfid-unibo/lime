@@ -72,7 +72,6 @@ Ext.define('AknCollection.DocumentCollectionController', {
         var me = this,
             app = me.application,
             docsType = Config.getDocTypesName(),
-            beforeTranslate = TranslatePlugin.beforeTranslate,
             collTab = me.getDocCollectionTab(),
             tabPanel = collTab.up();
 
@@ -96,14 +95,6 @@ Ext.define('AknCollection.DocumentCollectionController', {
             if (docConfig.docType != "documentCollection") {
                 tabPanel.setActiveTab(0);
                 tabPanel.getTabBar().items.items[1].disable();
-            } else {
-                // Wrap beforeTrasnalte for customizate it
-                TranslatePlugin.beforeTranslate = function(params) {
-                    me.originalBeforeTranslate = me.originalBeforeTranslate ||
-                                                Ext.Function.bind(beforeTranslate, TranslatePlugin);
-                    var newParams = me.originalBeforeTranslate(params) || params;
-                    return me.docCollectionBeforeTranslate(newParams);
-                };
             }
         }
 

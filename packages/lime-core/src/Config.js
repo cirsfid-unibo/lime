@@ -54,7 +54,7 @@ Ext.define('LIME.Config', {
     uxPath : 'LIME.ux',
     requires : ['Server'],
 
-    extensionScripts : ['LoadPlugin', 'Language', 'SavePlugin', 'TranslatePlugin'],
+    extensionScripts : ['LoadPlugin', 'Language'],
 
     language : '',
 

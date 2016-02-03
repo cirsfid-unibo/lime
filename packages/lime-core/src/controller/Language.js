@@ -205,12 +205,10 @@ Ext.define('LIME.controller.Language', {
     },
 
     beforeTranslate: function(config, cmp) {
-       var languageController = this, editorController = this.getController("Editor"),
-            beforeTranslate = TranslatePlugin.beforeTranslate,
+       var editorController = this.getController("Editor"),
         //removing all ext generated ids
         editorContent = editorController.getContent(false, cmp).replace(/id="ext-element-(\d)+"/g, "")
-                        .replace(/(class=\"[^\"]+)(\s+\bfocused\")/g, '$1"'),
-        params = {}, newParams, newFn;
+                        .replace(/(class=\"[^\"]+)(\s+\bfocused\")/g, '$1"');
 
         // creating a div that contains the editor content
         var tmpElement = Ext.DomHelper.createDom({
@@ -218,15 +216,9 @@ Ext.define('LIME.controller.Language', {
             html : editorContent
         });
 
-        if (beforeTranslate) {
-            params.docDom = tmpElement;
-            newFn = Ext.Function.bind(beforeTranslate, TranslatePlugin, [Ext.Object.merge(params, config)]);
-            newParams = newFn();
-            if (!newParams) {
-                newParams = params;
-            }
-        }
-        return newParams;
+        return {
+            docDom: tmpElement
+        };
     },
 
     /**
@@ -374,26 +366,17 @@ Ext.define('LIME.controller.Language', {
         newFn();
     },
 
-    beforeSave: function(params) {
-        var newFn = Ext.Function.bind(SavePlugin.beforeSave, SavePlugin, [params]);
-        newFn();
-
-    },
-    afterSave: function(params) {
-        var newFn = Ext.Function.bind(SavePlugin.afterSave, SavePlugin, [params, this.application]);
-        newFn();
-    },
+    /*
+        These functions are ment be overridden by other packages
+    */
+    beforeSave: function(params) {},
+    afterSave: function(params) {},
 
     init : function() {
-        // save a reference to the controller
-        var languageController = this;
-
         // Create bindings between events and callbacks
         // User's custom callbacks
         this.application.on(Statics.eventsNames.translateRequest, this.processTranslateRequest, this);
         this.application.on(Statics.eventsNames.getDocumentHtml, this.getDocumentHtml, this);
-        // now before translate on documentLoaded is useless
-        //this.application.on(Statics.eventsNames.documentLoaded, this.beforeTranslate, this);
         this.application.on(Statics.eventsNames.afterLoad, this.afterLoad, this);
         this.application.on(Statics.eventsNames.beforeLoad, this.beforeLoad, this);
         this.application.on(Statics.eventsNames.beforeSave, this.beforeSave, this);
