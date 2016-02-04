@@ -299,15 +299,13 @@ Ext.define('LIME.controller.Language', {
         };
     },
 
-    beforeLoad: function(params, callback, noSideEffects) {
-        var me = this, app = this.application, beforeLoad = LoadPlugin.beforeLoad,
-            editorController = me.getController("Editor"),
-            newParams = params,
-            newFn, docDom, docText,
+    beforeLoadManager: function(params, callback, noSideEffects) {
+        var me = this, app = this.application,
+            editorController = me.getController("Editor"), docDom, docText,
             parser = new DOMParser(), doc, docCounters = {}, openedDocumentsData = [];
 
         // Checking that before load will be called just one time per document
-        if (beforeLoad && !newParams.beforeLoaded) {
+        if (!params.beforeLoaded) {
             if ( !noSideEffects ) {
                 DocProperties.docsMeta = {};
             }
@@ -316,7 +314,9 @@ Ext.define('LIME.controller.Language', {
                 // IE exception
                 try {
                     docDom = parser.parseFromString(params.docText, "application/xml");
-                    if (!(docDom.documentElement.tagName == "parsererror" || docDom.documentElement.querySelector("parseerror") || docDom.documentElement.querySelector("parsererror"))) {
+                    if (!(docDom.documentElement.tagName == "parsererror" || 
+                        docDom.documentElement.querySelector("parseerror") || 
+                        docDom.documentElement.querySelector("parsererror"))) {
                         params.docDom = docDom;
                     }
                 } catch(e) {
@@ -324,13 +324,13 @@ Ext.define('LIME.controller.Language', {
                 }
             }
 
-            newFn = Ext.Function.bind(beforeLoad, LoadPlugin, [params]);
-            newParams = newFn();
+            var newParams = me.beforeLoad(params);
             if (newParams) {
-                newParams.beforeLoaded = true;
+                params = newParams;
+                params.beforeLoaded = true;
 
-                if (newParams.metaResults && !noSideEffects) {
-                    Ext.each(newParams.metaResults, function(metaObj, index) {
+                if (params.metaResults && !noSideEffects) {
+                    Ext.each(params.metaResults, function(metaObj, index) {
                         var name = metaObj.docType;
                         docCounters[name] = docCounters[name]+1 || 1;
                         if (metaObj.docDom) {
@@ -342,11 +342,9 @@ Ext.define('LIME.controller.Language', {
                     });
                 }
 
-                if(newParams.docDom) {
-                    params.docText = DomUtils.serializeToString(newParams.docDom);
+                if(params.docDom) {
+                    params.docText = DomUtils.serializeToString(params.docDom);
                 }
-            } else {
-                newParams = params;
             }
         } else {
             Ext.Object.each(DocProperties.docsMeta, function(index, obj) {
@@ -354,21 +352,19 @@ Ext.define('LIME.controller.Language', {
                 obj.docLocale = obj.docLocale || params.docLocale;
             });
         }
-        callback(newParams);
-    },
-
-    afterLoad: function(params) {
-        var docEl = params.docDom.querySelector("."+DocProperties.documentBaseClass);
-        if(docEl && !docEl.getAttribute(DocProperties.docIdAttribute)) {
-            docEl.setAttribute(DocProperties.docIdAttribute, 0);
-        }
-        var newFn = Ext.Function.bind(LoadPlugin.afterLoad, LoadPlugin, [params, this.application]);
-        newFn();
+        callback(params);
     },
 
     /*
         These functions are ment be overridden by other packages
     */
+    beforeLoad: function(params) {},
+    afterLoad: function(params) {
+        var docEl = params.docDom.querySelector("."+DocProperties.documentBaseClass);
+        if(docEl && !docEl.getAttribute(DocProperties.docIdAttribute)) {
+            docEl.setAttribute(DocProperties.docIdAttribute, 0);
+        }
+    },
     beforeSave: function(params) {},
     afterSave: function(params) {},
 
@@ -378,7 +374,7 @@ Ext.define('LIME.controller.Language', {
         this.application.on(Statics.eventsNames.translateRequest, this.processTranslateRequest, this);
         this.application.on(Statics.eventsNames.getDocumentHtml, this.getDocumentHtml, this);
         this.application.on(Statics.eventsNames.afterLoad, this.afterLoad, this);
-        this.application.on(Statics.eventsNames.beforeLoad, this.beforeLoad, this);
+        this.application.on(Statics.eventsNames.beforeLoad, this.beforeLoadManager, this);
         this.application.on(Statics.eventsNames.beforeSave, this.beforeSave, this);
         this.application.on(Statics.eventsNames.afterSave, this.afterSave, this);
     }

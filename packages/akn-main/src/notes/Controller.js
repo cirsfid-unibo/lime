@@ -51,8 +51,11 @@ Ext.define('AknMain.notes.Controller', {
         authorialNoteClass : 'authorialNote',
         changePosAttr: 'chposid',
         changePosTargetAttr: 'chpos_id',
+        noteRefAttribute: 'noteref',
         refToAttribute: 'refto',
-        notesContainerCls: 'notesContainer'
+        notesContainerCls: 'notesContainer',
+        tmpSpanCls: 'posTmpSpan',
+        noteTmpId: 'notetmpid'
     },
 
     init : function() {
@@ -60,6 +63,46 @@ Ext.define('AknMain.notes.Controller', {
         //Listening progress events
         me.application.on(Statics.eventsNames.afterLoad, me.beforeProcessNotes, me);
         me.application.on(Statics.eventsNames.nodeAttributesChanged, me.nodeChangedAttributes, me);
+    },
+
+    beforeProcessNotes: function(config) {
+        var editorBody = this.getController("Editor").getBody();
+        this.linkNotes(editorBody);
+        this.processNotes(editorBody);
+    },
+
+    linkNotes: function(body) {
+        var me = this, app = this.application,
+            noteLinkers = body.querySelectorAll(".linker");
+        clickLinker = function() {
+            var marker = this.getAttribute(me.getRefToAttribute()), note;
+            if (marker) {
+                note = body.querySelector("*["+me.getChangePosTargetAttr()+"="+marker+"]");
+                if(note) {
+                    app.fireEvent('nodeFocusedExternally', note, {
+                        select : true,
+                        scroll : true,
+                        click : true
+                    });
+                }
+            }
+        };
+        Ext.each(noteLinkers, function(linker) {
+            linker.onclick = clickLinker;
+        }, this);
+    },
+    
+    nodeChangedAttributes: function(node) {
+        if(node.getAttribute("class").indexOf(this.getAuthorialNoteClass())!=-1) {
+            var result = this.updateNote(node, this.getController("Editor").getBody());
+            if(result.placement) {
+                this.application.fireEvent('nodeFocusedExternally', node, {
+                    select : true,
+                    scroll : true,
+                    click : true
+                }); 
+            }
+        }
     },
 
     processNotes : function(editorBody) {
@@ -88,7 +131,7 @@ Ext.define('AknMain.notes.Controller', {
     setNotePosition: function(note, refNode, editorBody) {
         var me = this, languageController = me.getController("Language"), 
             placement = languageController.nodeGetLanguageAttribute(note, "placement"), 
-            allRefs = Array.prototype.slice.call(editorBody.querySelectorAll("*["+LoadPlugin.getRefToAttribute()+"]")),
+            allRefs = Array.prototype.slice.call(editorBody.querySelectorAll("*["+me.getNoteRefAttribute()+"]")),
             notesContainer, changed = false, refIndex, siblingNote, refSibling, refSiblingIndex;
 
         if (placement.value == "bottom" && note.parentNode && 
@@ -103,7 +146,7 @@ Ext.define('AknMain.notes.Controller', {
                 for(var i = 0; i < notesContainer.childNodes.length; i++) {
                     siblingNote = notesContainer.childNodes[i];
                     refSibling = allRefs.filter(function(el) { 
-                        return el.getAttribute(LoadPlugin.getRefToAttribute()) == siblingNote.getAttribute(LoadPlugin.getNoteTmpId());
+                        return el.getAttribute(me.getNoteRefAttribute()) == siblingNote.getAttribute(me.getNoteTmpId());
                     })[0];
                     if(refSibling) {
                         refSiblingIndex = allRefs.indexOf(refSibling);
@@ -140,14 +183,14 @@ Ext.define('AknMain.notes.Controller', {
             marker = languageController.nodeGetLanguageAttribute(node, "marker"),
             placement = languageController.nodeGetLanguageAttribute(node, "placement"),
             supLinkTemplate = new Ext.Template('<sup><a class="linker" href="#">{markerNumber}</a></sup>'),
-            notTmpId = node.getAttribute(LoadPlugin.getNoteTmpId()),
-            tmpRef = editorBody.querySelector("*["+LoadPlugin.getRefToAttribute()+"="+notTmpId+"]"),
-            allRefs = Array.prototype.slice.call(editorBody.querySelectorAll("*["+LoadPlugin.getRefToAttribute()+"]")),
+            notTmpId = node.getAttribute(me.getNoteTmpId()),
+            tmpRef = editorBody.querySelector("*["+me.getNoteRefAttribute()+"="+notTmpId+"]"),
+            allRefs = Array.prototype.slice.call(editorBody.querySelectorAll("*["+me.getNoteRefAttribute()+"]")),
             clickLinker = function() {
                 var marker = this.getAttribute(me.getRefToAttribute()),
                     note;
                 if (marker) {
-                    note = editorBody.querySelector("*["+LoadPlugin.getNoteTmpId()+"="+marker+"]");
+                    note = editorBody.querySelector("*["+me.getNoteTmpId()+"="+marker+"]");
                     if(note) {
                         app.fireEvent('nodeFocusedExternally', note, {
                             select : true,
@@ -180,8 +223,8 @@ Ext.define('AknMain.notes.Controller', {
     updateNote: function(node, editorBody) {
         var me = this, languageController = me.getController("Language"),
             marker = languageController.nodeGetLanguageAttribute(node, "marker"),
-            eId = node.getAttribute(LoadPlugin.getNoteTmpId()),
-            ref = editorBody.querySelector("*["+LoadPlugin.getRefToAttribute()+"="+eId+"]"),
+            eId = node.getAttribute(me.getNoteTmpId()),
+            ref = editorBody.querySelector("*["+me.getNoteRefAttribute()+"="+eId+"]"),
             linker, result = {marker: false, placement: false};
         if(eId && ref && marker && marker.value) {
             linker = ref.querySelector('a');
@@ -194,20 +237,24 @@ Ext.define('AknMain.notes.Controller', {
         return result;
     },
 
-    beforeProcessNotes: function(config) {
-        this.processNotes(this.getController("Editor").getBody());
-    },
-    
-    nodeChangedAttributes: function(node) {
-        if(node.getAttribute("class").indexOf(this.getAuthorialNoteClass())!=-1) {
-            var result = this.updateNote(node, this.getController("Editor").getBody());
-            if(result.placement) {
-                this.application.fireEvent('nodeFocusedExternally', node, {
-                    select : true,
-                    scroll : true,
-                    click : true
-                }); 
+    /*
+     * Is important to call this function before loading the document in the editor. 
+     * */
+    preProcessNotes : function(dom) {
+        var athNotes = dom.querySelectorAll("*[class~=" + this.getAuthorialNoteClass() + "]"),
+            markerTemplate = new Ext.Template('<span class="'+this.getTmpSpanCls()+'" '+this.getNoteRefAttribute()+'="{ref}"></span>');
+            
+        Ext.each(athNotes, function(element, index) {
+            var noteTmpId = "note_"+index;
+            Ext.DomHelper.insertHtml("beforeBegin", element, markerTemplate.apply({
+                'ref' : noteTmpId
+            }));
+            element.setAttribute(this.getNoteTmpId(), noteTmpId);
+            // Move the element to the end of parent to prevent split in parent
+            if(element.nextSibling) {
+                element.parentNode.appendChild(element);
             }
-        }
+        }, this);
     }
+
 });

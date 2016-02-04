@@ -79,6 +79,88 @@ Ext.define('AknModsMarker.Controller', {
         externalConnectedElements: ["quotedStructure", "quotedText", "ref", "rref", "mref"]
     },
 
+    // Temporary, until the old meta is used
+    metaStructure: {
+        "name": "meta",
+        "children": [
+            {
+                "name": "identification",
+                "children": [
+                    {"name": "FRBRWork", "children": []},
+                    {"name": "FRBRExpression", "children": []},
+                    {"name": "FRBRManifestation", "children": []},
+                    {"name": "FRBRItem", "children": []}
+                ]
+            },
+            {"name": "publication","children": []},
+            {
+                "name": "classification",
+                "children": [
+                    {"name": "keyword","children": []}
+                ]
+            },
+            {
+                "name": "lifecycle",
+                "children": [
+                    {"name": "eventRef","children": []}
+                ]
+            },
+            {
+                "name": "workflow",
+                "children": [
+                    {"name": "step","children": []}
+                ]
+            },
+            {
+                "name": "analysis",
+                "children": [
+                    {"name": "activeModifications","children": []},
+                    {"name": "passiveModifications","children": []},
+                    {"name": "restrictions",
+                        "children": [
+                            {"name": "restriction","children": []}
+                        ]
+                    },
+                    {"name": "judicial","children": []},
+                    {"name": "parliamentary","children": []},
+                    {"name": "mappings",
+                    "children": [
+                            {"name": "mapping","children": []}
+                        ]
+                    },
+                    {"name": "otherAnalysis","children": []}
+                ]
+            },
+            {
+                "name": "temporalData",
+                "children": [
+                    {"name": "temporalGroup",
+                        "children": [
+                            {"name": "timeInterval","children": []}
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "references",
+                "children": []
+            },
+            {
+                "name": "notes",
+                "children": [
+                    {"name": "note","children": []}
+                ]
+            },
+            {
+                "name": "proprietary",
+                "children": []
+            },
+            {
+                "name": "presentation",
+                "children": []
+            }
+        ]
+    },
 
     init : function() {
         var me = this;
@@ -849,9 +931,8 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     createMetaElement: function(dom, name) {
-        var me = this, node,
-            metaStructure = Language.getMetadataStructure();
-        var path = me.getElementStructurePath(name, metaStructure);
+        var me = this, node;
+        var path = me.getElementStructurePath(name, me.metaStructure);
         if(path.length) {
             var iterNode = dom, tmpNode, parentStructure;
             Ext.each(path, function(objStructure) {
@@ -899,9 +980,24 @@ Ext.define('AknModsMarker.Controller', {
 
 
     insertTextModChildInOrder: function(parent, child) {
-        var me = this, txtModStructure = LoadPlugin.getSchemaElements(LoadPlugin.langSchema, "textualMod"),
+        var me = this, 
+            txtModStructure = {
+                name: "textualMod",
+                children: [
+                    {
+                        name: "previous", children: []
+                    },
+                    {
+                        name: "old", children: []
+                    },
+                    {
+                        name: "new", children: []
+                    }
+                ]
+            },
             type = child.getAttribute("class"),
             childStructure = txtModStructure.children.filter(function(el) {return el.name == type;})[0];
+
         if(childStructure) {
             me.insertChildInOrder(parent, child, txtModStructure, childStructure);
         }

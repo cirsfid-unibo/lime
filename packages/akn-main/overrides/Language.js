@@ -47,6 +47,14 @@
 Ext.define('AknMain.Language', {
     override: 'LIME.controller.Language',
 
+    requires: [
+        'AknMain.notes.Controller'
+    ],
+
+    config: {
+        metadataClass: 'meta'
+    },
+
     beforeTranslate : function(config) {
         var params = this.callParent(arguments);
         var dom = params.docDom;
@@ -64,5 +72,102 @@ Ext.define('AknMain.Language', {
             }
         });
         return params;
+    },
+
+    beforeLoad: function(params) {
+        var metaResults = [];
+        if (params.docDom) {
+            var documents = params.docDom.querySelectorAll('*[class~=' + DocProperties.documentBaseClass + ']');
+            if(documents.length) {
+                Ext.each(documents, function(doc, index) {
+                    metaResults.push(Ext.Object.merge(this.processMeta(doc, params), {docDom: doc}));
+                }, this);    
+            } else {
+                metaResults.push(this.processMeta(null, params));
+            }
+                   
+            // Set the properties of main document which is the first docuemnt found
+            // params object contains properties inserted by user, 
+            // metaResults contains properties founded in the document
+            metaResults[0].docLang = metaResults[0].docLang || params.docLang;
+            metaResults[0].docLocale = metaResults[0].docLocale || params.docLocale;
+            metaResults[0].docType = metaResults[0].docType || params.docType;
+            params.docLang = metaResults[0].docLang;
+            params.docLocale = metaResults[0].docLocale;
+            params.docType = metaResults[0].docType;
+            params.metaDom = metaResults[0].metaDom;
+        } else {
+            metaResults.push(this.processMeta(null, params));
+            metaResults[0].docType = params.docType;
+            params.metaDom = metaResults[0].metaDom;
+        }
+
+        params.metaResults = metaResults;
+
+        this.getController('AknMain.notes.Controller').preProcessNotes(params.docDom);
+        return params;
+    },
+
+    processMeta: function(doc, params) {
+        var meta, result = {}, ownDoc;
+        
+        result.docMarkingLanguage = params.docMarkingLanguage;
+        
+        if(!doc || !doc.querySelector("*[class="+this.getMetadataClass()+"]")) {
+            result.metaDom = this.createBlankMeta();
+        }  else {
+            meta = doc.querySelector("*[class=" + this.getMetadataClass() + "]");
+            result = {}, ownDoc = doc.ownerDocument;
+            if (meta && meta.parentNode) {
+                var language = meta.querySelector("*[class=FRBRlanguage]"),
+                    country = meta.querySelector("*[class=FRBRcountry]");
+    
+                if (language) {
+                    result.docLang = language.getAttribute('language');
+                }
+                if (country) {
+                    result.docLocale = country.getAttribute('value');
+                }
+                result.metaDom = meta.parentNode.removeChild(meta);
+            }
+        }
+        if (doc)
+            result.docType = DomUtils.getDocTypeByNode(doc);         
+        
+        return result;
+    },
+    
+    createBlankMeta: function() {
+        var meta = document.createElement('div');
+        meta.setAttribute('class', this.getMetadataClass());
+        return meta;
+    },
+
+    afterLoad: function(params) {
+        this.callParent(arguments);
+        
+        var documentNode = params.docDom.querySelector('*[class="'+DocProperties.getDocClassList()+'"]');
+        if(documentNode && !documentNode.getAttribute("akn_name")) {
+            documentNode.setAttribute("akn_name", DocProperties.getDocType());
+        }
+
+        Ext.each(params.docDom.querySelectorAll('['+'akn_class'+']'), function(node) {
+            var align = node.getAttribute('akn_class');
+            if ( !Ext.isEmpty(align) ) {
+                node.setAttribute('style', 'text-align: '+align+';');
+            }
+        });
+
+        // Add proprietary namespace for the given locale if it is missing
+        if(DocProperties.documentInfo.docLocale == 'uy') {
+            var el = params.docDom.querySelector('.document');
+            if (el && !el.getAttribute("xmlns:uy"))
+                el.setAttribute("xmlns:uy", "http://uruguay/propetary.xsd");
+        }
+
+        // Remove all note ref numbers from Word imported documents.
+        Ext.each(params.docDom.querySelectorAll('span.noteRefNumber'), function(node) {
+            node.parentNode.removeChild(node);
+        });
     }
 });

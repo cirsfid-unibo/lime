@@ -801,28 +801,6 @@ Ext.define('LIME.controller.Editor', {
         }, 200, me);
     },
 
-    linkNotes: function(body) {
-        var app = this.application,
-            noteLinkers = body.querySelectorAll(".linker");
-        clickLinker = function() {
-            var marker = this.getAttribute(LoadPlugin.refToAttribute), note;
-            if (marker) {
-                note = body.querySelector("*["+LoadPlugin.changePosTargetAttr+"="+marker+"]");
-                if(note) {
-                    app.fireEvent('nodeFocusedExternally', note, {
-                        select : true,
-                        scroll : true,
-                        click : true
-                    });
-                }
-            }
-        };
-        Ext.each(noteLinkers, function(linker) {
-            linker.onclick = clickLinker;
-        }, this);
-    },
-
-
     searchAndManageMarkedElements: function(body, cmp, noSideEffects) {
         var LanguageController = this.getController('Language'),
             marker = this.getController('Marker'),
@@ -930,7 +908,6 @@ Ext.define('LIME.controller.Editor', {
 
         editorBody = editor.getBody();
 
-        this.linkNotes(editorBody);
         this.searchAndManageMarkedElements(editorBody, cmp, noSideEffects);
 
         if(!noSideEffects) {
