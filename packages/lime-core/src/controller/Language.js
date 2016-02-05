@@ -52,22 +52,32 @@
  */
 
 Ext.define('LIME.controller.Language', {
-
-    // extend the ext controller
     extend : 'Ext.app.Controller',
-    // set up the views
-    views : ['Main', 'main.editor.Path'],
 
-    refs : [{
-        ref: 'main',
-        selector: 'main'
-    }],
+    init : function() {
+        // Create bindings between events and callbacks
+        // User's custom callbacks
+        this.application.on(Statics.eventsNames.translateRequest, this.processTranslateRequest, this);
+        this.application.on(Statics.eventsNames.getDocumentHtml, this.getDocumentHtml, this);
+        this.application.on(Statics.eventsNames.afterLoad, this.afterLoad, this);
+        this.application.on(Statics.eventsNames.beforeLoad, this.beforeLoadManager, this);
+        this.application.on(Statics.eventsNames.beforeSave, this.beforeSave, this);
+        this.application.on(Statics.eventsNames.afterSave, this.afterSave, this);
+    },
 
     processTranslateRequest: function(callback, config, cmp, metaNode) {
         var me = this,
             html = me.getHtmlToTranslate();
 
-        me.translateContent(html, callback);
+        me.translateContent(html, function(responseText) {
+            // pretty print the code because codemirror is not enough
+            var xmlPretty = vkbeautify.xml(responseText);
+            if (Ext.isFunction(callback)) {
+                callback.call(me, xmlPretty, me.aknIdMapping, html);
+            }
+        }, function() {
+            Ext.log({level: "error"}, "Document not translated");
+        });
     },
 
     getDocumentHtml: function(callback) {
@@ -94,13 +104,12 @@ Ext.define('LIME.controller.Language', {
             tmpElement = params.docDom,
             unusedElements = tmpElement.querySelectorAll(DomUtils.getTempClassesQuery()),
             markedElements = tmpElement.querySelectorAll("*[" + DomUtils.elementIdAttribute + "]"),
-            focusedElements  = tmpElement.querySelectorAll("."+DocProperties.elementFocusedCls),
-            langPrefix = me.getLanguagePrefix(),
-            counters = {};
+            focusedElements  = tmpElement.querySelectorAll("."+DocProperties.elementFocusedCls);
 
         me.aknIdMapping = {};
         me.appendMetadata(tmpElement, metaNode);
 
+        var wrappingElements = [];
         // TODO: decide if this part is general for all languages or specific
         try {
             //Remove all unused elements
@@ -122,63 +131,21 @@ Ext.define('LIME.controller.Language', {
             Ext.each(markedElements, function(element) {
                 // My manager forced me to write this "if brutto brutto". I'm sorry.
                 if (DocProperties.documentInfo.docType == 'documentCollection') return;
-
-                var intId = element.getAttribute(DomUtils.elementIdAttribute), newId,
-                    hrefElements = tmpElement.querySelectorAll("*["+langPrefix+"href = '#"+intId+"']");//TODO: improve this to work with complete href eg: /uy/..../#id
-
                 var elName = DomUtils.getNameByNode(element),
-                    button = DocProperties.getFirstButtonByName(elName),
-                    wrappingElements = Interpreters.wrappingRulesHandlerOnTranslate(element, button);
-
-                //Set a language unique Id
-                newId = me.setLanguageMarkingId(element, counters, tmpElement);
-                var status = element.getAttribute(langPrefix +'status');
-                var wId = element.getAttribute(langPrefix +'wId');
-
-                Ext.each(hrefElements, function(hrefElement) {
-                    var oldHref = hrefElement.getAttribute(langPrefix+"href");
-                    if ( !status || status != 'removed' || !wId ) {
-                        hrefElement.setAttribute(langPrefix+"href", oldHref.replace(intId, newId));
-                    } else if (wId) {
-                        hrefElement.setAttribute(langPrefix+"href", oldHref.replace(intId, wId));
-                    }
-                });
-
-                if ( newId ) {
-                    me.aknIdMapping[newId] = intId;
-                }
-
-                // Add ids also to wrapping elements
-                Ext.each(wrappingElements, function (el) {
-                    var id = me.setLanguageMarkingId(el, counters, tmpElement);
-                });
+                    button = DocProperties.getFirstButtonByName(elName);
+                
+                wrappingElements = wrappingElements.concat(Interpreters.wrappingRulesHandlerOnTranslate(element, button));
             }, this);
+
+            me.handleMarkedElBeforeTranslate(tmpElement, wrappingElements);
         } catch(e) {
             Ext.log({level: "error"}, 'prepareToTranslate '+ e);
             return;
         }
 
         var tmpHtml = editorController.serialize(tmpElement);
-
         tmpHtml = tmpHtml.replace(/\bid="[^"]*"/g, "");
         return tmpHtml;
-    },
-
-    translateContent: function(html, callback) {
-        var me = this;
-        Language.translateContent(html, DocProperties.documentInfo.docMarkingLanguage, {
-            success : function(response) {
-                // pretty print the code because codemirror is not enough
-                var xmlPretty = vkbeautify.xml(response.responseText);
-
-                if (Ext.isFunction(callback)) {
-                    callback.call(me, xmlPretty, me.aknIdMapping, html);
-                }
-            },
-            failure : function() {
-                Ext.log({level: "error"}, "Document not translated");
-            }
-        });
     },
 
     appendMetadata: function(node, meta) {
@@ -218,84 +185,6 @@ Ext.define('LIME.controller.Language', {
 
         return {
             docDom: tmpElement
-        };
-    },
-
-    /**
-     * This function builds and set an id attribute starting from the given element.
-     * The build process is based on the hierarchy of the elements.
-     * The difference between this and {@link LIME.controller.Marker#getMarkingId} is that this id is
-     * specific to the language plugin currently in use while the latest is for development purposes.
-     * @param {HTMLElement} markedElement The element we have to set the attribute to
-     * @param {Object} counters Counters of elements
-     */
-    getLanguageMarkingIdGeneral : function(markedElement, prefix, root, counters) {
-        var newId = '', elementId = markedElement.getAttribute(DomUtils.elementIdAttribute);
-        if (elementId && DocProperties.markedElements[elementId]) {
-            var counter = 1, button = DocProperties.markedElements[elementId].button;
-            // If the element has already an language id, leave it
-            if (markedElement.getAttribute(prefix + DomUtils.langElementIdAttribute))
-                return;
-            newId = button.id.replace(DomUtils.vowelsRegex, ''),
-            //don't use "parent" variable because in IE is a reference to Window
-            parentMarked = DomUtils.getFirstMarkedAncestor(markedElement.parentNode);
-            if (parentMarked) {
-                parentId = parentMarked.getAttribute(prefix + DomUtils.langElementIdAttribute);
-                if (!counters[parentId]) {
-                    counters[parentId] = {};
-                } else if (counters[parentId][newId]) {
-                    counter = counters[parentId][newId];
-                }
-                counters[parentId][newId] = counter + 1;
-                newId = parentId + '-' + newId;
-            } else {
-                if (!counters[newId]) {
-                    counters[newId] = counter + 1;
-                } else {
-                    counter = counters[newId];
-                }
-            }
-            newId += counter;
-        }
-
-        return newId;
-    },
-
-    setLanguageMarkingId: function(markedElement, counters, root) {
-        var me = this, langSetId, newId, langPrefix = me.getLanguagePrefix();
-        if(Ext.isFunction(Language.getLanguageMarkingId)) {
-            langSetId = Ext.Function.bind(Language.getLanguageMarkingId, Language);
-        } else {
-            langSetId = me.getLanguageMarkingIdGeneral;
-        }
-        newId = langSetId(markedElement, langPrefix, root, counters);
-
-        var oldId = markedElement.getAttribute(langPrefix + Language.getElementIdAttribute());
-
-        // TODO: understand how to manage changing ids
-        if ( oldId && newId && oldId != newId ) {
-            markedElement.setAttribute(langPrefix + 'wId', oldId);
-        }
-
-        if (newId != '') {
-            markedElement.setAttribute(langPrefix + DomUtils.langElementIdAttribute, newId);
-            markedElement.setAttribute(langPrefix + Language.getElementIdAttribute(), newId);
-        }
-
-        return newId;
-    },
-
-    getLanguagePrefix: function() {
-        return Language.getAttributePrefix();
-    },
-
-    nodeGetLanguageAttribute: function(node, attribute) {
-        var prefix = this.getLanguagePrefix(),
-            value = node.getAttribute(prefix+attribute);
-
-        return {
-            name: prefix+attribute,
-            value: value
         };
     },
 
@@ -367,15 +256,14 @@ Ext.define('LIME.controller.Language', {
     },
     beforeSave: function(params) {},
     afterSave: function(params) {},
-
-    init : function() {
-        // Create bindings between events and callbacks
-        // User's custom callbacks
-        this.application.on(Statics.eventsNames.translateRequest, this.processTranslateRequest, this);
-        this.application.on(Statics.eventsNames.getDocumentHtml, this.getDocumentHtml, this);
-        this.application.on(Statics.eventsNames.afterLoad, this.afterLoad, this);
-        this.application.on(Statics.eventsNames.beforeLoad, this.beforeLoadManager, this);
-        this.application.on(Statics.eventsNames.beforeSave, this.beforeSave, this);
-        this.application.on(Statics.eventsNames.afterSave, this.afterSave, this);
-    }
+    translateContent: function(html, success, failure) {
+        var xslt = Config.getLanguageTransformationFile("LIMEtoLanguage");
+        Server.applyXslt(html, xslt, success, function (error) {
+            Ext.callback(failure);
+        });
+    },
+    getLanguagePrefix: function() {
+        return '';
+    },
+    handleMarkedElBeforeTranslate: function(root, wrappingEls) {}
 });

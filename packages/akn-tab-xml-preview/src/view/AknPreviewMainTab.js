@@ -51,7 +51,7 @@
 Ext.define('AknTabXmlPreview.view.AknPreviewMainTab', {
     extend : 'Ext.panel.Panel',
     
-    requires: ['Ext.ux.form.field.CodeMirror'],
+    requires: ['Ext.ux.form.field.CodeMirror', 'AknMain.LangProp'],
 
     config : {
         pluginName : "aknPreview"
@@ -85,7 +85,7 @@ Ext.define('AknTabXmlPreview.view.AknPreviewMainTab', {
     }],
     
     initComponent: function(){
-        this.title = new Ext.Template(Locale.strings.mainPreview).apply({'language': Language.name});
+        this.title = new Ext.Template(Locale.strings.mainPreview).apply({'language': LangProp.name});
         this.callParent(arguments);
     }
 });

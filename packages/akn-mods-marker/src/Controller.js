@@ -71,6 +71,8 @@ Ext.define('AknModsMarker.Controller', {
         selector: '#secondEditor mainEditor'
     }],
 
+    requires: ['AknMain.LangProp'],
+
     config: {
         pluginName: "akn-mods-marker",
         renumberingAttr: "renumbering",
@@ -274,13 +276,13 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     modPosChecked: function(cmp, checked) {
-        var me = this, language = me.getController("Language"),
+        var me = this,
             typesMenu = cmp.up("*[name=types]"),
             pos, destination;
         if(checked && typesMenu && typesMenu.textMod) {
             destination = typesMenu.textMod.querySelector('*[class="destination"]');
             if(destination) {
-                pos = language.nodeGetLanguageAttribute(destination, "pos");
+                pos = LangProp.getNodeLangAttr(destination, "pos");
                 destination.setAttribute(pos.name, cmp.type);
             }
         }
@@ -290,28 +292,27 @@ Ext.define('AknModsMarker.Controller', {
         var me = this, editor = me.getController("Editor"),
             editorBody = editor.getBody(),
             docMeta = me.getDocumentMetadata(),
-            langPrefix = docMeta.langPrefix,
-            language = me.getController("Language"),
-            metaDom = docMeta.metadata.originalMetadata.metaDom,
+            langPrefix = LangProp.attrPrefix,
+            metaDom = docMeta.originalMetadata.metaDom,
             button = DocProperties.getFirstButtonByName("mod"),
             modsElements = editorBody.querySelectorAll("*[" + DomUtils.elementIdAttribute + "][class~='mod']"),
             returnMods = [],
             hrefAttr = langPrefix+"href";
 
         Ext.each(modsElements, function(element) {
-            var elId = language.nodeGetLanguageAttribute(element, "eId"),
+            var elId = LangProp.getNodeLangAttr(element, "eId"),
                 intId = element.getAttribute(DomUtils.elementIdAttribute),
                 metaMod, textMod, modType, buttonCfg;
             if (elId.value) {
-                metaMod = metaDom.querySelector('*[class="source"]['+langPrefix+'href="'+elId.value+'"], *[class="source"]['+langPrefix+'href="#'+elId.value+'"]');
+                metaMod = metaDom.querySelector('*[class="source"]['+hrefAttr+'="'+elId.value+'"], *[class="source"]['+hrefAttr+'="#'+elId.value+'"]');
             } else {
-                metaMod = metaDom.querySelector('*[class="source"]['+langPrefix+'href="'+intId+'"], *[class="source"]['+langPrefix+'href="#'+intId+'"]');
+                metaMod = metaDom.querySelector('*[class="source"]['+hrefAttr+'="'+intId+'"], *[class="source"]['+hrefAttr+'="#'+intId+'"]');
             }
             if(metaMod) {
                 textMod = metaMod.parentNode;
                 modType = textMod.getAttribute('type');
                 if(!noEffect) {
-                    metaMod.setAttribute(langPrefix+'href', "#"+intId);
+                    metaMod.setAttribute(hrefAttr, "#"+intId);
                     element.removeAttribute(elId.name);
                 }
                 returnMods.push({
@@ -434,7 +435,7 @@ Ext.define('AknModsMarker.Controller', {
 
     addExternalRefMenuItems: function(node, menu, meta) {
         var me = this, itemName = 'externalRefs',
-            hrefAttr = Language.getAttributePrefix()+'href';
+            hrefAttr = LangProp.attrPrefix+'href';
 
         if(menu.down("*[name="+itemName+"]")) return;
 
@@ -497,9 +498,7 @@ Ext.define('AknModsMarker.Controller', {
 
     addQuotedContextMenuItem: function(node, menu, name) {
         var me = this,
-            language = me.getController('Language'),
             markedParent = DomUtils.getFirstMarkedAncestor(node.parentNode);
-
 
         if (!markedParent || DomUtils.getElementNameByNode(markedParent) != 'mod' ) {
             me.addExternalContextMenuItems(menu, node, name, markedParent);
@@ -514,7 +513,7 @@ Ext.define('AknModsMarker.Controller', {
             var posMenu = Ext.clone(me.posMenu),
                 destination = textMod.querySelector('*[class="destination"]'),
                 pos = (destination) ?
-                        language.nodeGetLanguageAttribute(destination, "pos").value : false;
+                        LangProp.getNodeLangAttr(destination, "pos").value : false;
 
             posMenu.items.filter(function(item) {
                 return pos && item.type == pos;
@@ -526,7 +525,7 @@ Ext.define('AknModsMarker.Controller', {
         };
 
         var elId = node.getAttribute(DomUtils.elementIdAttribute),
-            langId = language.nodeGetLanguageAttribute(node, "eid"),
+            langId = LangProp.getNodeLangAttr(node, "eid"),
             modElement = textMod.querySelector("*[akn_href*="+elId+"], *[akn_href*="+langId.value+"]"),
             modType = (modElement) ? modElement.getAttribute("class") : "";
 
@@ -571,7 +570,7 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     addPosMenuItems: function(menu, node, elementName, markedParent) {
-        var me = this, language = me.getController("Language"), cls,
+        var me = this, cls,
             mod = me.detectModifications(node, false, false, true);
 
         if(mod && mod.modElement) {
@@ -579,7 +578,7 @@ Ext.define('AknModsMarker.Controller', {
             if(cls == "destination" || cls == "source") {
                 if(!menu.down("*[name=modPos]")) {
                     var posMenu = Ext.clone(me.posMenu);
-                    var pos = language.nodeGetLanguageAttribute(mod.modElement, "pos");
+                    var pos = LangProp.getNodeLangAttr(mod.modElement, "pos");
                     if(pos.value) {
                         menuItem = posMenu.items.filter(function(item) {
                             return item.type == pos.value;
@@ -690,19 +689,18 @@ Ext.define('AknModsMarker.Controller', {
             cmp.modElement.setAttribute("class", cmp.type);
             me.insertTextModChildInOrder(cmp.textMod, cmp.modElement);
         } else if(checked && cmp.textMod) {
-            var languageController = me.getController("Language"),
-                langPrefix = languageController.getLanguagePrefix(),
+            var hrefAttr = LangProp.attrPrefix+'href',
                 elId = cmp.refNode.getAttribute(DomUtils.elementIdAttribute),
-                existedEl = cmp.textMod.querySelector("*[class='"+cmp.type+"']["+langPrefix+"href='#']"),
+                existedEl = cmp.textMod.querySelector("*[class='"+cmp.type+"']["+hrefAttr+"='#']"),
                 href = (elId) ? "#"+elId : "#";
 
             if(existedEl) {
-                existedEl.setAttribute(langPrefix+"href", href);
+                existedEl.setAttribute(hrefAttr, href);
             } else {
                 var textModObj = {
                     name: cmp.type,
                     attributes: [{
-                        name: langPrefix+"href",
+                        name: hrefAttr,
                         value: href
                     }]
                 };
@@ -913,7 +911,7 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     getOrCreatePathMetaDom: function(path) {
-        return this.getOrCreatePath(this.getDocumentMetadata().metadata.originalMetadata.metaDom, path);
+        return this.getOrCreatePath(this.getDocumentMetadata().originalMetadata.metaDom, path);
     },
 
     getOrCreatePath: function(dom, path) {
@@ -1046,14 +1044,7 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     getDocumentMetadata: function() {
-        var me = this, editor = me.getController("Editor"),
-            languageController = me.getController("Language"),
-            langPrefix = languageController.getLanguagePrefix(),
-            metadata = editor.getDocumentMetadata();
-        return {
-            langPrefix: langPrefix,
-            metadata: metadata
-        };
+        return this.getController("Editor").getDocumentMetadata();
     },
 
     setElementStyles: function(markedElements, button, originalButton, buttonCfg) {
@@ -1078,7 +1069,7 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     addActiveInsMeta: function(node) {
-        var me = this, hrefAttr = Language.getAttributePrefix()+"href";
+        var me = this, hrefAttr = LangProp.attrPrefix+"href";
             quotedEl = node.querySelector("*[class~=quotedStructure], *[class~=quotedText]"),
             newHref = (quotedEl) ? quotedEl.getAttribute(DomUtils.elementIdAttribute) : "";
 
@@ -1101,7 +1092,7 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     addActiveDelMeta: function(node) {
-        var me = this, hrefAttr = Language.getAttributePrefix()+"href";
+        var me = this, hrefAttr = LangProp.attrPrefix+"href";
         return me.addActiveMeta(node, 'repeal');
     },
 
@@ -1109,12 +1100,12 @@ Ext.define('AknModsMarker.Controller', {
         var ref = Array.prototype.slice.call(node.querySelectorAll("*[class~=ref]")).filter(function(el) {
             return (node == DomUtils.getFirstMarkedAncestor(el.parentNode));
         })[0];
-        return (ref) ? ref.getAttribute(Language.getAttributePrefix()+"href") : "#";
+        return (ref) ? ref.getAttribute(LangProp.attrPrefix+"href") : "#";
     },
 
     addActiveMeta: function(node, type, metaElements) {
         var activeModifications = this.getOrCreatePathMetaDom("analysis/activeModifications"),
-            hrefAttr = Language.getAttributePrefix()+"href";
+            hrefAttr = LangProp.attrPrefix+"href";
 
         var standardMeta = [{
             name: "source",
@@ -1143,7 +1134,7 @@ Ext.define('AknModsMarker.Controller', {
 
     addPassiveMeta: function(node, type, metaElements) {
         var passiveModifications = this.getOrCreatePathMetaDom("analysis/passiveModifications"),
-            hrefAttr = Language.getAttributePrefix()+"href";
+            hrefAttr = LangProp.attrPrefix+"href";
 
         var standardMeta = [{
             name: "source",
@@ -1169,7 +1160,7 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     addActiveSubMeta: function(node) {
-        var me = this, hrefAttr = Language.getAttributePrefix()+"href";
+        var me = this, hrefAttr = LangProp.attrPrefix+"href";
             quotedEls = node.querySelectorAll("*[class~=quotedStructure], *[class~=quotedText]");
             newHref = (quotedEls[0]) ? quotedEls[0].getAttribute(DomUtils.elementIdAttribute) : "",
             oldHref = (quotedEls[1]) ? quotedEls[1].getAttribute(DomUtils.elementIdAttribute) : "";
@@ -1230,7 +1221,7 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     activeCommonMeta: function(node, type) {
-        var hrefAttr = Language.getAttributePrefix()+"href",
+        var hrefAttr = LangProp.attrPrefix+"href",
             quotedEls = node.querySelectorAll("*[class~=quotedStructure], *[class~=quotedText]"),
             newHref = (quotedEls[0]) ? quotedEls[0].getAttribute(DomUtils.elementIdAttribute) : "",
             oldHref = (quotedEls[1]) ? quotedEls[1].getAttribute(DomUtils.elementIdAttribute) : "";
@@ -1277,7 +1268,7 @@ Ext.define('AknModsMarker.Controller', {
         var meta = [{
             name: "destination",
             attributes: [{
-                name: Language.getAttributePrefix()+"href",
+                name: LangProp.attrPrefix+"href",
                 value: "#"+node.getAttribute(DomUtils.elementIdAttribute)
             }]
         }];
@@ -1433,7 +1424,7 @@ Ext.define('AknModsMarker.Controller', {
                     name: markButton.shortLabel,
                     content: node.textContent,
                     id: node.getAttribute(DomUtils.elementIdAttribute),
-                    eId: node.getAttribute(Language.getAttributePrefix()+'eid')
+                    eId: node.getAttribute(LangProp.attrPrefix+'eid')
                 }], true);
             }
         };
@@ -1453,7 +1444,7 @@ Ext.define('AknModsMarker.Controller', {
                     name: markButton.shortLabel,
                     content: node.textContent,
                     id: node.getAttribute(DomUtils.elementIdAttribute),
-                    eId: node.getAttribute(Language.getAttributePrefix()+'eid')
+                    eId: node.getAttribute(LangProp.attrPrefix+'eid')
                 }]);
             }
         };
@@ -1537,11 +1528,10 @@ Ext.define('AknModsMarker.Controller', {
     setSplitMetadataB: function(node1, node2) {
         var me = this,
             editorMeta = me.getDocumentMetadata(),
-            langPrefix = editorMeta.langPrefix,
-            language = me.getController("Language"),
-            metaDom = editorMeta.metadata.originalMetadata.metaDom,
+            langPrefix = LangProp.attrPrefix,
+            metaDom = editorMeta.originalMetadata.metaDom,
             passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
-            prevId = language.nodeGetLanguageAttribute(node1, "eId").value || node1.getAttribute(DomUtils.elementIdAttribute),
+            prevId = LangProp.getNodeLangAttr(node1, "eId").value || node1.getAttribute(DomUtils.elementIdAttribute),
             expressionThis = metaDom.querySelector("[class=FRBRExpression] [class=FRBRthis]");
 
         var prevId = (expressionThis && expressionThis.getAttribute("value"))
@@ -1603,13 +1593,12 @@ Ext.define('AknModsMarker.Controller', {
         var me = this,
             editorMeta = me.getDocumentMetadata();
 
-        prevMeta = prevMeta || editorMeta.metadata.obj;
+        prevMeta = prevMeta || editorMeta.obj;
 
-        var lpre = editorMeta.langPrefix,
-            language = me.getController("Language"),
-            metaDom = editorMeta.metadata.originalMetadata.metaDom,
+        var lpre = LangProp.attrPrefix,
+            metaDom = editorMeta.originalMetadata.metaDom,
             passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
-            prevId = language.nodeGetLanguageAttribute(prevNode, "eId").value || prevNode.getAttribute(DomUtils.elementIdAttribute),
+            prevId = LangProp.getNodeLangAttr(prevNode, "eId").value || prevNode.getAttribute(DomUtils.elementIdAttribute),
             expressionThis = prevMeta.identification &&
                             prevMeta.identification.FRBRExpression &&
                             prevMeta.identification.FRBRExpression.FRBRthis;
@@ -1757,7 +1746,7 @@ Ext.define('AknModsMarker.Controller', {
                     name: markButton.shortLabel,
                     content: node.textContent,
                     id: node.getAttribute(DomUtils.elementIdAttribute),
-                    eId: node.getAttribute(Language.getAttributePrefix()+'eid')
+                    eId: node.getAttribute(LangProp.attrPrefix+'eid')
                 }], true);
             }
         };
@@ -1783,7 +1772,7 @@ Ext.define('AknModsMarker.Controller', {
                 DomUtils.insertAfter(del, joinedNode);
 
                 var wrapNode = DomUtils.wrapNode(del, joinedNode.tagName);
-                wrapNode.setAttribute(Language.getAttributePrefix()+'status', 'removed');
+                wrapNode.setAttribute(LangProp.attrPrefix+'status', 'removed');
 
                 me.application.fireEvent('markingRequest', DocProperties.getFirstButtonByName('del'), {
                     silent : true,
@@ -1855,7 +1844,7 @@ Ext.define('AknModsMarker.Controller', {
                         name: toJoinButton.shortLabel,
                         content: node.textContent,
                         id: node.getAttribute(DomUtils.elementIdAttribute),
-                        eId: node.getAttribute(Language.getAttributePrefix()+'eid')
+                        eId: node.getAttribute(LangProp.attrPrefix+'eid')
                     }], true);
                 }
             };
@@ -1865,8 +1854,8 @@ Ext.define('AknModsMarker.Controller', {
     setJoinMetadata: function(joinedNode, joinedData) {
         var me = this,
             editorMeta = me.getDocumentMetadata(),
-            langPrefix = editorMeta.langPrefix,
-            metaDom = editorMeta.metadata.originalMetadata.metaDom,
+            hrefAttr = LangProp.attrPrefix+"href",
+            metaDom = editorMeta.originalMetadata.metaDom,
             passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
             destId = joinedNode.getAttribute(DomUtils.elementIdAttribute);
 
@@ -1885,13 +1874,13 @@ Ext.define('AknModsMarker.Controller', {
             children: [{
                 name: "source",
                 attributes: [{
-                    name: langPrefix+"href",
+                    name: hrefAttr,
                     value: " "
                 }]
             },{
                 name: "destination",
                 attributes: [{
-                    name: langPrefix+"href",
+                    name: hrefAttr,
                     value: "#"+destId
                 }]
             }]
@@ -1901,7 +1890,7 @@ Ext.define('AknModsMarker.Controller', {
             textModObj.children.push({
                 name : "old",
                 attributes : [{
-                    name : langPrefix + "href",
+                    name : hrefAttr,
                     value : "#" + joinedEl.langId || joinedEl.id
                 }]
             });
@@ -1965,7 +1954,7 @@ Ext.define('AknModsMarker.Controller', {
             if ( focusedNode ){
                 var button = DomUtils.getButtonByElement(focusedNode);
                 me.delHandler(button, [focusedNode]);
-                focusedNode.setAttribute(Language.getAttributePrefix()+"status", "removed");
+                focusedNode.setAttribute(LangProp.attrPrefix+"status", "removed");
                 DomUtils.removeChildren(focusedNode);
                 me.setElementStyles([focusedNode], button, button, {
                     shortLabel: button.shortLabel+" "+Locale.getString("deleted", me.getPluginName()),
@@ -1982,9 +1971,9 @@ Ext.define('AknModsMarker.Controller', {
         if (!removedText && !removedNode) return;
         var wrapDelWithNode = function(delNode, wrapOld) {
             var wrapNode = DomUtils.wrapNode(delNode, wrapOld.tagName);
-            wrapNode.setAttribute(Language.getAttributePrefix()+'status', 'removed');
+            wrapNode.setAttribute(LangProp.attrPrefix+'status', 'removed');
             // Set the old eId as new wId, TODO check if is ok
-            wrapNode.setAttribute(Language.getAttributePrefix()+'wid', wrapOld.getAttribute(Language.getAttributePrefix()+'eid'));
+            wrapNode.setAttribute(LangProp.attrPrefix+'wid', wrapOld.getAttribute(LangProp.attrPrefix+'eid'));
             me.application.fireEvent('markingRequest', DocProperties.getFirstButtonByName(DomUtils.getNameByNode(wrapOld)), {
                 silent : true,
                 noEvent : true,
@@ -2006,7 +1995,7 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     addDelMeta: function(node, oldText) {
-        var hrefAttr = Language.getAttributePrefix()+"href";
+        var hrefAttr = LangProp.attrPrefix+"href";
         var meta = [{
             name: "destination",
             attributes: [{
@@ -2021,12 +2010,7 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     delHandler: function(button, markedElements) {
-        var me = this,
-            editorMeta = me.getDocumentMetadata(),
-            langPrefix = editorMeta.langPrefix,
-            metaDom = editorMeta.metadata.originalMetadata.metaDom,
-            passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
-            modEl, textualMod;
+        var me = this, modEl, textualMod;
 
         var setMetadata = function(oldText) {
             Ext.each(markedElements, function(element) {
@@ -2051,7 +2035,7 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     updateSubsMetadata: function(node, oldText) {
-        var hrefAttr = Language.getAttributePrefix()+"href",
+        var hrefAttr = LangProp.attrPrefix+"href",
             elId = node.getAttribute(DomUtils.elementIdAttribute),
             parent = this.ensureHcontainerNode(node),
             destId = (parent) ? parent.getAttribute(DomUtils.elementIdAttribute) : elId,
@@ -2084,13 +2068,12 @@ Ext.define('AknModsMarker.Controller', {
 
     updateRenumberingMetadata: function(node, oldText, renumberedNode) {
         var me = this,
-            language = me.getController("Language"),
-            elId = language.nodeGetLanguageAttribute(renumberedNode, "eId").value || renumberedNode.getAttribute(DomUtils.elementIdAttribute),
+            elId = LangProp.getNodeLangAttr(renumberedNode, "eId").value || renumberedNode.getAttribute(DomUtils.elementIdAttribute),
             editorMeta = me.getDocumentMetadata(),
             parent = renumberedNode,
             parentId = (parent) ? parent.getAttribute(DomUtils.elementIdAttribute) : elId,
-            langPrefix = editorMeta.langPrefix,
-            metaDom = editorMeta.metadata.originalMetadata.metaDom,
+            langPrefix = LangProp.attrPrefix,
+            metaDom = editorMeta.originalMetadata.metaDom,
             passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
             query = "*[class='textualMod'][type='renumbering'] *[class='destination']["+langPrefix+"href='#"+parentId+"']",
             prevTextualMod = passiveModifications.querySelector(query), textualMod,
@@ -2269,7 +2252,7 @@ Ext.define('AknModsMarker.Controller', {
                     name: markButton.shortLabel,
                     content: node.textContent,
                     id: node.getAttribute(DomUtils.elementIdAttribute),
-                    eId: node.getAttribute(Language.getAttributePrefix()+'eid')
+                    eId: node.getAttribute(LangProp.attrPrefix+'eid')
                 }], false);
             }
         };
@@ -2415,9 +2398,8 @@ Ext.define('AknModsMarker.Controller', {
     getAnalysisByNodeOrNodeId: function(node, nodeId) {
         var me = this, id = nodeId || node.getAttribute(DomUtils.elementIdAttribute),
             editorMeta = me.getDocumentMetadata(),
-            langPrefix = editorMeta.langPrefix,
-            metaDom = editorMeta.metadata.originalMetadata.metaDom,
-            metaEl = metaDom.querySelector("*["+langPrefix+"href='#"+id+"']");
+            metaDom = editorMeta.originalMetadata.metaDom,
+            metaEl = metaDom.querySelector("*["+LangProp.attrPrefix+"href='#"+id+"']");
 
         if(metaEl && metaEl.parentNode) {
             return {
@@ -2431,8 +2413,8 @@ Ext.define('AknModsMarker.Controller', {
     detectModifications: function(node, nodeId, unmarked, noAction) {
         var me = this, elId = nodeId || node.getAttribute(DomUtils.elementIdAttribute),
             editorMeta = me.getDocumentMetadata(),
-            langPrefix = editorMeta.langPrefix,
-            metaDom = editorMeta.metadata.originalMetadata.metaDom,
+            langPrefix = LangProp.attrPrefix,
+            metaDom = editorMeta.originalMetadata.metaDom,
             textModChild = metaDom.querySelector("*["+langPrefix+"href='#"+elId+"']"),
             textMod, modType;
 

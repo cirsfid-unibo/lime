@@ -53,9 +53,7 @@
 Ext.define('LIME.controller.CustomizationManager', {
     extend : 'Ext.app.Controller',
 
-    views : ['DocumentLangSelector', 'LocaleSelector', 'MarkingMenu', 'Ext.ux.IframePlugin'],
-
-    customCallbacks : {},
+    views : ['DocumentLangSelector', 'LocaleSelector', 'Ext.ux.IframePlugin'],
 
     customMenuItems: {},
 
@@ -69,40 +67,36 @@ Ext.define('LIME.controller.CustomizationManager', {
         { ref: 'markingMenuContainer', selector: '[cls=markingMenuContainer]' }
     ],
 
-    onLanguageLoaded : function() {
-        this.customCallbacks = {};
-    },
+    init : function() {
+        var me = this;
+        //Listening progress events
+        me.application.on(Statics.eventsNames.addMenuItem, me.addMenuItem, me);
+        me.application.on(Statics.eventsNames.enableDualEditorMode, me.enableDualEditorMode, me);
+        me.application.on(Statics.eventsNames.afterLoad, me.afterDocumentLoaded, me);
 
-    callCallback : function(cmp, name) {
-        var me = this, className = me.fullNameToName(cmp.self.getName());
-        if(me.customCallbacks[className] && me.customCallbacks[className][name]) {
-            me.customCallbacks[className][name](cmp);
-        }
-    },
-
-    fullNameToName: function(className) {
-        var lastPoint = className.lastIndexOf(".");
-        return className.substring(lastPoint+1);
-    },
-
-    beforeCreation: function(className, originalConfig, callback) {
-        var me = this, config = Ext.clone(originalConfig), customs = Config.getCustomViews(className);
-        // Calling every customization of 'className' view
-        Ext.each(customs, function(custom) {
-            if(Ext.isFunction(custom.beforeCreation)) {
-                try {
-                    config = Ext.bind(custom.beforeCreation, custom)(config);
-                } catch(e) {
-                    Ext.log({level: "warn"}, "Exception beforeCreation plugin of "+className, e);
+        me.control({
+            'docLangSelector': {
+                afterrender: function(cmp) {
+                    if(Config.fieldsDefaults[cmp.name]) {
+                        cmp.setValue(Config.fieldsDefaults[cmp.name]);
+                    }
+                }
+            },
+            'docLocaleSelector': {
+                afterrender: function(cmp) {
+                    if(Config.fieldsDefaults[cmp.name]) {
+                        cmp.setValue(Config.fieldsDefaults[cmp.name]);
+                    }
+                }
+            },
+            'docTypeSelector': {
+                afterrender: function(cmp) {
+                    if(Config.fieldsDefaults[cmp.name]) {
+                        cmp.setValue(Config.fieldsDefaults[cmp.name]);
+                    }
                 }
             }
         });
-        config = config || originalConfig;
-        // Don't let customizations to change cls
-        config.cls = originalConfig.cls;
-        if (Ext.isFunction(callback)) {
-            callback(config);
-        }
     },
 
     addMenuItem: function(controller, config, menuConfig) {
@@ -271,44 +265,5 @@ Ext.define('LIME.controller.CustomizationManager', {
             Ext.callback(me.manageAfterLoad);
             me.manageAfterLoad = null;
         }
-    },
-
-    init : function() {
-        var me = this;
-        //Listening progress events
-        me.application.on(Statics.eventsNames.languageLoaded, me.onLanguageLoaded, me);
-        me.application.on(Statics.eventsNames.beforeCreation, me.beforeCreation, me);
-        me.application.on(Statics.eventsNames.addMenuItem, me.addMenuItem, me);
-        me.application.on(Statics.eventsNames.enableDualEditorMode, me.enableDualEditorMode, me);
-        me.application.on(Statics.eventsNames.afterLoad, me.afterDocumentLoaded, me);
-
-        me.control({
-            'markingMenu' : {
-                afterrender : function(cmp) {
-                    me.callCallback(cmp, "afterCreation");
-                }
-            },
-            'docLangSelector': {
-                afterrender: function(cmp) {
-                    if(Config.fieldsDefaults[cmp.name]) {
-                        cmp.setValue(Config.fieldsDefaults[cmp.name]);
-                    }
-                }
-            },
-            'docLocaleSelector': {
-                afterrender: function(cmp) {
-                    if(Config.fieldsDefaults[cmp.name]) {
-                        cmp.setValue(Config.fieldsDefaults[cmp.name]);
-                    }
-                }
-            },
-            'docTypeSelector': {
-                afterrender: function(cmp) {
-                    if(Config.fieldsDefaults[cmp.name]) {
-                        cmp.setValue(Config.fieldsDefaults[cmp.name]);
-                    }
-                }
-            }
-        });
     }
 });

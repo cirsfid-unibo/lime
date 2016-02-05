@@ -354,26 +354,13 @@ Ext.define('LIME.controller.MarkingMenu', {
     // Create the MarkingMenu inside the Main tab
     // TODO: this shound be inside the view.
     addMarkingMenu: function(pluginData) {
-        var me = this,
-            main = this.getMainTab(),
-            markingMenu = main.down('*[cls=markingMenuContainer]'),
-            secondEditor = this.getSecondEditor(),
-            collapsed;
-        if (markingMenu) {
-            collapsed = markingMenu.collapsed;
+        var main = this.getMainTab(),
+            markingMenu = main.down('*[cls=markingMenuContainer]');
+
+        if(!markingMenu) {
+            main.down('*[cls=editor]').add(main.markingMenu);
         }
-        this.application.fireEvent(Statics.eventsNames.beforeCreation, "MarkingMenu", main.markingMenu, function(config) {
-            if(!markingMenu) {
-                //TODO: check this when secondEditor exists
-                /*if(markingMenu) {
-                    main.remove(markingMenu, true);
-                }*/
-                main.down('*[cls=editor]').add(Ext.merge(config, {
-                    collapsed: collapsed
-                }));
-            }
-            me.buildButtonsStructure(pluginData);
-        });
+        this.buildButtonsStructure(pluginData);
     },
 
     updateTreeView: function(tree, fn) {

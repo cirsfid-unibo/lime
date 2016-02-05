@@ -47,6 +47,8 @@
  Ext.define('AknTocGenerator.TocGeneratorController', {
     extend : 'Ext.app.Controller',
 
+    requires: ['AknMain.LangProp'],
+
     refs : [
         {ref: 'generateTocButton', selector: '*[name=generateTocButton]'}
     ],
@@ -64,7 +66,7 @@
                     var genTocBtn = this.getGenerateTocButton();
                     var body = this.getController('Editor').getBody();
 
-                    if ( !body.querySelector('[class~="'+Language.getBodyName()+'"]') ) {
+                    if ( !body.querySelector('[class~="'+LangProp.getBodyName()+'"]') ) {
                         genTocBtn.disable();
                         genTocBtn.setTooltip(Locale.getString("noPreambleFound", this.getPluginName()));
                     } else {
@@ -192,13 +194,13 @@
                 cls : DomUtils.tempParsingClass,
                 html: tocItemObj.info
             });
-            tocItemNode.setAttribute(Language.getAttributePrefix()+'level', tocItemObj.parents);
-            tocItemNode.setAttribute(Language.getAttributePrefix()+'href', '#'+tocItemObj.node.getAttribute(DomUtils.elementIdAttribute));
+            tocItemNode.setAttribute(LangProp.attrPrefix+'level', tocItemObj.parents);
+            tocItemNode.setAttribute(LangProp.attrPrefix+'href', '#'+tocItemObj.node.getAttribute(DomUtils.elementIdAttribute));
             tocItems.push(tocItemNode);
             tocNode.appendChild(tocItemNode);
         });
 
-        var body = this.getController('Editor').getBody().querySelector('[class~="'+Language.getBodyName()+'"]');
+        var body = this.getController('Editor').getBody().querySelector('[class~="'+LangProp.getBodyName()+'"]');
         body.parentNode.insertBefore(tocNode, body);
 
         marker.autoWrap(tocItemConfig, {

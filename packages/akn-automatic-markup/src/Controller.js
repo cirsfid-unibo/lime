@@ -47,7 +47,7 @@
 Ext.define('AknAutomaticMarkup.Controller', {
     extend : 'Ext.app.Controller',
 
-    requires: ['AknMain.Reference'],
+    requires: ['AknMain.Reference', 'AknMain.LangProp'],
 
     config : {
         pluginName : 'akn-automatic-markup'
@@ -692,8 +692,8 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
     addLocationMetadata: function(nodes) {
 
-        var me = this, prefix = Language.getAttributePrefix(),
-            attr = prefix+"refersTo";
+        var me = this,
+            attr = LangProp.attrPrefix+"refersTo";
         Ext.each(nodes, function(node) {
             var text = DomUtils.getTextOfNode(node);
                 id = text.replace(/\s/g, "").toLowerCase().trim();
@@ -839,8 +839,8 @@ Ext.define('AknAutomaticMarkup.Controller', {
     },
 
     addRoleMetadata: function(nodes) {
-        var me = this, prefix = Language.getAttributePrefix(),
-            attr = prefix+"refersTo";
+        var me = this,
+            attr = LangProp.attrPrefix+"refersTo";
         Ext.each(nodes, function(node) {
             var text = DomUtils.getTextOfNode(node);
                 id = text.replace(/\s/g, "").toLowerCase().trim();
@@ -856,8 +856,8 @@ Ext.define('AknAutomaticMarkup.Controller', {
     },
 
     addOrganizationMetadata: function(nodes) {
-        var me = this, prefix = Language.getAttributePrefix(),
-            attr = prefix+"refersTo";
+        var me = this,
+            attr = LangProp.attrPrefix+"refersTo";
         Ext.each(nodes, function(node) {
             var text = DomUtils.getTextOfNode(node);
                 id = text.replace(/\s/g, "").toLowerCase().trim();
@@ -873,8 +873,8 @@ Ext.define('AknAutomaticMarkup.Controller', {
     },
 
     addPersonMetadata: function(nodes) {
-        var me = this, prefix = Language.getAttributePrefix(),
-            attr = prefix+"refersTo";
+        var me = this,
+            attr = LangProp.attrPrefix+"refersTo";
         Ext.each(nodes, function(node) {
             var text = DomUtils.getTextOfNode(node);
                 signature = Ext.fly(node).parent(".signature"),
@@ -1162,7 +1162,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 }
 
                 if (config.marker.attribute && config.marker.attribute.name && config.marker.attribute.value) {
-                    newWrapper.setAttribute(Language.getAttributePrefix() + config.marker.attribute.name, config.marker.attribute.value);
+                    newWrapper.setAttribute(LangProp.attrPrefix + config.marker.attribute.name, config.marker.attribute.value);
                 }
 
                 nodesToMark.push(newWrapper);

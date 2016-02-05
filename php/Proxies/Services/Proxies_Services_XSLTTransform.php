@@ -65,11 +65,8 @@
 			// save the format to which translate the input file
 			$this->_output = $params['output'];
 			
-			// save the document marking language
-			$this->_markingLanguage = $params['markingLanguage'];
-			
 			$this->_transformFile = (isset($params['transformFile'])) ? realpath(LIMEROOT."/".$params['transformFile']) : FALSE;
-			$this->_includeFiles = (isset($params['includeFiles'])) ? 
+			$this->_includeFiles = (isset($params['includeFiles']) && $params['includeFiles']) ? 
 					array_map(function ($str) {
 						$path = realpath(LIMEROOT."/".$str);
 						return ($path) ? "../../".$str : FALSE; //TODO: use get relative path function
@@ -87,7 +84,7 @@
 			$xml;
 			// create the processor 
 			$xslProcessor = new XSLTProcessor();
-			
+
 			if($this->_transformFile) {
 				$xml = new DOMDocument();
 				$xslt->load($this->_transformFile);

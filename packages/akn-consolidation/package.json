@@ -17,5 +17,5 @@
     },
     "output": "${package.dir}/build",
     "local": true,
-    "requires": ["lime-core"]
+    "requires": ["lime-core", "akn-main"]
 }

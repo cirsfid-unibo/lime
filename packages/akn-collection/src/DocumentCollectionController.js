@@ -51,7 +51,8 @@ Ext.define('AknCollection.DocumentCollectionController', {
 
     requires: [
         'AknMain.xml.DocumentCollection',
-        'AknMain.xml.Document'
+        'AknMain.xml.Document',
+        'AknMain.LangProp'
     ],
 
     refs : [
@@ -211,8 +212,7 @@ Ext.define('AknCollection.DocumentCollectionController', {
     docToTreeData: function(doc, dom, textSufix, qtip) {
 
         var res = {}, collBody, children, docChildren = [],
-            languageController = this.getController("Language"),
-            langPrefix = languageController.getLanguagePrefix(), chDoc, cmpDoc;
+            langPrefix = LangProp.attrPrefix, chDoc, cmpDoc;
         if (doc) {
             if(Ext.DomQuery.is(doc, "[class~=documentCollection]")) {
                 docChildren.push({text: doc.getAttribute(langPrefix+"name") || "collection",
@@ -234,8 +234,8 @@ Ext.define('AknCollection.DocumentCollectionController', {
                         if (docRef) {
                             window.docs = window.docs || [];
                             window.docs[window.counter = ((window.counter || 0) + 1 )] = dom;
-                            chDoc = dom.querySelector("*[class~='components'] *["+langPrefix+Language.getElementIdAttribute()+"="+docRef+"] *[class*="+DocProperties.documentBaseClass+"]")
-                                    || dom.querySelector("*[class~='components'] *["+langPrefix+Language.getElementIdAttribute().toLowerCase()+"="+docRef+"] *[class*="+DocProperties.documentBaseClass+"]");
+                            chDoc = dom.querySelector("*[class~='components'] *["+langPrefix+LangProp.elIdAttr+"="+docRef+"] *[class*="+DocProperties.documentBaseClass+"]")
+                                    || dom.querySelector("*[class~='components'] *["+langPrefix+LangProp.elIdAttr.toLowerCase()+"="+docRef+"] *[class*="+DocProperties.documentBaseClass+"]");
                             if (chDoc) {
                                 docChildren.push(this.docToTreeData(chDoc, dom, '#'+docRef, cmpDoc.getAttribute(langPrefix+"showAs")));
                             }
@@ -479,8 +479,7 @@ Ext.define('AknCollection.DocumentCollectionController', {
                 click : function(cmp) {
                     var relatedWindow = cmp.up('window'),
                         collectionGrid = relatedWindow.down("*[cls=dropArea] grid"),
-                        components = [],
-                        languageController = this.getController("Language");
+                        components = [];
                     if (collectionGrid) {
                         var gridStore = collectionGrid.getStore();
                         gridStore.each(function(record) {

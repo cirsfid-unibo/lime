@@ -48,30 +48,33 @@ Ext.define('AknMain.Language', {
     override: 'LIME.controller.Language',
 
     requires: [
-        'AknMain.notes.Controller'
+        'AknMain.notes.Controller',
+        'AknMain.LangProp',
+        'AknMain.IdGenerator'
     ],
 
     config: {
         metadataClass: 'meta'
     },
 
-    beforeTranslate : function(config) {
-        var params = this.callParent(arguments);
-        var dom = params.docDom;
-        Ext.each(dom.querySelectorAll('[style]'), function(node) {
-            var align = node.getAttribute('style').match(/text-align:\s*(\w+);/);
-            if ( align && align[1] ) {
-                node.setAttribute('akn_class', align[1]);
-            }
-        });
-        var nameAttr = 'akn_name';
-        Ext.each(dom.querySelectorAll('.formula'), function(node) {
-            if (  !node.getAttribute(nameAttr)  ) {
-                var type = Config.getLanguageConfig().formulaName || "" ;
-                node.setAttribute(nameAttr, type);
-            }
-        });
-        return params;
+    init : function() {
+        this.callParent(arguments);
+        this.application.on('editorDomChange', this.onNodeChange, this);
+    },
+
+    onNodeChange : function(node, deep) {
+        var me = this, fly = Ext.fly(node);
+        if (!node) return;
+        
+        if ( deep === false ) {
+            DomUtils.setNodeInfoAttr(node, 'hcontainer', " {data}");
+        } else if ( fly && fly.is('.inline')) {
+            me.onNodeChange(fly.parent('.hcontainer', true), false);
+        } else {
+            Ext.each(Ext.Array.push(Ext.Array.toArray(node.querySelectorAll('.hcontainer')), node), function(node) {
+                me.onNodeChange(node, false);
+            });
+        }
     },
 
     beforeLoad: function(params) {
@@ -169,5 +172,84 @@ Ext.define('AknMain.Language', {
         Ext.each(params.docDom.querySelectorAll('span.noteRefNumber'), function(node) {
             node.parentNode.removeChild(node);
         });
+    },
+
+    beforeTranslate : function(config) {
+        var params = this.callParent(arguments);
+        var dom = params.docDom;
+        Ext.each(dom.querySelectorAll('[style]'), function(node) {
+            var align = node.getAttribute('style').match(/text-align:\s*(\w+);/);
+            if ( align && align[1] ) {
+                node.setAttribute('akn_class', align[1]);
+            }
+        });
+        var nameAttr = 'akn_name';
+        Ext.each(dom.querySelectorAll('.formula'), function(node) {
+            if (  !node.getAttribute(nameAttr)  ) {
+                var type = Config.getLanguageConfig().formulaName || "" ;
+                node.setAttribute(nameAttr, type);
+            }
+        });
+        return params;
+    },
+
+    translateContent: function(html, success, failure) {
+        var config = {
+            output : 'akn',
+            includeFiles : Config.getLocaleXslPath()
+        };
+        var xslt = Config.getLanguageTransformationFile("LIMEtoLanguage");
+        Server.applyXslt(html, xslt, success, failure, config);
+    },
+
+    getLanguagePrefix: function() {
+        return LangProp.attrPrefix;
+    },
+
+    handleMarkedElBeforeTranslate: function(root, wrappingEls) {
+        var me = this;
+
+        Ext.each(root.querySelectorAll('*[' + DomUtils.elementIdAttribute + ']'), function(node) {
+            var newId = me.setNodeId(root, node), //Set a language unique Id
+                intId = node.getAttribute(DomUtils.elementIdAttribute);
+
+            if ( newId )
+                me.aknIdMapping[newId] = intId;
+                
+            //TODO: improve this to work with complete href eg: /uy/..../#id
+            var hrefElements = root.querySelectorAll("*["+LangProp.attrPrefix+"href = '#"+intId+"']"),
+                status = node.getAttribute(LangProp.attrPrefix +'status'),
+                wId = node.getAttribute(LangProp.attrPrefix +'wId');
+
+            Ext.each(hrefElements, function(hrefElement) {
+                var oldHref = hrefElement.getAttribute(LangProp.attrPrefix+"href");
+                if ( !status || status != 'removed' || !wId ) {
+                    hrefElement.setAttribute(LangProp.attrPrefix+"href", oldHref.replace(intId, newId));
+                } else if (wId) {
+                    hrefElement.setAttribute(LangProp.attrPrefix+"href", oldHref.replace(intId, wId));
+                }
+            });
+        });
+
+        // Add ids also to wrapping elements
+        Ext.each(wrappingEls, me.setNodeId.bind(me, root));
+    },
+
+    setNodeId: function(root, node) {
+        var me = this;
+        var newId = AknMain.IdGenerator.generateId(node, root);
+        var oldId = node.getAttribute(LangProp.attrPrefix + LangProp.elIdAttr);
+
+        // TODO: understand how to manage changing ids
+        if ( oldId && newId && oldId != newId ) {
+            node.setAttribute(LangProp.attrPrefix + 'wId', oldId);
+        }
+
+        if (newId !== '') {
+            node.setAttribute(LangProp.attrPrefix + DomUtils.langElementIdAttribute, newId);
+            node.setAttribute(LangProp.attrPrefix + LangProp.elIdAttr, newId);
+        }
+
+        return newId;
     }
 });

@@ -749,18 +749,16 @@ Ext.define('LIME.controller.Editor', {
         }
         if (config.docMarkingLanguage) {
             if (me.getStore('MarkupLanguages').findExact('name', config.docMarkingLanguage)!=-1) {
-               Config.setLanguage(config.docMarkingLanguage, function() {
-                    me.getStore('DocumentTypes').loadData(Config.getDocTypesByLang(config.docMarkingLanguage));
-                    if (!config.lightLoad) {
-                        //Before load
-                        me.application.fireEvent(Statics.eventsNames.beforeLoad, config, function(newConfig) {
-                            initDocument(newConfig, me);
-                        });
-                    } else {
-                        initDocument(config, me);
-                    }
-
-                });
+                Config.setLanguage(config.docMarkingLanguage);
+                me.getStore('DocumentTypes').loadData(Config.getDocTypesByLang(config.docMarkingLanguage));
+                if (!config.lightLoad) {
+                    //Before load
+                    me.application.fireEvent(Statics.eventsNames.beforeLoad, config, function(newConfig) {
+                        initDocument(newConfig, me);
+                    });
+                } else {
+                    initDocument(config, me);
+                }
                 loaded = true;
             }
         }
@@ -867,8 +865,6 @@ Ext.define('LIME.controller.Editor', {
             if(isBlock){
                 marker.addBreakingElements(element);
             }
-
-            this.onNodeChange(element, false);
         }, this);
     },
 
@@ -911,7 +907,7 @@ Ext.define('LIME.controller.Editor', {
         this.searchAndManageMarkedElements(editorBody, cmp, noSideEffects);
 
         if(!noSideEffects) {
-            app.fireEvent('editorDomChange', editorBody);
+            app.fireEvent('editorDomChange', editorBody, true);
             app.fireEvent(Statics.eventsNames.documentLoaded);
         }
     },
@@ -1027,10 +1023,6 @@ Ext.define('LIME.controller.Editor', {
         /* Load exemple document if there is no saved document */
 
         if (!User.preferences.lastOpened) {
-            /*Config.setLanguage(Config.languages[0].name, function() {
-                me.application.fireEvent(Statics.eventsNames.languageLoaded, {});
-            });*/
-
             Ext.Ajax.request({
                 url : me.getEditorStartContentUrl(),
                 success: function(response) {
@@ -1351,11 +1343,6 @@ Ext.define('LIME.controller.Editor', {
         });
     },
 
-    onNodeChange: function(node, deep) {
-        Ext.callback(Language.onNodeChange, Language, [node, deep]);
-    },
-
-
     /* Initialization of the controller */
     init: function() {
         var me = this;
@@ -1364,7 +1351,6 @@ Ext.define('LIME.controller.Editor', {
             nodeFocusedExternally : this.focus,
             nodeChangedExternally : this.focus,
             editorDomNodeFocused : this.onNodeClick,
-            editorDomChange: this.onNodeChange,
             scope : this
         });
         this.application.on(Statics.eventsNames.disableEditing, this.disableEditor, this);

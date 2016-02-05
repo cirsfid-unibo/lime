@@ -452,7 +452,7 @@ Ext.define('LIME.controller.Marker', {
 
         // Set the optional attribute, if it has name and value
         if (config.attribute && config.attribute.name && config.attribute.value) {
-            node.setAttribute(Language.getAttributePrefix() + config.attribute.name, config.attribute.value);
+            node.setAttribute(this.getController('Language').getLanguagePrefix() + config.attribute.name, config.attribute.value);
         }
         // Wrap the parent if it's a toMarkNode
         if( node.parentNode && Ext.fly(node.parentNode).is('.'+DomUtils.toMarkNodeClass) ) {

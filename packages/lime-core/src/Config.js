@@ -51,37 +51,18 @@ Ext.define('LIME.Config', {
     /* Since this is merely a utility class define it as a singleton (static members by default) */
     singleton : true,
     alternateClassName : 'Config',
-    uxPath : 'LIME.ux',
     requires : ['Server'],
 
-    extensionScripts : ['Language'],
-
     language : '',
-
     pluginBaseDir : 'languagesPlugins',
-
-    pluginClientLibs : 'client',
-    
     pluginStructureFile : 'structure.json',
-    
     pluginStructure : {},
-    
-    customizationViews : {},
-    
     languages:[],
-    
     fieldsDefaults: {},
-
     isReady: false,
 
     constructor: function() {
         this.load();
-    },
-
-    getDependences : function() {
-        return Ext.Array.map(this.extensionScripts, function(script) {
-            return this.uxPath + "." + script;
-        }, this);
     },
 
     load : function() {
@@ -176,47 +157,6 @@ Ext.define('LIME.Config', {
             }
         }
     },
-
-    loadLanguage : function(callback) {
-        var me = this, counter,
-            callingCallback = function() {
-                if(!--counter) {
-                    me.isReady = true;
-                    Ext.callback(callback, me);
-                } else {
-                    me.isReady = false;
-                }
-            }, scriptToLoad = Ext.Array.clone(this.extensionScripts), 
-            langConf = this.getLanguageConfig();
-
-        Ext.Loader.setPath(this.uxPath, this.getPluginLibsPath());
-        counter = scriptToLoad.length;
-        // Load app's components
-        Ext.each(scriptToLoad, function(script) {
-            me.loadScript(this.getPluginLibsPath() + '/' + script + '.js', callingCallback, callingCallback);
-        }, this);
-    },
-    
-    loadScript: function(url, success, error) {
-        Ext.Loader.loadScript({
-            url : url,
-            onLoad : function() {
-                Ext.callback(success, this);
-            },
-            onError: function() {
-                Ext.callback(error, this);
-            },
-            scope : this
-        });
-    },
-    
-    addCustomView : function(view) {
-        var viewToCustomize = view.getViewToCustomize();
-        if(viewToCustomize) {
-            this.customizationViews[viewToCustomize] = this.customizationViews[viewToCustomize] || [];
-            this.customizationViews[viewToCustomize].push(view);    
-        }
-    },
     
     getAppUrl: function() {
         return window.location.origin+window.location.pathname;
@@ -227,38 +167,21 @@ Ext.define('LIME.Config', {
     },
     
     getLanguageTransformationFile: function(name, lang) {
-        lang = lang || (this.language == "default" && Config.languages[0].name);
+        lang = lang || this.language || Config.languages[0].name;
         var files =  this.getLanguageTransformationFiles(lang);
         return (files && files[name]) ? files[name] : null;
     },
     
-    getCustomViews : function(name) {
-        return this.customizationViews[name];
-    },
-    
     getPluginStructureUrl : function(lang){
         return this.pluginBaseDir+'/'+lang+'/'+this.pluginStructureFile;  
-    },
-
-    getPluginLibsPath : function() {
-        return this.getLanguagePath() + this.pluginClientLibs;
     },
     
     getLanguageConfig: function(lang) {
         return this.pluginStructure[(lang) ? lang : this.language];
     },
 
-    setLanguage : function(language, callback) {
-        var me = this,
-            wrapperCallback = function() {
-                Ext.callback(callback, me);
-            };
-        if(me.language != language) {
-            me.language = language;
-            me.loadLanguage(wrapperCallback);    
-        } else {
-            Ext.callback(wrapperCallback, me);
-        }
+    setLanguage : function(language) {
+        this.language = language;
     },
     
     getLanguage: function() {
@@ -297,10 +220,6 @@ Ext.define('LIME.Config', {
         });
     },
     
-    getUxClassName: function(name) {
-        return this.uxPath+"." +name;
-    },
-
     getLocaleXslPath: function(lang, locale) {
         locale = locale || DocProperties.documentInfo.docLocale || this.fieldsDefaults['docLocale'];
         return this.getLanguagePath(lang)+'localeXsl/'+locale+'.xsl';

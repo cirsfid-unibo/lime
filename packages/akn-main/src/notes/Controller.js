@@ -47,6 +47,8 @@
 Ext.define('AknMain.notes.Controller', {
     extend : 'Ext.app.Controller',
 
+    requires: ['AknMain.LangProp'],
+
     config : {
         authorialNoteClass : 'authorialNote',
         changePosAttr: 'chposid',
@@ -129,8 +131,8 @@ Ext.define('AknMain.notes.Controller', {
     
     
     setNotePosition: function(note, refNode, editorBody) {
-        var me = this, languageController = me.getController("Language"), 
-            placement = languageController.nodeGetLanguageAttribute(note, "placement"), 
+        var me = this,
+            placement = LangProp.getNodeLangAttr(note, "placement"), 
             allRefs = Array.prototype.slice.call(editorBody.querySelectorAll("*["+me.getNoteRefAttribute()+"]")),
             notesContainer, changed = false, refIndex, siblingNote, refSibling, refSiblingIndex;
 
@@ -178,10 +180,9 @@ Ext.define('AknMain.notes.Controller', {
     
     processNote: function(node, editorBody) {
         var me = this, parent = node.parentNode, app = me.application,
-            languageController = me.getController("Language"),
             elId, tmpElement,  link, tmpExtEl,
-            marker = languageController.nodeGetLanguageAttribute(node, "marker"),
-            placement = languageController.nodeGetLanguageAttribute(node, "placement"),
+            marker = LangProp.getNodeLangAttr(node, "marker"),
+            placement = LangProp.getNodeLangAttr(node, "placement"),
             supLinkTemplate = new Ext.Template('<sup><a class="linker" href="#">{markerNumber}</a></sup>'),
             notTmpId = node.getAttribute(me.getNoteTmpId()),
             tmpRef = editorBody.querySelector("*["+me.getNoteRefAttribute()+"="+notTmpId+"]"),
@@ -221,8 +222,8 @@ Ext.define('AknMain.notes.Controller', {
     },
     
     updateNote: function(node, editorBody) {
-        var me = this, languageController = me.getController("Language"),
-            marker = languageController.nodeGetLanguageAttribute(node, "marker"),
+        var me = this,
+            marker = LangProp.getNodeLangAttr(node, "marker"),
             eId = node.getAttribute(me.getNoteTmpId()),
             ref = editorBody.querySelector("*["+me.getNoteRefAttribute()+"="+eId+"]"),
             linker, result = {marker: false, placement: false};
@@ -241,6 +242,7 @@ Ext.define('AknMain.notes.Controller', {
      * Is important to call this function before loading the document in the editor. 
      * */
     preProcessNotes : function(dom) {
+        if (!dom) return;
         var athNotes = dom.querySelectorAll("*[class~=" + this.getAuthorialNoteClass() + "]"),
             markerTemplate = new Ext.Template('<span class="'+this.getTmpSpanCls()+'" '+this.getNoteRefAttribute()+'="{ref}"></span>');
             

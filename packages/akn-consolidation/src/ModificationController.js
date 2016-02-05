@@ -51,6 +51,8 @@ Ext.define('AknConsolidation.ModificationController', {
         'AknConsolidation.ReportWindow',
         'LIME.view.modal.newSavefile.Main'
     ],
+
+    requires: ['AknMain.LangProp'],
     
     refs: [
         { ref: 'viewport', selector: 'appViewport' }, 
@@ -152,24 +154,24 @@ Ext.define('AknConsolidation.ModificationController', {
         };
 
         var source = node.querySelector('[class=source]');
-        var sourceHref = (source) ? source.getAttribute(Language.attributePrefix+'href') : false;
+        var sourceHref = (source) ? source.getAttribute(LangProp.attrPrefix+'href') : false;
         sourceHref = (sourceHref) ? sourceHref.replace('#', '') : false;
 
         if ( sourceHref ) {
-            var modNode = this.modifyingDom.querySelector('['+Language.attributePrefix+'eId'+'='+sourceHref+'], ['+Language.attributePrefix+'wId'+'='+sourceHref+']');
+            var modNode = this.modifyingDom.querySelector('['+LangProp.attrPrefix+'eId'+'='+sourceHref+'], ['+LangProp.attrPrefix+'wId'+'='+sourceHref+']');
             if ( modNode ) {
                 obj.source = modNode;
             }
         }
 
         var newNode = node.querySelector('[class=new]');
-        var newHref = (newNode) ? newNode.getAttribute(Language.attributePrefix+'href') : false;
+        var newHref = (newNode) ? newNode.getAttribute(LangProp.attrPrefix+'href') : false;
         newHref = (newHref) ? newHref.replace('#', '') : false;
         if ( newHref ) {
-            newNode = this.modifyingDom.querySelector('['+Language.attributePrefix+'eId'+'='+newHref+']');
+            newNode = this.modifyingDom.querySelector('['+LangProp.attrPrefix+'eId'+'='+newHref+']');
             if ( newNode ) {
                 obj["new"] = newNode;
-                var forRef = newNode.getAttribute(Language.attributePrefix+'for');
+                var forRef = newNode.getAttribute(LangProp.attrPrefix+'for');
                 if ( forRef ) {
                     console.log('Find destinations forRef', forRef);
                     this.findDestinations(obj, forRef.replace('#', ''));
@@ -191,14 +193,14 @@ Ext.define('AknConsolidation.ModificationController', {
     findDestinations: function(output, refId, refNode) {
         var me = this;
         output.destinations = [];
-        refNode = refNode || this.modifyingDom.querySelector('['+Language.attributePrefix+'eId'+'='+refId+']');
+        refNode = refNode || this.modifyingDom.querySelector('['+LangProp.attrPrefix+'eId'+'='+refId+']');
         console.log('WTF', refNode);
         if ( refNode ) {
             var elementName = DomUtils.getNameByNode(refNode);
             switch( elementName ) {
                 case 'ref':
-                    var from = me.getIdFromHref(refNode.getAttribute(Language.attributePrefix+'href'));
-                    var fromNode = ( from ) ? me.modifiedDom.querySelector('['+Language.attributePrefix+'eId'+'*='+from+']') : false;
+                    var from = me.getIdFromHref(refNode.getAttribute(LangProp.attrPrefix+'href'));
+                    var fromNode = ( from ) ? me.modifiedDom.querySelector('['+LangProp.attrPrefix+'eId'+'*='+from+']') : false;
                     output.destinationHref = from;
                     console.log('destinationHref', from);
                     if ( fromNode ) {
@@ -206,10 +208,10 @@ Ext.define('AknConsolidation.ModificationController', {
                     }
                 break;
                 case 'rref':
-                    var from = me.getIdFromHref(refNode.getAttribute(Language.attributePrefix+'from'));
-                    var upTo = me.getIdFromHref(refNode.getAttribute(Language.attributePrefix+'upTo'));
-                    var fromNode = ( from ) ? me.modifiedDom.querySelector('['+Language.attributePrefix+'eId'+'*='+from+']') : false;
-                    var upToNode = ( upTo ) ? me.modifiedDom.querySelector('['+Language.attributePrefix+'eId'+'*='+upTo+']') : false;
+                    var from = me.getIdFromHref(refNode.getAttribute(LangProp.attrPrefix+'from'));
+                    var upTo = me.getIdFromHref(refNode.getAttribute(LangProp.attrPrefix+'upTo'));
+                    var fromNode = ( from ) ? me.modifiedDom.querySelector('['+LangProp.attrPrefix+'eId'+'*='+from+']') : false;
+                    var upToNode = ( upTo ) ? me.modifiedDom.querySelector('['+LangProp.attrPrefix+'eId'+'*='+upTo+']') : false;
                     output.destinationHref = from;
                     console.log('destinationHref', from);
                     if ( fromNode && upToNode ) {
@@ -279,8 +281,8 @@ Ext.define('AknConsolidation.ModificationController', {
     // Apply modification
     execute: function (modification) {
         Ext.each(modification.get('destinations'), function(destNode) {
-            var destId = destNode.getAttribute(Language.attributePrefix+'eId');
-            var newNode = modification.get('new').querySelector('['+Language.attributePrefix+'eId'+'*='+destId+']');
+            var destId = destNode.getAttribute(LangProp.attrPrefix+'eId');
+            var newNode = modification.get('new').querySelector('['+LangProp.attrPrefix+'eId'+'*='+destId+']');
             if ( newNode ) {
                 var clonedNode = newNode.cloneNode(true);
                 destNode.parentNode.replaceChild(clonedNode, destNode);

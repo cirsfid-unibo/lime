@@ -46,7 +46,7 @@
 
 Ext.define('AknMetadata.tagAttributes.Controller', {
     extend: 'Ext.app.Controller',
-    requires: ['AknMain.Reference', 'AknMetadata.tagAttributes.RefPanel'],
+    requires: ['AknMain.Reference', 'AknMetadata.tagAttributes.RefPanel', 'AknMain.LangProp'],
 
     tabGroupName: "tagAttributesManager",
     tagAttributesTab: null,
@@ -85,7 +85,7 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
 
     createRefPanel: function(node) {
         var me = this;
-        var attribute = Language.getAttributePrefix()+'href';
+        var attribute = LangProp.attrPrefix+'href';
         var href = node.getAttribute(attribute);
         var ref = null;
         try {

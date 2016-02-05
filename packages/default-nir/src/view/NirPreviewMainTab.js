@@ -83,7 +83,6 @@ Ext.define('DefaultNir.view.NirPreviewMainTab', {
     }],
     
     initComponent: function(){
-        // this.title = new Ext.Template(Locale.strings.mainPreview).apply({'language': Language.name});
         this.callParent(arguments);
     }
 });

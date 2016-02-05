@@ -237,7 +237,7 @@ Ext.define('LIME.Server', {
                 transformFile: xslt,
                 input: content,
                 output: '',
-                markingLanguage: ''
+                includeFiles: ''
             }, extraConfig),
             success: function (response) {
                 success(response.responseText);
