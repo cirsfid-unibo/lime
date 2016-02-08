@@ -135,22 +135,11 @@ Ext.define('LIME.Statics', {
      services: {
          htmlToPdf: 'HTML_TO_PDF',
          pdfExport: 'HTML_TO_PDF_DOWNLOAD',
-         xmlExport: 'AKN_TO_XML_DOWNLOAD',
          htmlExport: 'AKN_TO_HTML_DOWNLOAD',
          aknToEpub: 'AKN_TO_EPUB',
-         aknToPdf: 'AKN_TO_PDF',
-         aknToFile: 'AKN_TO_FILE',
          xsltTrasform: 'XSLT_TRANSFORM',
-         getFileContent: 'GET_FILE_CONTENT',
-         getFileMetadata: 'GET_FILE_METADATA',
-         saveAs : 'SAVE_FILE',
-         listFiles: 'LIST_FILES',
          fileToHtml: 'FILE_TO_HTML',
-         userManager: 'USER_MANAGER',
-         userPreferences: 'USER_PREFERENCES',
-         createDocumentCollection: 'CREATE_DOCUMENT_COLLECTION',
-         filterUrls: 'FILTER_URLS',
-         publishDocument: 'PUBLISH_DOCUMENT'
+         filterUrls: 'FILTER_URLS'
      }
 
 });

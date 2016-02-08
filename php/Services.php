@@ -46,7 +46,7 @@
  */
 
 
-	// Enable CORS
+    // Enable CORS
     if (isset($_SERVER['HTTP_ORIGIN'])) {
         header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
         header('Access-Control-Allow-Credentials: true');
@@ -64,54 +64,42 @@
     }
 
 
-	define("E_NONE", (0));
-	error_reporting(E_ALL | E_STRICT);
+    define("E_NONE", (0));
+    error_reporting(E_ALL | E_STRICT);
 
 
-	// requires the configuration file
-	require('./config.php');
-	require('./utils.php');
-	require('./Proxies/Services/Proxies_Services_Interface.php');
-	require('./Proxies/Services/Proxies_Services_GetFileContent.php');
-	require('./Proxies/Services/Proxies_Services_ListFiles.php');
-	require('./Proxies/Services/Proxies_Services_GetFileMetadata.php');
-	require('./Proxies/Services/Proxies_Services_UserManager.php');
-	require('./Proxies/Services/Proxies_Services_UserPreferences.php');
-    require('./Proxies/Services/Proxies_Services_SaveFile.php');
-	require('./Proxies/Services/Proxies_Services_XSLTTransform.php');
-	require('./Proxies/Services/Proxies_Services_AknToPdf.php');
-	require('./Proxies/Services/Proxies_Services_AknToEpub.php');
-	require('./Proxies/Services/Proxies_Services_AknToXml.php');
-	require('./Proxies/Services/Proxies_Services_AknToHtml.php');
-	require('./Proxies/Services/Proxies_Services_FileToHtml.php');
+    // requires the configuration file
+    require('./config.php');
+    require('./utils.php');
+    require('./Proxies/Services/Proxies_Services_Interface.php');
+    require('./Proxies/Services/Proxies_Services_XSLTTransform.php');
+    require('./Proxies/Services/Proxies_Services_AknToEpub.php');
+    require('./Proxies/Services/Proxies_Services_AknToHtml.php');
+    require('./Proxies/Services/Proxies_Services_FileToHtml.php');
     require('./Proxies/Services/Proxies_Services_FileToTxt.php');
-	require('./Proxies/Services/Proxies_Services_Upload.php');
-	require('./Proxies/Services/Proxies_Services_HtmlToPdf.php');
-	require('./Proxies/Services/Proxies_Services_CreateDocumentCollection.php');
-	require('./Proxies/Services/Proxies_Services_XmlValidation.php');
-	require('./Proxies/Services/Proxies_Services_ExportFiles.php');
-	require('./Proxies/Services/Proxies_Services_FilterUrls.php');
-	require('./Proxies/Proxies.php');
-	require('./Proxies/Services/Proxies_Services_AknToPdfFop.php');
-	require('./Proxies/Services/Proxies_Services_PublishDoc.php');
+    require('./Proxies/Services/Proxies_Services_HtmlToPdf.php');
+    require('./Proxies/Services/Proxies_Services_XmlValidation.php');
+    require('./Proxies/Services/Proxies_Services_FilterUrls.php');
+    require('./Proxies/Services/Proxies_Services_AknToPdfFop.php');
+    require('./Proxies/Proxies.php');
 
-	// the method of the request
-	$type = $_SERVER['REQUEST_METHOD'];
+    // the method of the request
+    $type = $_SERVER['REQUEST_METHOD'];
 
-	// the desired format of the response
-	$params = $type=='GET'? $_GET : $_POST;
+    // the desired format of the response
+    $params = $type=='GET'? $_GET : $_POST;
 
-	// get the service name
-	$requestedService = $params['requestedService'];
+    // get the service name
+    $requestedService = $params['requestedService'];
 
-	// remove the requested service from the params
-	unset($params['requestedService']);
+    // remove the requested service from the params
+    unset($params['requestedService']);
 
-	// create the proxy
-	$proxy = new Proxies($requestedService,$params);
+    // create the proxy
+    $proxy = new Proxies($requestedService,$params);
 
-	// get the result
-	$result =  $proxy->getResults();
+    // get the result
+    $result =  $proxy->getResults();
 
-	echo $result;
-	return $result;
+    echo $result;
+    return $result;

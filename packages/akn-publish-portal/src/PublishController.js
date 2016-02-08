@@ -93,7 +93,8 @@ Ext.define('LIME.controller.PublishController', {
             Ext.Msg.alert(Locale.strings.error, "Cannot find document uri");
         }
     },
-
+    
+    // TODO: replace ajax call with new node.js server
     publishDoc: function(uri, content, callback) {
         var me = this,
             userInfo = me.getController('LoginManager').getUserInfo(),

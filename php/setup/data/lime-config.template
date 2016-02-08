@@ -45,15 +45,6 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
- 
-// the exist admin user
-define('EXIST_ADMIN_USER', '<<uname>>');
-
-// the exist admin password
-define('EXIST_ADMIN_PASSWORD', '<<pwd>>');
-
-// the exist db base url
-define('EXIST_URL','<<dbhost>>');
 
 // the server url 
 define('SERVER_NAME', '<<host>>');

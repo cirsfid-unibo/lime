@@ -78,63 +78,19 @@
 			// create the requested service instance
 			switch($this->_requestedService)
 			{
-				case 'LIST_FILES':
-					$this->_service = new Proxies_Services_ListFiles($this->_params);
-					header("Content-Type: text/xml");
-					break;
-				case 'GET_FILE_CONTENT':
-					header("Content-Type: text/xml");
-					$this->_service = new Proxies_Services_GetFileContent($this->_params);
-					break;
-				case 'GET_FILE_METADATA':
-					header("Content-Type: text/xml");
-					$this->_service = new Proxies_Services_GetFileMetadata($this->_params);
-					break;
-				case 'AUTOSAVE_FILE':
-					$this->_service = new Proxies_Services_AutosaveFile($this->_params);
-					break;
-                case 'SAVE_FILE':
-                    $this->_service = new Proxies_Services_SaveFile($this->_params);
-                    break;
-				case 'USER_MANAGER':
-					header("Content-Type: application/json");
-					$this->_service = new Proxies_Services_UserManager($this->_params);
-					break;
-				case 'USER_PREFERENCES':
-					header("Content-Type: application/json");
-					$this->_service = new Proxies_Services_UserPreferences($this->_params);
-					break;
 				case 'XSLT_TRANSFORM':
 				//	header("Content-Type: text/xml");
 					$this->_service = new Proxies_Services_XSLTTransform($this->_params);
-					break;
-				case 'AKN_TO_PDF':
-					header("Content-Type: application/json");
-					$this->_service = new Proxies_Services_AknToPdf($this->_params);
 					break;
 				case 'AKN_TO_EPUB':
 					header("Content-Type: application/epub+zip");
 					header('Content-disposition: attachment; filename="document.epub"');
 					$this->_service = new Proxies_Services_AknToEpub($this->_params, true);
 					break;
-				case 'AKN_TO_PDF_DOWNLOAD':
-					header("Content-Type: application/pdf");
-					header('Content-disposition: attachment; filename="document.pdf"');
-					$this->_service = new Proxies_Services_AknToPdf($this->_params, true);
-					break;
-				case 'AKN_TO_XML_DOWNLOAD':
-					header("Content-Type: text/xml");
-					header('Content-disposition: attachment; filename="document.xml"');
-					$this->_service = new Proxies_Services_AknToXml($this->_params);
-					break;
 				case 'AKN_TO_HTML_DOWNLOAD':
 					header("Content-Type: text/html");
 					header('Content-disposition: attachment; filename="document.html"');
 					$this->_service = new Proxies_Services_AknToHtml($this->_params);
-					break;
-				case 'AKN_TO_FILE':
-					header("Content-Type: application/json");
-					$this->_service = new Proxies_Services_AknToXml($this->_params, true);
 					break;
 				case 'FILE_TO_HTML':
 					header("Content-Type: application/json"); // TODO if set to any other type the result is wrapped into a <pre> tag
@@ -143,9 +99,6 @@
 				case 'FILE_TO_TXT':
 					header("Content-Type: application/json");
 					$this->_service = new Proxies_Services_FileToTxt($this->_params);
-					break;
-				case 'UPLOAD':
-					$this->_service = new Proxies_Services_Upload($this->_params);
 					break;
 				case 'HTML_TO_PDF':
 					header("Content-Type: application/json");
@@ -156,17 +109,9 @@
 					header('Content-disposition: attachment; filename="document.pdf"');
 					$this->_service = new Proxies_Services_HtmlToPdf($this->_params, true);
 					break;
-				case 'CREATE_DOCUMENT_COLLECTION':
-					header("Content-Type: text/xml");
-					$this->_service = new Proxies_Services_CreateDocumentCollection($this->_params);
-					break;
 				case 'XML_VALIDATION':
 					header("Content-Type: application/json");
 					$this->_service = new Proxies_Services_XmlValidation($this->_params);
-					break;
-				case 'EXPORT_FILES':
-					header("Content-Type: application/json");
-					$this->_service = new Proxies_Services_ExportFiles($this->_params);
 					break;
 				case 'FILTER_URLS':
 					header("Content-Type: application/json");
@@ -175,10 +120,6 @@
 				case 'AKN_TO_PDF_FOP':
 					header("Content-Type: application/json");
 					$this->_service = new Proxies_Services_AknToPdfFop($this->_params);
-					break;
-				case 'PUBLISH_DOCUMENT':
-					header("Content-Type: application/json");
-					$this->_service = new Proxies_Services_PublishDoc($this->_params);
 					break;
 			}
 

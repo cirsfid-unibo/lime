@@ -46,24 +46,20 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-require_once('./../dbInterface/class.dbInterface.php');
-
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
 $condition = TRUE;
-$init_db = TRUE;
 $host = 'http://'.$_SERVER['HTTP_HOST'] . substr($_SERVER['REQUEST_URI'], 0,
 												 strrpos($_SERVER['REQUEST_URI'],'/php/'));
-$dbhost = 'http://'.$_SERVER['HTTP_HOST'].':8080/exist/';
-$uname = 'admin'; $pwd = 'exist'; $abipath = '/path/to/AbiWord';
+$abipath = '/path/to/AbiWord';
 
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
 if($_POST){
-	$host = $_POST['host'];$dbhost = $_POST['dbhost'];
-	$uname = $_POST['uname']; $pwd = $_POST['pwd']; $abipath = $_POST['abipath'];
+	$host = $_POST['host'];
+	$abipath = $_POST['abipath'];
 	if(write_lime_config()) header( 'Location: ' . $host);
 };
 
@@ -129,28 +125,13 @@ function check_required_extensions() {
 
 function write_lime_config() {
 	$lime_config_content = file_get_contents(dirname(__FILE__) . '/data/lime-config.template');
-	global $init_db,$uname,$pwd,$dbhost;	
-	$credential = $uname . ':' . $pwd;
+	$lime_config_filepath = dirname(__FILE__) . '/../lime-config.php';
+	foreach ($_POST as $key=>$value)
+		 $lime_config_content = str_replace ('<<'.$key.'>>',$value,$lime_config_content);
 	
-	$DBInterface = new DBInterface($dbhost,$credential);
-	if(!$DBInterface->init_db()) {
-		$init_db = FALSE;
-	} else { 	
-		$lime_config_filepath = dirname(__FILE__) . '/../lime-config.php';
-		foreach ($_POST as $key=>$value)
-			 $lime_config_content = str_replace ('<<'.$key.'>>',$value,$lime_config_content);
-		file_put_contents($lime_config_filepath,$lime_config_content);
-	}
-	return $init_db;
+	return file_put_contents($lime_config_filepath,$lime_config_content);
 }
 
-function check_db() {
-	global $init_db;
-	if(!$init_db) {
-		return '<tr><td/><td class="warn"><p>Something goes wrong initializing eXist-db.
-		Please check eXist-db URL, your credential and permissions.</p></td></tr>';
-	}
-}
 
 ?>
 
@@ -176,24 +157,9 @@ function check_db() {
 			<td><input name="host" id="host" type="text" size="25" value="<?php global $host;echo $host; ?>"</td>
 		</tr>
 		
-		<tr>
-			<td id="heading"><label for="dbhost">exist url</label></th>
-			<td><input name="dbhost" id="dbhost" type="text" size="25" value="<?php global $dbhost;echo $dbhost; ?>" /></td>
-		</tr>
-
-		<tr>
-			<td id="heading"><label for="uname">exist username</label></th>
-			<td ><input name="uname" id="uname" type="text" size="25" value="<?php global $uname;echo $uname; ?>"</td>
-
-		</tr>
-		<tr>
-			<td	id="heading"><label for="pwd">exist password</label></th>
-			<td><input name="pwd" id="pwd" type="text" size="25" value="<?php global $pwd;echo $pwd; ?>" /></td>
-		</tr>
-		
 <?php
 
-$die = check_php_version().check_required_extensions().check_tmp_permission().check_db();
+$die = check_php_version().check_required_extensions().check_tmp_permission();
 $abi_path = check_AbiWord();
 
 if($die) {
