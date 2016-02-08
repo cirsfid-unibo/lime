@@ -61,7 +61,12 @@ Ext.define('AknMetadata.newMeta.LifecycleTab', {
             store: '{document.lifecycleEvents}'
         },
         columns: [
-            { text: Locale.getString('date', 'akn-metadata'), dataIndex: 'date', editor: 'datefield' },
+            {
+                text: Locale.getString('date', 'akn-metadata'),
+                dataIndex: 'date',
+                editor: 'datefield',
+                renderer: Ext.util.Format.dateRenderer(Ext.util.Format.dateFormat)
+            },
             {
                 text: Locale.getString('source', 'akn-metadata'),
                 dataIndex: 'source',

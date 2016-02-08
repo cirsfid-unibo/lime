@@ -141,7 +141,11 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         }
 
         function mapRef(data, prop) {
-            data[prop] = (data[prop]) ? data[prop].get('eid') : '';
+            try {
+                data[prop] = (data[prop]) ? data[prop].get('eid') : '';
+            } catch(e) {
+                console.error(e);
+            }
             return data;
         }
 
