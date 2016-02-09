@@ -81,6 +81,7 @@ Ext.define('AknMetadata.sync.ImportController', {
             importWorkflowSteps();
             importClassificationKeywords();
             importAliases();
+            importModifications();
 
             importWork();
             importExpression();
@@ -169,6 +170,55 @@ Ext.define('AknMetadata.sync.ImportController', {
                 };
                 store.aliases().add(data);
             });
+        }
+
+        function importModifications () {
+            var addTextualChanges = function(node, mod) {
+                var data = {
+                    type: node.tagName,
+                    href: node.getAttribute('href'),
+                    content: akn.getValue('./*', node)
+                };
+                mod.textualChanges().add(data);
+            }
+
+            var addSourceDestination = function(node, mod) {
+                var data = {
+                    type: node.tagName,
+                    href: node.getAttribute('href'),
+                    pos: node.getAttribute('pos'),
+                    exclusion: node.getAttribute('exclusion'),
+                    incomplete: node.getAttribute('incomplete'),
+                    upTo: node.getAttribute('upTo')
+                };
+                mod.sourceDestinations().add(data);
+            }
+
+            var addModification = function(node) {
+                var amndType = (node.parentNode.tagName == 'activeModifications') ? 'active' : 'passive';
+                var data = {
+                    amendmentType: amndType,
+                    type: node.tagName,
+                    modType: node.getAttribute('type'),
+                    eid: node.getAttribute('eId'),
+                    wid: node.getAttribute('wId'),
+                    period: node.getAttribute('period'),
+                    status: node.getAttribute('status'),
+                    refers: node.getAttribute('refersTo')
+                };
+                data.period = data.period ? data.period.substring(1) : '';
+                data.refers = data.refers ? data.refers.substring(1) : '';
+
+                var mod = store.modifications().add(data)[0];
+                akn.select('./akn:old | ./akn:new', node).forEach(function(nd) {
+                    addTextualChanges(nd, mod);
+                });
+                akn.select('./akn:source | ./akn:destination', node).forEach(function(nd) {
+                    addSourceDestination(nd, mod);
+                });
+            }
+
+            akn.select('//akn:textualMod').forEach(addModification);
         }
 
         function importWork() {

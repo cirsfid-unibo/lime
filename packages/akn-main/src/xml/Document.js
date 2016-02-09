@@ -78,10 +78,11 @@ Ext.define('AknMain.xml.Document', {
             else defaultResolver(prefix);
         }
 
-        function executeXpath (xpath, type) {
+        function executeXpath (xpath, type, contextNode) {
+            contextNode = contextNode || dom;
             return document.evaluate(
                 xpath,
-                dom,
+                contextNode,
                 nsResolver,
                 type,
                 null
@@ -90,8 +91,8 @@ Ext.define('AknMain.xml.Document', {
 
         return {
             // Return list of dom element matchers
-            select: function (xpath) {
-                var result = executeXpath(xpath, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
+            select: function (xpath, contextNode) {
+                var result = executeXpath(xpath, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, contextNode);
                 var matches = [];
                 for (var i=0; i < result.snapshotLength; i++)
                     matches.push(result.snapshotItem(i));
@@ -99,20 +100,20 @@ Ext.define('AknMain.xml.Document', {
             },
 
             // Return string concatenation of matches
-            getValue: function (xpath) {
-                return this.select(xpath)
+            getValue: function (xpath, contextNode) {
+                return this.select(xpath, contextNode)
                     .map(function (el) { return el.textContent})
                     .join('\n');
             },
 
             // Execute xpath function and return a string
-            query: function (xpath) {
-                return executeXpath(xpath, XPathResult.STRING_TYPE).stringValue;
+            query: function (xpath, contextNode) {
+                return executeXpath(xpath, XPathResult.STRING_TYPE, contextNode).stringValue;
             },
 
             // Return serialization of first match
-            getXml: function (xpath) {
-                var result = executeXpath(xpath, XPathResult.FIRST_ORDERED_NODE_TYPE);
+            getXml: function (xpath, contextNode) {
+                var result = executeXpath(xpath, XPathResult.FIRST_ORDERED_NODE_TYPE, contextNode);
                 if (result.singleNodeValue)
                     return me.serializer.serializeToString(result.singleNodeValue);
             }

@@ -220,3 +220,86 @@ Ext.define('AknMain.metadata.ClassificationKeyword', {
         { name: 'href', type: 'string' }
     ]
 });
+
+Ext.define('AknMain.metadata.Modification', {
+    extend: 'AknMain.metadata.Base',
+    fields: [
+        { name: 'documentId', reference: 'Document' },
+        { name: 'amendmentType', type: 'string' },
+        { name: 'type', type: 'string' },
+        { name: 'modType', type: 'string' },
+        { name: 'eid', type: 'string' },
+        { name: 'wid', type: 'string' },
+        { name: 'period', type: 'string' },
+        { name: 'status', type: 'string' },
+        { name: 'refers', type: 'string' },
+        { name: 'previous', type: 'string' },
+        { name: 'force', type: 'string' },
+        { name: 'efficacy', type: 'string' },
+        { name: 'application', type: 'string' },
+        { name: 'duration', type: 'string' },
+        { name: 'condition', type: 'string' },
+        { name: 'conditionFrozen', type: 'string' }
+    ],
+
+    validators: {
+        amendmentType: { type: 'inclusion', list: ['active', 'passive'] },
+        type: { type: 'inclusion', list: ['textualMod'] },
+        modType: { type: 'inclusion', list: [
+                    'repeal',
+                    'substitution',
+                    'insertion',
+                    'replacement',
+                    'renumbering',
+                    'split',
+                    'join'] },
+        status: { type: 'inclusion', list: [
+                    'removed',
+                    'temporarilyRemoved',
+                    'translated',
+                    'editorial',
+                    'edited',
+                    'verbatim',
+                    'incomplete',
+                    'unknown',
+                    'undefined',
+                    'ignored'] }
+    }
+});
+
+Ext.define('AknMain.metadata.SourceDestination', {
+    extend: 'AknMain.metadata.Base',
+    fields: [
+        { name: 'modification', reference: 'Modification' },
+        { name: 'type', type: 'string' },
+        { name: 'pos', type: 'string' },
+        { name: 'exclusion', type: 'string' },
+        { name: 'incomplete', type: 'string' },
+        { name: 'upTo', type: 'string' }
+    ],
+
+    validators: {
+        type: { type: 'inclusion', list: ['source', 'destination'] },
+        pos: { type: 'inclusion', list: [
+                    'start',
+                    'before',
+                    'inside',
+                    'after',
+                    'end',
+                    'unspecified'] }
+    }
+});
+
+Ext.define('AknMain.metadata.TextualChange', {
+    extend: 'AknMain.metadata.Base',
+    fields: [
+        { name: 'modification', reference: 'Modification' },
+        { name: 'type', type: 'string' },
+        { name: 'content', type: 'string' },
+        { name: 'href', type: 'string' }
+    ],
+
+    validators: {
+        type: { type: 'inclusion', list: ['old', 'new'] }
+    }
+});
