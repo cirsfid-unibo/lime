@@ -91,11 +91,19 @@
         var query = '//*[@class="classification" or '+
                     '@class="lifecycle" or '+
                     '@class="workflow" or '+
+                    '@class="analysis" or '+
+                    '@class="activeModifications" or '+
+                    '@class="passiveModifications" or '+
                     '@class="references"]'+
                     '[not(child::*)]';
-
-        doc.select(query).forEach(function(node) {
-            node.parentNode.removeChild(node);
-        });
+        
+        // Iterate multiple times to remove elements which become empty
+        // in result of previous iterations
+        var depth = 2;
+        while(depth--) {
+            doc.select(query).forEach(function(node) {
+                node.parentNode.removeChild(node);
+            });
+        }
     }
  });

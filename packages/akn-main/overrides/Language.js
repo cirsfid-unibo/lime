@@ -217,16 +217,16 @@ Ext.define('AknMain.Language', {
                 me.aknIdMapping[newId] = intId;
                 
             //TODO: improve this to work with complete href eg: /uy/..../#id
-            var hrefElements = root.querySelectorAll("*["+LangProp.attrPrefix+"href = '#"+intId+"']"),
+            var hrefElements = root.querySelectorAll("["+LangProp.attrPrefix+"href = '#"+intId+"'], [href='#"+intId+"']"),
                 status = node.getAttribute(LangProp.attrPrefix +'status'),
                 wId = node.getAttribute(LangProp.attrPrefix +'wId');
 
             Ext.each(hrefElements, function(hrefElement) {
-                var oldHref = hrefElement.getAttribute(LangProp.attrPrefix+"href");
+                var oldHref = hrefElement.getAttribute(LangProp.attrPrefix+"href") || hrefElement.getAttribute("href");
                 if ( !status || status != 'removed' || !wId ) {
-                    hrefElement.setAttribute(LangProp.attrPrefix+"href", oldHref.replace(intId, newId));
+                    hrefElement.setAttribute("href", oldHref.replace(intId, newId));
                 } else if (wId) {
-                    hrefElement.setAttribute(LangProp.attrPrefix+"href", oldHref.replace(intId, wId));
+                    hrefElement.setAttribute("href", oldHref.replace(intId, wId));
                 }
             });
         });

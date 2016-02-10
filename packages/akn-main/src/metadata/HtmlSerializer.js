@@ -95,20 +95,33 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         // Classification
         '   <div class="classification" source="#{source}">',
         '<tpl for="classificationKeywords">' +
-        '        <div class="keyword" value="{value}" showAs="{showAs}" dictionary="{dictionary}" {[this.uriAttrOpt("href", values.href)]} />',
+        '        <div class="keyword" value="{value}" showAs="{showAs}" dictionary="{dictionary}" {[this.uriAttr("href", values.href)]} />',
         '</tpl>' +
         '   </div>',
         // LifeCycle
         '   <div class="lifecycle" source="#{source}">',
         '<tpl for="lifecycleEvents">' +
-        '        <div class="eventRef" source="#{source}" type="{type}" eId="{eid}" date="{date}" {[this.uriAttrOpt("refersTo", values.refers)]}/>',
+        '        <div class="eventRef" source="#{source}" type="{type}" eId="{eid}" date="{date}" {[this.uriAttr("refersTo", values.refers)]}/>',
         '</tpl>' +
         '   </div>',
         // Workflow
         '   <div class="workflow" source="#{source}">',
         '<tpl for="workflowSteps">' +
-        '        <div class="step" date="{date}" {[this.uriAttrOpt("as", values.role)]} {[this.uriAttrOpt("actor", values.actor)]} {[this.uriAttrOpt("outcome", values.outcome)]} {[this.uriAttrOpt("refersTo", values.refers)]}/>',
+        '        <div class="step" date="{date}" {[this.uriAttr("as", values.role)]} {[this.uriAttr("actor", values.actor)]} {[this.uriAttr("outcome", values.outcome)]} {[this.uriAttr("refersTo", values.refers)]}/>',
         '</tpl>' +
+        '   </div>',
+        // Analysis
+        '   <div class="analysis" source="#{source}">',
+        '      <div class="activeModifications">',
+        '<tpl for="modifications"><tpl if="amendmentType==\'active\'">' +
+        '           {[this.modification(values)]}',
+        '</tpl></tpl>' +
+        '      </div>',
+        '      <div class="passiveModifications">',
+        '<tpl for="modifications"><tpl if="amendmentType==\'passive\'">' +
+        '           {[this.modification(values)]}',
+        '</tpl></tpl>' +
+        '      </div>',
         '   </div>',
         // References
         '   <div class="references" source="#{source}">',
@@ -119,17 +132,36 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
 
         '</div>', 
         {
-            uriAttrOpt: function(attr, value) {
+            uriAttr: function(attr, value, allowEmpty) {
                 attrVal = (value && value.startsWith('/')) ? value : '#'+value;
-                return value ? attr+'="'+attrVal+'"' : '';
+                return (value || allowEmpty) ? attr+'="'+attrVal+'"' : '';
+            },
+            modification: function(data) {
+                return this.modificationTpl.apply(data);
             }
         }
+    ),
+
+    modificationTpl: new Ext.XTemplate(
+        '<div class="{type}" eId="{eid}" type="{modType}" >',
+        '<tpl for="sourceDestinations">' +
+        '        <div class="{type}" {[this.uriAttr("href", values.href, true)]} {[this.uriAttr("pos", values.pos)]}/>',
+        '</tpl>' +
+        '<tpl for="textualChanges">' +
+        '        <div class="{type}" {[this.uriAttr("href", values.href)]}>',
+        '           {content}',
+        '        </div>',
+        '</tpl>' +
+        '</div>'
     ),
 
     constructor: function () {
         this.applyTemplate = function (data) {
             return this.template.apply(data);
         };
+        // Add the template utility functions to the modification template
+        Ext.apply(this.modificationTpl, this.template.initialConfig);
+        this.template.modificationTpl = this.modificationTpl;
         return this.callParent(arguments);
     },
 
@@ -137,6 +169,17 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         function mapData(store) {
             var res = [];
             store.each(function (d) { res.push(d.getData()); });
+            return res;
+        }
+
+        function mapModifications(store) {
+            var res = [];
+            store.each(function (d) {
+                var data = d.getData();
+                data.sourceDestinations = mapData(d.sourceDestinations());
+                data.textualChanges = mapData(d.textualChanges());
+                res.push(data);
+            });
             return res;
         }
 
@@ -175,6 +218,7 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         data.lifecycleEvents = mapData(model.lifecycleEvents()).map(mapEvent);
         data.workflowSteps = mapData(model.workflowSteps()).map(mapStep);
         data.classificationKeywords = mapData(model.classificationKeywords());
+        data.modifications = mapModifications(model.modifications());
 
         var uri = model.getUri();
         data.uri = {

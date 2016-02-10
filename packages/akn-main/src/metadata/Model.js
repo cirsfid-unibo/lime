@@ -272,6 +272,7 @@ Ext.define('AknMain.metadata.SourceDestination', {
     fields: [
         { name: 'modification', reference: 'Modification' },
         { name: 'type', type: 'string' },
+        { name: 'href', type: 'string' },
         { name: 'pos', type: 'string' },
         { name: 'exclusion', type: 'string' },
         { name: 'incomplete', type: 'string' },
