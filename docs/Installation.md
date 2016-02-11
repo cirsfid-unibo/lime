@@ -1,13 +1,10 @@
-# Installation guide
-
-## Lime 1.0
-http://lime.cirsfid.unibo.it/?page_id=134
-
-## Lime 2.0 installation guide
+# Lime 2.0 installation guide
 
 This new release of Lime offers many new features and improved performance.
 
-### Prerequisites
+If you want to install a build version of Lime go [here](http://lime.cirsfid.unibo.it/?page_id=134).
+
+## Prerequisites
 
 - Http server
 - Node.js (version 0.12 or later)
@@ -19,7 +16,7 @@ This new release of Lime offers many new features and improved performance.
 - Abiword
 - Download the Lime zip.
 
-### Node server
+## Node server
 
 - Extract the `aknservices` folder from the Lime zip.
 - Change the default port in `aknservices/config.json` (default is 9006)
@@ -31,13 +28,13 @@ This new release of Lime offers many new features and improved performance.
 - Run the server `node server.js`
     - Consider using the script in `aknservices/start.sh`, which sure only one instance of the server is running, logs errors in log.txt, and redirect output.
 
-### Client
+## Client
 
 - Extract the `lime` folder from the Lime zip to a path accessible by the web server.
 - Change `config.json` to point to the right port (If you didn't change the node port and kept 9006, this step is not needed)
 - Use Lime
 
-### Notes
+## Notes
 
 We are working on improving the installation experience by using Ubuntu packages, this will make installing Lime super simple in the future.
 
