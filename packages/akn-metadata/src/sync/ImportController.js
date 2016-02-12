@@ -182,7 +182,7 @@ Ext.define('AknMetadata.sync.ImportController', {
                 var data = {
                     type: node.tagName,
                     href: normalizeHref(node.getAttribute('href')),
-                    content: akn.getValue('./*', node)
+                    content: akn.getValue('.//text()', node).trim()
                 };
                 mod.textualChanges().add(data);
             }
