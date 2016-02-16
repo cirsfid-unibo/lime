@@ -52,18 +52,6 @@ Ext.define('AknModsMarker.Controller', {
             'AknModsMarker.RepealSelectorWindow'],
 
     refs : [{
-        ref : 'contextMenu',
-        selector : 'contextMenu'
-    },{
-        selector : 'appViewport',
-        ref : 'appViewport'
-    },{
-        selector: 'modsMarkerWindow',
-        ref: 'modsWindow'
-    },{
-        selector: 'modsMarkerWindow textfield[name=selection]',
-        ref: 'selectionField'
-    },{
         ref : 'mainEditor',
         selector : '#mainEditor mainEditor'
     }, {
@@ -71,7 +59,10 @@ Ext.define('AknModsMarker.Controller', {
         selector: '#secondEditor mainEditor'
     }],
 
-    requires: ['AknMain.LangProp'],
+    requires: [
+        'AknMain.LangProp',
+        'AknMain.metadata.HtmlSerializer'
+    ],
 
     config: {
         pluginName: "akn-mods-marker",
@@ -81,95 +72,11 @@ Ext.define('AknModsMarker.Controller', {
         externalConnectedElements: ["quotedStructure", "quotedText", "ref", "rref", "mref"]
     },
 
-    // Temporary, until the old meta is used
-    metaStructure: {
-        "name": "meta",
-        "children": [
-            {
-                "name": "identification",
-                "children": [
-                    {"name": "FRBRWork", "children": []},
-                    {"name": "FRBRExpression", "children": []},
-                    {"name": "FRBRManifestation", "children": []},
-                    {"name": "FRBRItem", "children": []}
-                ]
-            },
-            {"name": "publication","children": []},
-            {
-                "name": "classification",
-                "children": [
-                    {"name": "keyword","children": []}
-                ]
-            },
-            {
-                "name": "lifecycle",
-                "children": [
-                    {"name": "eventRef","children": []}
-                ]
-            },
-            {
-                "name": "workflow",
-                "children": [
-                    {"name": "step","children": []}
-                ]
-            },
-            {
-                "name": "analysis",
-                "children": [
-                    {"name": "activeModifications","children": []},
-                    {"name": "passiveModifications","children": []},
-                    {"name": "restrictions",
-                        "children": [
-                            {"name": "restriction","children": []}
-                        ]
-                    },
-                    {"name": "judicial","children": []},
-                    {"name": "parliamentary","children": []},
-                    {"name": "mappings",
-                    "children": [
-                            {"name": "mapping","children": []}
-                        ]
-                    },
-                    {"name": "otherAnalysis","children": []}
-                ]
-            },
-            {
-                "name": "temporalData",
-                "children": [
-                    {"name": "temporalGroup",
-                        "children": [
-                            {"name": "timeInterval","children": []}
-                        ]
-                    }
-                ]
-            },
-            {
-                "name": "references",
-                "children": []
-            },
-            {
-                "name": "notes",
-                "children": [
-                    {"name": "note","children": []}
-                ]
-            },
-            {
-                "name": "proprietary",
-                "children": []
-            },
-            {
-                "name": "presentation",
-                "children": []
-            }
-        ]
-    },
-
     init : function() {
         var me = this;
-
-        me.application.on(Statics.eventsNames.afterLoad, me.onDocumentLoaded, me);
         me.application.on(Statics.eventsNames.editorDomNodeFocused, me.editorNodeFocused, me);
         me.application.on(Statics.eventsNames.unmarkedNodes, me.nodesUnmarked, me);
+        me.application.on(Statics.eventsNames.afterLoad, me.onDocumentLoaded, me);
         me.application.fireEvent(Statics.eventsNames.registerContextMenuBeforeShow, Ext.bind(me.beforeContextMenuShow, me));
         
         me.initPosMenu();
@@ -223,6 +130,215 @@ Ext.define('AknModsMarker.Controller', {
         });
     },
 
+    editorNodeFocused: function(node) {
+        if(this.openedForm) {
+            this.openedForm.close();
+            this.openedForm = null;
+        }
+        if(node)
+            this.showModInfo(node);
+
+        Ext.callback(this.editorClickHandlerCustom, this, [node, this.getController("Editor").getEditor()]);
+    },
+
+    showModInfo: function(node) {
+        var mod = this.getModFromNode(node, 'passive');
+        console.log(mod);
+        if(!mod || !mod.modElement) return;
+
+        switch(mod.textualMod.get('modType')) {
+            case "substitution":
+                if(mod.modElement.get('type') == 'new')
+                    this.createSubstitution(node, mod.textualMod.getOldText(), true);
+                break;
+            case "repeal":
+                return this.showOldText(node, mod.textualMod.getOldText());
+        }
+    },
+
+    showOldText: function(node, oldText) {
+        this.openedForm = this.createAndShowFloatingForm(node, Locale.getString("oldText", this.getPluginName()), oldText.trim(), true);
+    },
+
+    nodesUnmarked: function(nodesIds) {
+        Ext.each(nodesIds, this.unlinkModByElId, this);
+    },
+
+    unlinkModByElId: function(elId) {
+        var mod = elId && this.getModFromElId(elId);
+        console.log(elId, mod);
+        if(!mod || !mod.modElement) return;
+
+        var elConf = DocProperties.getElementConfig(DomUtils.getButtonIdByElementId(elId));
+        console.log(elConf);
+        if (!elConf || elConf.name == 'mod' || mod.textualMod.get('amendmentType') == 'passive')
+            this.getModifications().remove(mod.textualMod);
+        else
+            mod.modElement.set('href', '');
+    },
+
+    onDocumentLoaded : function(docConfig) {
+        this.addModificationButtons();
+        this.detectExistingMods();
+    },
+
+    addModificationButtons: function() {
+       this.addActiveModificationButtons();
+       this.addPassiveModificationButtons();
+    },
+
+    addActiveModificationButtons: function() {
+        var me = this, app = me.application;
+            markerButtons = {
+                activeModifications: {
+                    label: Locale.getString("activeModifications", me.getPluginName())
+                },
+                insertionCustom: {
+                    label: Locale.getString("insertion", me.getPluginName()),
+                    handler: me.activeInsertionHandler,
+                    markAsButton: "mod",
+                    modType: "insertion"
+                },
+                repealCustom: {
+                    label: Locale.getString("repeal", me.getPluginName()),
+                    handler: me.activeDelHandler,
+                    markAsButton: "mod",
+                    modType: "repeal"
+                },
+                substitutionCustom: {
+                    label: Locale.getString("substitution", me.getPluginName()),
+                    handler: me.activeSubstitutionHandler,
+                    markAsButton: "mod",
+                    modType: "substitution"
+                },
+                splitCustom: {
+                    label: Locale.getString("split", me.getPluginName()),
+                    handler: me.activeSplitHandler,
+                    markAsButton: "mod",
+                    modType: "split"
+                },
+                joinCustom: {
+                    label: Locale.getString("join", me.getPluginName()),
+                    handler: me.activeJoinHandler,
+                    markAsButton: "mod",
+                    modType: "join"
+                },
+                renumberingCustom: {
+                    label: Locale.getString("renumbering", me.getPluginName()),
+                    handler: me.activeRenumberingHandler,
+                    markAsButton: "mod",
+                    modType: "renumbering"
+                },
+                destintionText: {
+                    label: Locale.getString("destinationText", me.getPluginName())
+                },
+                action: {
+                    label: Locale.getString("action", me.getPluginName())
+                }
+            },
+            rules = {
+                elements: {
+                    activeModifications: {
+                        children: ["commonReference", "destintionText", "action"]
+                    },
+                    destintionText: {
+                        children: ["quotedStructure", "quotedText"]
+                    },
+                    action: {
+                        children: ["insertionCustom", "repealCustom", "substitutionCustom", "splitCustom", "joinCustom", "renumberingCustom"]
+                    }
+                }
+            },
+            config = {
+                name : 'activeModifications',
+                group: "structure",
+                //after: "commonReference",
+                buttons: markerButtons,
+                rules: rules,
+                scope: me
+            };
+       app.fireEvent(Statics.eventsNames.addMarkingButton, config);
+       me.activeModButtons = markerButtons;
+    },
+
+    addPassiveModificationButtons: function() {
+         var me = this, app = me.application;
+            markerButtons = {
+                passiveModifications: {
+                    label: Locale.getString("passiveModifications", me.getPluginName())
+                },
+                insertionCustom: {
+                    label: Locale.getString("insertion", me.getPluginName()),
+                    handler: me.beforeInsertionHandler
+                },
+                repealCustom: {
+                    label: Locale.getString("repeal", me.getPluginName()),
+                    handler: me.beforeDelHandler
+                },
+                substitutionCustom: {
+                    label: Locale.getString("substitution", me.getPluginName()),
+                    handler: me.beforeSubstitutionHandler,
+                    elementStyle: "background-color: #fcf8e3;border-color: #faebcc;",
+                    // labelStyle: "border-color: #faebcc;",
+                    // shortLabel: Locale.getString("substitution", me.getPluginName()),
+                    modType: "substitution"
+                },
+                splitCustom: {
+                    label: Locale.getString("split", me.getPluginName()),
+                    handler: function(button) {
+                        if ( DocProperties.documentState == 'diffEditingScenarioB' ) {
+                            me.splitHandlerConsolidation(button);
+                        } else {
+                            me.splitHandler(button);
+                        }
+                    }
+                },
+                joinCustom: {
+                    label: Locale.getString("join", me.getPluginName()),
+                    handler: function(button) {
+                        if ( DocProperties.documentState == 'diffEditingScenarioB' ) {
+                            me.joinHandlerConsolidation(button);
+                        } else {
+                            me.joinHandler(button);
+                        }
+                    }
+                },
+                renumberingCustom: {
+                    label: Locale.getString("renumbering", me.getPluginName()),
+                    handler: me.renumberingHandler
+                },
+                destintionText: {
+                    label: Locale.getString("destinationText", me.getPluginName())
+                },
+                action: {
+                    label: Locale.getString("action", me.getPluginName())
+                }
+            },
+            rules = {
+                elements: {
+                    passiveModifications: {
+                        children: ["commonReference", "destintionText", "action"]
+                    },
+                    destintionText: {
+                        children: ["quotedStructure", "quotedText"]
+                    },
+                    action: {
+                        children: ["insertionCustom", "repealCustom", "substitutionCustom", "splitCustom", "joinCustom", "renumberingCustom"]
+                    }
+                }
+            },
+            config = {
+                name : 'passiveModifications',
+                group: "structure",
+                //after: "activeModifications",
+                buttons: markerButtons,
+                rules: rules,
+                scope: me
+            };
+       app.fireEvent(Statics.eventsNames.addMarkingButton, config);
+       me.passiveModButtons = markerButtons;
+    },
+
     initPosMenu: function() {
         var me = this, modPosChecked = Ext.bind(this.modPosChecked, this);
         this.posMenu = {
@@ -269,16 +385,6 @@ Ext.define('AknModsMarker.Controller', {
         Ext.callback(this.secondEditorClickHandlerCustom, this, [selectedNode, evt, editor]);
     },
 
-    onDocumentLoaded : function(docConfig) {
-        this.addModificationButtons();
-
-        try {
-            this.detectExistingMods();
-        } catch(e) {
-            Ext.log({level: "error"}, e);
-        }
-    },
-
     modPosChecked: function(cmp, checked) {
         var me = this,
             typesMenu = cmp.up("*[name=types]"),
@@ -310,17 +416,15 @@ Ext.define('AknModsMarker.Controller', {
         };
 
         me.getTextualMods('active').forEach(function(mod) {
-            me.getSourceDestinations(mod, 'source').forEach(setModAttrs.bind(me, mod));
+            mod.getSourceDestinations('source').forEach(setModAttrs.bind(me, mod));
         });
 
         me.getTextualMods('passive').forEach(function(mod) {
             //TODO: check if destination href for substitution needs id update
-            var modEls = me.getSourceDestinations(mod, 'destination')
-                            .concat(me.getTextualChanges(mod, 'new'));
-            var oldText = me.getTextualChanges(mod, 'old').map(function(old) {
-                return old.get('content');
-            }).join(' ').trim();
+            var modEls = mod.getSourceDestinations('destination')
+                            .concat(mod.getTextualChanges('new'));
 
+            var oldText = mod.getOldText();
             modEls.forEach(function(rec) {
                 var modNode = setModAttrs(mod, rec);
                 if (modNode && oldText)
@@ -338,23 +442,6 @@ Ext.define('AknModsMarker.Controller', {
                 mods.push(mod);
         });
         return mods;
-    },
-
-    getSourceDestinations: function(modStore, type) {
-        return this.getRecordsBy(modStore.sourceDestinations(), 'type', type);
-    },
-
-    getRecordsBy: function(store, prop, val) {
-        var res = [];
-        store.each(function(rec) {
-            if (!val || rec.get(prop) == val)
-                res.push(rec);
-        });
-        return res;
-    },
-
-    getTextualChanges: function(modStore, type) {
-        return this.getRecordsBy(modStore.textualChanges(), 'type', type);
     },
 
     getModifications: function() {
@@ -403,47 +490,45 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     addModContextMenuItem: function(node, menu) {
+        if(menu.down("*[name=modType]")) return;
+
         var me = this,
-            meta = me.getAnalysisByNodeOrNodeId(node);
-        if(!menu.down("*[name=modType]")) {
-            var modType = (meta) ? meta.type : false;
-            menu.add(['-', {
-                text : Locale.getString("modType", me.getPluginName()),
-                name: "modType",
-                menu : {
-                    items : [{
-                        text : Locale.getString("insertion", me.getPluginName()),
-                        modType: 'insertion',
-                        group : 'modType',
-                        refNode: node,
-                        checked: (modType == "insertion") ? true : false,
-                        checkHandler : Ext.bind(me.onModTypeSelected, me)
-                    }, {
-                        text : Locale.getString("repeal", me.getPluginName()),
-                        modType: 'repeal',
-                        group : 'modType',
-                        refNode: node,
-                        checked: (modType == "repeal") ? true : false,
-                        checkHandler : Ext.bind(me.onModTypeSelected, me)
-                    }, {
-                        text : Locale.getString("substitution", me.getPluginName()),
-                        modType: 'substitution',
-                        group : 'modType',
-                        refNode: node,
-                        checked: (modType == "substitution") ? true : false,
-                        checkHandler : Ext.bind(me.onModTypeSelected, me)
-                    }]
-                }
-            }]);
-            if (meta) {
-                me.addExternalRefMenuItems(node, menu, meta);
+            mod = this.getModFromNode(node, 'active'),
+            modType = mod && mod.textualMod.get('modType');
+        menu.add(['-', {
+            text : Locale.getString("modType", me.getPluginName()),
+            name: "modType",
+            menu : {
+                items : [{
+                    text : Locale.getString("insertion", me.getPluginName()),
+                    modType: 'insertion',
+                    group : 'modType',
+                    refNode: node,
+                    checked: (modType == "insertion") ? true : false,
+                    checkHandler : Ext.bind(me.onModTypeSelected, me)
+                }, {
+                    text : Locale.getString("repeal", me.getPluginName()),
+                    modType: 'repeal',
+                    group : 'modType',
+                    refNode: node,
+                    checked: (modType == "repeal") ? true : false,
+                    checkHandler : Ext.bind(me.onModTypeSelected, me)
+                }, {
+                    text : Locale.getString("substitution", me.getPluginName()),
+                    modType: 'substitution',
+                    group : 'modType',
+                    refNode: node,
+                    checked: (modType == "substitution") ? true : false,
+                    checkHandler : Ext.bind(me.onModTypeSelected, me)
+                }]
             }
-        }
+        }]);
+        if (mod)
+            me.addExternalRefMenuItems(node, menu, mod);
     },
 
-    addExternalRefMenuItems: function(node, menu, meta) {
-        var me = this, itemName = 'externalRefs',
-            hrefAttr = LangProp.attrPrefix+'href';
+    addExternalRefMenuItems: function(node, menu, mod) {
+        var me = this, itemName = 'externalRefs';
 
         if(menu.down("*[name="+itemName+"]")) return;
 
@@ -455,10 +540,11 @@ Ext.define('AknModsMarker.Controller', {
         };
 
         var onSelectRefItem = function(item) {
-            var destNode = meta.analysis.querySelector("[class=destination]");
-            if (destNode) {
-                destNode.setAttribute(hrefAttr, item.ref.node.getAttribute(hrefAttr));
-            }
+            var dest = mod.textualMod.getSourceDestinations('destination')[0];
+            if (dest)
+                dest.set('href', 
+                    AknMain.metadata.HtmlSerializer.normalizeHref(item.ref.node.getAttribute(LangProp.attrPrefix+'href')));
+
             me.application.fireEvent('nodeFocusedExternally', node, {
                 select : false,
                 scroll : true
@@ -503,26 +589,13 @@ Ext.define('AknModsMarker.Controller', {
         }).reverse();
         return references;
     },
-
+    //TODO: test the working all this function
     addQuotedContextMenuItem: function(node, menu, name) {
-        var me = this,
-            markedParent = DomUtils.getFirstMarkedAncestor(node.parentNode);
-
-        if (!markedParent || DomUtils.getElementNameByNode(markedParent) != 'mod' ) {
-            me.addExternalContextMenuItems(menu, node, name, markedParent);
-            return;
-        }
-        me.addPosMenuItems(menu, node, name, markedParent);
-        var textMod = me.detectModifications(markedParent, false, false, true);
-        textMod = (textMod) ? textMod.textMod : null;
-        if (!textMod) return;
-
+        var me = this;
         var getPosMenuChecked = function(textMod) {
-            var posMenu = Ext.clone(me.posMenu),
-                destination = textMod.querySelector('*[class="destination"]'),
-                pos = (destination) ?
-                        LangProp.getNodeLangAttr(destination, "pos").value : false;
-
+            var posMenu = Ext.clone(me.posMenu);
+            var destination = textMod.getSourceDestinations('destination')[0];
+            var pos = (destination) ? destination.get('pos') : false;
             posMenu.items.filter(function(item) {
                 return pos && item.type == pos;
             }).map(function(item) {
@@ -531,11 +604,17 @@ Ext.define('AknModsMarker.Controller', {
 
             return posMenu;
         };
+        var markedParent = DomUtils.getFirstMarkedAncestor(node.parentNode);
+        if (!markedParent || DomUtils.getElementNameByNode(markedParent) != 'mod' ) {
+            me.addExternalContextMenuItems(menu, node, name, markedParent);
+            return;
+        }
+        me.addPosMenuItems(menu, node, name, markedParent);
+        var textMod = me.getModFromNode(markedParent);
+        if (!textMod) return;
 
-        var elId = node.getAttribute(DomUtils.elementIdAttribute),
-            langId = LangProp.getNodeLangAttr(node, "eid"),
-            modElement = textMod.querySelector("*[akn_href*="+elId+"], *[akn_href*="+langId.value+"]"),
-            modType = (modElement) ? modElement.getAttribute("class") : "";
+        // TODO: check modElement
+        var modType = textMod.modElement.get('type');
 
         if(!menu.down("*[name=modType]")) {
             menu.add(['-', {
@@ -543,14 +622,14 @@ Ext.define('AknModsMarker.Controller', {
                 name: "modType",
                 menu : {
                     name: "types",
-                    textMod: textMod,
+                    textMod: textMod.textMod,
                     refNode: node,
-                    modElement: modElement,
+                    modElement: textMod.modElement,
                     items : [{
                         text : 'Old',
                         group : 'modType',
-                        textMod: textMod,
-                        modElement: modElement,
+                        textMod: textMod.textMod,
+                        modElement: textMod.modElement,
                         refNode: node,
                         type: "old",
                         checked: (modType == "old") ? true : false,
@@ -559,9 +638,9 @@ Ext.define('AknModsMarker.Controller', {
                         text : 'New',
                         group : 'modType',
                         checked: (modType == "new") ? true : false,
-                        textMod: textMod,
+                        textMod: textMod.textMod,
                         refNode: node,
-                        modElement: modElement,
+                        modElement: textMod.modElement,
                         type: "new",
                         checkHandler : Ext.bind(me.onTypeSelected, me)
                     }, {
@@ -570,40 +649,61 @@ Ext.define('AknModsMarker.Controller', {
                         checked: (modType == "pos") ? true : false,
                         type: "pos",
                         checkHandler : Ext.bind(me.onTypeSelected, me),
-                        menu: getPosMenuChecked(textMod)
+                        menu: getPosMenuChecked(textMod.textMod)
                     }]
                 }
             }]);
         }
     },
 
-    addPosMenuItems: function(menu, node, elementName, markedParent) {
-        var me = this, cls,
-            mod = me.detectModifications(node, false, false, true);
+    getModFromNode: function(node, amendmentType) {
+        var elId = node && node.getAttribute(DomUtils.elementIdAttribute);
+        return elId && this.getModFromElId(elId, amendmentType);
+    },
 
-        if(mod && mod.modElement) {
-            cls = mod.modElement.getAttribute("class");
-            if(cls == "destination" || cls == "source") {
-                if(!menu.down("*[name=modPos]")) {
-                    var posMenu = Ext.clone(me.posMenu);
-                    var pos = LangProp.getNodeLangAttr(mod.modElement, "pos");
-                    if(pos.value) {
-                        menuItem = posMenu.items.filter(function(item) {
-                            return item.type == pos.value;
-                        })[0];
-                        if(menuItem) {
-                            menuItem.checked = true;
-                        }
+    getModFromElId: function(id, amendmentType) {
+        var mods = this.getTextualMods(amendmentType).map(function(mod) {
+            var modEls = mod.getSourceDestinations()
+                            .concat(mod.getTextualChanges());
+            
+            modEls = modEls.filter(function(modEl) {
+                return modEl.get('href') === id;
+            });
+            return {
+                textMod: mod,
+                modElement: modEls[0]
+            };
+        }).filter(function(obj) {
+            return obj.modElement !== undefined;
+        });
+        return mods[0];
+    },
+
+    addPosMenuItems: function(menu, node, elementName, markedParent) {
+        var mod = this.getModFromNode(node);
+        if(!mod || !mod.modElement) return;
+
+        var type = mod.modElement.get('type');
+        if(type == "destination" || type == "source") {
+            if(!menu.down("*[name=modPos]")) {
+                var posMenu = Ext.clone(this.posMenu);
+                var pos = mod.modElement.get('pos');
+                if(pos) {
+                    menuItem = posMenu.items.filter(function(item) {
+                        return item.type == pos;
+                    })[0];
+                    if(menuItem) {
+                        menuItem.checked = true;
                     }
-                    posMenu.textMod = mod.textMod;
-                    posMenu.name = "types";
-                    menu.add(['-', {
-                        name: "modPos",
-                        text : 'Pos',
-                        type: "pos",
-                        menu: posMenu
-                    }]);
                 }
+                posMenu.textMod = mod.textMod;
+                posMenu.name = "types";
+                menu.add(['-', {
+                    name: "modPos",
+                    text : 'Pos',
+                    type: "pos",
+                    menu: posMenu
+                }]);
             }
         }
     },
@@ -667,8 +767,6 @@ Ext.define('AknModsMarker.Controller', {
         if(checked && cmp.refNode) {
             var meta = me.getAnalysisByNodeOrNodeId(cmp.refNode);
             if (meta && meta.type == cmp.modType) return;
-            if (meta)
-                me.unmarkModMeta(meta.analysis);
             me.addModMetadata(cmp.refNode, cmp.modType);
         } else if(!checked) {
             me.setModDataAttributes(cmp.refNode, false);
@@ -699,16 +797,17 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     onTypeSelected: function(cmp, checked) {
-        var me = this, sameType, oldType;
+        var me = this;
+        //TODO: check pos type
         if(checked && cmp.textMod && cmp.modElement) {
-            oldType = cmp.modElement.getAttribute("class");
-            sameType = cmp.textMod.querySelectorAll("*[class="+cmp.type+"]");
-            if(sameType.length == 1) {
-                sameType[0].setAttribute("class", oldType);
-            }
-            cmp.modElement.setAttribute("class", cmp.type);
-            me.insertTextModChildInOrder(cmp.textMod, cmp.modElement);
-        } else if(checked && cmp.textMod) {
+            var oldType = cmp.modElement.get('type');
+            var sameType = cmp.textMod.getTextualChanges(oldType);
+
+            if(sameType.length == 1)
+                sameType.set('type', oldType);
+
+            cmp.modElement.set('type', cmp.type);
+        } else if(checked && cmp.textMod) { //TODO: check this case
             var hrefAttr = LangProp.attrPrefix+'href',
                 elId = cmp.refNode.getAttribute(DomUtils.elementIdAttribute),
                 existedEl = cmp.textMod.querySelector("*[class='"+cmp.type+"']["+hrefAttr+"='#']"),
@@ -725,346 +824,9 @@ Ext.define('AknModsMarker.Controller', {
                     }]
                 };
                 var modEl = me.objToDom(cmp.textMod.ownerDocument, textModObj);
-                me.insertTextModChildInOrder(cmp.textMod, modEl);
+                //me.insertTextModChildInOrder(cmp.textMod, modEl);
             }
         }
-    },
-
-    removeElementStyles: function(node, buttonCfg) {
-        if(node) {
-            node.removeAttribute(buttonCfg.modType);
-        }
-    },
-
-    addModificationButtons: function() {
-       this.addActiveMofigicationButtons();
-       this.addPassiveModificationButtons();
-    },
-
-    addPassiveModificationButtons: function() {
-         var me = this, app = me.application;
-            markerButtons = {
-                passiveModifications: {
-                    label: Locale.getString("passiveModifications", me.getPluginName()),
-                    buttonStyle: "border-radius: 3px; background-color: #74BAAC;"
-                },
-                insertionCustom: {
-                    label: Locale.getString("insertion", me.getPluginName()),
-                    buttonStyle: "background-color:#DBEADC;border-radius:3px",
-                    handler: me.beforeInsertionHandler
-                },
-                repealCustom: {
-                    label: Locale.getString("repeal", me.getPluginName()),
-                    buttonStyle: "background-color:#DBEADC;border-radius:3px",
-                    handler: me.beforeDelHandler
-                },
-                substitutionCustom: {
-                    label: Locale.getString("substitution", me.getPluginName()),
-                    buttonStyle: "background-color:#DBEADC;border-radius:3px",
-                    handler: me.beforeSubstitutionHandler,
-                    elementStyle: "background-color: #fcf8e3;border-color: #faebcc;",
-                    // labelStyle: "border-color: #faebcc;",
-                    // shortLabel: Locale.getString("substitution", me.getPluginName()),
-                    modType: "substitution"
-                },
-                splitCustom: {
-                    label: Locale.getString("split", me.getPluginName()),
-                    buttonStyle: "background-color:#DBEADC;border-radius:3px",
-                    handler: function(button) {
-                        if ( DocProperties.documentState == 'diffEditingScenarioB' ) {
-                            me.splitHandlerConsolidation(button);
-                        } else {
-                            me.splitHandler(button);
-                        }
-                    }
-                },
-                joinCustom: {
-                    label: Locale.getString("join", me.getPluginName()),
-                    buttonStyle: "background-color:#DBEADC;border-radius:3px",
-                    handler: function(button) {
-                        if ( DocProperties.documentState == 'diffEditingScenarioB' ) {
-                            me.joinHandlerConsolidation(button);
-                        } else {
-                            me.joinHandler(button);
-                        }
-                    }
-                },
-                renumberingCustom: {
-                    label: Locale.getString("renumbering", me.getPluginName()),
-                    buttonStyle: "background-color:#DBEADC;border-radius:3px",
-                    handler: me.renumberingHandler
-                },
-                destintionText: {
-                    label: Locale.getString("destinationText", me.getPluginName()),
-                    buttonStyle: "border-radius: 3px; background-color: #74BAAC;"
-                },
-                action: {
-                    label: Locale.getString("action", me.getPluginName()),
-                    buttonStyle: "border-radius: 3px; background-color: #74BAAC;"
-                }
-            },
-            rules = {
-                elements: {
-                    passiveModifications: {
-                        //children: ["insertionCustom", "repealCustom", "substitutionCustom", "splitCustom", "joinCustom", "renumberingCustom"]
-                        children: ["commonReference", "destintionText", "action"]
-                    },
-                    destintionText: {
-                        children: ["quotedStructure", "quotedText"]
-                    },
-                    action: {
-                        children: ["insertionCustom", "repealCustom", "substitutionCustom", "splitCustom", "joinCustom", "renumberingCustom"]
-                    }
-                }
-            },
-            config = {
-                name : 'passiveModifications',
-                group: "structure",
-                //after: "activeModifications",
-                buttons: markerButtons,
-                rules: rules,
-                scope: me
-            };
-       app.fireEvent(Statics.eventsNames.addMarkingButton, config);
-       me.passiveModButtons = markerButtons;
-    },
-
-    addActiveMofigicationButtons: function() {
-        var me = this, app = me.application;
-            markerButtons = {
-                activeModifications: {
-                    label: Locale.getString("activeModifications", me.getPluginName()),
-                    buttonStyle: "border-radius: 3px; background-color: #74BAAC;"
-                },
-                insertionCustom: {
-                    label: Locale.getString("insertion", me.getPluginName()),
-                    buttonStyle: "background-color:#DBEADC;border-radius:3px",
-                    handler: me.activeInsertionHandler,
-                    elementStyle: "background-color: #dff0d8; border-color: #d6e9c6;",
-                    labelStyle: "border-color: #d6e9c6;",
-                    markAsButton: "mod",
-                    shortLabel: Locale.getString("insertion", me.getPluginName()),
-                    modType: "insertion"
-                },
-                repealCustom: {
-                    label: Locale.getString("repeal", me.getPluginName()),
-                    buttonStyle: "background-color:#DBEADC;border-radius:3px",
-                    handler: me.activeDelHandler,
-                    elementStyle: "background-color: #f2dede;border-color: #ebccd1;",
-                    labelStyle: "border-color: #ebccd1;",
-                    markAsButton: "mod",
-                    shortLabel: Locale.getString("repeal", me.getPluginName()),
-                    modType: "repeal"
-                },
-                substitutionCustom: {
-                    label: Locale.getString("substitution", me.getPluginName()),
-                    buttonStyle: "background-color:#DBEADC;border-radius:3px",
-                    handler: me.activeSubstitutionHandler,
-                    elementStyle: "background-color: #fcf8e3;border-color: #faebcc;",
-                    labelStyle: "border-color: #faebcc;",
-                    markAsButton: "mod",
-                    shortLabel: Locale.getString("substitution", me.getPluginName()),
-                    modType: "substitution"
-                },
-                splitCustom: {
-                    label: Locale.getString("split", me.getPluginName()),
-                    buttonStyle: "background-color:#DBEADC;border-radius:3px",
-                    handler: me.activeSplitHandler,
-                    elementStyle: "background-color: #D4E7ED; border-color: #74A6BD;",
-                    labelStyle: "border-color: #74A6BD",
-                    markAsButton: "mod",
-                    shortLabel: Locale.getString("split", me.getPluginName()),
-                    modType: "split"
-                },
-                joinCustom: {
-                    label: Locale.getString("join", me.getPluginName()),
-                    buttonStyle: "background-color:#DBEADC;border-radius:3px",
-                    handler: me.activeJoinHandler,
-                    elementStyle: "background-color: #AB988B; border-color: #B06A3B;",
-                    labelStyle: "border-color: #B06A3B;",
-                    markAsButton: "mod",
-                    shortLabel: Locale.getString("join", me.getPluginName()),
-                    modType: "join"
-                },
-                renumberingCustom: {
-                    label: Locale.getString("renumbering", me.getPluginName()),
-                    buttonStyle: "background-color:#DBEADC;border-radius:3px",
-                    handler: me.activeRenumberingHandler,
-                    elementStyle: "background-color: #EB8540; border-color: #AB988B;",
-                    labelStyle: "border-color: #AB988B;",
-                    markAsButton: "mod",
-                    shortLabel: Locale.getString("renumbering", me.getPluginName()),
-                    modType: "renumbering"
-                },
-                destintionText: {
-                    label: Locale.getString("destinationText", me.getPluginName()),
-                    buttonStyle: "border-radius: 3px; background-color: #74BAAC;"
-                },
-                action: {
-                    label: Locale.getString("action", me.getPluginName()),
-                    buttonStyle: "border-radius: 3px; background-color: #74BAAC;"
-                }
-            },
-            rules = {
-                elements: {
-                    activeModifications: {
-                        children: ["commonReference", "destintionText", "action"]
-                    },
-                    destintionText: {
-                        children: ["quotedStructure", "quotedText"]
-                    },
-                    action: {
-                        children: ["insertionCustom", "repealCustom", "substitutionCustom", "splitCustom", "joinCustom", "renumberingCustom"]
-                    }
-                }
-            },
-            config = {
-                name : 'activeModifications',
-                group: "structure",
-                //after: "commonReference",
-                buttons: markerButtons,
-                rules: rules,
-                scope: me
-            };
-       app.fireEvent(Statics.eventsNames.addMarkingButton, config);
-       me.activeModButtons = markerButtons;
-    },
-
-    getOrCreatePathMetaDom: function(path) {
-        return this.getOrCreatePath(this.getDocumentMetadata().originalMetadata.metaDom, path);
-    },
-
-    getOrCreatePath: function(dom, path) {
-        var me = this, elements = path.split("/"), node,
-            iterNode = dom, tmpNode;
-
-        for(var i = 0; i<elements.length; i++) {
-            iterNode = iterNode.querySelector("[class='"+elements[i]+"']");
-            if(!iterNode) {
-                iterNode = me.createMetaElement(dom, elements[i]);
-            }
-        }
-        node = iterNode;
-        return node;
-    },
-
-    createMetaElement: function(dom, name) {
-        var me = this, node;
-        var path = me.getElementStructurePath(name, me.metaStructure);
-        if(path.length) {
-            var iterNode = dom, tmpNode, parentStructure;
-            Ext.each(path, function(objStructure) {
-                if (iterNode.getAttribute("class") != objStructure.name) {
-                    tmpNode = iterNode.querySelector("[class='" + objStructure.name + "']");
-                    var source = (objStructure.name == 'analysis') ? {
-                        attributes: [{
-                            name: "source",
-                            value: " "
-                        }]
-                    } : {};
-
-                    if (!tmpNode) {
-                        node = me.objToDom(iterNode.ownerDocument, Ext.merge({
-                            name : objStructure.name
-                        }, source));
-                        me.insertChildInOrder(iterNode, node, parentStructure, objStructure);
-                    } else {
-                        iterNode = tmpNode;
-                    }
-                }
-                parentStructure = objStructure;
-            });
-
-        }
-        return node;
-    },
-
-
-    getElementStructurePath: function(name, structure, inChildren) {
-        var me = this, path = [], chPath = [];
-        if(structure.name != name) {
-            for(var i = 0; i<structure.children.length; i++) {
-                chPath = me.getElementStructurePath(name, structure.children[i], structure.children);
-                if(chPath.length) {
-                    path = Ext.Array.merge([structure], chPath);
-                    break;
-                }
-            }
-        } else {
-            path = [structure];
-        }
-        return path;
-    },
-
-
-    insertTextModChildInOrder: function(parent, child) {
-        var me = this, 
-            txtModStructure = {
-                name: "textualMod",
-                children: [
-                    {
-                        name: "previous", children: []
-                    },
-                    {
-                        name: "old", children: []
-                    },
-                    {
-                        name: "new", children: []
-                    }
-                ]
-            },
-            type = child.getAttribute("class"),
-            childStructure = txtModStructure.children.filter(function(el) {return el.name == type;})[0];
-
-        if(childStructure) {
-            me.insertChildInOrder(parent, child, txtModStructure, childStructure);
-        }
-    },
-
-    insertChildInOrder: function(parent, child, parentStructure, childStructure) {
-        var indexInParent = parentStructure.children.indexOf(childStructure),
-            refNode, tmpNode;
-        if(indexInParent == -1 || indexInParent == parentStructure.children.length-1) {
-            parent.appendChild(child);
-        } else {
-            for(var i = indexInParent+1; i < parentStructure.children.length; i++) {
-                refNode = parent.querySelector("[class='" + parentStructure.children[i].name + "']");
-                if(refNode) break;
-            }
-            if(refNode) {
-                parent.insertBefore(child, refNode);
-            } else {
-                parent.appendChild(child);
-            }
-        }
-    },
-
-
-    objToDom: function(doc, obj) {
-        var me = this, node, childNode;
-        if(obj.name) {
-            node = doc.createElement("div");
-            node.setAttribute("class", obj.name);
-            Ext.each(obj.attributes, function(attribute) {
-                node.setAttribute(attribute.name, attribute.value);
-            });
-            if(!Ext.isEmpty(obj.text)) {
-                childNode = doc.createTextNode(obj.text);
-                node.appendChild(childNode);
-            } else {
-                Ext.each(obj.children, function(child) {
-                    childNode = me.objToDom(doc, child);
-                    if(childNode) {
-                        node.appendChild(childNode);
-                    }
-                });
-            }
-        }
-        return node;
-    },
-
-    getDocumentMetadata: function() {
-        return this.getController("Editor").getDocumentMetadata();
     },
 
     setElementStyles: function(markedElements, button, originalButton, buttonCfg) {
@@ -1076,9 +838,8 @@ Ext.define('AknModsMarker.Controller', {
         });
     },
 
-    getTextualModId: function( parent ) {
-        var textualMods = parent.querySelectorAll("*[class~=textualMod]");
-        return "pmod_"+(textualMods.length+1);
+    getTextualModId: function() {
+        return "pmod_"+(this.getModifications().count()+1);
     },
 
     activeInsertionHandler: function(button, markedElements, originalButton) {
@@ -1089,19 +850,14 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     addActiveInsMeta: function(node) {
-        var me = this, hrefAttr = LangProp.attrPrefix+"href";
-            quotedEl = node.querySelector("*[class~=quotedStructure], *[class~=quotedText]"),
+        var quotedEl = node.querySelector("*[class~=quotedStructure], *[class~=quotedText]"),
             newHref = (quotedEl) ? quotedEl.getAttribute(DomUtils.elementIdAttribute) : "";
 
-        var meta = [{
-            name: "new",
-            attributes: [{
-                name: hrefAttr,
-                value: "#"+newHref
-            }]
-        }];
+        var meta = {
+            "new": newHref
+        };
 
-        return me.addActiveMeta(node, 'insertion', meta);
+        return this.addActiveMeta(node, 'insertion', meta);
     },
 
     activeDelHandler: function(button, markedElements, originalButton) {
@@ -1112,65 +868,48 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     addActiveDelMeta: function(node) {
-        var me = this, hrefAttr = LangProp.attrPrefix+"href";
-        return me.addActiveMeta(node, 'repeal');
+        return this.addActiveMeta(node, 'repeal');
     },
 
     findModRef: function(node) {
-        var ref = Array.prototype.slice.call(node.querySelectorAll("*[class~=ref]")).filter(function(el) {
+        var ref = Array.prototype.slice.call(node.querySelectorAll('*[class~=ref]')).filter(function(el) {
             return (node == DomUtils.getFirstMarkedAncestor(el.parentNode));
         })[0];
-        return (ref) ? ref.getAttribute(LangProp.attrPrefix+"href") : "#";
+        var value = (ref) ? ref.getAttribute(LangProp.attrPrefix+"href") : '';
+
+        return (value && value.startsWith('#')) ? value.substring(1) : value;
     },
 
-    addActiveMeta: function(node, type, metaElements) {
-        var activeModifications = this.getOrCreatePathMetaDom("analysis/activeModifications"),
-            hrefAttr = LangProp.attrPrefix+"href";
+    addActiveMeta: function(node, type, meta) {
+        meta = meta || {};
+        var data = {
+            amendmentType: 'active',
+            type: 'textualMod',
+            modType: type,
+            eid: this.getTextualModId(),
+            nodeId: node.getAttribute(DomUtils.elementIdAttribute)
+        };
+        var mod = this.getModifications().add(data)[0];
 
-        var standardMeta = [{
-            name: "source",
-            attributes: [{
-                name: hrefAttr,
-                value: "#"+node.getAttribute(DomUtils.elementIdAttribute)
-            }]
-        },{
-            name: "destination",
-            attributes: [{
-                name: hrefAttr,
-                value: this.findModRef(node)
-            }]
-        }];
+        mod.sourceDestinations().add({
+            type: 'source',
+            href: node.getAttribute(DomUtils.elementIdAttribute)
+        });
+        mod.sourceDestinations().add({
+            type: 'destination',
+            href: this.findModRef(node)
+        });
 
-        metaElements = (metaElements) ? standardMeta.concat(metaElements) : standardMeta;
+        if (meta.new)
+            mod.textualChanges().add({ type: 'new', href: meta['new']});
 
-        var textModObj = this.buildTexModObj(type, metaElements, activeModifications);
-        var textualMod = this.objToDom(activeModifications.ownerDocument, textModObj);
-        activeModifications.appendChild(textualMod);
+        if (meta.old)
+            mod.textualChanges().add({ type: 'old', href: meta['old']});
 
         this.setModDataAttributes(node, type);
-
-        return textualMod;
+        return mod;
     },
 
-    addPassiveMeta: function(node, type, metaElements) {
-        var passiveModifications = this.getOrCreatePathMetaDom("analysis/passiveModifications"),
-            hrefAttr = LangProp.attrPrefix+"href";
-
-        var standardMeta = [{
-            name: "source",
-            attributes: [{
-                name: hrefAttr,
-                value: " "
-            }]
-        }];
-
-        metaElements = (metaElements) ? standardMeta.concat(metaElements) : standardMeta;
-
-        var textModObj = this.buildTexModObj(type, metaElements, passiveModifications);
-        var textualMod = this.objToDom(passiveModifications.ownerDocument, textModObj);
-        passiveModifications.appendChild(textualMod);
-        return textualMod;
-    },
 
     activeSubstitutionHandler: function(button, markedElements, originalButton) {
         if(!markedElements.length) return;
@@ -1180,45 +919,40 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     addActiveSubMeta: function(node) {
-        var me = this, hrefAttr = LangProp.attrPrefix+"href";
-            quotedEls = node.querySelectorAll("*[class~=quotedStructure], *[class~=quotedText]");
+        var quotedEls = node.querySelectorAll("*[class~=quotedStructure], *[class~=quotedText]");
             newHref = (quotedEls[0]) ? quotedEls[0].getAttribute(DomUtils.elementIdAttribute) : "",
             oldHref = (quotedEls[1]) ? quotedEls[1].getAttribute(DomUtils.elementIdAttribute) : "";
 
-        var meta = [{
-            name: "old",
-            attributes: [{
-                name: hrefAttr,
-                value: "#"+oldHref
-            }]
-        },{
-            name: "new",
-            attributes: [{
-                name: hrefAttr,
-                value: "#"+newHref
-            }]
-        }];
-
-        return me.addActiveMeta(node, 'substitution', meta);
-    },
-
-    buildTexModObj: function(type, children, node) {
-        return textModObj = {
-            name: 'textualMod',
-            attributes: [{
-                name: 'type',
-                value: type
-            },{
-                name: 'period',
-                value: '#'
-            },{
-                name: 'eId',
-                value: this.getTextualModId(node)
-            }],
-            children: children
+        var meta = {
+            "old": oldHref,
+            "new": newHref
         };
+
+        return this.addActiveMeta(node, 'substitution', meta);
     },
 
+    addPassiveMeta: function(node, type, meta) {
+        meta = meta || {};
+        var data = Ext.merge({
+            amendmentType: 'passive',
+            type: 'textualMod',
+            modType: type,
+            eid: this.getTextualModId(),
+            nodeId: node.getAttribute(DomUtils.elementIdAttribute)
+        }, meta.extraData);
+
+        var mod = this.getModifications().add(data)[0];
+
+        Ext.each(meta.sourceDestinations, function(data) {
+            mod.sourceDestinations().add(data);
+        });
+        Ext.each(meta.textualChanges, function(data) {
+            mod.textualChanges().add(data);
+        });
+
+        this.setModDataAttributes(node, type);
+        return mod;
+    },
 
     activeJoinHandler: function(button, markedElements, originalButton) {
         if(!markedElements.length) return;
@@ -1241,24 +975,14 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     activeCommonMeta: function(node, type) {
-        var hrefAttr = LangProp.attrPrefix+"href",
-            quotedEls = node.querySelectorAll("*[class~=quotedStructure], *[class~=quotedText]"),
+        var quotedEls = node.querySelectorAll("*[class~=quotedStructure], *[class~=quotedText]"),
             newHref = (quotedEls[0]) ? quotedEls[0].getAttribute(DomUtils.elementIdAttribute) : "",
             oldHref = (quotedEls[1]) ? quotedEls[1].getAttribute(DomUtils.elementIdAttribute) : "";
 
-        var meta = [{
-            name: "old",
-            attributes: [{
-                name: hrefAttr,
-                value: "#"+oldHref
-            }]
-        },{
-            name: "new",
-            attributes: [{
-                name: hrefAttr,
-                value: "#"+newHref
-            }]
-        }];
+        var meta = {
+            "old": oldHref,
+            "new": newHref
+        };
 
         return this.addActiveMeta(node, type, meta);
     },
@@ -1285,13 +1009,9 @@ Ext.define('AknModsMarker.Controller', {
 
     insertionHandler: function(button, markedElements) {
         var node = markedElements[0];
-        var meta = [{
-            name: "destination",
-            attributes: [{
-                name: LangProp.attrPrefix+"href",
-                value: "#"+node.getAttribute(DomUtils.elementIdAttribute)
-            }]
-        }];
+        var meta = {
+            sourceDestinations: [{type:'destination', href: node.getAttribute(DomUtils.elementIdAttribute)}]
+        };
         this.setModDataAttributes(node, "insertion");
         var textualMod = this.addPassiveMeta(node, 'insertion', meta);
         if ( DocProperties.documentState != 'diffEditingScenarioB' ) {
@@ -1546,138 +1266,35 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     setSplitMetadataB: function(node1, node2) {
-        var me = this,
-            editorMeta = me.getDocumentMetadata(),
-            langPrefix = LangProp.attrPrefix,
-            metaDom = editorMeta.originalMetadata.metaDom,
-            passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
-            prevId = LangProp.getNodeLangAttr(node1, "eId").value || node1.getAttribute(DomUtils.elementIdAttribute),
-            expressionThis = metaDom.querySelector("[class=FRBRExpression] [class=FRBRthis]");
+        var prevId = LangProp.getNodeLangAttr(node1, "eId").value || 
+                        node1.getAttribute(DomUtils.elementIdAttribute);
 
-        var prevId = (expressionThis && expressionThis.getAttribute("value"))
-                ? expressionThis.getAttribute("value")+"#"+prevId : "#"+prevId;
-
-        textModObj = {
-            name: "textualMod",
-            attributes: [{
-                name: "type",
-                value: "split"
-            },{
-                name: "period",
-                value: "#"
-            },{
-                name: "eId",
-                value: me.getTextualModId(passiveModifications)
-            }],
-            children: [{
-                name: "source",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: " "
-                }]
-            },{
-                name : "destination",
-                attributes : [{
-                    name : langPrefix + "href",
-                    value : "#" + node1.getAttribute(DomUtils.elementIdAttribute)
-                }]
-            },{
-                name : "destination",
-                attributes : [{
-                    name : langPrefix + "href",
-                    value : "#" + node2.getAttribute(DomUtils.elementIdAttribute)
-                }]
-            },{
-                name: "previous",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: prevId
-                },{
-                    name: langPrefix+"showAs",
-                    value: "previous"
-                }]
-            }, {
-                name: "old",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: "#"+node1.getAttribute(DomUtils.elementIdAttribute)
-                }]
-            }]
+        var meta = {
+            extraData: { previous: prevId },
+            sourceDestinations: [
+                {type: 'destination', href: node1.getAttribute(DomUtils.elementIdAttribute)},
+                {type: 'destination', href: node2.getAttribute(DomUtils.elementIdAttribute)}
+            ],
+            textualChanges: [{type: 'old', href: node1.getAttribute(DomUtils.elementIdAttribute)}]
         };
-
-        textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
-        passiveModifications.appendChild(textualMod);
+        this.addPassiveMeta(node1, 'split', meta);
     },
 
     setSplitMetadata: function(prevNode, prevMeta, nodes) {
-        var me = this,
-            editorMeta = me.getDocumentMetadata();
+        // TODO: use prevMeta for prevId
+        var prevId = LangProp.getNodeLangAttr(prevNode, "eId").value 
+                    || prevNode.getAttribute(DomUtils.elementIdAttribute);
 
-        prevMeta = prevMeta || editorMeta.obj;
+        var sourceDestinations = nodes.map(function(node) {
+            return {type: 'destination', href: node.getAttribute(DomUtils.elementIdAttribute)};
+        });
 
-        var lpre = LangProp.attrPrefix,
-            metaDom = editorMeta.originalMetadata.metaDom,
-            passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
-            prevId = LangProp.getNodeLangAttr(prevNode, "eId").value || prevNode.getAttribute(DomUtils.elementIdAttribute),
-            expressionThis = prevMeta.identification &&
-                            prevMeta.identification.FRBRExpression &&
-                            prevMeta.identification.FRBRExpression.FRBRthis;
-
-        var prevId = (expressionThis && expressionThis.attr.value)
-                ? expressionThis.attr.value+"#"+prevId : "#"+prevId;
-
-        var children = [{
-                name: "source",
-                attributes: [{
-                    name: lpre+"href",
-                    value: " "
-                }]
-            }];
-
-        children = children.concat(nodes.map(function(node) {
-            return {
-                name : "destination",
-                attributes : [{
-                    name : lpre + "href",
-                    value : "#" + node.getAttribute(DomUtils.elementIdAttribute)
-                }]
-            };
-        }));
-
-        children = children.concat([{
-            name: "previous",
-            attributes: [{
-                name: lpre+"href",
-                value: prevId
-            },{
-                name: lpre+"showAs",
-                value: "previous"
-            }]
-        }, {
-            name: "old",
-            attributes: [{
-                name: lpre+"href",
-                value: prevId
-            }]
-        }]);
-
-        textModObj = {
-            name: "textualMod",
-            attributes: [{
-                name: "type",
-                value: "split"
-            },{
-                name: "period",
-                value: "#"
-            },{
-                name: "eId",
-                value: me.getTextualModId(passiveModifications)
-            }],
-            children: children
+        var meta = {
+            extraData: { previous: prevId },
+            sourceDestinations: sourceDestinations,
+            textualChanges: [{type: 'old', href: prevId}]
         };
-
-        textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
-        passiveModifications.appendChild(textualMod);
+        this.addPassiveMeta(nodes[0], 'split', meta);
     },
 
     joinHandler: function(button) {
@@ -1872,52 +1489,17 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     setJoinMetadata: function(joinedNode, joinedData) {
-        var me = this,
-            editorMeta = me.getDocumentMetadata(),
-            hrefAttr = LangProp.attrPrefix+"href",
-            metaDom = editorMeta.originalMetadata.metaDom,
-            passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
-            destId = joinedNode.getAttribute(DomUtils.elementIdAttribute);
-
-        textModObj = {
-            name: "textualMod",
-            attributes: [{
-                name: "type",
-                value: "join"
-            },{
-                name: "period",
-                value: "#"
-            },{
-                name: "eId",
-                value: me.getTextualModId(passiveModifications)
-            }],
-            children: [{
-                name: "source",
-                attributes: [{
-                    name: hrefAttr,
-                    value: " "
-                }]
-            },{
-                name: "destination",
-                attributes: [{
-                    name: hrefAttr,
-                    value: "#"+destId
-                }]
-            }]
-        };
-
-        Ext.each(joinedData, function(joinedEl) {
-            textModObj.children.push({
-                name : "old",
-                attributes : [{
-                    name : hrefAttr,
-                    value : "#" + joinedEl.langId || joinedEl.id
-                }]
-            });
+        var textualChanges = joinedData.map(function(joinedEl) {
+            return {type: 'old', href: joinedEl.langId || joinedEl.id};
         });
 
-        textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
-        passiveModifications.appendChild(textualMod);
+        var meta = {
+            sourceDestinations: [
+                {type: 'destination', href: joinedNode.getAttribute(DomUtils.elementIdAttribute)}
+            ],
+            textualChanges: textualChanges
+        };
+        this.addPassiveMeta(joinedNode, 'join', meta);
     },
 
     beforeDelHandler: function() {
@@ -2015,17 +1597,10 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     addDelMeta: function(node, oldText) {
-        var hrefAttr = LangProp.attrPrefix+"href";
-        var meta = [{
-            name: "destination",
-            attributes: [{
-                name: hrefAttr,
-                value: "#"+node.getAttribute(DomUtils.elementIdAttribute)
-            }]
-        },{
-            name: "old",
-            text: oldText
-        }];
+        var meta = {
+            sourceDestinations: [{type:'destination', href: node.getAttribute(DomUtils.elementIdAttribute)}],
+            textualChanges: [{type: 'old', text: oldText}]
+        };
         return this.addPassiveMeta(node, 'repeal', meta);
     },
 
@@ -2055,97 +1630,56 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     updateSubsMetadata: function(node, oldText) {
-        var hrefAttr = LangProp.attrPrefix+"href",
+        var me = this,
             elId = node.getAttribute(DomUtils.elementIdAttribute),
             parent = this.ensureHcontainerNode(node),
-            destId = (parent) ? parent.getAttribute(DomUtils.elementIdAttribute) : elId,
-            passiveModifications = this.getOrCreatePathMetaDom("analysis/passiveModifications"),
-            query = "*[class='textualMod'][type='substitution'] *[class='new']["+hrefAttr+"='#"+elId+"']",
-            prevTextualMod = passiveModifications.querySelector(query);
+            destId = (parent) ? parent.getAttribute(DomUtils.elementIdAttribute) : elId;
 
+        // Check if exists a textual mod for this node and remove it
+        var prevTextualMod = me.getTextualMods('passive').filter(function(mod) {
+            if (mod.modType !== 'substitution') return false;
+            var txtChanges = mod.getTextualChanges('new').filter(function(txtChange) {
+                return txtChange.get('href') == elId;
+            });
+            return txtChanges.length;
+        })[0];
         if(prevTextualMod)
-            passiveModifications.removeChild(prevTextualMod.parentNode);
+            me.getModifications().remove(prevTextualMod);
 
-        var meta = [{
-            name: "destination",
-            attributes: [{
-                name: hrefAttr,
-                value: "#"+destId
-            }]
-        },{
-            name: "old",
-            text: oldText
-        },{
-            name: "new",
-            attributes: [{
-                name: hrefAttr,
-                value: "#"+elId
-            }]
-        }];
+        var meta = {
+            sourceDestinations: [{type:'destination', href: destId}],
+            textualChanges: [
+                {type: 'old', text: oldText},
+                {type: 'new', href: elId}]
+        };
 
+        node.setAttribute('data-old-text', oldText);
         return this.addPassiveMeta(node, 'substitution', meta);
     },
 
     updateRenumberingMetadata: function(node, oldText, renumberedNode) {
         var me = this,
-            elId = LangProp.getNodeLangAttr(renumberedNode, "eId").value || renumberedNode.getAttribute(DomUtils.elementIdAttribute),
-            editorMeta = me.getDocumentMetadata(),
-            parent = renumberedNode,
-            parentId = (parent) ? parent.getAttribute(DomUtils.elementIdAttribute) : elId,
-            langPrefix = LangProp.attrPrefix,
-            metaDom = editorMeta.originalMetadata.metaDom,
-            passiveModifications = me.getOrCreatePath(metaDom, "analysis/passiveModifications"),
-            query = "*[class='textualMod'][type='renumbering'] *[class='destination']["+langPrefix+"href='#"+parentId+"']",
-            prevTextualMod = passiveModifications.querySelector(query), textualMod,
-            textModObj = {},
-            expressionThis = metaDom.querySelector("[class=FRBRExpression] [class=FRBRthis]");
+            elId = LangProp.getNodeLangAttr(renumberedNode, "eId").value 
+                    || renumberedNode.getAttribute(DomUtils.elementIdAttribute);
 
-        elId = (expressionThis && expressionThis.getAttribute("value"))
-                ? expressionThis.getAttribute("value")+"#"+elId : "#"+elId;
+        // Check if exists a textual mod for this node and remove it
+        var prevTextualMod = me.getTextualMods('passive').filter(function(mod) {
+            if (mod.modType !== 'renumbering') return false;
+            var destinations = mod.getTextualChanges('destination').filter(function(dest) {
+                return dest.get('href') == elId;
+            });
+            return destinations.length;
+        })[0];
+        if(prevTextualMod)
+            me.getModifications().remove(prevTextualMod);
 
-        textModObj = {
-            name: "textualMod",
-            attributes: [{
-                name: "type",
-                value: "renumbering"
-            },{
-                name: "period",
-                value: "#"
-            },{
-                name: "eId",
-                value: me.getTextualModId(passiveModifications)
-            }],
-            children: [{
-                name: "source",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: " "
-                }]
-            },{
-                name: "destination",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: "#"+parentId
-                }]
-            },{
-                name: "previous",
-                attributes: [{
-                    name: langPrefix+"href",
-                    value: elId
-                },{
-                    name: langPrefix+"showAs",
-                    value: "previous"
-                }]
-            }]
+        var meta = {
+            extraData: { previous: elId },
+            sourceDestinations: [
+                {type: 'destination', href: elId}
+            ]
         };
-
-        textualMod = me.objToDom(metaDom.ownerDocument, textModObj);
-        if(prevTextualMod) {
-            prevTextualMod = prevTextualMod.parentNode;
-            passiveModifications.replaceChild(textualMod, prevTextualMod);
-        } else {
-            passiveModifications.appendChild(textualMod);
-        }
+        this.addPassiveMeta(node, 'renumbering', meta);
     },
 
     beforeSubstitutionHandler: function(aliasButton, elements) {
@@ -2305,47 +1839,45 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     createSubstitution: function(node, formText, update) {
-        var me = this, editor = me.getController("Editor"),
-            oldText = formText,
-            button = DocProperties.getFirstButtonByName("ins");
+        if ( DocProperties.documentState == 'diffEditingScenarioB' )
+            this.createSubstitutionConsolidation(node, update);
+        else
+            this.createSubstitutionAmendment(node, formText, update);
+    },
 
-        if ( DocProperties.documentState == 'diffEditingScenarioB' ) {
-            var formText = false;
-            if ( update ) {
-                formText = node.getAttribute('data-old-text');
-            }
-            me.createAndShowFloatingForm(node, Locale.getString("oldText", me.getPluginName()), formText, false, function(cmp, text) {
-                me.updateSubsMetadata(node, text);
-                node.setAttribute('data-old-text', text);
-                me.setModDataAttributes(node, "substitution");
+    createSubstitutionConsolidation: function(node, update) {
+        var me = this, 
+            oldText = (update) ? node.getAttribute('data-old-text') : '';
+        me.createAndShowFloatingForm(node, Locale.getString("oldText", me.getPluginName()), oldText, false, function(cmp, text) {
+            me.updateSubsMetadata(node, text);
+            cmp.close();
+        }, function(cmp) {
+            cmp.close();
+            if ( !update )
+                DomUtils.unwrapNode(node);
+        });
+    },    
+
+    createSubstitutionAmendment: function(node, oldText, update) {
+        var me = this, editor = me.getController("Editor");
+        if(!update) {
+            oldText = DomUtils.getTextOfNode(node).trim();
+            me.updateSubsMetadata(node, oldText);
+            me.createAndShowFloatingForm(node, "Insert the new text", false, false, function(cmp, text) {
+                node.textContent = text;
                 cmp.close();
             }, function(cmp) {
                 cmp.close();
-                if ( !update ) {
-                    DomUtils.unwrapNode(node);
-                }
             });
         } else {
-            if(!update) {
-                oldText = DomUtils.getTextOfNode(node).trim();
-                me.updateSubsMetadata(node, oldText);
-                me.setModDataAttributes(node, "substitution");
-                me.createAndShowFloatingForm(node, "Insert the new text", false, false, function(cmp, text) {
-                    node.textContent = text;
-                    cmp.close();
-                }, function(cmp) {
-                    cmp.close();
-                });
-            } else {
-                me.openedForm = me.createAndShowFloatingForm(node, Locale.getString("oldText", me.getPluginName()), oldText.trim(), true);
-            }
-            Ext.defer(function() {
-                editor.getEditor().focus();
-                if(!update) {
-                    editor.selectNode(node);
-                }
-            }, 40);
+            oldText = oldText || '';
+            me.openedForm = me.createAndShowFloatingForm(node, Locale.getString("oldText", me.getPluginName()), oldText.trim(), true);
         }
+        Ext.defer(function() {
+            editor.getEditor().focus();
+            if(!update)
+                editor.selectNode(node);
+        }, 40);
     },
 
     createAndShowFloatingForm: function(node, title ,text, readOnly, onAccept, onCancel, customConfig) {
@@ -2410,82 +1942,7 @@ Ext.define('AknModsMarker.Controller', {
         return panel;
     },
 
-    substitutionUpdate: function(node, textMod) {
-        var oldEl = textMod.querySelector("*[class='old']");
-        this.createSubstitution(node, DomUtils.getTextOfNode(oldEl), true);
-    },
-
-    getAnalysisByNodeOrNodeId: function(node, nodeId) {
-        var me = this, id = nodeId || node.getAttribute(DomUtils.elementIdAttribute),
-            editorMeta = me.getDocumentMetadata(),
-            metaDom = editorMeta.originalMetadata.metaDom,
-            metaEl = metaDom.querySelector("*["+LangProp.attrPrefix+"href='#"+id+"']");
-
-        if(metaEl && metaEl.parentNode) {
-            return {
-                analysis: metaEl.parentNode,
-                node: metaEl,
-                type: metaEl.parentNode.getAttribute("type")
-            };
-        }
-    },
-
-    detectModifications: function(node, nodeId, unmarked, noAction) {
-        var me = this, elId = nodeId || node.getAttribute(DomUtils.elementIdAttribute),
-            editorMeta = me.getDocumentMetadata(),
-            langPrefix = LangProp.attrPrefix,
-            metaDom = editorMeta.originalMetadata.metaDom,
-            textModChild = metaDom.querySelector("*["+langPrefix+"href='#"+elId+"']"),
-            textMod, modType;
-
-        if(textModChild && textModChild.parentNode) {
-            textMod = textModChild.parentNode;
-            modType= textMod.getAttribute('type');
-            if(noAction) {
-                return {
-                    textMod: textMod,
-                    modElement: textModChild
-                };
-            }
-            if ( unmarked ) {
-                var elConf = DocProperties.getElementConfig(DomUtils.getButtonIdByElementId(elId));
-                if (textMod.parentNode.classList[0] != 'activeModifications' || elConf.name == 'mod')
-                    me.unmarkModMeta(textMod);
-                else
-                    textModChild.setAttribute(langPrefix+'href', '#');
-                return;
-            }
-
-            switch(modType) {
-                case "substitution":
-                    if(textMod.parentNode.getAttribute("class") != "activeModifications"
-                            && textModChild.getAttribute("class") == "new") {
-                            me.substitutionUpdate(node, textMod);
-                    }
-                    break;
-                case "insertion":
-                    break;
-                case "repeal":
-                    if(textMod.parentNode.getAttribute("class") != "activeModifications")
-                        me.showOldText(node, DomUtils.getTextOfNode(textMod.querySelector("*[class='old']")));
-                    break;
-            }
-        }
-
-        return null;
-    },
-
-    unmarkModMeta: function(textModNode) {
-        var modifications = textModNode.parentNode;
-        modifications.removeChild(textModNode);
-
-        if ( !modifications.childNodes.length ) {
-            modifications.parentNode.removeChild(modifications);
-        }
-    },
-
-    askForRenumbering: function(modEl, textualMod) {
-
+    askForRenumbering: function(modEl, textualMod) { //TODO: localize
         var me = this, win = Ext.widget("window", {
             title: "This modification has caused a renumbering?",
             closable: false,
@@ -2513,46 +1970,9 @@ Ext.define('AknModsMarker.Controller', {
                 }]
             }]
         }).show();
-        /*Ext.Msg.confirm("Renumbering", "This modification has caused a renumbering?", function(response) {
-            if(response == "yes") {
-                console.log(modEl, textualMod);
-            }
-        }, this);*/
     },
 
     addRenumberingAfterMod: function(modEl, textualMod) {
-        //TODO:
-    },
-
-    editorNodeFocused: function(node) {
-        var me = this;
-        if(me.openedForm) {
-            me.openedForm.close();
-            me.openedForm = null;
-        }
-        if(node) {
-            try {
-                me.detectModifications(node);
-            } catch(e) {
-                Ext.log({level: "error"}, e);
-            }
-        }
-
-        Ext.callback(this.editorClickHandlerCustom, this, [node, me.getController("Editor").getEditor()]);
-    },
-
-    nodesUnmarked: function(nodesIds) {
-        var me = this;
-        Ext.each(nodesIds, function(nodeId) {
-            try {
-                me.detectModifications(null, nodeId, true);
-            } catch(e) {
-                Ext.log({level: "error"}, e);
-            }
-        });
-    },
-
-    showOldText: function(node, oldText) {
-        this.openedForm = this.createAndShowFloatingForm(node, Locale.getString("oldText", this.getPluginName()), oldText.trim(), true);
+        //TODO: implement
     }
 });

@@ -228,5 +228,11 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         };
 
         return this.applyTemplate(data);
+    },
+
+    normalizeHref: function(val) {
+        val = (val || '').trim();
+        val = val.startsWith('#') ? val.substring(1) : val;
+        return val;
     }
  });

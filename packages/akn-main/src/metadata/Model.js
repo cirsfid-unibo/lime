@@ -264,6 +264,29 @@ Ext.define('AknMain.metadata.Modification', {
                     'unknown',
                     'undefined',
                     'ignored'] }
+    },
+
+    getSourceDestinations: function(type) {
+        return this.getRecordsBy(this.sourceDestinations(), 'type', type);
+    },
+
+    getRecordsBy: function(store, prop, val) {
+        var res = [];
+        store.each(function(rec) {
+            if (!val || rec.get(prop) == val)
+                res.push(rec);
+        });
+        return res;
+    },
+
+    getTextualChanges: function(type) {
+        return this.getRecordsBy(this.textualChanges(), 'type', type);
+    },
+
+    getOldText: function() {
+        return this.getTextualChanges('old').map(function(old) {
+                return old.get('content');
+            }).join(' ').trim();
     }
 });
 

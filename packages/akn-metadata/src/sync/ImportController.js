@@ -51,7 +51,8 @@ Ext.define('AknMetadata.sync.ImportController', {
 
     requires: [
         'AknMain.xml.Document',
-        'AknMain.Uri'
+        'AknMain.Uri',
+        'AknMain.metadata.HtmlSerializer'
     ],
 
     listen: {
@@ -173,15 +174,10 @@ Ext.define('AknMetadata.sync.ImportController', {
         }
 
         function importModifications () {
-            var normalizeHref = function(val) {
-                val = (val || '').trim();
-                val = val.startsWith('#') ? val.substring(1) : val;
-                return val;
-            }
             var addTextualChanges = function(node, mod) {
                 var data = {
                     type: node.tagName,
-                    href: normalizeHref(node.getAttribute('href')),
+                    href: AknMain.metadata.HtmlSerializer.normalizeHref(node.getAttribute('href')),
                     content: akn.getValue('.//text()', node).trim()
                 };
                 mod.textualChanges().add(data);
@@ -190,7 +186,7 @@ Ext.define('AknMetadata.sync.ImportController', {
             var addSourceDestination = function(node, mod) {
                 var data = {
                     type: node.tagName,
-                    href: normalizeHref(node.getAttribute('href')),
+                    href: AknMain.metadata.HtmlSerializer.normalizeHref(node.getAttribute('href')),
                     pos: node.getAttribute('pos'),
                     exclusion: node.getAttribute('exclusion'),
                     incomplete: node.getAttribute('incomplete'),
