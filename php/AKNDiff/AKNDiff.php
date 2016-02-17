@@ -94,7 +94,18 @@ class AKNDiff {
 			$doc2 = new DOMDocument();
 			$doc2->preserveWhiteSpace = FALSE;
 			$doc2->load($doc_2);
-			
+
+            $finder = new DomXPath($doc1);
+            $firstAkn = $finder->query("/*[local-name() = 'akomaNtoso']");
+			$finder = new DomXPath($doc2);
+            $secondAkn = $finder->query("/*[local-name() = 'akomaNtoso']");
+
+            if (!$firstAkn->length || !$secondAkn->length) {
+                header('HTTP/1.1 400 Bad Request');
+                echo 'No akomaNtoso document';
+                return;
+            }
+
 			$this->prepareDocuments($doc1,$doc2);
 		}
 	}

@@ -72,6 +72,8 @@ Ext.define('AknModsMarker.Controller', {
         externalConnectedElements: ["quotedStructure", "quotedText", "ref", "rref", "mref"]
     },
 
+    modsMap: {},
+
     init : function() {
         var me = this;
         me.application.on(Statics.eventsNames.editorDomNodeFocused, me.editorNodeFocused, me);
@@ -143,16 +145,15 @@ Ext.define('AknModsMarker.Controller', {
 
     showModInfo: function(node) {
         var mod = this.getModFromNode(node, 'passive');
-        console.log(mod);
         if(!mod || !mod.modElement) return;
 
-        switch(mod.textualMod.get('modType')) {
+        switch(mod.textMod.get('modType')) {
             case "substitution":
                 if(mod.modElement.get('type') == 'new')
-                    this.createSubstitution(node, mod.textualMod.getOldText(), true);
+                    this.createSubstitution(node, mod.textMod.getOldText(), true);
                 break;
             case "repeal":
-                return this.showOldText(node, mod.textualMod.getOldText());
+                return this.showOldText(node, mod.textMod.getOldText());
         }
     },
 
@@ -170,11 +171,25 @@ Ext.define('AknModsMarker.Controller', {
         if(!mod || !mod.modElement) return;
 
         var elConf = DocProperties.getElementConfig(DomUtils.getButtonIdByElementId(elId));
-        console.log(elConf);
-        if (!elConf || elConf.name == 'mod' || mod.textualMod.get('amendmentType') == 'passive')
-            this.getModifications().remove(mod.textualMod);
-        else
+        if (!elConf || elConf.name == 'mod' || mod.textMod.get('amendmentType') == 'passive')
+            this.removeMod(elId);
+        else {
             mod.modElement.set('href', '');
+            delete this.modsMap[elId];
+        }
+    },
+
+    removeMod: function(id) {
+        var mod = this.modsMap[id];
+        if (!mod) return;
+        delete this.modsMap[id];
+        // Search and remove all the references to this mod
+        Object.keys(this.modsMap).filter(function(id) {
+            return this.modsMap[id] === mod;
+        }, this).forEach(function(id) {
+            delete this.modsMap[id];
+        }, this);
+        this.getModifications().remove(mod);
     },
 
     onDocumentLoaded : function(docConfig) {
@@ -409,8 +424,10 @@ Ext.define('AknModsMarker.Controller', {
             var href = rec.get('href'),
                 modNode = getNodeByModRec(rec);
             if (!href || !modNode) return;
+            var id = modNode.getAttribute(DomUtils.elementIdAttribute);
             // Set the source href to internetId because the eId can change at the translation this should be reverted
-            rec.set('href', modNode.getAttribute(DomUtils.elementIdAttribute));
+            rec.set('href', id);
+            me.modsMap[id] = mod;
             me.setModDataAttributes(modNode, mod.get('modType'));
             return modNode;
         };
@@ -494,7 +511,8 @@ Ext.define('AknModsMarker.Controller', {
 
         var me = this,
             mod = this.getModFromNode(node, 'active'),
-            modType = mod && mod.textualMod.get('modType');
+            modType = mod && mod.textMod.get('modType');
+
         menu.add(['-', {
             text : Locale.getString("modType", me.getPluginName()),
             name: "modType",
@@ -540,7 +558,7 @@ Ext.define('AknModsMarker.Controller', {
         };
 
         var onSelectRefItem = function(item) {
-            var dest = mod.textualMod.getSourceDestinations('destination')[0];
+            var dest = mod.textMod.getSourceDestinations('destination')[0];
             if (dest)
                 dest.set('href', 
                     AknMain.metadata.HtmlSerializer.normalizeHref(item.ref.node.getAttribute(LangProp.attrPrefix+'href')));
@@ -662,21 +680,17 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     getModFromElId: function(id, amendmentType) {
-        var mods = this.getTextualMods(amendmentType).map(function(mod) {
-            var modEls = mod.getSourceDestinations()
-                            .concat(mod.getTextualChanges());
-            
-            modEls = modEls.filter(function(modEl) {
-                return modEl.get('href') === id;
-            });
-            return {
-                textMod: mod,
-                modElement: modEls[0]
-            };
-        }).filter(function(obj) {
-            return obj.modElement !== undefined;
-        });
-        return mods[0];
+        var mod = this.modsMap[id];
+        if (!mod) return;
+        var modEls = mod.getSourceDestinations()
+                        .concat(mod.getTextualChanges())
+                        .filter(function(modEl) {
+                            return modEl.get('href') === id;
+                        });
+        return {
+            textMod: mod,
+            modElement: modEls[0]
+        };
     },
 
     addPosMenuItems: function(menu, node, elementName, markedParent) {
@@ -765,8 +779,8 @@ Ext.define('AknModsMarker.Controller', {
     onModTypeSelected: function(cmp, checked) {
         var me = this;
         if(checked && cmp.refNode) {
-            var meta = me.getAnalysisByNodeOrNodeId(cmp.refNode);
-            if (meta && meta.type == cmp.modType) return;
+            var mod = me.getModFromNode(cmp.refNode);
+            if (mod && mod.textMod.get('modType') == cmp.modType) return;
             me.addModMetadata(cmp.refNode, cmp.modType);
         } else if(!checked) {
             me.setModDataAttributes(cmp.refNode, false);
@@ -774,18 +788,14 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     addModMetadata: function(node, type) {
+        this.removeMod(node.getAttribute(DomUtils.elementIdAttribute));
         switch(type) {
             case 'insertion':
-                this.addActiveInsMeta(node);
-                break;
+                return this.addActiveInsMeta(node);
             case 'substitution':
-                this.addActiveSubMeta(node);
-                break;
+                return this.addActiveSubMeta(node);
             case 'repeal':
-                this.addActiveDelMeta(node);
-                break;
-            default:
-                return;
+                return this.addActiveDelMeta(node);
         }
     },
 
@@ -886,10 +896,10 @@ Ext.define('AknModsMarker.Controller', {
             amendmentType: 'active',
             type: 'textualMod',
             modType: type,
-            eid: this.getTextualModId(),
-            nodeId: node.getAttribute(DomUtils.elementIdAttribute)
+            eid: this.getTextualModId() 
         };
         var mod = this.getModifications().add(data)[0];
+        this.modsMap[node.getAttribute(DomUtils.elementIdAttribute)] = mod;
 
         mod.sourceDestinations().add({
             type: 'source',
@@ -905,7 +915,6 @@ Ext.define('AknModsMarker.Controller', {
 
         if (meta.old)
             mod.textualChanges().add({ type: 'old', href: meta['old']});
-
         this.setModDataAttributes(node, type);
         return mod;
     },
@@ -937,11 +946,10 @@ Ext.define('AknModsMarker.Controller', {
             amendmentType: 'passive',
             type: 'textualMod',
             modType: type,
-            eid: this.getTextualModId(),
-            nodeId: node.getAttribute(DomUtils.elementIdAttribute)
+            eid: this.getTextualModId()
         }, meta.extraData);
-
         var mod = this.getModifications().add(data)[0];
+        this.modsMap[node.getAttribute(DomUtils.elementIdAttribute)] = mod;
 
         Ext.each(meta.sourceDestinations, function(data) {
             mod.sourceDestinations().add(data);
@@ -1635,16 +1643,7 @@ Ext.define('AknModsMarker.Controller', {
             parent = this.ensureHcontainerNode(node),
             destId = (parent) ? parent.getAttribute(DomUtils.elementIdAttribute) : elId;
 
-        // Check if exists a textual mod for this node and remove it
-        var prevTextualMod = me.getTextualMods('passive').filter(function(mod) {
-            if (mod.modType !== 'substitution') return false;
-            var txtChanges = mod.getTextualChanges('new').filter(function(txtChange) {
-                return txtChange.get('href') == elId;
-            });
-            return txtChanges.length;
-        })[0];
-        if(prevTextualMod)
-            me.getModifications().remove(prevTextualMod);
+        this.removeMod(elId); // Remove the possibly existing mod
 
         var meta = {
             sourceDestinations: [{type:'destination', href: destId}],
@@ -1662,17 +1661,7 @@ Ext.define('AknModsMarker.Controller', {
             elId = LangProp.getNodeLangAttr(renumberedNode, "eId").value 
                     || renumberedNode.getAttribute(DomUtils.elementIdAttribute);
 
-        // Check if exists a textual mod for this node and remove it
-        var prevTextualMod = me.getTextualMods('passive').filter(function(mod) {
-            if (mod.modType !== 'renumbering') return false;
-            var destinations = mod.getTextualChanges('destination').filter(function(dest) {
-                return dest.get('href') == elId;
-            });
-            return destinations.length;
-        })[0];
-        if(prevTextualMod)
-            me.getModifications().remove(prevTextualMod);
-
+        this.removeMod(elId); // Remove the possibly existing mod
         var meta = {
             extraData: { previous: elId },
             sourceDestinations: [
