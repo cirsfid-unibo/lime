@@ -1,4 +1,9 @@
 
+// This script:
+// - converts an xml akomantoso document to html (transform function)
+// - splits its content into pages by adding divs (addPages function)
+// - Adds line numbers (renderLineNumbers function)
+
 var Preview = {
     start: start,
     setSize: setSize
@@ -23,17 +28,17 @@ function addLinkHandlers () {
     });
 }
 
-function cloneDoc (xml) {   
+function cloneDoc (xml) {
     Preview.dom = $('.document')[0];
     var parser = new DOMParser();
     var dom = parser.parseFromString(xml, "text/xml");
     transform(dom, Preview.dom);
 }
 
-// Transform the input XML DOM in HTML and copy it to output. 
+// Transform the input XML DOM in HTML and copy it to output.
 // Split text nodes in fragments.
 function transform (input, output) {
- 
+
     switch (input.nodeType) {
     case 3: // Text
         var text = input.wholeText.trim();
@@ -49,7 +54,7 @@ function transform (input, output) {
             });
         }
         break;
- 
+
     case 9: // Document
     case 1: // Element
         var el = document.createElement('div');
@@ -60,12 +65,12 @@ function transform (input, output) {
                 var name = input.attributes[i].name.replace('ndiff:', '');
                 el.dataset[name] = input.attributes[i].value;
             }
- 
+
         var children = input.childNodes;
         for (var i = 0; i < children.length; i++)
             transform(children[i], el);
         break;
- 
+
     default:
         console.log('Unknown node type:', input.nodeType);
     }
@@ -76,7 +81,7 @@ function transform (input, output) {
 // Add some computations to set its css to start relative to the page instead of
 // the parent element.
 // Set the data-page attribute of each fragment with the relative page.
-// Move every page break exactly PAGE_SIZE pixels after the last one, 
+// Move every page break exactly PAGE_SIZE pixels after the last one,
 // thus making pages seam of the same height.
 // Force document height to be a multiple of pages.
 function addPages () {
@@ -94,7 +99,7 @@ function addPages () {
     // Detect fragments before which we should insert a page break
     var breakingFragments = [];
     getAllFragments().forEach(function (fragment) {
-        var expectedBreak = pagePos.top 
+        var expectedBreak = pagePos.top
             + (page+1) * (PAGE_SIZE - PAGE_BREAK_MARGIN_TOP)
             - (page) * (PAGE_BREAK_MARGIN_BOTTOM);
         if (fragment.start > expectedBreak) {
@@ -112,6 +117,8 @@ function addPages () {
     breakingFragments.forEach(function (fragment) {
         // console.log('Adding page at', fragment.start, fragment.node);
         var node = fragment.node;
+        // If the fragment is the first child of its parent, we want to add
+        // the page breack before the containing div
         while (node == node.parentNode.firstChild) {
             node = node.parentNode;
         }
@@ -127,8 +134,8 @@ function addPages () {
     for (var page = 0; page < breaks.length; page++) {
         var el = breaks[page];
         var pos = $(el).offset();
-        
-        var adjustment = pos.top - pagePos.top 
+
+        var adjustment = pos.top - pagePos.top
             - (page * PAGE_BREAK_HEIGHT)
             // - (page * PAGE_BREAK_MARGIN)
             // - ((page+1) * PAGE_BREAK_MARGIN)
@@ -176,6 +183,7 @@ function getAllFragments () {
     }).toArray();
 }
 
+// Filter fragments after the formula tag (which is where line numeration starts)
 function getAfterFormulaFilter () {
     var firstFormula = Preview.dom.querySelector('.formula'),
         firstFragment = Preview.dom.querySelector('.fragment'),
