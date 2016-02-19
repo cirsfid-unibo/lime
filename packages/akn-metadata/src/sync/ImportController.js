@@ -223,7 +223,9 @@ Ext.define('AknMetadata.sync.ImportController', {
         }
 
         function importWork() {
-            store.set('date',    new Date(akn.getValue('//akn:FRBRWork/akn:FRBRdate/@date') || uri.date));
+            var date = new Date(akn.getValue('//akn:FRBRWork/akn:FRBRdate/@date') || uri.date);
+            date = (Utilities.isValidDate(date)) ? date : new Date();
+            store.set('date', date);
             store.set('author',  uri.author);
             store.set('number',  akn.getValue('//akn:FRBRWork/akn:FRBRnumber/@value'));
             store.set('name',    akn.getValue('//akn:FRBRWork/akn:FRBRname/@value'));
@@ -237,7 +239,9 @@ Ext.define('AknMetadata.sync.ImportController', {
         }
 
         function importExpression () {
-            store.set('version', new Date(akn.getValue('//akn:FRBRExpression/akn:FRBRdate/@date') || uri.version));
+            var date = new Date(akn.getValue('//akn:FRBRExpression/akn:FRBRdate/@date') || uri.version);
+            if (Utilities.isValidDate(date))
+                store.set('version', date);
             store.set('language', akn.getValue('//akn:FRBRExpression/akn:FRBRlanguage/@language') || uri.language);
             store.setExpressionAuthor(getReference('//akn:FRBRExpression/akn:FRBRauthor/@href'));
             store.setExpressionAuthorRole(getReference('//akn:FRBRExpression/akn:FRBRauthor/@as'));
@@ -254,7 +258,9 @@ Ext.define('AknMetadata.sync.ImportController', {
             store.set('pubblicationName', akn.getValue('//akn:publication/@name'));
             store.set('pubblicationShowAs', akn.getValue('//akn:publication/@showAs'));
             store.set('pubblicationNumber', akn.getValue('//akn:publication/@number'));
-            store.set('pubblicationDate', new Date(akn.getValue('//akn:publication/@date')));
+            var date = new Date(akn.getValue('//akn:publication/@date'));
+            if (Utilities.isValidDate(date))
+                store.set('pubblicationDate', date);
         }
 
         function getReference (xpath, fallback) {

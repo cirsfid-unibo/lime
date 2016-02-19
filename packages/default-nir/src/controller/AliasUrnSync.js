@@ -57,37 +57,26 @@ Ext.define('DefaultNir.controller.AliasUrnSync', {
         }
     },
 
-    setUrnAlias: function() {
-        var store = Ext.getStore('metadata').getMainDocument();
-        var uri = this.getUri();
-        if (!uri) return;
+    setUrnAlias: Utilities.events.debounce(function() {
+        var store = Ext.getStore('metadata').getMainDocument(),
+            urn = this.uriToUrnNir(store.getUri());
 
-        uri.date = AknMain.metadata.XmlSerializer.normalizeDate(store.get('date'));
-        uri.subtype = store.get('subtype');
-        uri.name = store.get('number');;
+        var found = false;
+        store.aliases().each(function(alias) {
+            if (alias.get('name') == 'urn:uri' && 
+                    alias.get('level') == 'work') {
+                alias.set('value', urn);
+                found = true;
+            }
+        });
 
-        var meta = this.getController('Editor').getDocumentMetadata().originalMetadata.metaDom;
-        var alias = meta.querySelector('[class="FRBRalias"][name="urn:uri"]') ||
-                    meta.querySelector('[class="FRBRalias"]');
-
-        if (!alias) return;
-
-        alias.setAttribute('name', 'urn:uri');
-        alias.setAttribute('value', this.uriToUrnNir(uri));
-        Ext.GlobalEvents.fireEvent('forceMetadataWidgetRefresh');
-    },
+        if (!found)
+            store.aliases().add({name: 'urn:uri', level: 'work', value: urn});
+    }, 100),
 
     uriToUrnNir: function(uri) {
         return 'urn:nir'+
                     (uri.subtype ? ':'+uri.subtype : '')+
                     ':'+uri.date+ (uri.name ? ';'+uri.name : '');
-    },
-
-    getUri: function() {
-        try {
-            // We know better than the Law of Demeter.
-            var oldUriStr = this.getController('Editor').getDocumentMetadata().originalMetadata.metaDom.querySelector('[class="FRBRManifestation"] [class="FRBRthis"]').getAttribute('value')
-            return AknMain.Uri.parse(oldUriStr);
-        } catch (e) {return; }
     }
 });

@@ -58,9 +58,9 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
         }
     },
 
-    onMetadataUpdate: function (store, record, operation, fields) {
+    onMetadataUpdate: Utilities.events.debounce(function () {
         this.getController('Editor').showDocumentIdentifier();
-    },
+    }, 100),
 
     init: function () {
         this.application.on({
