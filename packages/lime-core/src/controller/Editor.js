@@ -510,18 +510,6 @@ Ext.define('LIME.controller.Editor', {
         return null;
     },
 
-    getDocumentMetadata: function(docId) {
-        var result = {};
-        docId = docId || this.getCurrentDocId() || 0;
-
-        result.originalMetadata = DocProperties.docsMeta[docId];
-        if(result.originalMetadata) {
-            result.obj = DomUtils.nodeToJson(result.originalMetadata.metaDom);
-            return result;
-        }
-        return null;
-    },
-
     /**
      * Returns the currently selected node or one of its ascendants
      * found by looking at two possible conditions given as arguments: either

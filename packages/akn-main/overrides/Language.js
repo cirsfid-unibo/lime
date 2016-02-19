@@ -98,13 +98,12 @@ Ext.define('AknMain.Language', {
             params.docLang = metaResults[0].docLang;
             params.docLocale = metaResults[0].docLocale;
             params.docType = metaResults[0].docType;
-            params.metaDom = metaResults[0].metaDom;
         } else {
             metaResults.push(this.processMeta(null, params));
             metaResults[0].docType = params.docType;
-            params.metaDom = metaResults[0].metaDom;
         }
 
+        params.metaDom = metaResults.length && metaResults[0].metaDom;
         params.metaResults = metaResults;
 
         this.getController('AknMain.notes.Controller').preProcessNotes(params.docDom);
