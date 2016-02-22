@@ -910,10 +910,10 @@ Ext.define('AknModsMarker.Controller', {
             href: this.findModRef(node)
         });
 
-        if (meta.new)
+        if (meta['new'])
             mod.textualChanges().add({ type: 'new', href: meta['new']});
 
-        if (meta.old)
+        if (meta['old'])
             mod.textualChanges().add({ type: 'old', href: meta['old']});
         this.setModDataAttributes(node, type);
         return mod;

@@ -890,7 +890,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
             role = (signature) ? signature.down(".role", true) : null;
             asAttribute = (role) ? role.getAttribute(attr) : "";
-            node.setAttribute(prefix+"as", asAttribute);
+            node.setAttribute(LangProp.attrPrefix+"as", asAttribute);
             node.setAttribute(attr, "#"+id);
 
             me.addMetaReference({
