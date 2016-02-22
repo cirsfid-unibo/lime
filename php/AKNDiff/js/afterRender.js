@@ -5,7 +5,6 @@ function addVisualizationLayouts() {
     }
     applySplits();
     applyJoins();
-    //applyEqualCells();
     applyRenumbering();
 }
 
@@ -29,20 +28,6 @@ function applyRenumbering() {
                     createRenumberingCellBox(firstCell, secondCell, true);
                 }
 
-            }catch(e){};
-        }
-    }
-}
-
-function applyEqualCells() {
-    var equalCells = document.querySelectorAll("*[equalcell]:first-child");
-    for(var i = 0; i < equalCells.length; i++) {
-        var firstCell = equalCells.item(i),
-            equalId = firstCell.getAttribute("equalcell");
-            secondCell = document.querySelectorAll("*[equalcell='"+equalId+"']:last-of-type").item(0);
-        if(secondCell) {
-            try {
-                createEqualCellBox(firstCell, secondCell);
             }catch(e){};
         }
     }
@@ -105,77 +90,13 @@ function createRenumberingCellBox(firstCell, secondCell, leftToRight) {
     }
 }
 
-function createEqualCellBox(firstCell, secondCell) {
-    var firstEl = firstCell.firstChild || firstCell,
-        secondEl = secondCell.firstChild || secondCell,
-        styleFist = window.getComputedStyle(firstEl),
-        widthF = parseInt(styleFist.getPropertyValue("width")),
-        heightF = parseInt(styleFist.getPropertyValue("height")),
-        styleSecond = window.getComputedStyle(secondEl),
-        widthS = parseInt(styleSecond.getPropertyValue("width")),
-        heightS = parseInt(styleSecond.getPropertyValue("height")),
-        firstPos = getPos(firstEl),
-        secondPos = getPos(secondEl),
-        boxX = firstPos.x+widthF,
-        boxH = Math.max(heightS, heightF);
-
-     var svgBoxSettings = {
-        pos : {
-            x : boxX,
-            y : firstPos.y
-        },
-        size : {
-            w : secondPos.x-boxX,
-            h : boxH
-        }
-    };
-
-    if(!isNaN(svgBoxSettings.pos.x) &&
-        !isNaN(svgBoxSettings.pos.y) &&
-        !isNaN(svgBoxSettings.size.w) && !isNaN(svgBoxSettings.size.h)) {
-        var svgBox = createArrowsBox(svgBoxSettings);
-        createEqualArrows(svgBox, svgBoxSettings, {
-            pos : firstPos,
-            size : {
-                w : widthF,
-                h : heightF
-            }
-        },{
-            pos : secondPos,
-            size : {
-                w : widthS,
-                h : heightS
-            }
-        });
-
-        document.body.appendChild(svgBox);
-    }
-}
-
 function applyJoins() {
     var joins = document.querySelectorAll("*[joined]");
 
     for (var i = 0; i < joins.length; i++) {
         var el = joins[i], td = getParentByName(el, "td");
-
-        if (el.textContent == td.textContent)
-            drawTdJoin(td);
-        else
-            drawElJoin(el, td);
+        drawElJoin(el, td);
     }
-}
-
-function drawTdJoin(td) {
-    var targetElement = td.querySelector("*"),
-        oppositeTdsBBox = getOppositeTdsBBox(td);
-
-    drawArrows(targetElement, td, oppositeTdsBBox, 'join');
-}
-
-function getOppositeTdsBBox(td) {
-    var tds = getOppositeTds(td);
-
-    return getNodesBBox(tds);
 }
 
 function drawElJoin(el, td) {
@@ -186,18 +107,10 @@ function drawElJoin(el, td) {
     drawArrows(el, td, oppositeTdsBBox, 'join');
 }
 
-function drawTdSplit(td) {
-    var targetElement = td.querySelector("*"),
-    oppositeTdsBBox = getOppositeTdsBBox(td);
-
-    drawArrows(targetElement, td, oppositeTdsBBox, 'split');
-}
-
 function drawElSplit(el, td) {
     var splitId = el.getAttribute('tosplit'),
         nodesSplitted = document.querySelectorAll("*[splittedby='"+splitId+"']"),
         oppositeTdsBBox = getNodesBBox(nodesSplitted);
-
     drawArrows(el, td, oppositeTdsBBox, 'split');
 }
 
@@ -209,7 +122,11 @@ function drawArrows(el, td, oppositeTdsBBox, arrowsType) {
         tdPosInParent = getPosInParent(td);
 
     if ( oppositeTdsBBox.size.h > height ) {
-        el.style.height = oppositeTdsBBox.size.h;
+        var rows = oppositeTdsBBox.elements.map(function(el) {
+            return getParentByName(el.node, "tr");
+        });
+        if (rows[0] === rows[rows.length-1])
+            el.style.height = oppositeTdsBBox.size.h;
     }
 
     var svgBoxSettings = {
@@ -281,11 +198,7 @@ function applySplits() {
     var splitted = document.querySelectorAll("*[tosplit]");
     for (var i = 0; i < splitted.length; i++) {
         var el = splitted[i], td = getParentByName(el, "td");
-
-        if (el.textContent == td.textContent)
-            drawTdSplit(td);
-        else
-            drawElSplit(el, td);
+        drawElSplit(el, td);
     }
 }
 
@@ -335,27 +248,6 @@ function getParentByName(node, name) {
     iterNode = iterNode.parentNode;
 
     return (iterNode && iterNode.nodeName.toLowerCase() == name) ? iterNode : false;
-}
-
-
-function getOppositeTds(td) {
-    var elements = [], trs = [], nTr = (td.getAttribute("rowspan")) ? parseInt(td.getAttribute("rowspan")) : 1,
-        iterTr = getParentByName(td, "tr"), tdPosInParent = getPosInParent(td);
-
-    while (iterTr && trs.length < nTr) {
-        trs.push(iterTr);
-        iterTr = iterTr.nextElementSibling;
-    }
-
-    for (var i = 0; i < trs.length; i++) {
-        var oppositeTd = trs[i].children.item(1 - tdPosInParent);
-        if (oppositeTd) {
-            elements.push(oppositeTd);
-        } else if (trs[i].children.item(tdPosInParent)) {
-            elements.push(trs[i].children.item(tdPosInParent));
-        }
-    }
-    return elements;
 }
 
 function createArrowsBox(settings) {
@@ -450,51 +342,6 @@ function createArrows(box, boxSettings, td, oppositeTds, type) {
         arrow = createSvgElement("line", arrowCfg);
         box.appendChild(arrow);
     }
-}
-
-
-function createEqualArrows(box, boxSettings, first, second) {
-    var xPadding = 5, arrowPadding = 7, middleY;
-
-    tdLine = createSvgElement("line", {
-        x1 : xPadding,
-        y1 : 0,
-        x2 : xPadding,
-        y2 : boxSettings.size.h,
-        stroke : "blue",
-        "stroke-width" : "2"
-    });
-    middleY = boxSettings.size.h / 2;
-    tdLine2 = createSvgElement("line", {
-        x1 : boxSettings.size.w-xPadding,
-        y1 : 0,
-        x2 : boxSettings.size.w-xPadding,
-        y2 : boxSettings.size.h,
-        stroke : "blue",
-        "stroke-width" : "2"
-    });
-    box.appendChild(tdLine);
-    box.appendChild(tdLine2);
-    arrow = createSvgElement("line", {
-            x1 : xPadding+arrowPadding,
-            y1 : middleY,
-            x2 : boxSettings.size.w-xPadding-arrowPadding,
-            y2 : middleY,
-            stroke : "blue",
-            "stroke-width" : "2",
-            "marker-end" : "url(#triangle)"
-    });
-    box.appendChild(arrow);
-    arrow = createSvgElement("line", {
-            x1 : boxSettings.size.w-xPadding-arrowPadding,
-            y1 : middleY,
-            x2 : xPadding+arrowPadding,
-            y2 : middleY,
-            stroke : "blue",
-            "stroke-width" : "2",
-            "marker-end" : "url(#triangle)"
-    });
-    box.appendChild(arrow);
 }
 
 function createRenumberingArrows(box, boxSettings, first, second, leftToRight) {
