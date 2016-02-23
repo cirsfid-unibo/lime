@@ -63,6 +63,7 @@ Ext.define('LIME.controller.UndoManager', {
 
     checkpoints: [],
     currentLevel: 0,
+    maxLevels: 50,
 
     init: function () {
         setInterval(this.addCheckpoint.bind(this), 2000);
@@ -75,6 +76,10 @@ Ext.define('LIME.controller.UndoManager', {
         if (this.areDifferent(checkpoint, lastCheckpoint)) {
             this.checkpoints.length = (++this.currentLevel) + 1;
             this.checkpoints[this.currentLevel] = checkpoint;
+            if (this.checkpoints.length > this.maxLevels) {
+                this.checkpoints.shift();
+                this.currentLevel--;
+            }
             this.fireEvent('change');
         }
     },

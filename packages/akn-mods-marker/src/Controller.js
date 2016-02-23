@@ -1607,7 +1607,7 @@ Ext.define('AknModsMarker.Controller', {
     addDelMeta: function(node, oldText) {
         var meta = {
             sourceDestinations: [{type:'destination', href: node.getAttribute(DomUtils.elementIdAttribute)}],
-            textualChanges: [{type: 'old', text: oldText}]
+            textualChanges: [{type: 'old', content: oldText}]
         };
         return this.addPassiveMeta(node, 'repeal', meta);
     },
@@ -1648,7 +1648,7 @@ Ext.define('AknModsMarker.Controller', {
         var meta = {
             sourceDestinations: [{type:'destination', href: destId}],
             textualChanges: [
-                {type: 'old', text: oldText},
+                {type: 'old', content: oldText},
                 {type: 'new', href: elId}]
         };
 
