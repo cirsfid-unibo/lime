@@ -55,7 +55,7 @@ $rules = Array(
     "chapter" => "/(?<![\w\.\,] )(?P<num>({{chapterList}})\s*({{number}}))/",
     "article" => "/(?<![\w\.\,] )(?P<num>({{articleList}})\s*({{number}}\s*[º°\.]*)([ -]*{{latino}})?)\s*({{heading}})?/",
 
-    "heading" => "\([A-Z].+\)\.?",
+    "heading" => "\([A-Z][^\(^\)]+\)\.?",
 
     "paragraph" => "/(?<![\w\.\,] ){{numparagraph}} +{{bodyitem}}/u",
     //"numparagraph" => "\(*\b\d{1,2}[\)\.\-]",

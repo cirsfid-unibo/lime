@@ -453,39 +453,36 @@ class newAKNDiff09 extends AKNDiff {
 	
 	protected function normalizeModification($td, $nextTd, $modName, $avoidClass = FALSE) {
 		$nextTr = ($nextTd) ? $this->getParentByName($nextTd, "tr") : FALSE;
-		if($td) {
-			$xpath = new DOMXPath($td->ownerDocument);
-			$tr = $this->getParentByName($td, "tr");
-			$table = $this->getParentByName($tr, "table");
-			$siblings = $this->getNextSiblings($tr, $nextTr);
-			foreach($siblings as $sibling) {
-				$this->normalizeRow($sibling,$modName);
-				$modNodes = $xpath->query(".//*[contains(@class, '$modName')]", $sibling);
-				if($modNodes->length) {
-					$tdToAdd = FALSE;
-					foreach($modNodes as $mod) {
-						$tdModParent = $this->getParentByName($mod, "td");
-						// Add blank cell if the cell contains only the insertion
-						if(trim($mod->nodeValue) == trim($tdModParent->nodeValue)) {
-							$tdToAdd = $tdModParent;
-							break;
-						}
-					}
-					if($tdToAdd) {
-						$posInParent = $this->getPosInParent($tdToAdd);
-						$tdToMove = $sibling->childNodes->item(1-$posInParent);
-						// Checking if the td contains avoiding elements
-						if(!$avoidClass || $xpath->query(".//*[contains(@class, '$avoidClass')]", $tdToMove)->length == 0) {
-							$trHcontainer = $this->getUpRowContainsAttr($tdToMove, "parentClass", "hcontainer");
-							// Check if cells are in the same hcontainer
-							if($trHcontainer && $trHcontainer === $tr) {
-								$blankCell = $this->addBlankCell($table, $tdToMove);
-								if ($blankCell) {
-									$this->setAllAttribute(array($tdToAdd),"class", $modName.'Cell');
-									$this->setAllAttribute(array($blankCell),"class", $modName.'BlankCell');
-								}
-							}
-						}
+		if(!$td) return;
+		$xpath = new DOMXPath($td->ownerDocument);
+		$tr = $this->getParentByName($td, "tr");
+		$table = $this->getParentByName($tr, "table");
+		$siblings = $this->getNextSiblings($tr, $nextTr);
+		foreach($siblings as $sibling) {
+			$this->normalizeRow($sibling,$modName);
+			$modNodes = $xpath->query(".//*[contains(@class, '$modName')]", $sibling);
+			if(!$modNodes->length) continue;
+			$tdToAdd = FALSE;
+			foreach($modNodes as $mod) {
+				$tdModParent = $this->getParentByName($mod, "td");
+				// Add blank cell if the cell contains only the insertion
+				if(trim($mod->nodeValue) == trim($tdModParent->nodeValue)) {
+					$tdToAdd = $tdModParent;
+					break;
+				}
+			}
+			if(!$tdToAdd) continue;
+			$posInParent = $this->getPosInParent($tdToAdd);
+			$tdToMove = $sibling->childNodes->item(1-$posInParent);
+			// Checking if the td contains avoiding elements
+			if(!$avoidClass || $xpath->query(".//*[contains(@class, '$avoidClass')]", $tdToMove)->length == 0) {
+				$trHcontainer = $this->getUpRowContainsAttr($tdToMove, "parentClass", "hcontainer");
+				// Check if cells are in the same hcontainer
+				if($trHcontainer && $trHcontainer === $tr) {
+					$blankCell = $this->addBlankCell($table, $tdToMove);
+					if ($blankCell) {
+						$this->setAllAttribute(array($tdToAdd),"class", $modName.'Cell');
+						$this->setAllAttribute(array($blankCell),"class", $modName.'BlankCell');
 					}
 				}
 			}
@@ -586,7 +583,6 @@ class newAKNDiff09 extends AKNDiff {
 			// Importante farlo a questo punto e non prima, perché altrimenti si perde l'allineamento
 			$nextTdNew = (array_key_exists($i+1, $tdsNew)) ? $tdsNew[$i+1] : FALSE;
 			$nextTdOld = (array_key_exists($i+1, $tdsOld)) ? $tdsOld[$i+1] : FALSE;
-			
 			$this->normalizeModifications($tdNew, $nextTdNew);
 		}
 		$this->applySplits($table);
@@ -714,6 +710,8 @@ class newAKNDiff09 extends AKNDiff {
 			$modId = $node->getAttribute("toSplit");
 			$mod =  $this->mods[$modId];
 			if($mod && count($mod->destinations) > 1) {
+                $splittedNodes = $xpath->query("//*[@class='newVersion']//*[@splittedBy='$modId']", $table);
+                $this->normalizeSplitJoinCells($table, $node, $splittedNodes);
 				$td = $this->getParentByName($node, "td");
 				$pos = $this->getPosInParent($td);
 				$tr = $this->getParentByName($td, "tr");
@@ -734,6 +732,48 @@ class newAKNDiff09 extends AKNDiff {
 			}
 		}
 	}
+
+    protected function normalizeSplitJoinCells($table, $node, $destNodes) {
+        $xpath = new DOMXPath($table->ownerDocument);
+        $posInParent = $this->getPosInParent($this->getParentByName($node, "td"));
+        $targetTr = $this->getParentByName($node, "tr");
+        
+        foreach($destNodes as $spNode) {
+            $tr = $this->getParentByName($spNode, "tr");
+            if ($tr === $targetTr) continue;
+            $tdToMove = $tr->childNodes->item($posInParent);
+            $blankCell = $this->createBlankCell($this->tableDOM);
+            $tdToMove = $tr->replaceChild($blankCell, $tdToMove);
+
+            if ($tr->nextSibling) {
+                $nextTd = $tr->nextSibling->childNodes->item($posInParent);
+                $tdToMove = $tr->nextSibling->replaceChild($tdToMove, $nextTd);
+                if (!$tdToMove->getAttribute("blankcell"))
+                    $this->insertAfter($this->wrapTd($table, $tdToMove, $posInParent), $tr->nextSibling);
+            } else 
+                $table->insertBefore($this->wrapTd($table, $tdToMove, $posInParent), $tr->nextSibling);
+        }
+    }
+
+    protected function insertAfter($node, $target) {
+        if ($target->nextSibling)
+            $target->parentNode->insertBefore($node, $target->nextSibling);
+        else
+            $target->parentNode->appendChild($node);
+    }
+
+    protected function wrapTd($table, $td, $pos) {
+        $trNode = $table->ownerDocument->createElement('tr');
+        $blankCell = $this->createBlankCell($table->ownerDocument);
+        if($pos) {
+            $trNode->appendChild($blankCell);
+            $trNode->appendChild($td);
+        } else {
+            $trNode->appendChild($td);
+            $trNode->appendChild($blankCell);
+        }
+        return $trNode;
+    }
 	
 	protected function applyJoins($table) {
 		$xpath = new DOMXPath($table->ownerDocument);
@@ -742,6 +782,7 @@ class newAKNDiff09 extends AKNDiff {
 			$tdJoined = $this->getParentByName($nodeJoined, "td");
 			$modId = $nodeJoined->getAttribute("joined");
 			$nodesToJoin = $xpath->query("//*[@class='oldVersion']//*[@joinInto='$modId']", $table);
+            $this->normalizeSplitJoinCells($table, $nodeJoined, $nodesToJoin);
 			$nodeJoined->setAttribute("numJoins", $nodesToJoin->length);
 			$mod =  $this->mods[$modId];
 			$fistJoin = $nodesToJoin->item(0);
@@ -1147,18 +1188,8 @@ class newAKNDiff09 extends AKNDiff {
 			$tr = $tr->nextSibling;
 		}
 		// If the last cell is not a blank cell insert a new row
-		if(!$cellToInsert->getAttribute("blankcell")) {
-			$trNode = $table->ownerDocument->createElement('tr');
-			$blankCell = $this->createBlankCell($table->ownerDocument);
-			if($cellPosition) {
-				$trNode->appendChild($blankCell);
-				$trNode->appendChild($cellToInsert);
-			} else {
-				$trNode->appendChild($cellToInsert);
-				$trNode->appendChild($blankCell);
-			}
-			$table->appendChild($trNode);
-		}
+		if(!$cellToInsert->getAttribute("blankcell"))
+			$table->appendChild($this->wrapTd($table, $cellToInsert, $cellPosition));
 	}
 	
 	protected function getParentByName($node, $name) {
