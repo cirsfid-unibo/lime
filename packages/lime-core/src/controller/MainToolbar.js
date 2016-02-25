@@ -327,14 +327,9 @@ Ext.define('LIME.controller.MainToolbar', {
                 },
                 // when a language is selected
                 select : {
-                    // register the function
-                    fn : function(cb, records) {
-                        // get the store record of the language
-                        var langCode = records[0].get("code");
-
-                        // Change the language
-                        Utilities.changeLanguage(langCode);
-
+                    fn : function(cb, record) {
+                        var langCode = record.get("code"); // get the store record of the language
+                        Utilities.changeLanguage(langCode); // Change the language
                     }
                 }
             },
