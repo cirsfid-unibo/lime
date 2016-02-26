@@ -52,7 +52,8 @@ Ext.define('AknCollection.DocumentCollectionController', {
     requires: [
         'AknMain.xml.DocumentCollection',
         'AknMain.xml.Document',
-        'AknMain.LangProp'
+        'AknMain.LangProp',
+        'AknMain.metadata.HtmlSerializer'
     ],
 
     refs : [
@@ -67,39 +68,128 @@ Ext.define('AknCollection.DocumentCollectionController', {
         docColAlternateType: "documentCollectionContent"
     },
 
-    originalBeforeTranslate: false,
+    collectionLoaded: false,
+
+    init: function() {
+        var me = this;
+        me.application.on(Statics.eventsNames.afterLoad, me.onDocumentLoaded, me);
+        me.addMenuItem();
+
+        me.control({
+            '*[cls=modifyDocColl]': {
+                click: function() {
+                    me.newDocumentCollection(true);
+                }
+            },
+            '*[cls=docCollectionTab] treepanel': {
+                itemclick : function(view, rec, item, index, eventObj) {
+                    me.switchDoc(rec.getData());
+                },
+                afterrender: function() {
+                    me.selectActiveDocument(-1);
+                }
+            },
+            'newDocumentCollection': {
+                afterrender: function(cmp) {
+                    var collectionGrid = cmp.down("*[cls=dropArea] grid"),
+                    config, gridStore, components = [];
+                    if (!cmp.isModify) return;
+                    components = this.getDocumentsFromSnapshot(me.completeEditorSnapshot);
+                    if (collectionGrid) {
+                        gridStore = collectionGrid.getStore();
+                        gridStore.loadData(components);
+                    }
+                }
+            },
+            'newDocumentCollection button[cls=createDocumentCollection]' : {
+                click : function(cmp) {
+                    var relatedWindow = cmp.up('window'),
+                        collectionGrid = relatedWindow.down("*[cls=dropArea] grid"),
+                        components = [];
+                    if (collectionGrid) {
+                        var gridStore = collectionGrid.getStore();
+                        gridStore.each(function(record) {
+                            components.push({
+                                id: record.get('id'),
+                                download: record.get('cls') !== 'xml'
+                            });
+                        });
+                    }
+                    me.createDocumentCollection(components, function () {
+                        relatedWindow.close();
+                    });
+                }
+            },
+            'newDocumentCollection *[cls=dropArea] gridview' : {
+                drop : function(node, data, dropRec, dropPosition) {
+                    var record = data.records[0], store = record.store;
+                    if (record.get('cls') == "folder") {
+                        store.requestNode = record.get('id');
+                        store.load({
+                            addRecords : true,
+                            scope : this,
+                            callback : function(records, operation, success) {
+                                var oldRecordIndex = store.indexOf(record);
+                                // Remove the "version" record
+                                store.remove(record);
+                                // If new records are in the wrong position move they
+                                if (store.indexOf(records[0]) != oldRecordIndex) {
+                                    store.remove(records);
+                                    store.insert(oldRecordIndex, records);
+                                }
+                            }
+                        });
+                    }
+                },
+                beforedrop : function(node, data, overModel, dropPosition, dropHandlers) {
+                    var record = data.records[0], relatedWindow = data.view.up("window"), dropGrid = relatedWindow.down("*[cls=dropArea] gridview");
+
+                    dropHandlers.wait = true;
+                    // Check if the record already exist in the store and cancel drop event if so
+                    if (dropGrid != data.view && dropGrid.getStore().find('id', record.get('id')) != -1) {
+                        dropHandlers.cancelDrop();
+                    } else {
+                        dropHandlers.processDrop();
+                    }
+                }
+            }
+        });
+    },
+
+    addMenuItem: function() {
+        var menu = {
+            text : Locale.getString("newCollectionText", this.getPluginName()),
+            icon : 'resources/images/icons/package_add.png',
+            name : 'newDocCollection',
+            handler : Ext.bind(this.newDocumentCollection, this, [false])
+        };
+        this.application.fireEvent("addMenuItem", this, {
+            menu: "fileMenuButton",
+            after: "newDocumentButton"
+        }, menu);
+    },
 
     onDocumentLoaded: function(docConfig) {
         var me = this,
             app = me.application,
-            docsType = Config.getDocTypesName(),
             collTab = me.getDocCollectionTab(),
             tabPanel = collTab.up();
 
         // Create snapshot and documents tree only if the load is not light load but a complete one
         if (!docConfig.lightLoad) {
-            if (Ext.Array.indexOf(docsType, "documentCollection") != -1) {
-                var menu = {
-                    text : Locale.getString("newCollectionText", me.getPluginName()),
-                    icon : 'resources/images/icons/package_add.png',
-                    name : 'newDocCollection',
-                    handler : Ext.bind(this.newDocumentCollection, this, [false])
-                };
-                app.fireEvent("addMenuItem", me, {
-                    menu: "fileMenuButton",
-                    after: "newDocumentButton"
-                }, menu);
-            }
-            me.completeEditorSnapshot = me.createEditorSnapshot();
-            me.setDocumentTreeData(docConfig);
-            // Disables the document collection tab if the opened document is not a document collection
-            if (docConfig.docType != "documentCollection") {
+            if (docConfig.docType == 'documentCollection') {
+                me.collectionLoaded = true;
+                me.completeEditorSnapshot = me.createEditorSnapshot();
+                me.setDocumentTreeData(docConfig);
+            } else {
+                // Disables the document collection tab if the opened document is not a document collection
                 tabPanel.setActiveTab(0);
                 tabPanel.getTabBar().items.items[1].disable();
+                me.collectionLoaded = false;
             }
         }
 
-        if (docConfig.docType == "documentCollection" && !docConfig.colectionMod) {
+        if (docConfig.docType == 'documentCollection' && !docConfig.colectionMod) {
             tabPanel.setActiveTab(collTab);
             tabPanel.getTabBar().items.items[0].disable();
             tabPanel.getTabBar().items.items[1].enable();
@@ -110,7 +200,8 @@ Ext.define('AknCollection.DocumentCollectionController', {
             app.fireEvent(Statics.eventsNames.enableEditing);
         }
 
-        me.selectActiveDocument(docConfig.treeDocId, true);
+        if (me.collectionLoaded)
+            me.selectActiveDocument(docConfig.treeDocId, true);
     },
 
     newDocumentCollection : function(modify) {
@@ -127,6 +218,7 @@ Ext.define('AknCollection.DocumentCollectionController', {
     },
 
     docCollectionBeforeTranslate: function(params) {
+        if (!this.collectionLoaded) return params;
         var me = this, dom = params.docDom, metaConf = DocProperties.docsMeta,
             documents, snapshot, tmpDom, rootEl;
 
@@ -210,50 +302,51 @@ Ext.define('AknCollection.DocumentCollectionController', {
     },
 
     docToTreeData: function(doc, dom, textSufix, qtip) {
+        var docChildren = [];
+        if (!doc) return {};
 
-        var res = {}, collBody, children, docChildren = [],
-            langPrefix = LangProp.attrPrefix, chDoc, cmpDoc;
-        if (doc) {
-            if(Ext.DomQuery.is(doc, "[class~=documentCollection]")) {
-                docChildren.push({text: doc.getAttribute(langPrefix+"name") || "collection",
-                   leaf: true,
-                   id: doc.getAttribute("docid")+this.getColModSuffix(),
-                   qtip: "collection"});
-            }
-            collBody = doc.querySelector("*[class*=collectionBody]");
-            children = (collBody) ? DomUtils.filterMarkedNodes(collBody.childNodes) : [];
-            for (var i = 0; i < children.length; i++) {
-                cmpDoc = children[i];
-                if (cmpDoc.getAttribute("class").indexOf("component") != -1) {
-                    cmpDoc = DomUtils.filterMarkedNodes(cmpDoc.childNodes)[0];
-                }
-                if(cmpDoc) {
-                    if (DomUtils.getElementNameByNode(cmpDoc) == "documentRef") {
-                        var docRef = cmpDoc.getAttribute(langPrefix+"href");
-                        docRef = (docRef) ? docRef.substr(1) : ""; //Removing the '#'
-                        if (docRef) {
-                            window.docs = window.docs || [];
-                            window.docs[window.counter = ((window.counter || 0) + 1 )] = dom;
-                            chDoc = dom.querySelector("*[class~='components'] *["+langPrefix+LangProp.elIdAttr+"="+docRef+"] *[class*="+DocProperties.documentBaseClass+"]")
-                                    || dom.querySelector("*[class~='components'] *["+langPrefix+LangProp.elIdAttr.toLowerCase()+"="+docRef+"] *[class*="+DocProperties.documentBaseClass+"]");
-                            if (chDoc) {
-                                docChildren.push(this.docToTreeData(chDoc, dom, '#'+docRef, cmpDoc.getAttribute(langPrefix+"showAs")));
-                            }
-                        }
-                    } else if(cmpDoc.getAttribute("class").indexOf(DocProperties.documentBaseClass) != -1) {
-                        docChildren.push(this.docToTreeData(cmpDoc, dom));
-                    }
-                }
+        if(doc.classList.contains('documentCollection'))
+            docChildren.push({text: doc.getAttribute(LangProp.attrPrefix+'name') || 'collection',
+               leaf: true,
+               id: doc.getAttribute('docid')+this.getColModSuffix(),
+               qtip: 'collection'});
 
-            }
-            res = {text:DomUtils.getDocTypeByNode(doc) + ((textSufix) ? " "+ textSufix : ""),
-                   children: docChildren,
-                   leaf: (docChildren.length === 0),
-                   expanded : (docChildren.length >= 0),
-                   id: parseInt(doc.getAttribute("docid")),
-                   qtip: qtip};
+        var collBody = doc.querySelector('*[class~=collectionBody]');
+        var children = (collBody) ? DomUtils.filterMarkedNodes(collBody.childNodes) : [];
+        for (var i = 0; i < children.length; i++) {
+            var cmpDoc = children[i];
+            if (cmpDoc.classList.contains('component'))
+                cmpDoc = DomUtils.filterMarkedNodes(cmpDoc.childNodes)[0];
+            if(!cmpDoc) continue;
+
+            var treeData;
+            if (DomUtils.getElementNameByNode(cmpDoc) == 'documentRef') 
+                treeData = this.docToTreeData(this.findDocByDocRef(cmpDoc), dom, 
+                                                    cmpDoc.getAttribute(LangProp.attrPrefix+"href"), 
+                                                    cmpDoc.getAttribute(LangProp.attrPrefix+'showAs'));
+            else if(cmpDoc.classList.contains(DocProperties.documentBaseClass))
+                treeData = this.docToTreeData(cmpDoc, dom);
+
+            if (!Ext.Object.isEmpty(treeData))
+                docChildren.push(treeData);
         }
+
+        var res = {text:DomUtils.getDocTypeByNode(doc) + ((textSufix) ? ' '+ textSufix : ''),
+               children: docChildren,
+               leaf: (docChildren.length === 0),
+               expanded : (docChildren.length >= 0),
+               id: parseInt(doc.getAttribute('docid')),
+               qtip: qtip};
         return res;
+    },
+
+    findDocByDocRef: function(node) {
+        var docRef = AknMain.metadata.HtmlSerializer.normalizeHref(node.getAttribute(LangProp.attrPrefix+"href"));
+        if (!docRef) return;
+        var doc = node.ownerDocument.querySelector("*[class~='components'] "+
+                                                    "*["+LangProp.attrPrefix+LangProp.elIdAttr+"="+docRef+"] "+
+                                                    "*[class~="+DocProperties.documentBaseClass+"]");
+        return doc;
     },
 
     selectActiveDocument: function(docId, persistent) {
@@ -444,89 +537,5 @@ Ext.define('AknCollection.DocumentCollectionController', {
             }, this);
         }
         return documents;
-    },
-
-    init: function() {
-        var me = this;
-        me.application.on(Statics.eventsNames.afterLoad, me.onDocumentLoaded, me);
-        me.control({
-            '*[cls=modifyDocColl]': {
-                click: function() {
-                    me.newDocumentCollection(true);
-                }
-            },
-            '*[cls=docCollectionTab] treepanel': {
-                itemclick : function(view, rec, item, index, eventObj) {
-                    me.switchDoc(rec.getData());
-                },
-                afterrender: function() {
-                    me.selectActiveDocument(-1);
-                }
-            },
-            'newDocumentCollection': {
-                afterrender: function(cmp) {
-                    var collectionGrid = cmp.down("*[cls=dropArea] grid"),
-                    config, gridStore, components = [];
-                    if (!cmp.isModify) return;
-                    components = this.getDocumentsFromSnapshot(me.completeEditorSnapshot);
-                    if (collectionGrid) {
-                        gridStore = collectionGrid.getStore();
-                        gridStore.loadData(components);
-                    }
-                }
-            },
-            'newDocumentCollection button[cls=createDocumentCollection]' : {
-                click : function(cmp) {
-                    var relatedWindow = cmp.up('window'),
-                        collectionGrid = relatedWindow.down("*[cls=dropArea] grid"),
-                        components = [];
-                    if (collectionGrid) {
-                        var gridStore = collectionGrid.getStore();
-                        gridStore.each(function(record) {
-                            components.push({
-                                id: record.get('id'),
-                                download: record.get('cls') !== 'xml'
-                            });
-                        });
-                    }
-                    me.createDocumentCollection(components, function () {
-                        relatedWindow.close();
-                    });
-                }
-            },
-            'newDocumentCollection *[cls=dropArea] gridview' : {
-                drop : function(node, data, dropRec, dropPosition) {
-                    var record = data.records[0], store = record.store;
-                    if (record.get('cls') == "folder") {
-                        store.requestNode = record.get('id');
-                        store.load({
-                            addRecords : true,
-                            scope : this,
-                            callback : function(records, operation, success) {
-                                var oldRecordIndex = store.indexOf(record);
-                                // Remove the "version" record
-                                store.remove(record);
-                                // If new records are in the wrong position move they
-                                if (store.indexOf(records[0]) != oldRecordIndex) {
-                                    store.remove(records);
-                                    store.insert(oldRecordIndex, records);
-                                }
-                            }
-                        });
-                    }
-                },
-                beforedrop : function(node, data, overModel, dropPosition, dropHandlers) {
-                    var record = data.records[0], relatedWindow = data.view.up("window"), dropGrid = relatedWindow.down("*[cls=dropArea] gridview");
-
-                    dropHandlers.wait = true;
-                    // Check if the record already exist in the store and cancel drop event if so
-                    if (dropGrid != data.view && dropGrid.getStore().find('id', record.get('id')) != -1) {
-                        dropHandlers.cancelDrop();
-                    } else {
-                        dropHandlers.processDrop();
-                    }
-                }
-            }
-        });
     }
 });
