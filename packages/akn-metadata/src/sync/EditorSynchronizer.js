@@ -53,6 +53,7 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
     listen: {
         store: {
             '#metadata': {
+                maindocumentchanged: 'onMetadataUpdate',
                 update: 'onMetadataUpdate'
             }
         }

@@ -55,6 +55,7 @@ Ext.define('AknMetadata.newMeta.Controller', {
     listen: {
         store: {
             '#metadata': {
+                maindocumentchanged: 'refreshStore',
                 datachanged: 'refreshStore'
             }
         }

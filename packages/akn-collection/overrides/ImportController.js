@@ -44,65 +44,14 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
- Ext.define('AknMetadata.Language', {
-    override: 'LIME.controller.Language',
+Ext.define('AknCollection.ImportController', {
+    override: 'AknMetadata.sync.ImportController',
 
-    requires: [
-        'AknMain.metadata.HtmlSerializer',
-        'AknMain.xml.Document',
-        'LIME.DomUtils'
-    ],
-
-    appendMetadata: function() {
-        var metaNode = this.callParent(arguments);
-
-        // if the meta are related to the main document
-        if (metaNode && metaNode.parentNode && metaNode.parentNode.hasAttribute(DocProperties.docIdAttribute))
-            this.overwriteMetadata(metaNode, Ext.getStore('metadata').getMainDocument());
-    },
-
-    overwriteMetadata: function(metaNode, store) {
-        var metaStr = AknMain.metadata.HtmlSerializer.serialize(store),
-            doc = AknMain.xml.Document.parse(metaStr);
-
-        var lastInsertedNode = undefined;
-        doc.select('//*[@class="meta"]/*').forEach(function(node) {
-            node = metaNode.ownerDocument.adoptNode(node);
-            var oldNode = metaNode.querySelector('*[class="'+node.getAttribute('class')+'"]');
-
-            if (oldNode) {
-                oldNode.parentNode.replaceChild(node, oldNode);
-                lastInsertedNode = node;
-            }
-            else if (lastInsertedNode) {
-                DomUtils.insertAfter(node, lastInsertedNode);
-                lastInsertedNode = node;
-            }
-            else
-                lastInsertedNode = metaNode.appendChild(node);
-        });
-
-        this.removeInconsistentElements(metaNode);
-    },
-
-    removeInconsistentElements: function(node) {
-        var doc = AknMain.xml.Document.newDocument(node);
-        var query = '//*[@class="classification" or '+
-                    '@class="lifecycle" or '+
-                    '@class="workflow" or '+
-                    '@class="analysis" or '+
-                    '@class="activeModifications" or '+
-                    '@class="passiveModifications" or '+
-                    '@class="references"]'+
-                    '[not(child::*)]';
-        
-        // Iterate multiple times to remove elements which become empty
-        // in result of previous iterations
-        var depth = 2;
-        while(depth--) {
-            doc.select(query).forEach(function(node) {
-                node.parentNode.removeChild(node);
-            });
-        }
+    // Don't call the onLoadDocument of AknMetadata.sync.ImportController if it's a light load
+    onLoadDocument: function(config) {
+        if (config.lightLoad)
+            Ext.getStore('metadata').setMainDocumentIndex(config.docIndex);
+        else
+            this.callParent(arguments);
     }
- });
+});

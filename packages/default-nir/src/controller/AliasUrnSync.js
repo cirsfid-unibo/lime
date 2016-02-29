@@ -51,6 +51,7 @@ Ext.define('DefaultNir.controller.AliasUrnSync', {
     listen: {
         store: {
             '#metadata': {
+                maindocumentchanged: 'setUrnAlias',
                 add: 'setUrnAlias',
                 update: 'setUrnAlias'
             }

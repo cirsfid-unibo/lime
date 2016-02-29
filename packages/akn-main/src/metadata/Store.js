@@ -59,15 +59,24 @@ Ext.define('AknMain.metadata.Store', {
         {}
     ],
 
+    mainDocumentIndex: 0, // by default the main document is the first
+
+    // Set the index of the main document
+    setMainDocumentIndex: function(index) {
+        if (!this.getAt(index) || this.mainDocumentIndex === index) return false;
+
+        this.mainDocumentIndex = index;
+        this.fireEvent('maindocumentchanged');
+        return true;
+    },
+
     // Get the main Document metadata record
     getMainDocument: function () {
-        return this.first();
+        return this.getAt(this.mainDocumentIndex);
     },
 
     // Create and return a new Document metadata record
-    newMainDocument: function () {
-        this.removeAt(0);
-        this.add({});
-        return this.first();
+    newDocument: function() {
+        return this.add({})[0];
     }
 });

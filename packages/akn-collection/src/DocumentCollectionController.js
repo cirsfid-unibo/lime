@@ -234,21 +234,21 @@ Ext.define('AknCollection.DocumentCollectionController', {
         // Insert the metadata which was removed before loading
         if (metaConf) {
             Ext.each(documents, function(doc, index) {
-                var docId = doc.getAttribute(DocProperties.docIdAttribute),
-                    metaDom;
-                /* The first document is processed by the editor
-                 * here we process the documents inside the first document
-                 * e.g. documentCollection */
+                var docId = doc.getAttribute(DocProperties.docIdAttribute);
                 docId = (docId!=undefined) ? parseInt(docId) : undefined;
+                // The first document is processed by the editor here we process 
+                // the documents inside the first document e.g. documentCollection
                 if (docId != 0 && metaConf[docId] && metaConf[docId].metaDom) {
-                    metaDom = Ext.clone(metaConf[docId].metaDom);
+                    var metaDom = Ext.clone(metaConf[docId].metaDom);
                     metaDom.setAttribute("class", "meta");
-                    if ( doc.firstChild && Ext.fly(doc.firstChild) && !Ext.fly(doc.firstChild).is('.meta') ) {
+                    if ( doc.firstChild && Ext.fly(doc.firstChild) && !Ext.fly(doc.firstChild).is('.meta') )
                         doc.insertBefore(metaDom, doc.firstChild);
-                    }
+                    
+                    me.getController('Language').overwriteMetadata(metaDom, Ext.getStore('metadata').getAt(docId));
                 }
             }, this);
         }
+        // Copy the root attributes from snapshot to dom
         if (me.completeEditorSnapshot && me.completeEditorSnapshot.dom) {
             rootEl = me.completeEditorSnapshot.dom.querySelector("*["+DocProperties.markingLanguageAttribute+"]");
             tmpDom = dom.querySelector("*["+DocProperties.markingLanguageAttribute+"]");
@@ -446,39 +446,39 @@ Ext.define('AknCollection.DocumentCollectionController', {
     },
 
     switchDoc: function(config) {
-        var me = this, editor = me.getController('Editor'),
+        var me = this,
+            snapshot = me.completeEditorSnapshot;
+        if (!snapshot || !snapshot.dom) return;
+
+        // Before loading a new document we need to update 
+        // the snapshot with new content from the editor
+        var newSnapshot = me.updateEditorSnapshot(snapshot),
             docId = Ext.isString(config.id) ? parseInt(config.id) : config.id,
             docMeta = DocProperties.docsMeta[docId],
             colMod = Ext.isString(config.id) ? (config.id.indexOf(me.getColModSuffix()) != -1) : false;
-            snapshot = me.completeEditorSnapshot, prevColMod = 0;
-
-        if (snapshot && snapshot.dom) {
-            /* Before loading a new document we need to update
-             * the snapshot with new content from the editor
-             */
-            newSnapshot = me.updateEditorSnapshot(snapshot);
-            // Select the document in the snapshot and load it
-            doc = (docId === 0) ? snapshot.dom : snapshot.dom.querySelector("*["+DocProperties.docIdAttribute+"='" + docId + "']");
-            prevColMod = doc.querySelector("[colmod]");
-            prevColMod = (prevColMod) ? parseInt(prevColMod.getAttribute("colmod")) : 0;
-            if (doc && ((docId != parseInt(newSnapshot.editorDocId)) || colMod || prevColMod)) {
-                if(colMod) {
-                    doc = me.snapshotToDocColMod(snapshot, docId);
-                    docTypeAlternateName = "";
-                }
-                var docEl = doc.querySelector("["+DocProperties.docIdAttribute+"]");
-                if(docEl) {
-                    docEl.setAttribute("colmod", (colMod) ? 1 : 0);
-                }
-                Ext.GlobalEvents.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(docMeta, {
-                    docMarkingLanguage: Config.getLanguage(),
-                    docText : DomUtils.serializeToString(doc),
-                    alternateDocType: (colMod) ? me.getDocColAlternateType() : null,
-                    lightLoad : true,
-                    treeDocId : config.id,
-                    colectionMod : colMod
-                }));
+        // Select the document in the snapshot and load it
+        var doc = (docId === 0) ? snapshot.dom : 
+                    snapshot.dom.querySelector("*["+DocProperties.docIdAttribute+"='" + docId + "']");
+        var prevColMod = doc.querySelector("[colmod]");
+        prevColMod = (prevColMod) ? parseInt(prevColMod.getAttribute("colmod")) : 0;
+        if (doc && ((docId != parseInt(newSnapshot.editorDocId)) || colMod || prevColMod)) {
+            if(colMod) {
+                doc = me.snapshotToDocColMod(snapshot, docId);
+                docTypeAlternateName = "";
             }
+            var docEl = doc.querySelector("["+DocProperties.docIdAttribute+"]");
+            if(docEl) {
+                docEl.setAttribute("colmod", (colMod) ? 1 : 0);
+            }
+            Ext.GlobalEvents.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(docMeta, {
+                docMarkingLanguage: Config.getLanguage(),
+                docText : DomUtils.serializeToString(doc),
+                alternateDocType: (colMod) ? me.getDocColAlternateType() : null,
+                lightLoad : true,
+                treeDocId : config.id,
+                docIndex: docId,
+                colectionMod : colMod
+            }));
         }
     },
 

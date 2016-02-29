@@ -64,17 +64,26 @@ Ext.define('AknMetadata.sync.ImportController', {
     // On the loadDocument event, load metadata from the original xml document.
     // No HtmlToso, no XSLTs, just plain and simple AkomaNtoso. KISS. <3
     onLoadDocument: function (config) {
-        config.originalXml = config.originalXml || this.generateMetaXml(config)
+        var metadata = Ext.getStore('metadata');
+        metadata.removeAll();
+        config.originalXml = config.originalXml || this.generateMetaXml(config);
         try {
-            var akn = AknMain.xml.Document.parse(config.originalXml, 'akn'),
-                store = Ext.getStore('metadata').newMainDocument();
-                var expUri = akn.getValue('//akn:FRBRExpression/akn:FRBRuri/@value');
-                var uri = expUri ? AknMain.Uri.parse(expUri) : AknMain.Uri.empty();
-            return main ();
+            var akn = AknMain.xml.Document.parse(config.originalXml, 'akn');
+            akn.select('//akn:meta').forEach(function(meta) {
+                var doc = AknMain.xml.Document.newDocument(meta, 'akn');
+                this.importDocumentMeta(doc, metadata.newDocument());
+            }, this);
         } catch (e) {
             console.warn('Exception parsing metadata: ', e);
             console.warn(e.stack);
         }
+    },
+
+    importDocumentMeta: function(akn, store) {
+        var expUri = akn.getValue('.//akn:FRBRExpression/akn:FRBRuri/@value'),
+            uri = expUri ? AknMain.Uri.parse(expUri) : AknMain.Uri.empty();
+
+        return main();
 
         function main () {
             importReferences();
@@ -89,9 +98,9 @@ Ext.define('AknMetadata.sync.ImportController', {
             importManifestation();
             importPublication();
 
-            store.set('type', akn.query('local-name(//akn:akomaNtoso/*)'));
+            store.set('type', akn.query('local-name(..)'));
 
-            store.setSource(getReference('//akn:identification/@source', {
+            store.setSource(getReference('.//akn:identification/@source', {
                 eid: 'source',
                 type: 'TLCPerson',
                 href: '/ontology/person/somebody',
@@ -100,7 +109,7 @@ Ext.define('AknMetadata.sync.ImportController', {
         }
 
         function importReferences () {
-            akn.select('//akn:references/*').forEach(function (reference) {
+            akn.select('.//akn:references/*').forEach(function (reference) {
                 var data = {
                     eid: reference.getAttribute('eId'),
                     type: reference.tagName,
@@ -112,7 +121,7 @@ Ext.define('AknMetadata.sync.ImportController', {
         }
 
         function importLifecycleEvents() {
-            var xpath = '//akn:lifecycle/akn:eventRef';
+            var xpath = './/akn:lifecycle/akn:eventRef';
             akn.select(xpath).forEach(function (event, index) {
                 var xpathIndex = xpath+'['+(index+1)+']';
                 var data = {
@@ -129,7 +138,7 @@ Ext.define('AknMetadata.sync.ImportController', {
         }
 
         function importWorkflowSteps() {
-            var xpath = '//akn:workflow/akn:step';
+            var xpath = './/akn:workflow/akn:step';
             akn.select(xpath).forEach(function (step, index) {
                 var xpathIndex = xpath+'['+(index+1)+']';
                 var data = {
@@ -145,7 +154,7 @@ Ext.define('AknMetadata.sync.ImportController', {
         }
 
         function importClassificationKeywords() {
-            var xpath = '//akn:classification/akn:keyword';
+            var xpath = './/akn:classification/akn:keyword';
             akn.select(xpath).forEach(function (keyword, index) {
                 var data = {
                     value: keyword.getAttribute('value'),
@@ -158,7 +167,7 @@ Ext.define('AknMetadata.sync.ImportController', {
         }
 
         function importAliases () {
-            akn.select('//akn:FRBRalias').forEach(function (alias) {
+            akn.select('.//akn:FRBRalias').forEach(function (alias) {
                 var data = {
                     name: alias.getAttribute('name'),
                     value: alias.getAttribute('value'),
@@ -219,46 +228,46 @@ Ext.define('AknMetadata.sync.ImportController', {
                 });
             }
 
-            akn.select('//akn:textualMod').forEach(addModification);
+            akn.select('.//akn:textualMod').forEach(addModification);
         }
 
         function importWork() {
-            var date = new Date(akn.getValue('//akn:FRBRWork/akn:FRBRdate/@date') || uri.date);
+            var date = new Date(akn.getValue('.//akn:FRBRWork/akn:FRBRdate/@date') || uri.date);
             date = (Utilities.isValidDate(date)) ? date : new Date();
             store.set('date', date);
             store.set('author',  uri.author);
-            store.set('number',  akn.getValue('//akn:FRBRWork/akn:FRBRnumber/@value'));
-            store.set('name',    akn.getValue('//akn:FRBRWork/akn:FRBRname/@value'));
+            store.set('number',  akn.getValue('.//akn:FRBRWork/akn:FRBRnumber/@value'));
+            store.set('name',    akn.getValue('.//akn:FRBRWork/akn:FRBRname/@value'));
             if (!store.get('name') && !store.get('number')) store.set('name', uri.name);
-            store.set('subtype', akn.getValue('//akn:FRBRWork/akn:FRBRsubtype/@value') || uri.subtype);
-            store.set('country', akn.getValue('//akn:FRBRWork/akn:FRBRcountry/@value') || uri.country);
-            store.set('authoritative', akn.getValue('//akn:FRBRWork/akn:FRBRauthoritative/@value') === 'true');
-            store.set('prescriptive', akn.getValue('//akn:FRBRWork/akn:FRBRprescriptive/@value') === 'true');
-            store.setWorkAuthor(getReference('//akn:FRBRWork/akn:FRBRauthor/@href'));
-            store.setWorkAuthorRole(getReference('//akn:FRBRWork/akn:FRBRauthor/@as'));
+            store.set('subtype', akn.getValue('.//akn:FRBRWork/akn:FRBRsubtype/@value') || uri.subtype);
+            store.set('country', akn.getValue('.//akn:FRBRWork/akn:FRBRcountry/@value') || uri.country);
+            store.set('authoritative', akn.getValue('.//akn:FRBRWork/akn:FRBRauthoritative/@value') === 'true');
+            store.set('prescriptive', akn.getValue('.//akn:FRBRWork/akn:FRBRprescriptive/@value') === 'true');
+            store.setWorkAuthor(getReference('.//akn:FRBRWork/akn:FRBRauthor/@href'));
+            store.setWorkAuthorRole(getReference('.//akn:FRBRWork/akn:FRBRauthor/@as'));
         }
 
         function importExpression () {
-            var date = new Date(akn.getValue('//akn:FRBRExpression/akn:FRBRdate/@date') || uri.version);
+            var date = new Date(akn.getValue('.//akn:FRBRExpression/akn:FRBRdate/@date') || uri.version);
             if (Utilities.isValidDate(date))
                 store.set('version', date);
-            store.set('language', akn.getValue('//akn:FRBRExpression/akn:FRBRlanguage/@language') || uri.language);
-            store.setExpressionAuthor(getReference('//akn:FRBRExpression/akn:FRBRauthor/@href'));
-            store.setExpressionAuthorRole(getReference('//akn:FRBRExpression/akn:FRBRauthor/@as'));
+            store.set('language', akn.getValue('.//akn:FRBRExpression/akn:FRBRlanguage/@language') || uri.language);
+            store.setExpressionAuthor(getReference('.//akn:FRBRExpression/akn:FRBRauthor/@href'));
+            store.setExpressionAuthorRole(getReference('.//akn:FRBRExpression/akn:FRBRauthor/@as'));
         }
 
         function importManifestation () {
             store.set('component', 'main');
             store.set('media', 'xml');
-            store.setManifestationAuthor(getReference('//akn:FRBRManifestation/akn:FRBRauthor/@href'));
-            store.setManifestationAuthorRole(getReference('//akn:FRBRManifestation/akn:FRBRauthor/@as'));
+            store.setManifestationAuthor(getReference('.//akn:FRBRManifestation/akn:FRBRauthor/@href'));
+            store.setManifestationAuthorRole(getReference('.//akn:FRBRManifestation/akn:FRBRauthor/@as'));
         }
 
         function importPublication () {
-            store.set('pubblicationName', akn.getValue('//akn:publication/@name'));
-            store.set('pubblicationShowAs', akn.getValue('//akn:publication/@showAs'));
-            store.set('pubblicationNumber', akn.getValue('//akn:publication/@number'));
-            var date = new Date(akn.getValue('//akn:publication/@date'));
+            store.set('pubblicationName', akn.getValue('.//akn:publication/@name'));
+            store.set('pubblicationShowAs', akn.getValue('.//akn:publication/@showAs'));
+            store.set('pubblicationNumber', akn.getValue('.//akn:publication/@number'));
+            var date = new Date(akn.getValue('.//akn:publication/@date'));
             if (Utilities.isValidDate(date))
                 store.set('pubblicationDate', date);
         }
