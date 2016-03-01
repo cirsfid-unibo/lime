@@ -90,10 +90,14 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
         var ref = null;
         try {
             ref = AknMain.Reference.parse(href);
-            console.log(ref);
         } catch (e) {
             console.error(e);
         }
+
+        var normalizeSubtype = function(str) {
+            str = str || '';
+            return str.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
+        };
 
         var saveRef = function(refPanel) {
             var data = refPanel.getValues(false, false, false, true);
@@ -102,7 +106,7 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
             ref.id = data.fragment;
             ref.uri.country = data.nationality;
             ref.uri.type = data.docType;
-            ref.uri.subtype = data.subtype;
+            ref.uri.subtype = normalizeSubtype(data.subtype);
             ref.uri.name = data.number;
             ref.uri.date = (data.date) ? Ext.Date.format(data.date, 'Y-m-d') : "";
             ref.uri.language = DocProperties.documentInfo.docLang;

@@ -925,8 +925,7 @@ class newAKNDiff09 extends AKNDiff {
 
 	protected function applyModSplit($mod, $xpath, $table) {
 		//echo $mod->type. " - ".$id." - ".$mod->oldHref."<br>";
-		if(!$mod->oldHref) return;
-
+		if(!$mod->oldHref || count($mod->destinations) < 2) return;
 		$previousNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId= '$mod->oldHref' or contains(@parent, '$mod->oldHref')]", $table);
 		if(!$previousNodes->length) return;
 
@@ -939,7 +938,7 @@ class newAKNDiff09 extends AKNDiff {
 	}
 
 	protected function applyModJoin($mod, $xpath, $table) {
-		//echo $mod->type. " - ".$mod->id." - ".$mod->oldHref."<br>";
+        if(!$mod->destination || count($mod->olds) < 2) return;
 		$dest = $mod->destination;
 		$previousNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId= '$dest' or contains(@parent, '$dest')]", $table);
 		if(!$previousNodes->length) return;

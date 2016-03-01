@@ -103,7 +103,6 @@ function drawElJoin(el, td) {
     var joinId = el.getAttribute('joined'),
         nodesToJoin = document.querySelectorAll("*[joininto='"+joinId+"']"),
         oppositeTdsBBox = getNodesBBox(nodesToJoin);
-
     drawArrows(el, td, oppositeTdsBBox, 'join');
 }
 
@@ -128,15 +127,17 @@ function drawArrows(el, td, oppositeTdsBBox, arrowsType) {
         if (rows[0] === rows[rows.length-1])
             el.style.height = oppositeTdsBBox.size.h;
     }
-
+    var sboxY = Math.min(oppositeTdsBBox.pos.y, pos.y);
+    var oppositeTotalHeight = oppositeTdsBBox.pos.y-sboxY+oppositeTdsBBox.size.h;
+    var elTotalHeight = pos.y-sboxY+height;
     var svgBoxSettings = {
         pos : {
             x : (tdPosInParent) ? oppositeTdsBBox.pos.x + oppositeTdsBBox.size.w: (pos.x + width),
-            y : oppositeTdsBBox.pos.y
-        },
-        size : {
+            y : sboxY
+        }, 
+        size: {
             w : (tdPosInParent) ? (pos.x - (oppositeTdsBBox.pos.x + oppositeTdsBBox.size.w)) : (oppositeTdsBBox.pos.x - (pos.x + width)),
-            h : oppositeTdsBBox.size.h
+            h : Math.max(oppositeTotalHeight, elTotalHeight)
         }
     };
 
