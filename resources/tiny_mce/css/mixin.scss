@@ -6,6 +6,7 @@
 @mixin Label ($label) {
     &:before {
         content: $label;
+        text-transform: capitalize;
         width: (13px + str-length($label) * 6px);
     }
 }
