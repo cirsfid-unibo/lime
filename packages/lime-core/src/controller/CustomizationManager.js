@@ -168,7 +168,7 @@ Ext.define('LIME.controller.CustomizationManager', {
             expandable : true,
             resizable : true,
             width : '15%',
-            autoScroll : true,
+            scrollable: true,
             margin : 2
         });
         viewport.down('mainEditor').up().add(newExplorer);

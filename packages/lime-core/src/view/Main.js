@@ -74,7 +74,7 @@ Ext.define('LIME.view.Main', {
         collapsible: true,
         expandable: true,
         resizable: true,
-        autoScroll: true
+        scrollable: 'y'
     },
 
     initComponent: function() {
@@ -109,7 +109,7 @@ Ext.define('LIME.view.Main', {
                 expandable: true,
                 resizable: true,
                 width: '17%',
-                autoScroll: true
+                scrollable: true
             }]
         }];
         this.plugins = {

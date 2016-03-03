@@ -96,7 +96,7 @@ Ext.define('LIME.view.MarkingMenuTreePanel', {
     useArrows: true,
     border: false,
     rootVisible: false,
-    autoScroll: true,
+    scrollable: true,
 
     unhighlight: null,
 

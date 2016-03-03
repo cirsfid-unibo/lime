@@ -311,7 +311,7 @@ Ext.define('AknConsolidation.ConsolidationController', {
                     expandable : true,
                     resizable : true,
                     width : '15%',
-                    autoScroll : true,
+                    scrollable: true,
                     margin : 2
                 });
                 viewport.add(newExplorer);

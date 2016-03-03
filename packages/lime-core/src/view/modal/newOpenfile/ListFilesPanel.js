@@ -55,7 +55,7 @@ Ext.define('LIME.view.modal.newOpenfile.ListFilesPanel', {
         type : 'hbox',
         align : 'stretch'
     },
-    autoScroll : true,
+    scrollable: true,
     border : false,
     margin : 2,
     items : [{

@@ -241,7 +241,7 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
             xtype: 'panel',
             baseCls: 'x-panel-error',
             cls: 'goToElement',
-            autoScroll: true,
+            scrollable: true,
             margin: 5,
             layout: {
                 type:'vbox',

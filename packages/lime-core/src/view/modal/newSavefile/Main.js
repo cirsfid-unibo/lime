@@ -69,7 +69,7 @@ Ext.define('LIME.view.modal.newSavefile.Main', {
             type : 'hbox',
             align : 'stretch'
         },
-        autoScroll : true,
+        scrollable: true,
         border : false,
         region : 'center',
         margin : 2,

@@ -97,7 +97,7 @@ Ext.define('LIME.controller.Notification', {
             slideBackDuration : 1500,
             slideInAnimation : 'elasticIn',
             maxHeight: 600,
-            autoScroll: true,
+            scrollable: true,
             slideBackAnimation : 'elasticIn'
         }, config));
     },

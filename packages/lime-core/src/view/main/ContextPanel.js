@@ -56,7 +56,7 @@ Ext.define('LIME.view.main.ContextPanel', {
     height : 280,
     maxHeight : 300,
     frame : true,
-    autoScroll : true,
+    scrollable: true,
     header : false,
     layout:'fit',
     style : {

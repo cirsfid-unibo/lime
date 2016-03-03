@@ -499,7 +499,7 @@ Ext.define('LIME.controller.MarkingMenu', {
                 xtype: 'panel',
                 title: config.title,
                 border: false,
-                autoScroll: true,
+                scrollable: true,
                 name: config.name,
                 cls: 'buttonsContainer '+config.name
             });
