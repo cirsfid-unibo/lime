@@ -47,6 +47,7 @@
 
  $rules = Array(
 	"main" => "/<[\w=\" ]+>VOLUME I+<[\w\/]+>/",
+	"children" => "/[A-Z]\.\t*[ A-Z]+/"
 );
 
 ?>

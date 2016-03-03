@@ -64,18 +64,47 @@ class CollectionParser {
         $return = array();
 		if($this->lang && $this->docType && !empty($this->parserRules)) {
 			$resolved = resolveRegex($this->parserRules['main'],$this->parserRules,$this->lang, $this->docType, $this->dirName);
+            $resolved_children = resolveRegex($this->parserRules['children'],$this->parserRules,$this->lang, $this->docType, $this->dirName);
 			$success = 	preg_match_all($resolved["value"], $content, $result, PREG_OFFSET_CAPTURE);
 			if ($success) {
-				for ($i = 0; $i < $success; $i++) {
+                // adding end of document/////////////////////////////////////////////////////////
+                $result[0][$success][0] = 'EOF';
+                $result[0][$success][1] = strlen($content);
+                $success++;
+                //////////////////////////////////////////////////////////////////////////////////
+                $collection = Array();
+				for ($i = 0; $i<$success; $i++) {
                     $match = $result[0][$i][0];
                     $offset = $result[0][$i][1];
-					$entry = Array (
-						"header" => $match,
-						"start" => $offset,
+                    //////////////////////////////////////////////////////////////////////////////
+                    //////////////////////////////////////////////////////////////////////////////
+                    $collection[] = $offset;
+                    $children = Array();
+                    if (count($collection) > 2) array_shift($collection);
+                    if (count($collection) == 2) {
+                        $fragment = substr($content,$collection[0],$collection[1]-$collection[0]);
+                        $success_children =  preg_match_all($resolved_children["value"], $fragment, $result_children, PREG_OFFSET_CAPTURE);
+                        for ($j = 0; $j < $success_children; $j++) {
+                            $match_child = $result_children[0][$j][0];
+                            $offset_child = $result_children[0][$j][1];
+                            $entry_child = Array(
+                                "header" => $match_child,
+                                "start" => $offset_child,
+                                "end" => $offset_child+strlen($match_child)
+                            );
+
+                            $children[] = $entry_child;
+                        }
+                    }
+                    //////////////////////////////////////////////////////////////////////////////
+                    //////////////////////////////////////////////////////////////////////////////
+                    $entry = Array (
+                        "header" => $match,
+                        "start" => $offset,
                         "end" => $offset+strlen($match)
-					);
-					
-					$return[] = $entry;
+                    );
+                    if (count($children)) $return[count($return) - 1]['children'] = $children;
+                    $return[] = $entry;
 				}
 			}
 		} else {
