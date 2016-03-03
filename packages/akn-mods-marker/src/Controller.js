@@ -167,7 +167,6 @@ Ext.define('AknModsMarker.Controller', {
 
     unlinkModByElId: function(elId) {
         var mod = elId && this.getModFromElId(elId);
-        console.log(elId, mod);
         if(!mod || !mod.modElement) return;
 
         var elConf = DocProperties.getElementConfig(DomUtils.getButtonIdByElementId(elId));

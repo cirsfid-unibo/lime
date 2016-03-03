@@ -59,6 +59,7 @@ Ext.define('AknCollection.Main', {
             xtype: 'panel',
             title: Locale.getString("documentCollectionTabTitle", pluginName),
             cls: 'docCollectionTab',
+            scrollable: 'y',
             items: [{
                 xtype: 'treepanel',
                 border: 0,

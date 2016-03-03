@@ -62,6 +62,7 @@
     },
 
     overwriteMetadata: function(metaNode, store) {
+        if (!store) return;
         var metaStr = AknMain.metadata.HtmlSerializer.serialize(store),
             doc = AknMain.xml.Document.parse(metaStr);
 

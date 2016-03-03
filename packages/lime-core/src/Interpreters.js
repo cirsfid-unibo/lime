@@ -132,7 +132,7 @@ Ext.define('LIME.Interpreters', {
                     var extEl = Ext.fly(markedNode),
                         parent = extEl.parent('.'+rule.conditions["parentClassContains"]),
                         contentElement = extEl.parent('.content'),
-                        contentChild = parent.down('.content');
+                        contentChild = parent && parent.down('.content');
 
                     //If content elements are the same  
                     if(parent && contentElement && contentChild && contentChild==contentElement){

@@ -126,7 +126,6 @@
 
         var data = [];
         docs.forEach(function(obj) {
-            data.push(obj);
             if (obj.doc)
                 data = data.concat(me.findTocDataFromNode(obj.doc, 2)).filter(function(chObj) {
                     return !chObj.node.classList.contains('item');
