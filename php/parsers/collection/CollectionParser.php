@@ -65,6 +65,7 @@ class CollectionParser {
 		if($this->lang && $this->docType && !empty($this->parserRules)) {
 			$resolved = resolveRegex($this->parserRules['main'],$this->parserRules,$this->lang, $this->docType, $this->dirName);
             $resolved_children = resolveRegex($this->parserRules['children'],$this->parserRules,$this->lang, $this->docType, $this->dirName);
+            $resolved_annex = resolveRegex($this->parserRules['annexes'],$this->parserRules,$this->lang, $this->docType, $this->dirName);
 			$success = 	preg_match_all($resolved["value"], $content, $result, PREG_OFFSET_CAPTURE);
 			if ($success) {
                 // adding end of document/////////////////////////////////////////////////////////
@@ -78,21 +79,45 @@ class CollectionParser {
                     $offset = $result[0][$i][1];
                     //////////////////////////////////////////////////////////////////////////////
                     //////////////////////////////////////////////////////////////////////////////
+                    //// COLLECTION //////////////////////////////////////////////////////////////
                     $collection[] = $offset;
                     $children = Array();
                     if (count($collection) > 2) array_shift($collection);
                     if (count($collection) == 2) {
                         $fragment = substr($content,$collection[0],$collection[1]-$collection[0]);
                         $success_children =  preg_match_all($resolved_children["value"], $fragment, $result_children, PREG_OFFSET_CAPTURE);
+                        
                         for ($j = 0; $j < $success_children; $j++) {
                             $match_child = $result_children[0][$j][0];
                             $offset_child = $result_children[0][$j][1];
+                            //////////////////////////////////////////////////////////////////////
+                            //////////////////////////////////////////////////////////////////////
+                            //// WORK ////////////////////////////////////////////////////////////
+                            $works[] = $offset_child;
+                            $annexes = Array();
+                            if (count($works) > 2) array_shift($works);
+                            if (count($works) == 2) {
+                                $fragment_work = substr($fragment,$works[0],$works[1]-$works[0]);
+                                $success_annexes =  preg_match_all($resolved_annex["value"], $fragment_work, $result_annexes, PREG_OFFSET_CAPTURE);
+                                for ($k = 0; $k < $success_annexes; $k++) {
+                                    $match_annex = $result_annexes[0][$k][0];
+                                    $offset_annex = $result_annexes[0][$k][1];
+                                    $entry_annex = Array(
+                                        "header" => $match_annex,
+                                        "start" => $offset_annex,
+                                        "end" => $offset_annex+strlen($match_annex)
+                                    );
+                                    $annexes[] = $entry_annex;
+                                }
+                            }
+                            //////////////////////////////////////////////////////////////////////
+                            //////////////////////////////////////////////////////////////////////
                             $entry_child = Array(
                                 "header" => $match_child,
                                 "start" => $offset_child,
                                 "end" => $offset_child+strlen($match_child)
                             );
-
+                            if (count($annexes)) $children[$j-1]['annexes'] = $annexes;
                             $children[] = $entry_child;
                         }
                     }
@@ -103,7 +128,7 @@ class CollectionParser {
                         "start" => $offset,
                         "end" => $offset+strlen($match)
                     );
-                    if (count($children)) $return[count($return) - 1]['children'] = $children;
+                    if (count($children)) $return[$i-1]['children'] = $children;
                     $return[] = $entry;
 				}
 			}
