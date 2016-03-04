@@ -235,12 +235,11 @@ Ext.define('LIME.controller.Language', {
                     params.docText = DomUtils.serializeToString(params.docDom);
                 }
             }
-        } else {
-            Ext.Object.each(DocProperties.docsMeta, function(index, obj) {
-                obj.docLang = obj.docLang || params.docLang;
-                obj.docLocale = obj.docLocale || params.docLocale;
-            });
         }
+        Ext.Object.each(DocProperties.docsMeta, function(index, obj) {
+            obj.docLang = obj.docLang || params.docLang;
+            obj.docLocale = obj.docLocale || params.docLocale;
+        });
         callback(params);
     },
 

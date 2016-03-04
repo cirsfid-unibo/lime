@@ -64,12 +64,13 @@ Ext.define('AknMetadata.sync.ImportController', {
     // On the loadDocument event, load metadata from the original xml document.
     // No HtmlToso, no XSLTs, just plain and simple AkomaNtoso. KISS. <3
     onLoadDocument: function (config) {
+        var metaNodes = this.getMetadataNodes(config);
+        if (!metaNodes.length) return;
+
         var metadata = Ext.getStore('metadata');
         metadata.removeAll();
-        config.originalXml = config.originalXml || this.generateMetaXml(config);
         try {
-            var akn = AknMain.xml.Document.parse(config.originalXml, 'akn');
-            akn.select('//akn:meta').forEach(function(meta) {
+            metaNodes.forEach(function(meta) {
                 var doc = AknMain.xml.Document.newDocument(meta, 'akn');
                 this.importDocumentMeta(doc, metadata.newDocument());
             }, this);
@@ -77,6 +78,20 @@ Ext.define('AknMetadata.sync.ImportController', {
             console.warn('Exception parsing metadata: ', e);
             console.warn(e.stack);
         }
+    },
+
+    // Get metadata nodes in the originalXml or from a generated xml from config
+    getMetadataNodes: function(config) {
+        var metaNodes = [];
+        try {
+            metaNodes = AknMain.xml.Document.parse(config.originalXml, 'akn').select('//akn:meta');
+        } catch(e) {
+            console.warn('Exception parsing xml: ', e);
+        }
+        if (!metaNodes.length)
+            metaNodes = AknMain.xml.Document.parse(this.generateMetaXml(config), 'akn').select('//akn:meta');
+
+        return metaNodes;
     },
 
     importDocumentMeta: function(akn, store) {

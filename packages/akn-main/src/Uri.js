@@ -175,7 +175,7 @@ Ext.define('AknMain.Uri', {
         },
         // Accept country codes
         country: function (item) {
-            return item && (item.length === 2 || item.length === 4);
+            return item && (item.length === 2 || item.length === 3 || item.length === 4);
         },
         // Accept dates
         date: function (item) {

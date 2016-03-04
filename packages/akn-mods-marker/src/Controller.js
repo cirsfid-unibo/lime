@@ -193,7 +193,11 @@ Ext.define('AknModsMarker.Controller', {
 
     onDocumentLoaded : function(docConfig) {
         this.addModificationButtons();
-        this.detectExistingMods();
+        try {
+            this.detectExistingMods();
+        } catch(e) {
+            console.error('detectExistingMods ',e);
+        }
     },
 
     addModificationButtons: function() {
