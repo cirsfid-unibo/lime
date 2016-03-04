@@ -2,155 +2,35 @@
     "schemaRegex": "xmlns=\"(http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD\\d+)\"",
     "formulaName": "formulaIniziale",
 	"docTypes": [
-		{
-			"name": "bill",
+        {
+			"name": "dc-doc",
 			"locales": [
 				{
+					"name": "fao"
+                    
+				},
+            	{
 					"name": "ke"
 				}, {
 					"name": "uy"
-				}, {
-					"name": "ch"
-				}, {
-					"name": "it"
-				}, {
-					"name": "cl"
-				}, {
-					"name": "eu"
-				}, {
-					"name": "uk"
-				}, {
-					"name": "us"
-				}, {
-					"name": "za"
 				}
 			]
-		}, {
-			"name": "doc",
+		},
+       {
+			"name": "rep-doc",
 			"locales": [
 				{
+					"name": "fao"
+                    
+				},
+            	{
 					"name": "ke"
 				}, {
 					"name": "uy"
-				}, {
-					"name": "ch"
-				}, {
-					"name": "it"
-				}, {
-					"name": "cl"
-				}, {
-					"name": "eu"
-				}, {
-					"name": "uk"
-				}, {
-					"name": "us"
-				}, {
-					"name": "za"
 				}
 			]
-		}, {
-			"name": "act",
-			"locales": [
-				{
-					"name": "ke"
-				}, {
-					"name": "uy"
-				}, {
-					"name": "ch"
-				}, {
-					"name": "it"
-				}, {
-					"name": "cl"
-				}, {
-					"name": "eu"
-				}, {
-					"name": "uk"
-				}, {
-					"name": "us"
-				}, {
-					"name": "za"
-				}
-			]
-		}, {
-			"name": "amendment",
-			"locales": [
-				{
-					"name": "ke"
-				}, {
-					"name": "uy"
-				}, {
-					"name": "ch"
-				}, {
-					"name": "it"
-				}, {
-					"name": "cl"
-				}, {
-					"name": "eu"
-				}, {
-					"name": "uk"
-				}, {
-					"name": "us"
-				}, {
-					"name": "za"
-				}
-			]
-		}, {
-			"name": "statment",
-			"locales": [
-				{
-					"name": "ke"
-				}, {
-					"name": "uy"
-				}, {
-					"name": "ch"
-				}, {
-					"name": "it"
-				}, {
-					"name": "cl"
-				}, {
-					"name": "eu"
-				}, {
-					"name": "uk"
-				}, {
-					"name": "us"
-				}, {
-					"name": "za"
-				}
-			]
-		}, {
-			"name": "documentCollection",
-			"locales": [
-				{
-					"name": "ke"
-				}, {
-					"name": "uy"
-				}, {
-					"name": "ch"
-				}, {
-					"name": "it"
-				}, {
-					"name": "cl"
-				}, {
-					"name": "eu"
-				}, {
-					"name": "uk"
-				}, {
-					"name": "us"
-				}, {
-					"name": "za"
-				}
-			]
-		}, {
-            "name": "judgment",
-            "locales": [
-                {
-                    "name": "it"
-                }, {
-                    "name": "ro"
-                }
-            ]
-        }
-	],
+		}
+    ],
 	"transformationFiles": {
 		"languageToLIME": "AknToXhtml.xsl",
 		"LIMEtoLanguage": "HtmlToAkn.xsl"
