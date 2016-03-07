@@ -75,8 +75,15 @@ Ext.define('AknMetadata.Strings', {
             "steps": "Steps",
             "actor": "Actor",
             "role": "Role",
-            "outcome": "Outcome"
-
+            "outcome": "Outcome",
+            "dictionary": "Uri thesaurus",
+            "associated": "Associated to",
+            "wholeContent": "Whole content",
+            "classify": "Classify",
+            "seeelement": "Show associated element",
+            "selectKeyword": "Select one of the following keywords",
+            "emptySelection": "No item selected",
+            "classifyConfirm": "Are you sure to classify the selected node as <b>{keyword}</b>?"
         },
         "it": {
             "title": "Editor metadati",
@@ -105,7 +112,15 @@ Ext.define('AknMetadata.Strings', {
             "steps": "Passi",
             "actor": "Attore",
             "role": "Ruolo",
-            "outcome": "Esito"
+            "outcome": "Esito",
+            "dictionary": "Uri thesaurus",
+            "associated": "Associato a",
+            "wholeContent": "Contenuto intero",
+            "classify": "Classifica",
+            "seeelement": "Visualizza l'elemento associato",
+            "selectKeyword": "Seleziona una parola chiave",
+            "emptySelection": "Nessun elemento selezionato",
+            "classifyConfirm": "Sei sicuro di voler classificare l'elemento selezionato come <b>{keyword}</b>?"
         },
         "es": {
             "title": "Editor de metadatos",
@@ -134,7 +149,15 @@ Ext.define('AknMetadata.Strings', {
             "steps": "Pasos",
             "actor": "Actor",
             "role": "Papel",
-            "outcome": "Resultado"
+            "outcome": "Resultado",
+            "dictionary": "Uri thesaurus",
+            "associated": "Associated to",
+            "wholeContent": "Whole content",
+            "classify": "Classify",
+            "seeelement": "Show associated element",
+            "selectKeyword": "Select one of the following keywords",
+            "emptySelection": "No item selected",
+            "classifyConfirm": "Are you sure to classify the selected node as <b>{keyword}</b>?"
         }
     },
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 - Copyright holders CIRSFID and Department of
+ * Copyright (c) 2015 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
  *
  * Authors:
@@ -44,51 +44,28 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('AknMetadata.newMeta.ClassificationTab', {
-    extend: 'AknMetadata.newMeta.EditorTab',
-    xtype: 'akn-metadata-tab-classification',
-    requires: [
-        'AknMetadata.newMeta.ClassificationController',
-        'AknMetadata.newMeta.EditorTab',
-        'AknMetadata.newMeta.EditorTable'
-    ],
+Ext.define('AknMetadata.newMeta.ClassificationController', {
+    extend: 'Ext.app.ViewController',
+    alias: 'controller.akn-metadata-classification',
 
-    controller: 'akn-metadata-classification',
+    renderHref: function(value, meta, record) {
+        if (!value) return Locale.getString('wholeContent', 'akn-metadata');
 
-    title: Locale.getString('classification', 'akn-metadata'),
-    glyph: 'xf200@FontAwesome',
-    items: [{
-        xtype: 'metadataeditortable',
-        bind: {
-            store: '{document.classificationKeywords}'
-        },
-        title: Locale.getString('keywords', 'akn-metadata'),
-        columns: [
-            { text: Locale.getString('value', 'akn-metadata'), 
-                dataIndex: 'value', flex: 1, editor: 'textfield' },
-            { text: Locale.getString('dictionary', 'akn-metadata'), 
-                dataIndex: 'dictionary', editor: 'textfield', flex: 2 },
-            { text: Locale.getString('associated', 'akn-metadata'), 
-                dataIndex: 'href', editor: 'textfield', flex: 1,
-                renderer: 'renderHref', editor: false
-            },
-            {
-                xtype: 'actioncolumn',
-                align: 'center',
-                width: 30,
-                glyph:'xf06e@FontAwesome',
-                tooltip: Locale.getString('seeelement', 'akn-metadata'),
-                handler: 'seeElement',
-                renderer: function(value, meta, record) {
-                    if (DocProperties.getMarkedElement(record.get('href')))
-                        this.enable();
-                    else
-                        this.disable();
-                }
-            }
-        ],
-        custom: {
-            showAs: function (context) { return context.newValues.value; }
-        }
-    }]
+        var node = DocProperties.getMarkedElement(value);
+        node = node && node.htmlElement;
+        if (node && node.textContent.trim())
+            return Ext.String.ellipsis(node.textContent.trim(), 20);
+        else
+            return value;
+    },
+
+    seeElement: function(grid, rowIndex, colIndex, item, e, rec) {
+        var node = DocProperties.getMarkedElement(rec.get('href'));
+        if (node)
+            LIME.getApplication().fireEvent('nodeFocusedExternally', node.htmlElement, {
+                select : true,
+                scroll : true,
+                highlight:true
+            });
+    }
 });
