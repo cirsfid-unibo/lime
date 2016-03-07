@@ -133,7 +133,7 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         '</div>', 
         {
             uriAttr: function(attr, value, allowEmpty) {
-                attrVal = (value && value.startsWith('/')) ? value : '#'+value;
+                attrVal = (value && (value.startsWith('/') || value.startsWith('#'))) ? value : '#'+value;
                 return (value || allowEmpty) ? attr+'="'+attrVal+'"' : '';
             },
             modification: function(data) {
@@ -219,7 +219,6 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         data.workflowSteps = mapData(model.workflowSteps()).map(mapStep);
         data.classificationKeywords = mapData(model.classificationKeywords());
         data.modifications = mapModifications(model.modifications());
-
         var uri = model.getUri();
         data.uri = {
             work: uri.work(),

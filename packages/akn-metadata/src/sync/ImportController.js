@@ -175,7 +175,7 @@ Ext.define('AknMetadata.sync.ImportController', {
                     value: keyword.getAttribute('value'),
                     showAs: keyword.getAttribute('showAs'),
                     dictionary: keyword.getAttribute('dictionary'),
-                    href: keyword.getAttribute('href')
+                    href: AknMain.metadata.HtmlSerializer.normalizeHref(keyword.getAttribute('href'))
                 }
                 store.classificationKeywords().add(data);
             });

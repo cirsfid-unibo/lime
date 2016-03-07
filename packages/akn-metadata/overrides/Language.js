@@ -105,5 +105,28 @@
                 node.parentNode.removeChild(node);
             });
         }
+    },
+
+    // Replace meta href values from eId to internalId
+    afterLoad: function(params) {
+        this.callParent(arguments);
+        var store = Ext.getStore('metadata').getMainDocument();
+        if (!store || !params.docDom) return;
+
+        var getNodeByEid = function(value) {
+            return params.docDom.querySelector("*[" + LangProp.attrPrefix + "eid='"+value+"']");
+        };
+
+        var updateHref = function(rec) {
+            var href = rec.get('href'),
+                elId = href && DomUtils.getElementId(getNodeByEid(href));
+            if (!href || !elId) return;
+
+            rec.set('oldhref', href);
+            rec.set('href', elId);
+        };
+
+        store.classificationKeywords().each(updateHref);
+        //TODO: call updateHref for other metadata elements
     }
  });

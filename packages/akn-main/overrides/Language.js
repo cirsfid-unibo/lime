@@ -209,34 +209,35 @@ Ext.define('AknMain.Language', {
         var me = this;
 
         Ext.each(root.querySelectorAll('*[' + DomUtils.elementIdAttribute + ']'), function(node) {
-            var newId = me.setNodeId(root, node), //Set a language unique Id
-                intId = node.getAttribute(DomUtils.elementIdAttribute);
+            var intId = node.getAttribute(DomUtils.elementIdAttribute),
+                hrefElements = root.querySelectorAll("["+LangProp.attrPrefix+"href = '#"+intId+"'], [href='#"+intId+"']");
+                //TODO: improve this to work with complete href eg: /uy/..../#id
 
-            if ( newId )
-                me.aknIdMapping[newId] = intId;
-                
-            //TODO: improve this to work with complete href eg: /uy/..../#id
-            var hrefElements = root.querySelectorAll("["+LangProp.attrPrefix+"href = '#"+intId+"'], [href='#"+intId+"']"),
+            //Set a language unique id (eId)
+            var newId = me.setNodeId(root, node, (hrefElements.length != 0)),
                 status = node.getAttribute(LangProp.attrPrefix +'status'),
                 wId = node.getAttribute(LangProp.attrPrefix +'wId');
 
             Ext.each(hrefElements, function(hrefElement) {
                 var oldHref = hrefElement.getAttribute(LangProp.attrPrefix+"href") || hrefElement.getAttribute("href");
-                if ( !status || status != 'removed' || !wId ) {
+                if ( newId && !status || status != 'removed' || !wId ) {
                     hrefElement.setAttribute("href", oldHref.replace(intId, newId));
                 } else if (wId) {
                     hrefElement.setAttribute("href", oldHref.replace(intId, wId));
                 }
             });
+
+            if ( newId )
+                me.aknIdMapping[newId] = intId;
         });
 
         // Add ids also to wrapping elements
         Ext.each(wrappingEls, me.setNodeId.bind(me, root));
     },
 
-    setNodeId: function(root, node) {
+    setNodeId: function(root, node, enforce) {
         var me = this;
-        var newId = AknMain.IdGenerator.generateId(node, root);
+        var newId = AknMain.IdGenerator.generateId(node, root, enforce);
         var oldId = node.getAttribute(LangProp.attrPrefix + LangProp.elIdAttr);
 
         // TODO: understand how to manage changing ids

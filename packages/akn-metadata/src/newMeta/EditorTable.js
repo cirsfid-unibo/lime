@@ -63,10 +63,9 @@ Ext.define('AknMetadata.newMeta.EditorTable', {
         clicksToEdit: 1,
         listeners: {
             validateedit: function(editor, context) {
-                console.log('validate edit', editor, context)
                 var custom = context.grid.custom || {};
                 Object.keys(custom).forEach(function (prop) {
-                    context.newValues[prop] = custom[prop](context);
+                    context.record.set(prop, custom[prop](context));
                 });
 
                 var referenceFix = context.grid.referenceFix || {};
