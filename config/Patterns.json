@@ -29,7 +29,7 @@
 		"wrapperStyle" : "border: 1px solid #3355AA;line-height: 20px; padding:1.5px;",
 		"wrapperClass" : "patternName elementName",
 		"wrapperId": "seqId",
-		"allowedPatterns": ["inline", "marker"]
+		"allowedPatterns": ["inline", "marker", "popup"]
 	},
 	"marker": {
 		"wrapperElement": "<span>&content;</span>",

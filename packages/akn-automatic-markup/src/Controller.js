@@ -171,7 +171,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
     onNodeChanged: function(nodes, config, callback) {
         var me = this;
-        if(!config.unmark) {
+        if(!config.unmark && nodes) {
             try {
                 me.parseElements(nodes, config, function() {
                     me.addChildWrapper(nodes, config);

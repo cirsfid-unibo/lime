@@ -51,8 +51,6 @@ Ext.define('AknMain.notes.Controller', {
 
     config : {
         authorialNoteClass : 'authorialNote',
-        changePosAttr: 'chposid',
-        changePosTargetAttr: 'chpos_id',
         noteRefAttribute: 'noteref',
         refToAttribute: 'refto',
         notesContainerCls: 'notesContainer',
@@ -60,59 +58,178 @@ Ext.define('AknMain.notes.Controller', {
         noteTmpId: 'notetmpid'
     },
 
-    init : function() {
+    noteIndex: 0,
+
+    init: function() {
         var me = this;
         //Listening progress events
         me.application.on(Statics.eventsNames.afterLoad, me.beforeProcessNotes, me);
         me.application.on(Statics.eventsNames.nodeAttributesChanged, me.nodeChangedAttributes, me);
+        me.application.on(Statics.eventsNames.nodeChangedExternally, me.onNodeChanged, me);
+        me.application.on(Statics.eventsNames.unmarkedNodes, me.nodesUnmarked, me);
     },
 
     beforeProcessNotes: function(config) {
-        var editorBody = this.getController("Editor").getBody();
-        this.linkNotes(editorBody);
-        this.processNotes(editorBody);
+        this.linkNotes(config.docDom);
+        this.processNotes(config.docDom);
     },
 
     linkNotes: function(body) {
-        var me = this, app = this.application,
-            noteLinkers = body.querySelectorAll(".linker");
-        clickLinker = function() {
-            var marker = this.getAttribute(me.getRefToAttribute()), note;
-            if (marker) {
-                note = body.querySelector("*["+me.getChangePosTargetAttr()+"="+marker+"]");
-                if(note) {
-                    app.fireEvent('nodeFocusedExternally', note, {
-                        select : true,
-                        scroll : true,
-                        click : true
-                    });
-                }
-            }
-        };
-        Ext.each(noteLinkers, function(linker) {
-            linker.onclick = clickLinker;
-        }, this);
-    },
-    
-    nodeChangedAttributes: function(node) {
-        if(node.getAttribute("class").indexOf(this.getAuthorialNoteClass())!=-1) {
-            var result = this.updateNote(node, this.getController("Editor").getBody());
-            if(result.placement) {
-                this.application.fireEvent('nodeFocusedExternally', node, {
-                    select : true,
-                    scroll : true,
-                    click : true
-                }); 
-            }
-        }
+        var me = this;
+        Ext.each(body.querySelectorAll(".linker"), function(linker) {
+            linker.onclick = function() {
+                me.noteLinkClickHandler(this);
+            };
+        });
     },
 
-    processNotes : function(editorBody) {
+    processNotes: function(editorBody) {
+        var athNotes = editorBody.querySelectorAll("*[class~='"+this.getAuthorialNoteClass()+"']"); 
+        Ext.each(athNotes, function(element, index) {
+            this.processNote(element, index);
+        }, this);  
+    },
+
+    processNote: function(node, index) {
         var me = this, 
-            athNotes = editorBody.querySelectorAll("*[class~='"+me.getAuthorialNoteClass()+"']"); 
-        Ext.each(athNotes, function(element) {
-            me.processNote(element, editorBody);
-        }, me);  
+            noteTmpId = node.getAttribute(me.getNoteTmpId()),
+            tmpRef = node.ownerDocument.querySelector("*["+me.getNoteRefAttribute()+"="+noteTmpId+"]");
+        if (!tmpRef) return;
+
+        var marker = LangProp.getNodeLangAttr(node, "marker"),
+            placement = LangProp.getNodeLangAttr(node, "placement");
+            
+        marker.value = marker.value || index && index+1 || 'note';
+        placement.value = placement.value || "bottom";
+
+        if(!tmpRef.querySelector('a')) {
+            var linkContainer = this.insertMarkerLink(tmpRef, marker.value);
+            linkContainer.querySelector('a').setAttribute(me.getRefToAttribute(), noteTmpId);
+            linkContainer.querySelector('a').onclick = function() {
+                me.noteLinkClickHandler(this);
+            };
+        }
+        
+        node.setAttribute(marker.name, marker.value);
+        node.setAttribute(placement.name, placement.value);
+        me.setNotePosition(node, tmpRef);
+    },
+
+    insertMarkerLink: function(node, marker) {
+        var supLinkTemplate = new Ext.Template('<sup><a class="linker" href="#">{markerNumber}</a></sup>');
+        return Ext.DomHelper.insertHtml("afterBegin", node, supLinkTemplate.apply({
+            'markerNumber': marker
+        }));
+    },
+
+    noteLinkClickHandler: function(node) {
+        var marker = node.getAttribute(this.getRefToAttribute()),
+            note = marker && node.ownerDocument.querySelector("*["+this.getNoteTmpId()+"="+marker+"]");
+        if (note)
+            this.focusNote(note);
+    },
+
+    focusNote: function(node) {
+        this.application.fireEvent('nodeFocusedExternally', node, {
+            select : true, scroll : true, click : true
+        });
+    },
+
+    setNotePosition: function(note, refNode) {
+        var placement = LangProp.getNodeLangAttr(note, "placement");
+        var parentClsList = note.parentNode && note.parentNode.classList;
+
+        if (placement.value == "bottom" && parentClsList &&
+                (!parentClsList.length || !parentClsList.contains(this.getNotesContainerCls()))) {
+            this.moveNoteToBottom(note, refNode);
+            return true;
+        }
+
+        if (placement.value == "inline" && parentClsList &&
+                parentClsList.contains(this.getNotesContainerCls())) {
+            this.moveNoteInline(note, refNode);
+            return true;
+        }
+        return false;
+    },
+
+    moveNoteToBottom: function(node, refNode) {
+        var me = this, 
+            notesContainer = me.getNotesContainer(node.ownerDocument);
+        if(!notesContainer.childNodes.length)
+            return notesContainer.appendChild(node);
+        // Insert the note in order
+        var allRefs = Ext.Array.toArray(node.ownerDocument.querySelectorAll("*["+me.getNoteRefAttribute()+"]")),
+            refIndex = allRefs.indexOf(refNode),
+            sbNote, refSibling;
+
+        for(var i = 0; i < notesContainer.childNodes.length; i++) {
+            sbNote = notesContainer.childNodes[i];
+            refSibling = allRefs.filter(function(el) {
+                return el.getAttribute(me.getNoteRefAttribute()) == sbNote.getAttribute(me.getNoteTmpId());
+            })[0];
+            if(refSibling && allRefs.indexOf(refSibling) > refIndex)
+                return notesContainer.insertBefore(node, sbNote);
+        }
+        
+        notesContainer.appendChild(node);
+    },
+
+    moveNoteInline: function(node, refNode) {
+        if (DomUtils.getPatternByNode(refNode.parentNode) == 'inline')
+            return DomUtils.insertAfter(node, refNode.parentNode);
+        DomUtils.insertAfter(node, refNode);
+    },
+
+    nodeChangedAttributes: function(node) {
+        if (DomUtils.getElementNameByNode(node) !== 'authorialNote') return;
+        if (this.updateNote(node).placement)
+            this.focusNote(node);
+    },
+
+    updateNote: function(node) {
+        var noteId = node.getAttribute(this.getNoteTmpId()),
+            ref = noteId && node.ownerDocument.querySelector("*["+this.getNoteRefAttribute()+"="+noteId+"]"),
+            result = {marker: false, placement: false},
+            marker = LangProp.getNodeLangAttr(node, "marker");
+
+        if(ref && marker && marker.value) {
+            var linker = ref.querySelector('a');
+            if(marker.value.trim() != linker.textContent.trim()) {
+                result.marker = true;
+                linker.replaceChild(node.ownerDocument.createTextNode(marker.value), linker.firstChild);  
+            }
+            result.placement = this.setNotePosition(node, ref);
+        }
+
+        return result;
+    },
+
+    onNodeChanged: function(nodes, config) {
+        if(config.unmark || !nodes) return;
+        var me = this;
+        Ext.each(nodes, function(node) {
+            if (DomUtils.getElementNameByNode(node) === 'authorialNote') {
+                me.insertNoteTmpSpan(node);
+                me.processNote(node);
+            }
+        });
+    },
+
+    insertNoteTmpSpan: function(node) {
+        var markerTemplate = new Ext.Template('<span class="'+this.getTmpSpanCls()+'" '+this.getNoteRefAttribute()+'="{ref}"></span>');
+        var noteTmpId = "note_"+this.noteIndex++;
+        Ext.DomHelper.insertHtml("beforeBegin", node, markerTemplate.apply({
+            'ref' : noteTmpId
+        }));
+        node.setAttribute(this.getNoteTmpId(), noteTmpId);
+        // Move the element after the parent to prevent split in parent
+        DomUtils.insertAfter(node, node.parentNode);
+    },
+
+    //TODO: remove all tmp nodes when the node is unmarked
+    nodesUnmarked: function(nodes) {
+        console.log(nodes);
     },
     
     getNotesContainer: function(editorBody) {
@@ -128,135 +245,14 @@ Ext.define('AknMain.notes.Controller', {
         
         return notesContainer;
     },
-    
-    
-    setNotePosition: function(note, refNode, editorBody) {
-        var me = this,
-            placement = LangProp.getNodeLangAttr(note, "placement"), 
-            allRefs = Array.prototype.slice.call(editorBody.querySelectorAll("*["+me.getNoteRefAttribute()+"]")),
-            notesContainer, changed = false, refIndex, siblingNote, refSibling, refSiblingIndex;
-
-        if (placement.value == "bottom" && note.parentNode && 
-                    (!note.parentNode.getAttribute("class") || 
-                        note.parentNode.getAttribute("class").indexOf(me.getNotesContainerCls()) == -1)) {
-            notesContainer = me.getNotesContainer(editorBody);
-            if(!notesContainer.childNodes.length) {
-                notesContainer.appendChild(note);    
-            } else {
-                // Insert the note in order
-                refIndex = allRefs.indexOf(refNode);
-                for(var i = 0; i < notesContainer.childNodes.length; i++) {
-                    siblingNote = notesContainer.childNodes[i];
-                    refSibling = allRefs.filter(function(el) { 
-                        return el.getAttribute(me.getNoteRefAttribute()) == siblingNote.getAttribute(me.getNoteTmpId());
-                    })[0];
-                    if(refSibling) {
-                        refSiblingIndex = allRefs.indexOf(refSibling);
-                        if(refSiblingIndex > refIndex) {
-                            break;
-                        }
-                    }
-                }
-                if(siblingNote && refSiblingIndex > refIndex) {
-                    notesContainer.insertBefore(note, siblingNote);
-                } else {
-                    notesContainer.appendChild(note);
-                }
-            }
-            changed = true;
-        } else if (placement.value == "inline" && note.parentNode && 
-                (note.parentNode.getAttribute("class") && 
-                    note.parentNode.getAttribute("class").indexOf(me.getNotesContainerCls()) != -1)) {
-            if (refNode.nextSibling) {
-                refNode.parentNode.insertBefore(note, refNode.nextSibling);
-            } else {
-                refNode.parentNode.appendChild(note);
-            }
-            changed = true;
-        }
-        return changed;
-    },
-
-    
-    processNote: function(node, editorBody) {
-        var me = this, parent = node.parentNode, app = me.application,
-            elId, tmpElement,  link, tmpExtEl,
-            marker = LangProp.getNodeLangAttr(node, "marker"),
-            placement = LangProp.getNodeLangAttr(node, "placement"),
-            supLinkTemplate = new Ext.Template('<sup><a class="linker" href="#">{markerNumber}</a></sup>'),
-            notTmpId = node.getAttribute(me.getNoteTmpId()),
-            tmpRef = editorBody.querySelector("*["+me.getNoteRefAttribute()+"="+notTmpId+"]"),
-            allRefs = Array.prototype.slice.call(editorBody.querySelectorAll("*["+me.getNoteRefAttribute()+"]")),
-            clickLinker = function() {
-                var marker = this.getAttribute(me.getRefToAttribute()),
-                    note;
-                if (marker) {
-                    note = editorBody.querySelector("*["+me.getNoteTmpId()+"="+marker+"]");
-                    if(note) {
-                        app.fireEvent('nodeFocusedExternally', note, {
-                            select : true,
-                            scroll : true,
-                            click : true
-                        });    
-                    }
-                }  
-            };
-        if (tmpRef) {
-            elId = allRefs.indexOf(tmpRef);
-            elId = (elId != -1) ? elId+1 : "note";
-            marker.value = marker.value || elId;
-            placement.value = placement.value || "bottom";
-            
-            if(!tmpRef.querySelector('a')) {
-                tmpElement = Ext.DomHelper.insertHtml("afterBegin", tmpRef, supLinkTemplate.apply({
-                    'markerNumber' : marker.value
-                }));
-                tmpElement.querySelector('a').setAttribute(me.getRefToAttribute(), notTmpId);
-                tmpElement.querySelector('a').onclick = clickLinker;    
-            }
-            
-            node.setAttribute(marker.name, marker.value);
-            node.setAttribute(placement.name, placement.value);
-            me.setNotePosition(node, tmpRef, editorBody);
-        }
-    },
-    
-    updateNote: function(node, editorBody) {
-        var me = this,
-            marker = LangProp.getNodeLangAttr(node, "marker"),
-            eId = node.getAttribute(me.getNoteTmpId()),
-            ref = editorBody.querySelector("*["+me.getNoteRefAttribute()+"="+eId+"]"),
-            linker, result = {marker: false, placement: false};
-        if(eId && ref && marker && marker.value) {
-            linker = ref.querySelector('a');
-            if(marker.value.trim() !=  DomUtils.getTextOfNode(linker).trim()) {
-                result.marker = true;
-                linker.replaceChild(editorBody.ownerDocument.createTextNode(marker.value), linker.firstChild);  
-            }
-            result.placement = me.setNotePosition(node, ref, editorBody);
-        }
-        return result;
-    },
 
     /*
      * Is important to call this function before loading the document in the editor. 
      * */
-    preProcessNotes : function(dom) {
+    preProcessNotes: function(dom) {
+        this.noteIndex = 0;
         if (!dom) return;
-        var athNotes = dom.querySelectorAll("*[class~=" + this.getAuthorialNoteClass() + "]"),
-            markerTemplate = new Ext.Template('<span class="'+this.getTmpSpanCls()+'" '+this.getNoteRefAttribute()+'="{ref}"></span>');
-            
-        Ext.each(athNotes, function(element, index) {
-            var noteTmpId = "note_"+index;
-            Ext.DomHelper.insertHtml("beforeBegin", element, markerTemplate.apply({
-                'ref' : noteTmpId
-            }));
-            element.setAttribute(this.getNoteTmpId(), noteTmpId);
-            // Move the element to the end of parent to prevent split in parent
-            if(element.nextSibling) {
-                element.parentNode.appendChild(element);
-            }
-        }, this);
+        var athNotes = dom.querySelectorAll("*[class~=" + this.getAuthorialNoteClass() + "]");
+        Ext.each(athNotes, this.insertNoteTmpSpan, this);
     }
-
 });
