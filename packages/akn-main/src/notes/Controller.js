@@ -93,6 +93,7 @@ Ext.define('AknMain.notes.Controller', {
     processNote: function(node, index) {
         var me = this, 
             noteTmpId = node.getAttribute(me.getNoteTmpId()),
+            elId = DomUtils.getElementId(node),
             tmpRef = node.ownerDocument.querySelector("*["+me.getNoteRefAttribute()+"="+noteTmpId+"]");
         if (!tmpRef) return;
 
@@ -104,12 +105,13 @@ Ext.define('AknMain.notes.Controller', {
 
         if(!tmpRef.querySelector('a')) {
             var linkContainer = this.insertMarkerLink(tmpRef, marker.value);
-            linkContainer.querySelector('a').setAttribute(me.getRefToAttribute(), noteTmpId);
+            linkContainer.querySelector('a').setAttribute(me.getRefToAttribute(), elId);
             linkContainer.querySelector('a').onclick = function() {
                 me.noteLinkClickHandler(this);
             };
         }
-        
+
+        tmpRef.setAttribute(me.getRefToAttribute(), elId);
         node.setAttribute(marker.name, marker.value);
         node.setAttribute(placement.name, placement.value);
         me.setNotePosition(node, tmpRef);
@@ -123,10 +125,9 @@ Ext.define('AknMain.notes.Controller', {
     },
 
     noteLinkClickHandler: function(node) {
-        var marker = node.getAttribute(this.getRefToAttribute()),
-            note = marker && node.ownerDocument.querySelector("*["+this.getNoteTmpId()+"="+marker+"]");
-        if (note)
-            this.focusNote(note);
+        var note = DocProperties.getMarkedElement(node.getAttribute(this.getRefToAttribute()));
+        if (note && note.htmlElement)
+            this.focusNote(note.htmlElement);
     },
 
     focusNote: function(node) {
@@ -209,7 +210,8 @@ Ext.define('AknMain.notes.Controller', {
         if(config.unmark || !nodes) return;
         var me = this;
         Ext.each(nodes, function(node) {
-            if (DomUtils.getElementNameByNode(node) === 'authorialNote') {
+            if (DomUtils.getElementNameByNode(node) === 'authorialNote' && 
+                    !node.getAttribute(me.getNoteTmpId())) {
                 me.insertNoteTmpSpan(node);
                 me.processNote(node);
             }
@@ -227,9 +229,14 @@ Ext.define('AknMain.notes.Controller', {
         DomUtils.insertAfter(node, node.parentNode);
     },
 
-    //TODO: remove all tmp nodes when the node is unmarked
-    nodesUnmarked: function(nodes) {
-        console.log(nodes);
+    // Removing the tmp element linked to the removed authorialNote
+    nodesUnmarked: function(elIds, doc) {
+        elIds.forEach(function(id) {
+            var isNote = DocProperties.getElementConfig(DomUtils.getButtonIdByElementId(id)).name === 'authorialNote',
+                tmpRef = isNote && doc.querySelector("*["+this.getRefToAttribute()+"="+id+"]");
+            if (tmpRef)
+                tmpRef.parentNode.removeChild(tmpRef);
+        }, this);
     },
     
     getNotesContainer: function(editorBody) {

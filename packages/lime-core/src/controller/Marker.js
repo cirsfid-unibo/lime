@@ -538,7 +538,8 @@ Ext.define('LIME.controller.Marker', {
             // Check what kind of operations we have to perform on the unmarked node
             eventConfig = {change : true, click : true, unmark: true},
             markedParent = (start)? start.parentNode : end.parentNode,
-            unmarkedNodeIds = [];
+            unmarkedNodeIds = [],
+            nodeDocument = node.ownerDocument;
         // Check the siblings
         if (siblings){
             // If the node is not marked delete it from the array
@@ -566,12 +567,13 @@ Ext.define('LIME.controller.Marker', {
             eventConfig.change = false;
         }*/
         this.application.fireEvent('nodeChangedExternally', markedParent, eventConfig);
-        this.application.fireEvent(Statics.eventsNames.unmarkedNodes, unmarkedNodeIds);
+        this.application.fireEvent(Statics.eventsNames.unmarkedNodes, unmarkedNodeIds, nodeDocument);
     },
 
     unmarkNodes: function(nodes, unmarkChildren) {
         var me = this, parents = [], editor = me.getController("Editor"),
             documentEl = editor.getDocumentElement(),
+            nodeDocument = nodes[0].ownerDocument,
             unmarkedNodeIds = [], config = {change : true, unmark: true};
 
         editor.removeBookmarks();
@@ -587,7 +589,7 @@ Ext.define('LIME.controller.Marker', {
         } else {
             me.application.fireEvent('nodeChangedExternally', documentEl, config);
         }
-        me.application.fireEvent(Statics.eventsNames.unmarkedNodes, unmarkedNodeIds);
+        me.application.fireEvent(Statics.eventsNames.unmarkedNodes, unmarkedNodeIds, nodeDocument);
     },
     
     wrapChildrenInWrapperElement: function(node, pattern) {

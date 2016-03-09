@@ -364,7 +364,7 @@
 		<xsl:element name="{$aknName}">
 			<xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
 			<xsl:choose>
-				<xsl:when test="./p">
+				<xsl:when test="./div[contains(@class, 'block p')]">
 					<xsl:apply-templates />
 				</xsl:when>
 				<xsl:otherwise>
