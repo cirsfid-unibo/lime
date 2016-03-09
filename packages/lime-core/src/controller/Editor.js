@@ -77,6 +77,232 @@ Ext.define('LIME.controller.Editor', {
         autosaveEnabled: true
     },
 
+    listen: {
+        global: {
+            loadDocument: 'beforeLoadDocument',
+            scrollToActiveNode: 'scrollToShowActiveNode'
+        },
+        controller: {
+            '#Outliner': {
+                elementFocused: 'onOutlinerClick'
+            },
+            '#UndoManager': {
+                change: 'refreshUndoButtons'
+            }
+        },
+        component: {
+            mainEditorPath: {
+                pathItemClicked: 'onPathItemClicked'
+            },
+            mainEditorUri: {
+                // This shouldn't be done by this controller: use stores instead
+                pathSwitcherChanged: 'showDocumentIdentifier'
+            }
+        }
+    },
+
+    init: function() {
+        var me = this;
+        this.application.on({
+            nodeFocusedExternally : this.focus,
+            nodeChangedExternally : this.focus,
+            editorDomNodeFocused : this.onNodeClick,
+            scope : this
+        });
+        this.application.on(Statics.eventsNames.disableEditing, this.disableEditor, this);
+        this.application.on(Statics.eventsNames.enableEditing, this.enableEditor, this);
+        this.application.on(Statics.eventsNames.afterSave, this.afterSave, this);
+
+        var markerController = this.getController('Marker');
+        this.control({
+            // Handle the viewable events on the editor (click, contextmenu etc.)
+            '#mainEditor mainEditor' : {
+                click : me.onClickHandler,
+                change: me.onChangeContent,
+                setcontent: function(ed, e) {
+                    if(!DocProperties.getDocType()) return;
+                    me.onChangeContent(ed);
+                },
+                contextmenu: me.showContextMenu,
+                beforerender: me.setupTinyCmp
+            },
+            '#secondEditor': {
+                added: function(cmp) {
+                    me.setOnlyEditorTabMode(true);
+                },
+                removed: function(cmp) {
+                    me.setOnlyEditorTabMode(false);
+                }
+            },
+            '#secondEditor mainEditor' : {
+                beforerender: me.setupTinySecondEditorCmp,
+                editorcreated: function(tinyEditor) {
+                    var editor2 = Ext.fly(me.getEditor(me.getSecondEditor()).getBody());
+                    editor2.addCls('secondEditor');
+                }
+            }
+        });
+    },
+
+    onChangeContent: function(ed) {
+        this.ensureContentWrapper(ed);
+        this.changed = true;
+    },
+
+    showContextMenu: function(ed, e) {
+        e.preventDefault(); // Prevent the default context menu to show
+        // Compute the coordinates
+        var offsetPosition = this.getPosition(),
+            coordinates = [e.clientX+offsetPosition[0], e.clientY+offsetPosition[1]];
+        this.application.fireEvent(Statics.eventsNames.showContextMenu, coordinates);
+    },
+
+    setupTinyCmp: function(cmp) {
+        var me = this,
+            editorView = cmp,
+            tinyView = me.getEditorComponent(cmp),
+            tinyConfig = me.getTinyMceConfig();
+
+        tinyConfig = Ext.merge(tinyConfig, {
+            // Events and callbacks
+            mysetup: function(editor) {
+                me.addUndoButtons(editor);
+
+                editor.on('init', function(e) {
+                    me.tinyInit();
+                });
+
+                editor.on('change', function(e) {
+                    editorView.fireEvent('change', editor, e);
+                });
+
+                editor.on('setcontent', function(e) {
+                    editorView.fireEvent('setcontent', editor, e);
+                });
+
+                editor.on('BeforeExecCommand', function(e) {
+                    if(e.value && Ext.isFunction(e.value.indexOf) && e.value.indexOf('<table>') != -1) {
+                        var node = me.getSelectedNode(true);
+                        var config = Interpreters.getButtonConfig('table');
+                        if (!me.getController('Marker').isAllowedMarking(node, config)) {
+                            e.preventDefault();
+                        }
+                    }
+                });
+
+                var blurHandler = Ext.bind(me.blurHandler, me, [editor], true);
+                editor.on('blur', blurHandler);
+                editor.on('focusOut', blurHandler);
+
+                var focusHandler = Ext.bind(me.focusHandler, me, [editor], true);
+                editor.on('focus', focusHandler);
+
+                editor.on('mousedown', function(e) {
+                    if ( document.activeElement == me.getIframe().dom ) {
+                        me.removeVisualSelectionObjects();
+                    } else {
+                        /* IE bug workaround, avoid moving the caret
+                            at beginning of the document on focusing editor */
+                        me.tmpBookmark = me.getBookmark();
+                    }
+                });
+
+                editor.on('mouseup', function(e) {
+                    if (!me.tmpBookmark) return;
+                    me.removeBookmarks(true);
+                    me.tmpBookmark = null;
+                });
+
+                editor.on('click', function(e) {
+                    // Fire a click event only if left mousebutton was used
+                    if (e.which == 1){
+                        me.onClickHandler(editor, e);
+                    }
+                });
+
+                editor.on('contextmenu', function(e) {
+                    me.onClickHandler(editor, e);
+                    editorView.fireEvent('contextmenu', editor, e);
+                });
+
+                editor.on('BeforeAddUndo', function(e) {
+                    editor.fire('change');
+                    return false;
+                });
+
+                editor.on('init', me.addScrollHandler.bind(me));
+            }});
+
+        tinyConfig.menubar = false;
+
+        /* Set the editor custom configuration */
+        Ext.apply(tinyView, {tinymceConfig: tinyConfig});
+    },
+
+    setOnlyEditorTabMode: function(enable) {
+        var mainCmp = this.getMain();
+        mainCmp.query('[cls~=editorTab]').forEach(function(tabPanel) {
+            tabPanel.tab.setVisible(!enable);
+        });
+        mainCmp.query('[cls*=editorTabButton]').forEach(function(button) {
+            button.setVisible(!enable);
+        });
+    },
+
+    setupTinySecondEditorCmp: function(cmp) {
+        var tinyView = this.getEditorComponent(cmp),
+            tinyConfig = this.getTinyMceConfig();
+
+        tinyConfig.menubar = false;
+        tinyConfig.readonly = 1;
+        tinyConfig.mysetup =  function(editor) {
+            editor.on('PostRender', function() {
+                editor.getBody().addEventListener('click', function(e) {
+                    if (e.which == 1){
+                        cmp.fireEvent('click', editor, e);
+                    }
+                });
+            });
+        };
+
+        /* Set the editor custom configuration */
+        Ext.apply(tinyView, {tinymceConfig: tinyConfig});
+    },
+
+    // Scroll the editor so that the active node becomes visible
+    scrollToShowActiveNode: function() {
+        var node = this.lastRange ? this.lastRange.startContainer : this.lastFocused;
+        if (!node) return;
+        node = (node.nodeType == DomUtils.nodeType.TEXT) ? node.parentNode : node;
+
+        var iframe = this.getIframe().dom,
+            nodeRect = node.getBoundingClientRect(),
+            iframeRect = iframe.getBoundingClientRect();
+
+        if (nodeRect.top < 0)
+            return node.scrollIntoView();
+
+        var delta = nodeRect.bottom + iframeRect.top - iframeRect.bottom;
+        if (delta > 0)
+            return iframe.contentWindow.scrollBy(0, delta+5);
+    },
+
+    onOutlinerClick: function (id) {
+        var node = DomUtils.getElementById(id, this.getDom());
+        if (node) {
+            this.selectNode(node);
+            node.scrollIntoView();
+        }
+    },
+
+    onPathItemClicked: function (node) {
+        this.focusNode(node, {
+            select: true,
+            scroll: true,
+            click: true
+        });
+    },
+
     constructor: function(){
         /**
          * @property {HTMLElement} lastFocused The last focused element
@@ -1319,229 +1545,5 @@ Ext.define('LIME.controller.Editor', {
             // Set the current file's id
             DocProperties.setDocId(config.saveData.path);
         }
-    },
-
-    setOnlyEditorTabMode: function(enable) {
-        var mainCmp = this.getMain();
-        mainCmp.query('[cls~=editorTab]').forEach(function(tabPanel) {
-            tabPanel.tab.setVisible(!enable);
-        });
-        mainCmp.query('[cls*=editorTabButton]').forEach(function(button) {
-            button.setVisible(!enable);
-        });
-    },
-
-    /* Initialization of the controller */
-    init: function() {
-        var me = this;
-        // Set the event listeners
-        this.application.on({
-            nodeFocusedExternally : this.focus,
-            nodeChangedExternally : this.focus,
-            editorDomNodeFocused : this.onNodeClick,
-            scope : this
-        });
-        this.application.on(Statics.eventsNames.disableEditing, this.disableEditor, this);
-        this.application.on(Statics.eventsNames.enableEditing, this.enableEditor, this);
-        this.application.on(Statics.eventsNames.afterSave, this.afterSave, this);
-
-        var markerController = this.getController('Marker');
-        this.control({
-            // Handle the viewable events on the editor (click, contextmenu etc.)
-            '#mainEditor mainEditor' : {
-                click : me.onClickHandler,
-                change: function(ed, e) {
-                    me.ensureContentWrapper(ed);
-                    /* Warn of the change */
-                    this.changed = true;
-                },
-                setcontent: function(ed, e) {
-                    if(!DocProperties.getDocType()) return;
-                    me.ensureContentWrapper(ed);
-                    /* Warn of the change */
-                    this.changed = true;
-                },
-
-                contextmenu: function(ed, e) {
-                    var coordinates = [],
-                        offsetPosition = this.getPosition();
-                    // Prevent the default context menu to show
-                    e.preventDefault();
-                    // Compute the coordinates
-                    //coordinates = [e.pageX+offsetPosition[0], e.pageY+offsetPosition[1]];
-                    coordinates = [e.clientX+offsetPosition[0], e.clientY+offsetPosition[1]];
-                    // Can't use Ext getXY because it's a tinymce event!
-                    this.application.fireEvent(Statics.eventsNames.showContextMenu, coordinates);
-                },
-
-                beforerender: function(cmp) {
-                    var me = this,
-                        editorView = cmp,
-                        tinyView = me.getEditorComponent(cmp),
-                        tinyConfig = me.getTinyMceConfig();
-
-                    tinyConfig = Ext.merge(tinyConfig, {
-
-                        // Events and callbacks
-                        mysetup: function(editor) {
-                            me.addUndoButtons(editor);
-
-                            editor.on('init', function(e) {
-                                me.tinyInit();
-                            });
-
-                            editor.on('change', function(e) {
-                                editorView.fireEvent('change', editor, e);
-                            });
-
-                            editor.on('setcontent', function(e) {
-                                editorView.fireEvent('setcontent', editor, e);
-                            });
-
-                            editor.on('BeforeExecCommand', function(e) {
-                                if(e.value && Ext.isFunction(e.value.indexOf) && e.value.indexOf('<table>') != -1) {
-                                    var node = me.getSelectedNode(true);
-                                    var config = Interpreters.getButtonConfig('table');
-                                    if (!me.getController('Marker').isAllowedMarking(node, config)) {
-                                        e.preventDefault();
-                                    }
-                                }
-                            });
-
-                            var blurHandler = Ext.bind(me.blurHandler, me, [editor], true);
-                            editor.on('blur', blurHandler);
-                            editor.on('focusOut', blurHandler);
-
-                            var focusHandler = Ext.bind(me.focusHandler, me, [editor], true);
-                            editor.on('focus', focusHandler);
-
-                            editor.on('mousedown', function(e) {
-                                if ( document.activeElement == me.getIframe().dom ) {
-                                    me.removeVisualSelectionObjects();
-                                } else {
-                                    /* IE bug workaround, avoid moving the caret
-                                        at beginning of the document on focusing editor */
-                                    me.tmpBookmark = me.getBookmark();
-                                }
-                            });
-
-                            editor.on('mouseup', function(e) {
-                                if (!me.tmpBookmark) return;
-                                me.removeBookmarks(true);
-                                me.tmpBookmark = null;
-                            });
-
-                            editor.on('click', function(e) {
-                                // Fire a click event only if left mousebutton was used
-                                if (e.which == 1){
-                                    me.onClickHandler(editor, e);
-                                }
-                            });
-
-                            editor.on('contextmenu', function(e) {
-                                me.onClickHandler(editor, e);
-                                editorView.fireEvent('contextmenu', editor, e);
-                            });
-
-                            editor.on('BeforeAddUndo', function(e) {
-                                editor.fire('change');
-                                return false;
-                            });
-
-                            editor.on('init', me.addScrollHandler.bind(me));
-                        }});
-
-                    tinyConfig.menubar = false;
-
-                    /* Set the editor custom configuration */
-                    Ext.apply(tinyView, {tinymceConfig: tinyConfig});
-                }
-            },
-            '#secondEditor': {
-                added: function(cmp) {
-                    me.setOnlyEditorTabMode(true);
-                },
-                removed: function(cmp) {
-                    me.setOnlyEditorTabMode(false);
-                }
-            },
-            '#secondEditor mainEditor' : {
-                beforerender: function(cmp) {
-                    var me = this,
-                        tinyView = me.getEditorComponent(cmp),
-                        tinyConfig = me.getTinyMceConfig();
-
-                    tinyConfig.menubar = false;
-
-                    tinyConfig.readonly = 1;
-
-                    tinyConfig.mysetup =  function(editor) {
-                        /*
-                        tinyMce not firing events in readonly mode
-                        editor.on('click', function(e) {
-                            console.log(e);
-                            // Fire a click event only if left mousebutton was used
-                            if (e.which == 1){
-                                cmp.fireEvent('click', editor, e);
-                            }
-                        });*/
-                        editor.on('PostRender', function() {
-                            editor.getBody().addEventListener('click', function(e) {
-                                if (e.which == 1){
-                                    cmp.fireEvent('click', editor, e);
-                                }
-                            });
-                        });
-                    };
-
-                    /* Set the editor custom configuration */
-                    Ext.apply(tinyView, {tinymceConfig: tinyConfig});
-                },
-
-                editorcreated: function(tinyEditor) {
-                    var editor2 = Ext.fly(this.getEditor(this.getSecondEditor()).getBody());
-                    editor2.addCls('secondEditor');
-                }
-            }
-        });
-    },
-
-    listen: {
-        global: {
-            loadDocument: 'beforeLoadDocument'
-        },
-        controller: {
-            '#Outliner': {
-                elementFocused: 'onOutlinerClick'
-            },
-            '#UndoManager': {
-                change: 'refreshUndoButtons'
-            }
-        },
-        component: {
-            mainEditorPath: {
-                pathItemClicked: 'onPathItemClicked'
-            },
-            mainEditorUri: {
-                // This shouldn't be done by this controller: use stores instead
-                pathSwitcherChanged: 'showDocumentIdentifier'
-            }
-        }
-    },
-
-    onOutlinerClick: function (id) {
-        var node = DomUtils.getElementById(id, this.getDom());
-        if (node) {
-            this.selectNode(node);
-            node.scrollIntoView();
-        }
-    },
-
-    onPathItemClicked: function (node) {
-        this.focusNode(node, {
-            select: true,
-            scroll: true,
-            click: true
-        });
     }
 });

@@ -81,6 +81,7 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
         this.tagAttributesTab.add(panel);
         this.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
                                     true, this.tabGroupName);
+        Ext.GlobalEvents.fireEvent('scrollToActiveNode');
     },
 
     createRefPanel: function(node) {

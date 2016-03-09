@@ -137,6 +137,7 @@ Ext.define('LIME.controller.WidgetManager', {
             panelHeight = (widgetConfig.list.length*30)+102;
             this.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
                                     true, this.tabGroupName, panelHeight);
+            Ext.GlobalEvents.fireEvent('scrollToActiveNode');
         } else {
             this.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
                                     false, this.tabGroupName);
