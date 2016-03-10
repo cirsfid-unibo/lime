@@ -191,7 +191,12 @@ Ext.define('AknMain.Uri', {
                 'doc',
                 'act',
                 'bill',
-                'debaterecord',
+                'debate',
+                'debateReport',
+                'statement',
+                'judgment',
+                'portion',
+                'officialGazette',
                 'documentCollection'
             ].indexOf(item) !== -1;
         },
