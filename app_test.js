@@ -66,15 +66,15 @@ Config.load();
 
 Ext.require([
     'Ext.ux.window.Notification',
-	'Ext.ux.form.field.TinyMCE',
-	'Ext.ux.form.field.TinyMCEWindowManager',
-	'Ext.ux.form.field.CodeMirror',
-	'Ext.ux.layout.component.field.CodeMirror',
-	'LIME.Utilities',
-	'LIME.Statics',
-	'LIME.DocProperties',
-	'LIME.DomUtils',
-	'LIME.Interpreters'
+    'Ext.ux.form.field.TinyMCE',
+    'Ext.ux.form.field.TinyMCEWindowManager',
+    'Ext.ux.form.field.CodeMirror',
+    'Ext.ux.layout.component.field.CodeMirror',
+    'LIME.Utilities',
+    'LIME.Statics',
+    'LIME.DocProperties',
+    'LIME.DomUtils',
+    'LIME.Interpreters'
 ]);
 
 Ext.application({
