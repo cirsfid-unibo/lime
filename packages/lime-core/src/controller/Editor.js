@@ -77,10 +77,13 @@ Ext.define('LIME.controller.Editor', {
         autosaveEnabled: true
     },
 
+    documentTempConfig: {},
+    lastFocused: null,
+
     listen: {
         global: {
-            loadDocument: 'beforeLoadDocument',
-            scrollToActiveNode: 'scrollToShowActiveNode'
+            scrollToActiveNode: 'scrollToShowActiveNode',
+            nodeAttributesChanged: 'onChangeAttribute'
         },
         controller: {
             '#Outliner': {
@@ -99,7 +102,7 @@ Ext.define('LIME.controller.Editor', {
                 pathSwitcherChanged: 'showDocumentIdentifier'
             }
         }
-    },
+    },   
 
     init: function() {
         var me = this;
@@ -111,7 +114,6 @@ Ext.define('LIME.controller.Editor', {
         });
         this.application.on(Statics.eventsNames.disableEditing, this.disableEditor, this);
         this.application.on(Statics.eventsNames.enableEditing, this.enableEditor, this);
-        this.application.on(Statics.eventsNames.afterSave, this.afterSave, this);
 
         var markerController = this.getController('Marker');
         this.control({
@@ -144,9 +146,35 @@ Ext.define('LIME.controller.Editor', {
         });
     },
 
+    onChangeAttribute: function() {
+        this.changed = true;
+    },
+
     onChangeContent: function(ed) {
         this.ensureContentWrapper(ed);
         this.changed = true;
+    },
+
+    /*
+        This function ensures that the first node
+        in the body is the right content wrapper
+    */
+    ensureContentWrapper: function(editor) {
+        editor = editor || this.getEditor();
+        var body = editor.getBody(),
+            docType = DocProperties.getDocType(),
+            docBaseCls = DocProperties.documentBaseClass,
+            wrapper = body.querySelector('.'+docBaseCls+'.'+docType) || body.firstChild;
+
+        if ( !wrapper || wrapper.nodeName.toLowerCase() != 'div' ) {
+            wrapper = body.ownerDocument.createElement('div');
+            DomUtils.moveChildrenNodes(body, wrapper);
+            body.appendChild(wrapper);
+        }
+
+        if ( !Ext.fly(wrapper).is('.'+docBaseCls+'.'+docType) ) {
+            wrapper.setAttribute('class', docBaseCls+' '+docType);
+        }
     },
 
     showContextMenu: function(ed, e) {
@@ -302,25 +330,6 @@ Ext.define('LIME.controller.Editor', {
             click: true
         });
     },
-
-    constructor: function(){
-        /**
-         * @property {HTMLElement} lastFocused The last focused element
-         */
-        this.lastFocused = null;
-
-        /**
-         * @property {Object} defaultElement
-         * The default element that wraps the content of the editor (compatible with Ext.DomHelper)
-         */
-        this.defaultElement = {
-            tag : 'div'
-        };
-
-        this.callParent(arguments);
-    },
-
-    documentTempConfig: {},
 
     /**
      * Returns a reference to the ExtJS component
@@ -636,44 +645,6 @@ Ext.define('LIME.controller.Editor', {
         this.getEditor().selection.setContent(text);
     },
 
-
-    /**
-     * This function set an attribute to the given element or
-     * the given id of the element
-     * using name as its name and value as its value.
-     * @param {HTMLElement/String} element The node or its id
-     * @param {String} name The name of the attribute
-     * @param {String} value The value of the attribute
-     * @returns {Boolean} true if the attribute was changed, false otherwise
-     */
-    setElementAttribute: function(elementId, name, value) {
-        var element = elementId, oldValue, chaged = false,
-            dom = this.getDom(), query;
-
-        if(Ext.isString(element)) {
-            query = new Ext.Template('*[{attr}="{value}"]').apply({
-                attr: DomUtils.elementIdAttribute,
-                value: element
-            });
-            element = dom.querySelector(query);
-        }
-
-        if (element) {
-            oldValue = element.getAttribute(name);
-            if(oldValue != value) {
-                //set attribute that has the same name of field
-                element.setAttribute(name, value);
-                /* Prevent from inserting empty attributes */
-                if (value === "") {
-                    element.removeAttribute(name);
-                }
-                this.getEditorComponent().fireEvent('change', this.getEditor());
-                chaged = element;
-            }
-        }
-        return chaged;
-    },
-
     /**
      * Returns the currently selected text in the format requested.
      * **Warning**: no checks are performed on the given format but
@@ -854,73 +825,12 @@ Ext.define('LIME.controller.Editor', {
         });
     },
 
-    /**
-     * Given a css selector, an object with some css properties and
-     * the name of a button (to match the class of marked elements)
-     * apply the given style by appending one or more style elements
-     * by using {@link LIME.controller.Editor#addContentStyle}.
-     * @param {String} selector The css selector
-     * @param {Object} styleObj An object with some css properties
-     * @param {String} buttonName The name of the button
-     */
-    applyAllStyles: function(selector, styleObj, buttonName, cmp) {
-        for (var i in styleObj) {
-            // Apply the style on the simple selector
-            if (i == "this") {
-                this.addContentStyle(selector, styleObj[i], cmp);
-            // Otherwise a complex selector was given
-            } else if (i.indexOf("this") != -1) {
-                var styleCss = styleObj[i];
-                selector = i.replace("this", selector);
-                this.applyAllStyles(selector, styleObj[i], buttonName, cmp);
-            // This means that another element was selected
-            } else {
-                var styleCss = styleObj[i];
-                if (styleCss.indexOf("content:") == -1) {
-                    styleCss = "content:'" + buttonName.toUpperCase() + "';" + styleCss;
-                }
-                this.addContentStyle(selector + ':' + i, styleCss, cmp);
-            }
-
-        }
-    },
-
-    onPluginLoaded: function(data, styleUrls) {
-        var markingMenuController = this.getController('MarkingMenu'),
-            mainToolbarController = this.getController('MainToolbar'),
-           app = this.application, config = this.documentTempConfig;
-
-        this.stylesUrl = styleUrls || this.stylesUrl;
-
-        this.addStyles(styleUrls);
-        var editor2 = this.getSecondEditor();
-        if (editor2) {
-            this.addStyles(styleUrls, editor2);
-        }
-
-        app.fireEvent(Statics.eventsNames.languageLoaded, data);
-        app.fireEvent(Statics.eventsNames.progressUpdate, Locale.strings.progressBar.loadingDocument);
-
-        // If the document loaded is empty, use the template
-        // following the complicated rules in our json configuration files.
-        if (config.docText == '<div> &nbsp; </div>')
-            config.docText = this.getStore('LanguagesPlugin').buildEmptyDocumentTemplate();
-
-        this.loadDocument(config.docText, config.docId);
-        config.docDom = this.getDom();
-        app.fireEvent(Statics.eventsNames.afterLoad, config);
-        this.setPath(this.getBody());
-        this.showDocumentIdentifier(config.docId);
-
-        this.startAutoSave();
-        app.fireEvent(Statics.eventsNames.progressEnd);
-    },
-
     addStyles: function(urls, editor) {
-        var me = this, editorDom = me.getDom(editor),
-            head = editorDom.querySelector("head");
+        urls = urls || this.stylesUrl;  
+        this.stylesUrl = urls;
 
-        urls = urls || me.stylesUrl;
+        var editorDom = this.getDom(editor),
+            head = editorDom.querySelector("head");
         if ( urls && urls.length ) {
             Ext.each(head.querySelectorAll('.limeStyle'), function(styleNode) {
                 head.removeChild(styleNode);
@@ -935,6 +845,9 @@ Ext.define('LIME.controller.Editor', {
             link.setAttribute("type", "text/css");
             head.appendChild(link);
         });
+
+        if (!editor && this.getSecondEditor())
+            this.addStyles(urls, this.getSecondEditor());
     },
 
     /**
@@ -956,187 +869,27 @@ Ext.define('LIME.controller.Editor', {
             style.parentElement.removeChild(style);
     },
 
-    beforeLoadDocument: function(config) {
-        var initDocument = this.initDocument, me = this, loaded = false;
-        if (!config.docMarkingLanguage && me.getStore('MarkupLanguages').count() == 1) {
-            config.docMarkingLanguage = me.getStore('MarkupLanguages').getAt(0).get("name");
-        }
-        if (config.docMarkingLanguage) {
-            if (me.getStore('MarkupLanguages').findExact('name', config.docMarkingLanguage)!=-1) {
-                Config.setLanguage(config.docMarkingLanguage);
-                me.getStore('DocumentTypes').loadData(Config.getDocTypesByLang(config.docMarkingLanguage));
-                if (!config.lightLoad) {
-                    //Before load
-                    me.application.fireEvent(Statics.eventsNames.beforeLoad, config, function(newConfig) {
-                        initDocument(newConfig, me);
-                    });
-                } else {
-                    initDocument(config, me);
-                }
-                loaded = true;
-            }
-        }
-        if(!loaded) {
-            var newDocumentWindow = Ext.widget('newDocument');
-            // TODO: temporary solution
-            newDocumentWindow.tmpConfig = config;
-            newDocumentWindow.onlyLanguage = true;
-            newDocumentWindow.show();
-        }
+    loadDocument: function(docText, styleUrls, cmp) {
+        var body = this.setContent(docText, cmp);
+        this.addStyles(styleUrls);
+        this.setPath(this.getBody());
+        this.showDocumentIdentifier();
+        this.startAutoSave();
+        return body;
     },
 
-    initDocument: function(config, me) {
-        me = me || this;
-        var app = me.application, docType;
-        if (!config.docType || !config.docLang || !config.docLocale) {
-            var newDocumentWindow = Ext.widget('newDocument');
-            // TODO: temporary solution
-            newDocumentWindow.tmpConfig = config;
-            newDocumentWindow.show();
-            return;
-        }
-
-        DocProperties.documentInfo.docId = config.docId || User.getDefaultFilePath();
-        DocProperties.documentInfo.docType = config.docType;
-        DocProperties.documentInfo.docLang = config.docLang;
-        DocProperties.documentInfo.docLocale = config.docLocale;
-        DocProperties.documentInfo.originalDocId = config.originalDocId;
-        DocProperties.documentInfo.docMarkingLanguage = config.docMarkingLanguage;
-
-        me.documentTempConfig = config;
-        me.getStore('LanguagesPlugin').addListener('filesloaded', me.onPluginLoaded, me);
-
-        app.fireEvent(Statics.eventsNames.progressStart, null, {value:0.1, text: Locale.strings.progressBar.loadingDocument});
-        docType =  Ext.isString(config.alternateDocType) ? config.alternateDocType : config.docType;
-        Ext.defer(function() {
-            me.getStore('LanguagesPlugin').loadPluginData(app, docType, config.docLocale);
-        }, 200, me);
-    },
-
-    searchAndManageMarkedElements: function(body, cmp, noSideEffects) {
-        var LanguageController = this.getController('Language'),
-            marker = this.getController('Marker'),
-            markedElements = body.querySelectorAll("*[" + DomUtils.elementIdAttribute + "]");
-
-        //Parse the new document and build documentProprieties
-        Ext.each(markedElements, function(element, index) {
-            var elId = element.getAttribute(DomUtils.elementIdAttribute),
-                newElId;
-            var nameAttr = element.getAttribute(LanguageController.getLanguagePrefix()+'name');
-            var buttonId = DomUtils.getButtonIdByElementId(elId);
-            var button; // = DocProperties.getElementConfig(buttonId)
-
-            if (elId.indexOf(DomUtils.elementIdSeparator)==-1) {
-                var parent = DomUtils.getFirstMarkedAncestor(element.parentNode);
-                if(parent) {
-                    var buttonParent = DomUtils.getButtonByElement(parent);
-                    if(buttonParent) {
-                        button = DocProperties.getChildConfigByName(buttonParent, elId) ||
-                                 DocProperties.getChildConfigByName(buttonParent, nameAttr);
-                    }
-                }
-                if(!button) {
-                    button = DocProperties.getFirstButtonByName(elId, 'common') ||
-                             DocProperties.getFirstButtonByName(nameAttr, 'common') ||
-                             DocProperties.getFirstButtonByName(elId) ||
-                             DocProperties.getFirstButtonByName(nameAttr);
-                    if ( button ) {
-                        buttonId = button.id;
-                        elId = marker.getMarkingId(buttonId);
-                    }
-                } else {
-                    elId = marker.getMarkingId(button.id);
-                }
-            } else {
-                elId = elId.substr(0, elId.indexOf(DomUtils.elementIdSeparator));
-            }
-
-            if ( !button ) {
-                button = DocProperties.getElementConfig(elId) ||
-                        DocProperties.getFirstButtonByName(elId.replace(/\d/g,''));
-                elId = (button) ? marker.getMarkingId(button.id) : elId;
-            }
-
-            if (!button) {
-                if(!noSideEffects) {
-                    Ext.log({level: "error"}, "FATAL ERROR!!", "The button with id " + buttonId + " is missing!");
-                    //Ext.MessageBox.alert("FATAL ERROR!!", "The button with id " + buttonId + " is missing!");
-                }
-                return;
-            }
-
-            //if(!noSideEffects) {
-                DocProperties.setMarkedElementProperties(elId, {
-                    button : button,
-                    htmlElement : element
-                });
-            //}
-
-            //remove inline style
-            element.removeAttribute('style');
-            element.setAttribute(DomUtils.elementIdAttribute, elId);
-            var isBlock = DomUtils.blockTagRegex.test(button.pattern.wrapperElement);
-            if(isBlock){
-                marker.addBreakingElements(element);
-            }
-        }, this);
-    },
-
-    /**
-     * This method ensures that the given text is loaded after
-     * some built-in preconditions are met. For example a default
-     * content that must wrap the newly loaded text.
-     * @param {String} docText The text that has to be loaded
-     * @param {String} [docId] The id of the document
-     * @param {Function} [callback] Function to call when finished
-     * @param {Boolean} [initial] If true removing previous document properties
-     * will be skipped
-     */
-    loadDocument: function(docText, docId, cmp, noSideEffects) {
-        var editor = this.getEditor(cmp), editorBody,
-            app = this.application;
-
-        //set new content to the editor
-        if (Ext.isEmpty(docText)) {
-            docText = '&nbsp;';
-        }
-
-        editor.setContent(docText); // Add a space, empty content prevents other views from updating
-
+    setContent: function(docText, cmp, silent) {
+        // Add a space, empty content prevents other views from updating
+        docText = docText || '&nbsp;';
+        var editor = this.getEditor(cmp);
+        editor.setContent(docText);
         // Clear Css
         this.removeAllContentStyle(cmp);
-        // Clear previous undo levels
-        this.getController('UndoManager').reset();
-
-        if(!noSideEffects) {
-            //Remove all previous document proprieties
-            DocProperties.removeAll();
-            // save the id of the currently opened file
-            if(docId)
-              DocProperties.setDocId(docId);
-        }
-
-        editorBody = editor.getBody();
-
-        this.searchAndManageMarkedElements(editorBody, cmp, noSideEffects);
-
-        if(!noSideEffects) {
-            app.fireEvent('editorDomChange', editorBody, true);
-            app.fireEvent(Statics.eventsNames.documentLoaded);
-        }
-    },
-
-    /**
-     * Replace the whole content of the editor with the given string.
-     *
-     * **Warning**: do NOT use this method to load text. Please refer to
-     * {@link LIME.controller.Editor#loadDocument} that will perform additional checks.
-     * @param {newContent} The content that has to be set
-     * @private
-     */
-    setContent: function(newContent) {
-        //set new content to the editor
-        this.getEditor().setContent(newContent);
+        var editorBody = editor.getBody();
+        this.getController('Marker').searchAndManageMarkedElements(editorBody);
+        if (!silent)
+            this.application.fireEvent('editorDomChange', editorBody, true);
+        return editorBody;
     },
 
     /**
@@ -1515,35 +1268,5 @@ Ext.define('LIME.controller.Editor', {
         var me = this;
         me.removeVisualSelectionObjects();
         me.lastSelectionRange = null;
-    },
-
-    /*
-        This function ensures that the first node
-        in the body is the right content wrapper
-    */
-    ensureContentWrapper: function(editor) {
-        var body = editor.getBody(),
-            docType = DocProperties.getDocType(),
-            docBaseCls = DocProperties.documentBaseClass,
-            wrapper = body.querySelector('.'+docBaseCls+'.'+docType) || body.firstChild;
-
-        if ( !wrapper || wrapper.nodeName.toLowerCase() != this.defaultElement.tag ) {
-            wrapper = body.ownerDocument.createElement(this.defaultElement.tag);
-            DomUtils.moveChildrenNodes(body, wrapper);
-            body.appendChild(wrapper);
-        }
-
-        if ( !Ext.fly(wrapper).is('.'+docBaseCls+'.'+docType) ) {
-            wrapper.setAttribute('class', docBaseCls+' '+docType);
-        }
-    },
-
-    afterSave: function(config) {
-        this.showDocumentIdentifier();
-        // Save as the last opened
-        if (config.saveData && config.saveData.path) {
-            // Set the current file's id
-            DocProperties.setDocId(config.saveData.path);
-        }
     }
 });

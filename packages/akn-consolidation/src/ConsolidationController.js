@@ -254,7 +254,7 @@ Ext.define('AknConsolidation.ConsolidationController', {
             storage.openDocumentNoEditor(dualConfig.notEditableDoc, function(config) {
                 language.beforeLoadManager(config, function(newConfig) {
                     me.secondDocumentConfig = newConfig;
-                    editorController.loadDocument(newConfig.docText, newConfig.docId, secondEditor.down('tinymcefield'), true);
+                    editorController.setContent(newConfig.docText, secondEditor.down('tinymcefield'), true);
                     me.manageAfterLoad = function() {
                         var newId = dualConfig.editableDoc.replace("/diff/", "/diff_modified/");
                         DocProperties.documentInfo.docId = newId;

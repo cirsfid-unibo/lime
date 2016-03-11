@@ -225,6 +225,12 @@ Ext.define('LIME.DocProperties', {
     setMarkedElementProperties : function(markingId, properties) {
         this.markedElements[markingId] = properties;
     },
+
+    getMarkedNode : function(markingId) {
+        var el = this.getMarkedElement(markingId);
+        return el && el.htmlElement;
+    },
+
     /**
      * Returns the marked element that has the specified id
      * @param {String} markingId

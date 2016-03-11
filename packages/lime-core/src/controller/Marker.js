@@ -792,5 +792,67 @@ Ext.define('LIME.controller.Marker', {
             markingRequest : {fn: this.autoWrap, scope:this}
         });
         this.application.on(Statics.eventsNames.unmarkNodes, this.unmarkNodes, this);
+    },
+
+    // TODO: refactor
+    searchAndManageMarkedElements: function(node) {
+        var markedElements = node.querySelectorAll("*[" + DomUtils.elementIdAttribute + "]");
+
+        // Link button to elements and build documentProprieties
+        Ext.each(markedElements, function(element, index) {
+            var elId = element.getAttribute(DomUtils.elementIdAttribute),
+                newElId;
+            var nameAttr = element.getAttribute(this.getController('Language').getLanguagePrefix()+'name');
+            var buttonId = DomUtils.getButtonIdByElementId(elId);
+            var button; // = DocProperties.getElementConfig(buttonId)
+
+            if (elId.indexOf(DomUtils.elementIdSeparator)==-1) {
+                var parent = DomUtils.getFirstMarkedAncestor(element.parentNode);
+                if(parent) {
+                    var buttonParent = DomUtils.getButtonByElement(parent);
+                    if(buttonParent) {
+                        button = DocProperties.getChildConfigByName(buttonParent, elId) ||
+                                 DocProperties.getChildConfigByName(buttonParent, nameAttr);
+                    }
+                }
+                if(!button) {
+                    button = DocProperties.getFirstButtonByName(elId, 'common') ||
+                             DocProperties.getFirstButtonByName(nameAttr, 'common') ||
+                             DocProperties.getFirstButtonByName(elId) ||
+                             DocProperties.getFirstButtonByName(nameAttr);
+                    if ( button ) {
+                        buttonId = button.id;
+                        elId = this.getMarkingId(buttonId);
+                    }
+                } else {
+                    elId = this.getMarkingId(button.id);
+                }
+            } else {
+                elId = elId.substr(0, elId.indexOf(DomUtils.elementIdSeparator));
+            }
+
+            if ( !button ) {
+                button = DocProperties.getElementConfig(elId) ||
+                        DocProperties.getFirstButtonByName(elId.replace(/\d/g,''));
+                elId = (button) ? this.getMarkingId(button.id) : elId;
+            }
+
+            if (!button) {
+                return Ext.log({level: "error"}, "FATAL ERROR!!", "The button with id " + buttonId + " is missing!");
+            }
+
+            DocProperties.setMarkedElementProperties(elId, {
+                button : button,
+                htmlElement : element
+            });
+
+            //remove inline style
+            element.removeAttribute('style');
+            element.setAttribute(DomUtils.elementIdAttribute, elId);
+            var isBlock = DomUtils.blockTagRegex.test(button.pattern.wrapperElement);
+            if(isBlock){
+                this.addBreakingElements(element);
+            }
+        }, this);
     }
 });

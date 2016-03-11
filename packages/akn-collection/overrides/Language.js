@@ -51,6 +51,12 @@ Ext.define('AknCollection.Language', {
         'AknCollection.DocumentCollectionController'
     ],
 
+    beforeLoadManager: function(config) {
+        if (!config.lightLoad)
+            return this.callParent(arguments);
+        return config;
+    },
+
     beforeTranslate : function(config) {
         var params = this.callParent(arguments);
         var collectionController = this.getController('AknCollection.DocumentCollectionController');

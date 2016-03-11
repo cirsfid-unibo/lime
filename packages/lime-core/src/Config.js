@@ -181,7 +181,13 @@ Ext.define('LIME.Config', {
     },
 
     setLanguage : function(language) {
+        var existingLang = language && this.languages.filter(function(lg) {
+                        return lg.name === language;
+                    })[0];
+        if (!existingLang) return false;
         this.language = language;
+        Ext.getStore('DocumentTypes').loadData(this.getDocTypesByLang(language));
+        return true;
     },
     
     getLanguage: function() {

@@ -368,7 +368,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 if ( dateObj &&widgetConfig &&
                          widgetConfig.attributes && widgetConfig.attributes.date.name ) {
                     node.setAttribute(widgetConfig.attributes.date.name, dateObj.date);
-                    me.application.fireEvent(Statics.eventsNames.nodeAttributesChanged, node);
+                    Ext.GlobalEvents.fireEvent('nodeAttributesChanged', node);
                 }
             }
             Ext.callback(callback);
@@ -621,7 +621,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 };
                 markedNodes = me.searchInlinesToMark(node, dateParsed.match.trim(), config);
                 markedNodes.forEach(function (node) {
-                    me.application.fireEvent(Statics.eventsNames.nodeAttributesChanged, node);
+                    Ext.GlobalEvents.fireEvent('nodeAttributesChanged', node);
                 })
             }, me);
         }
