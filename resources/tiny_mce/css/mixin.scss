@@ -7,7 +7,7 @@
     &:before {
         content: $label;
         text-transform: capitalize;
-        width: (13px + str-length($label) * 6px);
+        width: (7px + str-length($label) * 7px);
     }
 }
 
@@ -20,6 +20,7 @@
 @mixin Icon ($code) {
     &.inline.inline {
         &:before {
+            font-family: 'FontAwesome', sans-serif;
             content: $code;
             padding: 0 6px;
             width: inherit;
