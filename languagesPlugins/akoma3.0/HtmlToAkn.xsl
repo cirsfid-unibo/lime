@@ -174,12 +174,7 @@
         </xsl:variable>
         <xsl:element name="{$aknName}">
             <xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
-            <xsl:apply-templates select="./*[contains(@class,'num')]"/>
-            <xsl:apply-templates select="./*[contains(@class,'heading') and not(contains(@class,'subheading'))]"/>
-            <xsl:apply-templates select="./*[contains(@class,'subheading')]"/>
-            <xsl:apply-templates select="./node()[not(contains(@class,'num')) and 
-                                                  not(contains(@class,'heading')) and 
-                                                  not(contains(@class,'subheading'))]"/>
+            <xsl:apply-templates />
         </xsl:element>
     </xsl:template>
     

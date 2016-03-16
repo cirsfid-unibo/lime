@@ -60,11 +60,16 @@ Ext.define('AknMain.notes.Controller', {
 
     noteIndex: 0,
 
+    listen: {
+        global: {
+            nodeAttributesChanged: 'nodeChangedAttributes'
+        }
+    },
+
     init: function() {
         var me = this;
         //Listening progress events
         me.application.on(Statics.eventsNames.afterLoad, me.beforeProcessNotes, me);
-        me.application.on(Statics.eventsNames.nodeAttributesChanged, me.nodeChangedAttributes, me);
         me.application.on(Statics.eventsNames.nodeChangedExternally, me.onNodeChanged, me);
         me.application.on(Statics.eventsNames.unmarkedNodes, me.nodesUnmarked, me);
     },

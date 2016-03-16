@@ -124,17 +124,14 @@ Ext.define('LIME.controller.UndoManager', {
     // - Metadata (Not yet supported)
     buildCheckpoint: function () {
         var editorController = this.getController('Editor'),
-            application = this.application,
-            editor = this.getController('Editor').getEditor(),
+            editor = editorController.getEditor(),
             html = editor && this.stripHtmlNoise(editor.getContent());
         if (!html) return null;
         return {
             html: html,
             restore: function () {
                 console.info('restore', html.substring(0, 50));
-                editor.setContent(html);
-                application.fireEvent('editorDomChange', editor.getBody());
-                editorController.searchAndManageMarkedElements(editor.getBody(), editorController.getMainEditor());
+                editorController.setContent(html);
             }
         };
     },

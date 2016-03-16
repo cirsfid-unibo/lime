@@ -50,9 +50,15 @@
  * the chosen language by using the specified web service. The XSLT sheet needed for
  * the translation is part of the server side.
  */
-
+// TODO: rename this to Document
 Ext.define('LIME.controller.Language', {
     extend : 'Ext.app.Controller',
+
+    listen: {
+        global: {
+            loadDocument: 'loadDocument'
+        }
+    },
 
     init : function() {
         // Create bindings between events and callbacks
@@ -60,9 +66,69 @@ Ext.define('LIME.controller.Language', {
         this.application.on(Statics.eventsNames.translateRequest, this.processTranslateRequest, this);
         this.application.on(Statics.eventsNames.getDocumentHtml, this.getDocumentHtml, this);
         this.application.on(Statics.eventsNames.afterLoad, this.afterLoad, this);
-        this.application.on(Statics.eventsNames.beforeLoad, this.beforeLoadManager, this);
         this.application.on(Statics.eventsNames.beforeSave, this.beforeSave, this);
         this.application.on(Statics.eventsNames.afterSave, this.afterSave, this);
+    },
+
+    loadDocument: function(config) {
+        config.docMarkingLanguage = config.docMarkingLanguage || 
+                                    Config.languages.length == 1 && Config.languages[0].name;
+        config = this.beforeLoadManager(config);
+
+        var success = Config.setLanguage(config.docMarkingLanguage);
+        if (!success || !config.docType || !config.docLang || !config.docLocale)
+            return this.openNewDocumentWindow(config, !success);
+
+        this.application.fireEvent(Statics.eventsNames.progressStart, null, {
+            value:0.1, text: Locale.strings.progressBar.loadingDocument
+        });
+        this.setDocProperties(config);
+        this.loadLanguageConf(config, this.performLoad.bind(this));
+    },
+
+    openNewDocumentWindow: function(config, onlyLang) {
+        Ext.widget('newDocument', {
+            tmpConfig: config,
+            onlyLanguage: onlyLang
+        }).show();
+    },
+
+    setDocProperties: function(config) {
+        DocProperties.removeAll();
+        DocProperties.setDocId(config.docId || User.getDefaultFilePath());
+        DocProperties.documentInfo.docType = config.docType;
+        DocProperties.documentInfo.docLang = config.docLang;
+        DocProperties.documentInfo.docLocale = config.docLocale;
+        DocProperties.documentInfo.originalDocId = config.originalDocId;
+        DocProperties.documentInfo.docMarkingLanguage = config.docMarkingLanguage;
+    },
+
+    loadLanguageConf: function(config, callback) {
+        var me = this;
+        me.getStore('LanguagesPlugin').addListener('filesloaded', function(data, styleUrls) {
+            me.application.fireEvent(Statics.eventsNames.languageLoaded, data);
+            callback(config, styleUrls);
+        });
+        var docType =  Ext.isString(config.alternateDocType) ? config.alternateDocType : config.docType;
+        Ext.defer(function() { // TODO: check and remove defer
+            me.getStore('LanguagesPlugin').loadPluginData(me.application, docType, config.docLocale);
+        }, 200, me);
+    },
+
+    performLoad: function(config, styleUrls) {
+        var app = this.application;
+        app.fireEvent(Statics.eventsNames.progressUpdate, Locale.strings.progressBar.loadingDocument);
+        // Clear previous undo levels
+        this.getController('UndoManager').reset();
+
+        // If the document loaded is empty, use the template
+        // following the complicated rules in our json configuration files.
+        if (config.docText == '<div> &nbsp; </div>')
+            config.docText = this.getStore('LanguagesPlugin').buildEmptyDocumentTemplate();
+
+        config.docDom = this.getController('Editor').loadDocument(config.docText, styleUrls).ownerDocument;
+        app.fireEvent(Statics.eventsNames.afterLoad, config);
+        app.fireEvent(Statics.eventsNames.progressEnd);
     },
 
     processTranslateRequest: function(callback, config, cmp, metaNode) {
@@ -187,10 +253,9 @@ Ext.define('LIME.controller.Language', {
             docDom: tmpElement
         };
     },
-
-    beforeLoadManager: function(params, callback, noSideEffects) {
-        var me = this, app = this.application,
-            editorController = me.getController("Editor"), docDom, docText,
+    // TODO: this function needs to be refactored
+    beforeLoadManager: function(params, noSideEffects) {
+        var me = this, app = this.application, docDom, docText,
             parser = new DOMParser(), doc, docCounters = {}, openedDocumentsData = [];
 
         // Checking that before load will be called just one time per document
@@ -240,7 +305,7 @@ Ext.define('LIME.controller.Language', {
             obj.docLang = obj.docLang || params.docLang;
             obj.docLocale = obj.docLocale || params.docLocale;
         });
-        callback(params);
+        return params;
     },
 
     /*

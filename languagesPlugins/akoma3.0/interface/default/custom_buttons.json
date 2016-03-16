@@ -151,29 +151,7 @@
 	"eop": {
 		"wrapperElement": "<span></span>"
 	},
-	"heading": {
-		"wrapperRules": {
-			"headingElement":{
-				"conditions": {
-					"parentClassContains": "hcontainer"
-				},
-				"values" : {
-					"priority" : 1
-				}
-			}
-		}
-	},
 	"num": {
-		"wrapperRules": {
-			"headingElement":{
-				"conditions": {
-					"parentClassContains": "hcontainer"
-				},
-				"values" : {
-					"priority" : 0
-				}
-			}
-		},
 		"wrapperStyle": {
 			"pdf": "text-decoration: underline;"
 		}
@@ -189,19 +167,6 @@
 		}
 
 	},
-	"subheading": {
-		"wrapperRules": {
-			"headingElement":{
-				"conditions": {
-					"parentClassContains": "hcontainer"
-				},
-				"values" : {
-					"priority" : 2
-				}
-			}
-		}
-	},
-
 	"subdivision":{
 		"wrapperClass":"patternName patternName",
 		"wrapperRules": {

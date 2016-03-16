@@ -249,11 +249,10 @@ Ext.define('LIME.controller.CustomizationManager', {
 
         Ext.defer(function() {
             storage.openDocumentNoEditor(dualConfig.notEditableDoc, function(config) {
-                language.beforeLoadManager(config, function(newConfig) {
-                    me.secondDocumentConfig = newConfig;
-                    editorController.loadDocument(newConfig.docText, newConfig.docId, secondEditor, true);
-                    storage.openDocument(dualConfig.editableDoc);
-                }, true);
+                config = language.beforeLoadManager(config, true);
+                me.secondDocumentConfig = config;
+                editorController.setContent(config.docText, secondEditor, true);
+                storage.openDocument(dualConfig.editableDoc);
             });
         }, 100);
 

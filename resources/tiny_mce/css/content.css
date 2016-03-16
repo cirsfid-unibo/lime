@@ -1,6 +1,7 @@
 @charset "UTF-8";
 @import url(../../font-awesome/css/font-awesome.min.css);
 @import url(http://fonts.googleapis.com/css?family=Libre+Baskerville);
+@import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono&subset=latin,latin-ext);
 #tinymce.lime .preamble {
   position: relative;
   margin: 10px 0;
@@ -859,6 +860,7 @@
     padding: 0 5px 0 5px;
     margin-right: 5px; }
   #tinymce.lime .docNumber.inline.inline:before {
+    font-family: 'FontAwesome', sans-serif;
     content: "";
     padding: 0 6px;
     width: inherit; }
@@ -882,6 +884,7 @@
     padding: 0 5px 0 5px;
     margin-right: 5px; }
   #tinymce.lime .mref.inline.inline:before, #tinymce.lime .ref.inline.inline:before, #tinymce.lime .rref.inline.inline:before {
+    font-family: 'FontAwesome', sans-serif;
     content: "";
     padding: 0 6px;
     width: inherit; }
@@ -1105,43 +1108,43 @@
 #tinymce.lime .preamble:before {
   content: "preamble";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime .preface:before {
   content: "preface";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .body:before {
   content: "body";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime .judgmentBody:before {
   content: "judgmentBody";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime .mainBody:before {
   content: "mainBody";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime .amendmentBody:before {
   content: "amendmentBody";
   text-transform: capitalize;
-  width: 91px; }
+  width: 98px; }
 #tinymce.lime .collectionBody:before {
   content: "collectionBody";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime .fragmentBody:before {
   content: "fragmentBody";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime .debateBody:before {
   content: "debateBody";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime .conclusions:before {
   content: "conclusions";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime .header:before {
   content: "header";
   text-transform: capitalize;
@@ -1149,23 +1152,23 @@
 #tinymce.lime .administrationOfOath:before {
   content: "administrationOfOath";
   text-transform: capitalize;
-  width: 133px; }
+  width: 147px; }
 #tinymce.lime .amendmentContent:before {
   content: "amendmentContent";
   text-transform: capitalize;
-  width: 109px; }
+  width: 119px; }
 #tinymce.lime .amendmentHeading:before {
   content: "amendmentHeading";
   text-transform: capitalize;
-  width: 109px; }
+  width: 119px; }
 #tinymce.lime .amendmentJustification:before {
   content: "amendmentJustification";
   text-transform: capitalize;
-  width: 145px; }
+  width: 161px; }
 #tinymce.lime .amendmentReference:before {
   content: "amendmentReference";
   text-transform: capitalize;
-  width: 121px; }
+  width: 133px; }
 #tinymce.lime .answer:before {
   content: "answer";
   text-transform: capitalize;
@@ -1173,75 +1176,75 @@
 #tinymce.lime .arguments:before {
   content: "arguments";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime .attachments:before {
   content: "attachments";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime .attachment:before {
   content: "attachment";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime .background:before {
   content: "background";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime .blockContainer:before {
   content: "blockContainer";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime .blockList:before {
   content: "blockList";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime .citation:before {
   content: "citation";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime .component:before {
   content: "component";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime .components:before {
   content: "components";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime .coverPage:before {
   content: "coverPage";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime .decision:before {
   content: "decision";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime .extractStructure:before {
   content: "extractStructure";
   text-transform: capitalize;
-  width: 109px; }
+  width: 119px; }
 #tinymce.lime .foreign:before {
   content: "foreign";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .formula:before {
   content: "formula";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .introduction:before {
   content: "introduction";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime .motivation:before {
   content: "motivation";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime .question:before {
   content: "question";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime .recital:before {
   content: "recital";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .speech:before {
   content: "speech";
   text-transform: capitalize;
@@ -1249,7 +1252,7 @@
 #tinymce.lime .speechGroup:before {
   content: "speechGroup";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime .tblock:before {
   content: "tblock";
   text-transform: capitalize;
@@ -1257,19 +1260,19 @@
 #tinymce.lime .wrap:before {
   content: "wrap";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime .content:before {
   content: "content";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .remedies:before {
   content: "remedies";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime .address:before {
   content: "address";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .alinea:before {
   content: "alinea";
   text-transform: capitalize;
@@ -1277,19 +1280,19 @@
 #tinymce.lime .article:before {
   content: "article";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .book:before {
   content: "book";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime .chapter:before {
   content: "chapter";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .citations:before {
   content: "citations";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime .clause:before {
   content: "clause";
   text-transform: capitalize;
@@ -1297,15 +1300,15 @@
 #tinymce.lime .debateSection:before {
   content: "debateSection";
   text-transform: capitalize;
-  width: 91px; }
+  width: 98px; }
 #tinymce.lime .declarationOfVote:before {
   content: "declarationOfVote";
   text-transform: capitalize;
-  width: 115px; }
+  width: 126px; }
 #tinymce.lime .division:before {
   content: "division";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime .indent:before {
   content: "indent";
   text-transform: capitalize;
@@ -1313,7 +1316,7 @@
 #tinymce.lime .item:before {
   content: "item";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime .lawyer:before {
   content: "lawyer";
   text-transform: capitalize;
@@ -1321,23 +1324,23 @@
 #tinymce.lime .list:before {
   content: "list";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime .ministerialStatements:before {
   content: "ministerialStatements";
   text-transform: capitalize;
-  width: 139px; }
+  width: 154px; }
 #tinymce.lime .nationalInterest:before {
   content: "nationalInterest";
   text-transform: capitalize;
-  width: 109px; }
+  width: 119px; }
 #tinymce.lime .noticesOfMotion:before {
   content: "noticesOfMotion";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime .oralStatements:before {
   content: "oralStatements";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime .papers:before {
   content: "papers";
   text-transform: capitalize;
@@ -1345,119 +1348,119 @@
 #tinymce.lime .paragraph:before {
   content: "paragraph";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime .part:before {
   content: "part";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime .personalStatements:before {
   content: "personalStatements";
   text-transform: capitalize;
-  width: 121px; }
+  width: 133px; }
 #tinymce.lime .petitions:before {
   content: "petitions";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime .pointOfOrder:before {
   content: "pointOfOrder";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime .point:before {
   content: "point";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime .proceduralMotions:before {
   content: "proceduralMotions";
   text-transform: capitalize;
-  width: 115px; }
+  width: 126px; }
 #tinymce.lime .proviso:before {
   content: "proviso";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .questions:before {
   content: "questions";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime .recitals:before {
   content: "recitals";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime .resolutions:before {
   content: "resolutions";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime .rollCall:before {
   content: "rollCall";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime .rule:before {
   content: "rule";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime .section:before {
   content: "section";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .subchapter:before {
   content: "subchapter";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime .subclause:before {
   content: "subclause";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime .subdivision:before {
   content: "subdivision";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime .sublist:before {
   content: "sublist";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .subparagraph:before {
   content: "subparagraph";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime .subpart:before {
   content: "subpart";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .subrule:before {
   content: "subrule";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .subsection:before {
   content: "subsection";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime .subtitle:before {
   content: "subtitle";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime .title:before {
   content: "title";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime .tome:before {
   content: "tome";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime .transitional:before {
   content: "transitional";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime .writtenStatements:before {
   content: "writtenStatements";
   text-transform: capitalize;
-  width: 115px; }
+  width: 126px; }
 #tinymce.lime .affectedDocument:before {
   content: "affectedDocument";
   text-transform: capitalize;
-  width: 109px; }
+  width: 119px; }
 #tinymce.lime .argument:before {
   content: "argument";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime .change:before {
   content: "change";
   text-transform: capitalize;
@@ -1465,75 +1468,75 @@
 #tinymce.lime .concept:before {
   content: "concept";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .courtType:before {
   content: "courtType";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime .date:before {
   content: "date";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime .decoration:before {
   content: "decoration";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime .def:before {
   content: "def";
   text-transform: capitalize;
-  width: 31px; }
+  width: 28px; }
 #tinymce.lime .del:before {
   content: "del";
   text-transform: capitalize;
-  width: 31px; }
+  width: 28px; }
 #tinymce.lime .docAuthority:before {
   content: "docAuthority";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime .docCommittee:before {
   content: "docCommittee";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime .docDate:before {
   content: "docDate";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .docIntroducer:before {
   content: "docIntroducer";
   text-transform: capitalize;
-  width: 91px; }
+  width: 98px; }
 #tinymce.lime .docJurisdiction:before {
   content: "docJurisdiction";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime .docketNumber:before {
   content: "docketNumber";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime .docProponent:before {
   content: "docProponent";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime .docPurpose:before {
   content: "docPurpose";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime .docStage:before {
   content: "docStage";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime .docStatus:before {
   content: "docStatus";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime .docTitle:before {
   content: "docTitle";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime .documentRef:before {
   content: "documentRef";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime .entity:before {
   content: "entity";
   text-transform: capitalize;
@@ -1541,11 +1544,11 @@
 #tinymce.lime .event:before {
   content: "event";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime .extractText:before {
   content: "extractText";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime .fillIn:before {
   content: "fillIn";
   text-transform: capitalize;
@@ -1553,47 +1556,47 @@
 #tinymce.lime .from:before {
   content: "from";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime .ins:before {
   content: "ins";
   text-transform: capitalize;
-  width: 31px; }
+  width: 28px; }
 #tinymce.lime .judge:before {
   content: "judge";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime .legislature:before {
   content: "legislature";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime .listConclusion:before {
   content: "listConclusion";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime .listIntroduction:before {
   content: "listIntroduction";
   text-transform: capitalize;
-  width: 109px; }
+  width: 119px; }
 #tinymce.lime .location:before {
   content: "location";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime .mmod:before {
   content: "mmod";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime .mod:before {
   content: "mod";
   text-transform: capitalize;
-  width: 31px; }
+  width: 28px; }
 #tinymce.lime .narrative:before {
   content: "narrative";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime .neutralCitation:before {
   content: "neutralCitation";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime .object:before {
   content: "object";
   text-transform: capitalize;
@@ -1601,23 +1604,23 @@
 #tinymce.lime .omissis:before {
   content: "omissis";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .opinion:before {
   content: "opinion";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .organization:before {
   content: "organization";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime .outcome:before {
   content: "outcome";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .party:before {
   content: "party";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime .person:before {
   content: "person";
   text-transform: capitalize;
@@ -1625,19 +1628,19 @@
 #tinymce.lime .placeholder:before {
   content: "placeholder";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime .process:before {
   content: "process";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .quantity:before {
   content: "quantity";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime .relatedDocument:before {
   content: "relatedDocument";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime .remark:before {
   content: "remark";
   text-transform: capitalize;
@@ -1645,83 +1648,83 @@
 #tinymce.lime .rmod:before {
   content: "rmod";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime .role:before {
   content: "role";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime .scene:before {
   content: "scene";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime .session:before {
   content: "session";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .shortTitle:before {
   content: "shortTitle";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime .signature:before {
   content: "signature";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime .subheading:before {
   content: "subheading";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime .term:before {
   content: "term";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime .time:before {
   content: "time";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime .vote:before {
   content: "vote";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime .quotedText:before {
   content: "quotedText";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime .authorialNote:before {
   content: "authorialNote";
   text-transform: capitalize;
-  width: 91px; }
+  width: 98px; }
 #tinymce.lime .quotedStructure:before {
   content: "quotedStructure";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime .docNumber:before {
   content: "docNumber";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime .docType:before {
   content: "docType";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime .mref:before {
   content: "mref";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime .ref:before {
   content: "ref";
   text-transform: capitalize;
-  width: 31px; }
+  width: 28px; }
 #tinymce.lime .rref:before {
   content: "rref";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime .mod[data-modtype=insertion]:before {
   content: "Insertion";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime .mod[data-modtype=substitution]:before, #tinymce.lime .ins[data-modtype=substitution]:before {
   content: "Substitution";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime .mod[data-modtype=repeal]:before {
   content: "Repeal";
   text-transform: capitalize;
@@ -1730,231 +1733,231 @@
 #tinymce.lime.it .address:before {
   content: "indirizzo";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.it .administrationOfOath:before {
   content: "asserzione";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.it .affectedDocument:before {
   content: "modificato";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.it .alinea:before {
   content: "non-numerato";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.it .amendmentBody:before {
   content: "corpo-emendamento";
   text-transform: capitalize;
-  width: 115px; }
+  width: 126px; }
 #tinymce.lime.it .judgmentBody:before {
   content: "corpo-sentenza";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.it .amendmentContent:before {
   content: "cont.emend.";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .amendmentHeading:before {
   content: "intenstazione";
   text-transform: capitalize;
-  width: 91px; }
+  width: 98px; }
 #tinymce.lime.it .amendmentJustification:before {
   content: "giustificazione";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.it .amendmentReference:before {
   content: "riferimento";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .answer:before {
   content: "risposta";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .argument:before {
   content: "argomento";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.it .arguments:before {
   content: "argomenti";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.it .article:before {
   content: "articolo";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .attachments:before {
   content: "allegato";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .authorialNote:before {
   content: "nota-autore";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .background:before {
   content: "fatto";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.it .blockContainer:before {
   content: "contenitore-blocchi";
   text-transform: capitalize;
-  width: 127px; }
+  width: 140px; }
 #tinymce.lime.it .blockList:before {
   content: "lista";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.it .body:before {
   content: "corpo";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.it .book:before {
   content: "libro";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.it .change:before {
   content: "xxx";
   text-transform: capitalize;
-  width: 31px; }
+  width: 28px; }
 #tinymce.lime.it .chapter:before {
   content: "capitolo";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .citation:before {
   content: "citazione";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.it .citations:before {
   content: "citazioni";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.it .clause:before {
   content: "clausola";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .collectionBody:before {
   content: "corpo";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.it .component:before {
   content: "componente";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.it .componentRef:before {
   content: "link-componente";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.it .components:before {
   content: "componenti";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.it .concept:before {
   content: "concetto";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .conclusions:before {
   content: "conclusioni";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .courtType:before {
   content: "tipo-corte";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.it .coverPage:before {
   content: "copertina";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.it .date:before {
   content: "data";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime.it .debateBody:before {
   content: "corpo";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.it .debateSection:before {
   content: "sezione-report";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.it .decision:before {
   content: "decisione";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.it .declarationOfVote:before {
   content: "dichiarazione-voto";
   text-transform: capitalize;
-  width: 121px; }
+  width: 133px; }
 #tinymce.lime.it .decoration:before {
   content: "decorazione";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .def:before {
   content: "definizione";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .del:before {
   content: "cancella";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .division:before {
   content: "divisione";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.it .docAuthority:before {
   content: "autorità";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .docCommittee:before {
   content: "commissione";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .docDate:before {
   content: "data-doc";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .docIntroducer:before {
   content: "introduttore";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.it .docJurisdiction:before {
   content: "commissione";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .docketNumber:before {
   content: "numero-pratica";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.it .docNumber:before {
   content: "numero-doc";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.it .docProponent:before {
   content: "proponente";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.it .docPurpose:before {
   content: "finalita";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .docStage:before {
   content: "fase";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime.it .docStatus:before {
   content: "stato-doc";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.it .docTitle:before {
   content: "titolo-doc";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.it .docType:before {
   content: "tipo-doc";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .documentRef:before {
   content: "link-doc";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .entity:before {
   content: "entita";
   text-transform: capitalize;
@@ -1962,11 +1965,11 @@
 #tinymce.lime.it .eol:before {
   content: "fine-linea";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.it .eop:before {
   content: "fine-pagina";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .event:before {
   content: "evento";
   text-transform: capitalize;
@@ -1974,291 +1977,291 @@
 #tinymce.lime.it .extractStructure:before {
   content: "estratto-struttura";
   text-transform: capitalize;
-  width: 121px; }
+  width: 133px; }
 #tinymce.lime.it .extractText:before {
   content: "estratto-testo";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.it .fillIn:before {
   content: "campo-form";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.it .foreign:before {
   content: "inclusione-esterna";
   text-transform: capitalize;
-  width: 121px; }
+  width: 133px; }
 #tinymce.lime.it .formula:before {
   content: "formula";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.it .fragmentBody:before {
   content: "frammento-corpo";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.it .from:before {
   content: "da";
   text-transform: capitalize;
-  width: 25px; }
+  width: 21px; }
 #tinymce.lime.it .header:before {
   content: "intestazione-sentenza";
   text-transform: capitalize;
-  width: 139px; }
+  width: 154px; }
 #tinymce.lime.it .heading:before {
   content: "rubrica";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.it .indent:before {
   content: "indentato";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.it .ins:before {
   content: "inserimento";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .interstitial:before {
   content: "interstizio";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .intro:before {
   content: "intro-lista";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .introduction:before {
   content: "intro-lista";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .item:before {
   content: "punto";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.it .judge:before {
   content: "giudice";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.it .lawyer:before {
   content: "avvocato";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .legislature:before {
   content: "legislatura";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .list:before {
   content: "list-gerarchica";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.it .listConclusion:before {
   content: "conclusione-lista";
   text-transform: capitalize;
-  width: 115px; }
+  width: 126px; }
 #tinymce.lime.it .listIntroduction:before {
   content: "intro-liste";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .location:before {
   content: "luogo";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.it .longTitle:before {
   content: "titolo-lungo";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.it .mainBody:before {
   content: "corpo-doc";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.it .ministerialStatements:before {
   content: "dic-ministerale";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.it .mmod:before {
   content: "mmod";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime.it .mod:before {
   content: "modifica";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .motivation:before {
   content: "motivazione";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .mref:before {
   content: "rif-multipli";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.it .narrative:before {
   content: "narrazione";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.it .nationalInterest:before {
   content: "dich-nazionale";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.it .neutralCitation:before {
   content: "citazione-standard";
   text-transform: capitalize;
-  width: 121px; }
+  width: 133px; }
 #tinymce.lime.it .noteRef:before {
   content: "rif-nota";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .noticesOfMotion:before {
   content: "mozione";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.it .num:before {
   content: "identificativo";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.it .object:before {
   content: "oggetto";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.it .omissis:before {
   content: "omissis";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.it .opinion:before {
   content: "opinione";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .oralStatements:before {
   content: "dich-orale";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.it .organization:before {
   content: "organizzazione";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.it .other:before {
   content: "altro";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.it .outcome:before {
   content: "risultato";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.it .papers:before {
   content: "articoli";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .paragraph:before {
   content: "comma";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.it .part:before {
   content: "parte";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.it .party:before {
   content: "parte";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.it .person:before {
   content: "persona";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.it .personalStatements:before {
   content: "dich-personale";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.it .petitions:before {
   content: "petizione";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.it .placeholder:before {
   content: "termine";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.it .point:before {
   content: "punto";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.it .pointOfOrder:before {
   content: "punto-ordine";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.it .preamble:before {
   content: "preambolo";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.it .preface:before {
   content: "intestazione";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.it .proceduralMotions:before {
   content: "rich-mozione";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.it .process:before {
   content: "processo";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .proviso:before {
   content: "disposizione";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.it .quantity:before {
   content: "quantita";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .question:before {
   content: "quesito";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.it .questions:before {
   content: "quesiti";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.it .quotedStructure:before {
   content: "novella-strutturata";
   text-transform: capitalize;
-  width: 127px; }
+  width: 140px; }
 #tinymce.lime.it .quotedText:before {
   content: "novella-testo";
   text-transform: capitalize;
-  width: 91px; }
+  width: 98px; }
 #tinymce.lime.it .recital:before {
   content: "giustificazione";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.it .recitals:before {
   content: "giustificazioni";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.it .ref:before {
   content: "riferimento";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .relatedDocument:before {
   content: "doc-collegato";
   text-transform: capitalize;
-  width: 91px; }
+  width: 98px; }
 #tinymce.lime.it .remark:before {
   content: "commento";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .resolutions:before {
   content: "risluzione";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.it .rmod:before {
   content: "intervallo-mod";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.it .role:before {
   content: "ruolo";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.it .rollCall:before {
   content: "atto-votazione";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.it .rref:before {
   content: "intervallo-rif";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.it .rule:before {
   content: "regola";
   text-transform: capitalize;
@@ -2266,75 +2269,75 @@
 #tinymce.lime.it .scene:before {
   content: "scene";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.it .section:before {
   content: "sezione";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.it .session:before {
   content: "sessione";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .shortTitle:before {
   content: "titolo-breve";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.it .signature:before {
   content: "firma";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.it .speech:before {
   content: "discorso";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.it .speechGroup:before {
   content: "gruppo-discorsi";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.it .subchapter:before {
   content: "sotto-capitolo";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.it .subclause:before {
   content: "sotto-clausola";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.it .subdivision:before {
   content: "sotto-divisione";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.it .subFlow:before {
   content: "subFlow";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.it .subheading:before {
   content: "sotto-rubrica";
   text-transform: capitalize;
-  width: 91px; }
+  width: 98px; }
 #tinymce.lime.it .sublist:before {
   content: "sotto-lista";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .subparagraph:before {
   content: "sotto-paragrafo";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.it .subpart:before {
   content: "sotto-parte";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .subrule:before {
   content: "sotto-regola";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.it .subsection:before {
   content: "sotto-sezione";
   text-transform: capitalize;
-  width: 91px; }
+  width: 98px; }
 #tinymce.lime.it .subtitle:before {
   content: "sotto-titolo";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.it .tblock:before {
   content: "tblock";
   text-transform: capitalize;
@@ -2342,11 +2345,11 @@
 #tinymce.lime.it .term:before {
   content: "termine";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.it .time:before {
   content: "tempo";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.it .title:before {
   content: "titolo";
   text-transform: capitalize;
@@ -2358,31 +2361,31 @@
 #tinymce.lime.it .tocItem:before {
   content: "elemento-indice";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.it .tome:before {
   content: "tomo";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime.it .transitional:before {
   content: "transitorio";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .vote:before {
   content: "voto";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime.it .wrap:before {
   content: "coda";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime.it .writtenStatements:before {
   content: "dich-scritta";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.it .content:before {
   content: "content";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.it .remedies:before {
   content: "rimedi";
   text-transform: capitalize;
@@ -2390,128 +2393,128 @@
 #tinymce.lime.it .hierarchicalStructure:before {
   content: "Strutture gerarchiche";
   text-transform: capitalize;
-  width: 139px; }
+  width: 154px; }
 #tinymce.lime.it .genericElement:before {
   content: "Elementi generici";
   text-transform: capitalize;
-  width: 115px; }
+  width: 126px; }
 #tinymce.lime.it .externalFragment:before {
   content: "Frammenti di testo esterno";
   text-transform: capitalize;
-  width: 169px; }
+  width: 189px; }
 #tinymce.lime.it .commonsInline:before {
   content: "Elementi inline";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.it .contentInline:before {
   content: "Inline di contenuto";
   text-transform: capitalize;
-  width: 127px; }
+  width: 140px; }
 #tinymce.lime.it .commonElement:before {
   content: "Elementi comuni";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.it .commonReference:before {
   content: "Riferimenti";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .commonJudgement:before {
   content: "Judgement";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.it .commonReport:before {
   content: "debateReport/report";
   text-transform: capitalize;
-  width: 127px; }
+  width: 140px; }
 #tinymce.lime.it .structureNotes:before {
   content: "Note";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime.it .mod[data-modtype=insertion]:before {
   content: "Inserimento";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.it .mod[data-modtype=substitution]:before, #tinymce.lime.it .ins[data-modtype=substitution]:before {
   content: "Sostituzione";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.it .mod[data-modtype=repeal]:before {
   content: "Abrogazione";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 
 #tinymce.lime.es .address:before {
   content: "dirección";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.es .administrationOfOath:before {
   content: "Afirmación";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .affectedDocument:before {
   content: "modificado";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .alinea:before {
   content: "numerado";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.es .amendmentBody:before {
   content: "cuerpo.de.enmienda";
   text-transform: capitalize;
-  width: 121px; }
+  width: 133px; }
 #tinymce.lime.es .amendmentContent:before {
   content: "contenido.de.enmienda";
   text-transform: capitalize;
-  width: 139px; }
+  width: 154px; }
 #tinymce.lime.es .amendmentHeading:before {
   content: "encabezado";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .amendmentJustification:before {
   content: "justificación";
   text-transform: capitalize;
-  width: 91px; }
+  width: 98px; }
 #tinymce.lime.es .amendmentReference:before {
   content: "referencias";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .answer:before {
   content: "respuesta";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.es .argument:before {
   content: "argumento";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.es .arguments:before {
   content: "argumentos";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .article:before {
   content: "artículo";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.es .attachments:before {
   content: "anexo";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.es .authorialNote:before {
   content: "nota.autor";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .background:before {
   content: "sin-legal";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.es .blockContainer:before {
   content: "contenedor-de-bloques";
   text-transform: capitalize;
-  width: 139px; }
+  width: 154px; }
 #tinymce.lime.es .blockList:before {
   content: "lista";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.es .body:before {
   content: "cuerpo";
   text-transform: capitalize;
@@ -2519,27 +2522,27 @@
 #tinymce.lime.es .book:before {
   content: "libro";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.es .change:before {
   content: "xxx";
   text-transform: capitalize;
-  width: 31px; }
+  width: 28px; }
 #tinymce.lime.es .chapter:before {
   content: "capítulo";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.es .citation:before {
   content: "citación";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.es .citations:before {
   content: "citaciónes";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .clause:before {
   content: "cláusula";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.es .collectionBody:before {
   content: "cuerpo";
   text-transform: capitalize;
@@ -2547,35 +2550,35 @@
 #tinymce.lime.es .component:before {
   content: "componente";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .componentRef:before {
   content: "link-componente";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.es .components:before {
   content: "componentes";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .concept:before {
   content: "concepto";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.es .conclusions:before {
   content: "conclusiones";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.es .courtType:before {
   content: "tipo-tribunal";
   text-transform: capitalize;
-  width: 91px; }
+  width: 98px; }
 #tinymce.lime.es .coverPage:before {
   content: "tapa";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime.es .date:before {
   content: "Fecha";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.es .debateBody:before {
   content: "cuerpo";
   text-transform: capitalize;
@@ -2583,23 +2586,23 @@
 #tinymce.lime.es .debateSection:before {
   content: "sección-report";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.es .decision:before {
   content: "decisión";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.es .declarationOfVote:before {
   content: "explicación.voto";
   text-transform: capitalize;
-  width: 109px; }
+  width: 119px; }
 #tinymce.lime.es .decoration:before {
   content: "decoración";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .def:before {
   content: "definición";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .del:before {
   content: "borrar";
   text-transform: capitalize;
@@ -2607,7 +2610,7 @@
 #tinymce.lime.es .division:before {
   content: "división";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.es .docCommittee:before {
   content: "comité";
   text-transform: capitalize;
@@ -2615,27 +2618,27 @@
 #tinymce.lime.es .docDate:before {
   content: "Fecha-Doc";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.es .docIntroducer:before {
   content: "introductor";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .docJurisdiction:before {
   content: "jurisdicción";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.es .docketNumber:before {
   content: "número-práctica";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.es .docNumber:before {
   content: "número-doc";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .docProponent:before {
   content: "proponente";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .docPurpose:before {
   content: "objeto";
   text-transform: capitalize;
@@ -2643,35 +2646,35 @@
 #tinymce.lime.es .docStage:before {
   content: "fase";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime.es .docStatus:before {
   content: "stato-doc";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.es .docTitle:before {
   content: "Título-doc";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .docType:before {
   content: "tipo-doc";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.es .documentRef:before {
   content: "link-doc";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.es .entity:before {
   content: "Entidad";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.es .eol:before {
   content: "fine-linea";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .eop:before {
   content: "Final-pagina";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.es .event:before {
   content: "evento";
   text-transform: capitalize;
@@ -2679,171 +2682,171 @@
 #tinymce.lime.es .extractStructure:before {
   content: "estratto-struttura";
   text-transform: capitalize;
-  width: 121px; }
+  width: 133px; }
 #tinymce.lime.es .extractText:before {
   content: "estratto-testo";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.es .fillIn:before {
   content: "campo-form";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .foreign:before {
   content: "inclusione-esterna";
   text-transform: capitalize;
-  width: 121px; }
+  width: 133px; }
 #tinymce.lime.es .formula:before {
   content: "formula";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.es .fragmentBody:before {
   content: "Fragmento-cuerpo";
   text-transform: capitalize;
-  width: 109px; }
+  width: 119px; }
 #tinymce.lime.es .from:before {
   content: "De";
   text-transform: capitalize;
-  width: 25px; }
+  width: 21px; }
 #tinymce.lime.es .header:before {
   content: "Encabezado-juicio";
   text-transform: capitalize;
-  width: 115px; }
+  width: 126px; }
 #tinymce.lime.es .heading:before {
   content: "Nomen-juris";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .indent:before {
   content: "Indentación";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .ins:before {
   content: "inserimento";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .interstitial:before {
   content: "interstizio";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .intro:before {
   content: "intro-lista";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .introduction:before {
   content: "intro-lista";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .item:before {
   content: "punto";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.es .judge:before {
   content: "giudice";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.es .legislature:before {
   content: "legislatura";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .list:before {
   content: "list-gerarchica";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.es .listConclusion:before {
   content: "conclusione-lista";
   text-transform: capitalize;
-  width: 115px; }
+  width: 126px; }
 #tinymce.lime.es .listIntroduction:before {
   content: "intro-liste";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .location:before {
   content: "lugar";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.es .longTitle:before {
   content: "titolo-lungo";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.es .mainBody:before {
   content: "cuerpo-doc";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .ministerialStatements:before {
   content: "dic-ministerale";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.es .mmod:before {
   content: "mmod";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime.es .mod:before {
   content: "Modificación";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.es .motivation:before {
   content: "motivación";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .mref:before {
   content: "Ref-Multiple";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.es .narrative:before {
   content: "narración";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.es .nationalInterest:before {
   content: "dich-nazionale";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.es .neutralCitation:before {
   content: "cod-sentenza";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.es .noteRef:before {
   content: "rif-nota";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.es .noticesOfMotion:before {
   content: "motion ";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.es .num:before {
   content: "identificador";
   text-transform: capitalize;
-  width: 91px; }
+  width: 98px; }
 #tinymce.lime.es .object:before {
   content: "tema";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime.es .omissis:before {
   content: "omissis";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.es .opinion:before {
   content: "opinione";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.es .oralStatements:before {
   content: "dich-orale";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .organization:before {
   content: "organizzazione";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.es .other:before {
   content: "altro";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.es .outcome:before {
   content: "risultato";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.es .papers:before {
   content: "articoli";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.es .paragraph:before {
   content: "Inciso";
   text-transform: capitalize;
@@ -2851,91 +2854,91 @@
 #tinymce.lime.es .part:before {
   content: "parte";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.es .party:before {
   content: "parte";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.es .person:before {
   content: "persona";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.es .personalStatements:before {
   content: "dich-personale";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.es .petitions:before {
   content: "petizione";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.es .placeholder:before {
   content: "termine";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.es .point:before {
   content: "punto";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.es .pointOfOrder:before {
   content: "punto-ordine";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.es .preamble:before {
   content: "Preámbulo";
   text-transform: capitalize;
-  width: 67px; }
+  width: 70px; }
 #tinymce.lime.es .preface:before {
   content: "Encabezado";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .proceduralMotions:before {
   content: "rich-mozione";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.es .process:before {
   content: "processo";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.es .proviso:before {
   content: "disposizione";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.es .quantity:before {
   content: "Cantidad";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.es .question:before {
   content: "quesito";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.es .questions:before {
   content: "quesiti";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.es .quotedStructure:before {
   content: "novella strutturata";
   text-transform: capitalize;
-  width: 127px; }
+  width: 140px; }
 #tinymce.lime.es .quotedText:before {
   content: "novella testo";
   text-transform: capitalize;
-  width: 91px; }
+  width: 98px; }
 #tinymce.lime.es .recital:before {
   content: "giustificazione";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.es .recitals:before {
   content: "giustificazioni";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.es .ref:before {
   content: "Referencia";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .relatedDocument:before {
   content: "doc-collegato";
   text-transform: capitalize;
-  width: 91px; }
+  width: 98px; }
 #tinymce.lime.es .remark:before {
   content: "remark";
   text-transform: capitalize;
@@ -2943,23 +2946,23 @@
 #tinymce.lime.es .resolutions:before {
   content: "risluzione";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .rmod:before {
   content: "intervallo-mod";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.es .role:before {
   content: "Rol";
   text-transform: capitalize;
-  width: 31px; }
+  width: 28px; }
 #tinymce.lime.es .rollCall:before {
   content: "atto-votazione";
   text-transform: capitalize;
-  width: 97px; }
+  width: 105px; }
 #tinymce.lime.es .rref:before {
   content: "Intervalo-ref";
   text-transform: capitalize;
-  width: 91px; }
+  width: 98px; }
 #tinymce.lime.es .rule:before {
   content: "regola";
   text-transform: capitalize;
@@ -2967,75 +2970,75 @@
 #tinymce.lime.es .scene:before {
   content: "scene";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.es .section:before {
   content: "sección";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.es .session:before {
   content: "sessione";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.es .shortTitle:before {
   content: "titolo-breve";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.es .signature:before {
   content: "firma";
   text-transform: capitalize;
-  width: 43px; }
+  width: 42px; }
 #tinymce.lime.es .speech:before {
   content: "discorso";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.es .speechGroup:before {
   content: "gruppo-discorsi";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.es .subchapter:before {
   content: "subcapítulo";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .subclause:before {
   content: "subcláusula";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .subdivision:before {
   content: "subdivisión";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .subFlow:before {
   content: "subFlow";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.es .subheading:before {
   content: "subnomen";
   text-transform: capitalize;
-  width: 61px; }
+  width: 63px; }
 #tinymce.lime.es .sublist:before {
   content: "sotto-lista";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .subparagraph:before {
   content: "sub-párrafo";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .subpart:before {
   content: "sotto-parte";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .subrule:before {
   content: "sotto-regola";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.es .subsection:before {
   content: "subsección";
   text-transform: capitalize;
-  width: 73px; }
+  width: 77px; }
 #tinymce.lime.es .subtitle:before {
   content: "sotto-titolo";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.es .tblock:before {
   content: "tblock";
   text-transform: capitalize;
@@ -3043,7 +3046,7 @@
 #tinymce.lime.es .term:before {
   content: "término";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.es .time:before {
   content: "tiempo";
   text-transform: capitalize;
@@ -3059,31 +3062,31 @@
 #tinymce.lime.es .tocItem:before {
   content: "elemento-indice";
   text-transform: capitalize;
-  width: 103px; }
+  width: 112px; }
 #tinymce.lime.es .tome:before {
   content: "tomo";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime.es .transitional:before {
   content: "transitorio";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .vote:before {
   content: "voto";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime.es .wrap:before {
   content: "coda";
   text-transform: capitalize;
-  width: 37px; }
+  width: 35px; }
 #tinymce.lime.es .writtenStatements:before {
   content: "dich-scritta";
   text-transform: capitalize;
-  width: 85px; }
+  width: 91px; }
 #tinymce.lime.es .content:before {
   content: "content";
   text-transform: capitalize;
-  width: 55px; }
+  width: 56px; }
 #tinymce.lime.es .remedies:before {
   content: "rimedi";
   text-transform: capitalize;
@@ -3091,31 +3094,31 @@
 #tinymce.lime.es .hierarchicalStructure:before {
   content: "Estructuras jerárquicas";
   text-transform: capitalize;
-  width: 151px; }
+  width: 168px; }
 #tinymce.lime.es .genericElement:before {
   content: "Elementos genéricos";
   text-transform: capitalize;
-  width: 127px; }
+  width: 140px; }
 #tinymce.lime.es .externalFragment:before {
   content: "Fragmentos de texto externo";
   text-transform: capitalize;
-  width: 175px; }
+  width: 196px; }
 #tinymce.lime.es .commonsInline:before {
   content: "eelementos en línea";
   text-transform: capitalize;
-  width: 127px; }
+  width: 140px; }
 #tinymce.lime.es .contentInline:before {
   content: "Contenido en línea";
   text-transform: capitalize;
-  width: 121px; }
+  width: 133px; }
 #tinymce.lime.es .commonElement:before {
   content: "Elementos comunes";
   text-transform: capitalize;
-  width: 115px; }
+  width: 126px; }
 #tinymce.lime.es .commonReference:before {
   content: "Referencias";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .commonJudgement:before {
   content: "Juicio";
   text-transform: capitalize;
@@ -3123,15 +3126,15 @@
 #tinymce.lime.es .commonReport:before {
   content: "Debate Report / Informe";
   text-transform: capitalize;
-  width: 151px; }
+  width: 168px; }
 #tinymce.lime.es .mod[data-modtype=insertion]:before {
   content: "Inserimento";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .mod[data-modtype=substitution]:before, #tinymce.lime.es .ins[data-modtype=substitution]:before {
   content: "Sustitución";
   text-transform: capitalize;
-  width: 79px; }
+  width: 84px; }
 #tinymce.lime.es .mod[data-modtype=repeal]:before {
   content: "Borrar";
   text-transform: capitalize;
@@ -3163,7 +3166,7 @@
   #tinymce #tinymce *[highlighted=true] {
     background-color: #fafcc0; }
   #tinymce.lime *::before {
-    font-family: 'FontAwesome', sans-serif;
+    font-family: 'Ubuntu Mono';
     color: white;
     font-size: 13px;
     line-height: 15px;

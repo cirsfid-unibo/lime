@@ -7,6 +7,7 @@
 @import "akn_esp";
 
 @import url(http://fonts.googleapis.com/css?family=Libre+Baskerville);
+@import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono&subset=latin,latin-ext);
 
 #tinymce {
     font-size: .9em;
@@ -38,7 +39,7 @@
 
     &.lime {
         *::before {
-            font-family: 'FontAwesome', sans-serif;
+            font-family: 'Ubuntu Mono';
             color: white;
             font-size: 13px;
             line-height: 15px;

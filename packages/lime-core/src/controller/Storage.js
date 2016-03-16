@@ -424,14 +424,6 @@ Ext.define('LIME.controller.Storage', {
         }, this);
 
         this.updateDocProperties(values);
-
-        if (selectedItem.getData().id) {
-            DocProperties.documentInfo.docId = selectedItem.getData().id;
-            User.setPreference('lastOpened', DocProperties.documentInfo.docId);
-        } else {
-            console.warn('selectedItem.getData().id is null');
-        }
-
         this.saveDocument(function () {
             relatedWindow.close();
             var docName = "";
@@ -442,7 +434,7 @@ Ext.define('LIME.controller.Storage', {
                     docUrl : selectedItem.getData().path.replace(docName, '')
                 })
             });
-        });
+        }, selectedItem.getData().id);
     },
 
     updateDocProperties: function(values) {
@@ -471,27 +463,25 @@ Ext.define('LIME.controller.Storage', {
 
     // Save the currenly opened document and call callback on success.
     // Fire beforeSave and afterSave events.
-    saveDocument: function(callback) {
+    saveDocument: function(callback, path) {
         var me = this;
-        var path = DocProperties.documentInfo.docId;
-        User.setPreference('lastOpened', path);
-
         // Before saving
         me.application.fireEvent(Statics.eventsNames.beforeSave, {
             editorDom: me.getController('Editor').getDom(),
             documentInfo: DocProperties.documentInfo
         });
 
+        path = path || DocProperties.documentInfo.docId;
         me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml, idMapping, html) {
             Server.saveDocument(path, xml, function () {
+                DocProperties.setDocId(path);
+                User.setPreference('lastOpened', path);
                 if (callback) callback(xml, html);
 
                 // After saving
                 me.application.fireEvent(Statics.eventsNames.afterSave, {
                     editorDom: me.getController('Editor').getDom(),
-                    documentInfo: DocProperties.documentInfo,
-                    saveData: true
-                    // saveData: Ext.decode(responseText, true)
+                    documentInfo: DocProperties.documentInfo
                 });
             });
         }, {complete: true});
@@ -709,15 +699,6 @@ Ext.define('LIME.controller.Storage', {
                     };
                     this.loadOpenFileListData(cmp, false, onStoreLoad);
                     store.on("load", onStoreLoad, this);
-
-                    // if (cmp.filter) {
-                    //     var notExamples = new Ext.util.Filter({
-                    //         filterFn: function(item) {
-                    //             return (item.data.text.indexOf("examples") == -1);
-                    //         }
-                    //     });
-                    //     store.addFilter(notExamples);
-                    // }
                     column = cmp.columns[0];
                     if (columnConfig && columnConfig.editor) {
                         column.editor = columnConfig.editor;

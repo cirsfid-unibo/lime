@@ -88,7 +88,7 @@ Ext.define('LIME.controller.WidgetManager', {
                 attributes : config.attributes,
                 bbar: [{
                     xtype: 'component',
-                    id: 'successSaveLabel',
+                    itemId: 'successSaveLabel',
                     hidden: true,
                     flex: 1,
                     baseCls: 'form-success-state',
@@ -113,7 +113,7 @@ Ext.define('LIME.controller.WidgetManager', {
         Ext.each(widget.query("textfield"), function(field) {
             me.updateWidgetData(widget, field, false, true);
         });
-        widget.down("#successSaveLabel").setVisible(true);
+        widget.down("[itemId=successSaveLabel]").setVisible(true);
     },
     
     /*
@@ -285,16 +285,20 @@ Ext.define('LIME.controller.WidgetManager', {
      * */
     
     setElementAttributes: function(elementId, attributes) {
-        var editorController = this.getController('Editor'), node, tmpNode;
-        if (!Ext.isEmpty(attributes)) {
-            Ext.each(attributes, function(attribute) {
-                tmpNode = editorController.setElementAttribute(elementId, attribute.name, attribute.value);
-                node = node || tmpNode;
-            });
-            if(node) {
-                this.application.fireEvent(Statics.eventsNames.nodeAttributesChanged, node);
-            }
-        }
+        var me = this, node = DocProperties.getMarkedNode(elementId);
+        if (!node || !attributes.length) return;
+        var updated = attributes.reduce(function(updated, attribute) {
+            return updated || me.setElementAttribute(node, attribute.name, attribute.value);  
+        }, false);
+        if(updated)
+            Ext.GlobalEvents.fireEvent('nodeAttributesChanged', node);
+    },
+
+    setElementAttribute: function(node, name, value) {
+        var oldVal = node.getAttribute(name);
+        if (!value || oldVal === value) return false;
+        node.setAttribute(name, value);
+        return true;
     },
     
     
@@ -336,7 +340,7 @@ Ext.define('LIME.controller.WidgetManager', {
             "markedElementWidget textfield" : {
                 change : function(field) {
                     var widget = field.up('markedElementWidget');
-                    widget.down("#successSaveLabel").setVisible(false);
+                    widget.down("[itemId=successSaveLabel]").setVisible(false);
                 },
                 focus : function(field) {
                     var widget = field.up('markedElementWidget'),
