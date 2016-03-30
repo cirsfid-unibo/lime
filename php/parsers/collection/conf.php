@@ -47,7 +47,8 @@
 
  $rules = Array(
 	"main" => "/<[\w=\" ]+>VOLUME I+<[\w\/]+>/",
-	"children" => "/<[\w=\" ]+>[A-Z]\.\t*[ A-Z0-9\W]+<[\w\/]+>/",
+	//"children" => "/<[\w=\" ]+>[A-Z]\.\t*[ A-Z0-9\W]+<[\w\/]+>/",
+	"children" => "/<div class=\"toMark partitionHeader h1\">[A-Z]\.\t*[ A-Z0-9\W]+<\/div>/",
 	//"annexes" => "/<[\w=\" ]+><br\/>(?:Annex|Appendix)[\t ]*[I]*<[\w\/]+>/"
 	"annexes" => "/<p>(?:<br\/>)?(?:Annex|Appendix)[ \s]*[I0-9]+(?:<br\/>)?<\/p>/"
 );
