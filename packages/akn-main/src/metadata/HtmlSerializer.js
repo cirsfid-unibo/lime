@@ -58,8 +58,8 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         // identification
         '   <div class="identification" source="#{source}">',
         '       <div class="FRBRWork">',
-        '           <div class="FRBRthis" value="{uri.work}/main"/>',
-        '           <div class="FRBRuri" value="{uri.work}"/>',
+        '           <div class="FRBRthis" value="{uri.work}"/>',
+        '           <div class="FRBRuri" value="{uri.workUri}"/>',
         '<tpl for="aliases"><tpl if="level==\'work\'">' +
         '           <div class="FRBRalias" value="{value}" name="{name}"/>',
         '</tpl></tpl>' +
@@ -68,8 +68,8 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         '           <div class="FRBRcountry" value="{country}"/>',
         '       </div>',
         '       <div class="FRBRExpression">',
-        '          <div class="FRBRthis" value="{uri.expression}/main"/>',
-        '          <div class="FRBRuri" value="{uri.expression}"/>',
+        '          <div class="FRBRthis" value="{uri.expression}"/>',
+        '          <div class="FRBRuri" value="{uri.expressionUri}"/>',
         '<tpl for="aliases"><tpl if="level==\'expression\'">' +
         '           <div class="FRBRalias" value="{value}" name="{name}"/>',
         '</tpl></tpl>' +
@@ -78,8 +78,8 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         '          <div class="FRBRlanguage" language="{language}"/>',
         '       </div>',
         '       <div class="FRBRManifestation">',
-        '           <div class="FRBRthis" value="{uri.manifestation}/main"/>',
-        '           <div class="FRBRuri" value="{uri.manifestation}"/>',
+        '           <div class="FRBRthis" value="{uri.manifestation}"/>',
+        '           <div class="FRBRuri" value="{uri.manifestationUri}"/>',
         '<tpl for="aliases"><tpl if="level==\'manifestation\'">' +
         '           <div class="FRBRalias" value="{value}" name="{name}"/>',
         '</tpl></tpl>' +
@@ -222,8 +222,11 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         var uri = model.getUri();
         data.uri = {
             work: uri.work(),
+            workUri: uri.work(true),
             expression: uri.expression(),
-            manifestation: uri.manifestation()
+            expressionUri: uri.expression(true),
+            manifestation: uri.manifestation(),
+            manifestationUri: uri.manifestation(true)
         };
 
         return this.applyTemplate(data);

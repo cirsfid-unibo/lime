@@ -97,7 +97,7 @@ Ext.define('AknMain.Uri', {
         uri.work = this.uriFunctions.work.bind(uri),
         uri.expression = this.uriFunctions.expression.bind(uri),
         uri.manifestation = this.uriFunctions.manifestation.bind(uri),
-        uri.item = this.uriFunctions.item.bind(uri)
+        uri.item = this.uriFunctions.item.bind(uri);
         return uri;
     },
 
@@ -239,9 +239,17 @@ Ext.define('AknMain.Uri', {
                    ((this.component && !hideComponent) ? '/' + this.component : '');
         },
 
-        manifestation: function () {
+        /**
+         * If forFrbrUri is set to true returns with as should be set for FRBRthis in FRBRmanifestation
+         *  else if set to false returns with as should be set for FRBRuri in FRBRmanifestation (i.e.
+         *  with .akn instead of .xml )
+         * @param forFrbrUri
+         * @returns {string}
+         */
+        manifestation: function (forFrbrUri) {
             return this.expression(true) +
-                   '/' + this.component + '.' + this.media;
+                '/' + this.component + '.' +
+                (!forFrbrUri ? this.media: 'akn' );
         },
 
         item: function () {
