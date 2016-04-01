@@ -305,7 +305,15 @@ Ext.define('LIME.Strings', {
             "closeAllTabsText": "Chiudi tutte le schede",
             "unmark": "Cancella marcatura",
             "unmarkElement": "questo elemento",
-            "unmarkElementChildren": "questo elemento e dei suoi figli"
+            "unmarkElementChildren": "questo elemento e dei suoi figli",
+            "nationalities": {
+                "it": "Italia",
+                "es": "Spagna"
+            },
+            "languages": {
+                "ita": "Italiano",
+                "spa": "Spagnolo"  
+            }
         },
         "es": {
             "error": "Error",

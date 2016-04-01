@@ -61,5 +61,15 @@ Ext.define('LIME.store.DocumentLanguages', {
             type : 'json',
             rootProperty : 'languages'
         }
+    },
+
+    listeners: {
+        // Replace names with the translated ones
+        load: function(store, records) {
+            records.forEach(function(r) {
+                var translatedName = Locale.getString('languages')[r.get('code')];
+                if (translatedName) r.set('name', translatedName);
+            });
+        }
     }
 });

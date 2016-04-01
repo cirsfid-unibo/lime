@@ -50,17 +50,18 @@ Ext.define('AknMetadata.tagAttributes.RefPanel', {
     alias: 'widget.refPanel',
 
     ref: null,
-    title: 'Reference data',
+    title: Locale.getString('referenceWidgetTitle', 'akn-metadata'),
     items: [{
         xtype: 'combo',
-        emptyText: 'Type',
+        emptyText: Locale.getString('type', 'akn-metadata'),
         name: 'type',
         displayField: 'name',
         valueField: 'type',
         queryMode: 'local',
         store: Ext.create('Ext.data.Store', {
             fields: ['name', 'type'],
-            data: [{name: 'internal', type: 'internal'}, {name: 'external', type: 'external'}]
+            data: [{name: Locale.getString('internal', 'akn-metadata'), type: 'internal'}, 
+                    {name: Locale.getString('external', 'akn-metadata'), type: 'external'}]
         })
     }, {
         xtype: 'nationalitySelector'
@@ -69,19 +70,19 @@ Ext.define('AknMetadata.tagAttributes.RefPanel', {
     }, {
         xtype: 'textfield',
         name: 'subtype',
-        emptyText: 'Doc. SubType'
+        emptyText: Locale.getString('docSubType', 'akn-metadata')
     }, {
         xtype: 'datefield',
         name: 'date',
-        emptyText: 'Date'
+        emptyText: Locale.getString('date', 'akn-metadata')
     }, {
         xtype: 'textfield',
         name: 'number',
-        emptyText: 'Number'
+        emptyText: Locale.getString('number', 'akn-metadata')
     }, {
         xtype: 'textfield',
         name: 'fragment',
-        emptyText: 'Fragment'
+        emptyText: Locale.getString('fragment', 'akn-metadata')
     }],
 
     listeners: {

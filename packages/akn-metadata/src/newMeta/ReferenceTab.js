@@ -74,17 +74,20 @@ Ext.define('AknMetadata.newMeta.ReferenceTab', {
                 text: Locale.getString('type', 'akn-metadata'),
                 dataIndex: 'type',
                 renderer: function (r) {
+                    var getStr = function(str) {
+                        return Ext.String.capitalize(Locale.getString(str, 'akn-metadata'))
+                    };
                     switch (r) {
-                    case 'TLCPerson': return 'Person';
-                    case 'TLCOrganization': return 'Organization';
-                    case 'TLCConcept': return 'Concept';
-                    case 'TLCObject': return 'Object';
-                    case 'TLCEvent': return 'Event';
-                    case 'TLCLocation': return 'Location';
-                    case 'TLCProcess': return 'Process';
-                    case 'TLCRole': return 'Role';
-                    case 'TLCTerm': return 'Term';
-                    case 'TLCReference': return 'Reference';
+                    case 'TLCPerson': return getStr('person');
+                    case 'TLCOrganization': return getStr('organization');
+                    case 'TLCConcept': return getStr('concept');
+                    case 'TLCObject': return getStr('object');
+                    case 'TLCEvent': return getStr('event');
+                    case 'TLCLocation': return getStr('location');
+                    case 'TLCProcess': return getStr('process');
+                    case 'TLCRole': return getStr('role');
+                    case 'TLCTerm': return getStr('term');
+                    case 'TLCReference': return getStr('reference');
                     default: return r;
                     }
                 },

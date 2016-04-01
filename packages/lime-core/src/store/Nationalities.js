@@ -64,5 +64,15 @@ Ext.define('LIME.store.Nationalities', {
             type : 'json',
             rootProperty : 'countries'
         }
+    },
+
+    listeners: {
+        // Replace names with the translated ones
+        load: function(store, records) {
+            records.forEach(function(r) {
+                var translatedName = Locale.getString('nationalities')[r.get('alpha-2')];
+                if (translatedName) r.set('name', translatedName);
+            });
+        }
     }
 });
