@@ -2772,7 +2772,8 @@ Ext.define('AknAutomaticMarkup.Controller', {
             app = me.application, buttonName;
 
         if (!DocProperties.getLang()) {
-            Ext.MessageBox.alert(Locale.strings.parsersErrors.LANG_MISSING_ERROR_TITLE, Locale.strings.parsersErrors.langMissingError);
+            var strings = Locale.getString("parsersErrors", me.getPluginName());
+            Ext.MessageBox.alert(strings.LANG_MISSING_ERROR_TITLE, strings.langMissingError);
             return;
         }
         app.fireEvent(Statics.eventsNames.progressStart, null, {

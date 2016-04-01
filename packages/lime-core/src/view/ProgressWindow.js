@@ -61,11 +61,11 @@ Ext.define('LIME.view.ProgressWindow', {
     modal: true,
     
     items : [{
-        xtype: "progressbar"
+        xtype: 'progressbar'
     }],
     
     initComponent: function(){
-        this.title = Locale.strings.progressBar.title;
+        this.title = Locale.getString('progressBar').title;
         this.callParent(arguments);
     }
 

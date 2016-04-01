@@ -47,10 +47,10 @@
 Ext.define('LIME.Locale', {
     singleton : true,
     alternateClassName : 'Locale',
+    requires: ['LIME.Strings'],
 
     config: {
-        lang : 'it',
-        defaultLang: 'en'
+        lang: 'en'
     },
 
     isReady: false,
@@ -66,24 +66,22 @@ Ext.define('LIME.Locale', {
     setPluginStrings: function(name, strings) {
         this.pStrings[name] = strings;
     },
-
-    // Load strings from the strings.json file in the given package.
-    getPackageStrings: function(packageName, callback) {
-        Server.getResourceFile('strings.json', packageName, function (path, data) {
-            Locale.setPluginStrings(packageName, data);
-            Ext.callback(callback);
-        });
-    },
     
     getString: function(name, scope) {
-        if (scope && this.pStrings[scope]) {
-            if(this.pStrings[scope][this.getLang()])
-                return this.pStrings[scope][this.getLang()][name] || name;
-                
-            if(this.pStrings[scope][this.getDefaultLang()])
-                return this.pStrings[scope][this.getDefaultLang()][name] || name;
-        }
-        return this.strings[name];
+        if (scope && this.pStrings[scope])
+            return this.getLangString(name, this.pStrings[scope]) || name;
+
+        return this.getLangString(name, LIME.Strings.strings) || name;
+    },
+
+    getLangString: function(name, strings) {
+        var get = function(lang) {
+            return strings[lang] && strings[lang][name];
+        };
+
+        if (get(this.getLang())) return get(this.getLang());
+        if (get('en')) return get('en');
+        if(Object.keys(strings)) return get(Object.keys(strings)[0]);
     },
     
     detectLanguage : function() {
@@ -94,25 +92,13 @@ Ext.define('LIME.Locale', {
     },
     
     loadLanguage: function() {
-        var langUrl = 'config/locale/lang-'+this.config.lang+'.json';
-        var extLangUrl = 'config/locale/ext/ext-lang-'+this.config.lang+'.js';
-        Ext.Ajax.request({
-            url : langUrl,
-            async: false,
-            scope: this,
-            success : function(response, opts) {
-                try {
-                    this.strings = Ext.decode(response.responseText);
-                    this.isReady = true;
-                } catch(e) {
-                    alert("Fatal error on loading localization files");
-                }
-            },
-            failure : function(response, opts) {
-                alert("Fatal error on loading localization files");
-            }
-        });
-        
-        Ext.Loader.loadScript({url : extLangUrl});
+        // This is for backwards compatibility with Locale.string notation
+        // TODO: replace all occorences of Locale.string with Locale.getString
+        this.strings = LIME.Strings.strings[this.getLang()] ||
+                        Ext.Object.getValues(LIME.Strings.strings)[0];
+        var extLangUrl = 'config/locale/ext/ext-lang-'+this.getLang()+'.js';
+        Ext.Loader.loadScript({url : extLangUrl, scope: this, onLoad: function() {
+            this.isReady = true;
+        }});
     }
 });

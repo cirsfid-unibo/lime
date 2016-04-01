@@ -98,7 +98,7 @@ Ext.define('LIME.view.Outliner', {
     },
 
     initComponent: function(){
-        this.title = Locale.strings.westToolbarTitle;
+        this.title = Locale.getString('westToolbarTitle');
         this.callParent(arguments);
     }
 
