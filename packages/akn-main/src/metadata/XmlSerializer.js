@@ -146,7 +146,8 @@ Ext.define('AknMain.metadata.XmlSerializer', {
     normalizeDate: function (date) {
         if (!date) return '';
         try {
-            return date.toISOString().substring(0, 10);
+            // Use Ext.Date.format to fix the problem with timezones
+            return Ext.Date.format(date, 'c').substring(0, 10);
         } catch(e) {
             console.error('Invalid date: ', date, e);
         }
