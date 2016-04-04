@@ -57,7 +57,11 @@
             "structureParser": "Parsing structure",
             "referenceParser": "Parsing references",
             "markedAlready": "Document is marked",
-            "documentAllMarked": "I marked what I was able to recognize automatically"
+            "documentAllMarked": "I marked what I was able to recognize automatically",
+            "parsersErrors": {
+                "LANG_MISSING_ERROR_TITLE": "Language error",
+                "langMissingError": "The language of document is missing"
+            }
         },
         "it": {
             "parseDocumentText": "Markup automatico",

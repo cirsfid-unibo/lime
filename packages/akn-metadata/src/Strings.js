@@ -83,7 +83,11 @@ Ext.define('AknMetadata.Strings', {
             "seeelement": "Show associated element",
             "selectKeyword": "Select one of the following keywords",
             "emptySelection": "No item selected",
-            "classifyConfirm": "Are you sure to classify the selected node as <b>{keyword}</b>?"
+            "classifyConfirm": "Are you sure to classify the selected node as <b>{keyword}</b>?",
+            "referenceWidgetTitle": "Reference data",
+            "docSubType": "Doc. SubType",
+            "fragment": "Fragment",
+            "publication": "Publication"
         },
         "it": {
             "title": "Editor metadati",
@@ -112,6 +116,14 @@ Ext.define('AknMetadata.Strings', {
             "steps": "Passi",
             "actor": "Attore",
             "role": "Ruolo",
+            "person": "Persona",
+            "organization": "organizzazione",
+            "concept": "Concetto",
+            "object": "Oggetto",
+            "event": "Evento",
+            "location": "luogo",
+            "process": "Processo",
+            "term": "termine",
             "outcome": "Esito",
             "dictionary": "Uri thesaurus",
             "associated": "Associato a",
@@ -120,7 +132,13 @@ Ext.define('AknMetadata.Strings', {
             "seeelement": "Visualizza l'elemento associato",
             "selectKeyword": "Seleziona una parola chiave",
             "emptySelection": "Nessun elemento selezionato",
-            "classifyConfirm": "Sei sicuro di voler classificare l'elemento selezionato come <b>{keyword}</b>?"
+            "classifyConfirm": "Sei sicuro di voler classificare l'elemento selezionato come <b>{keyword}</b>?",
+            "referenceWidgetTitle": "Dati relativi al riferimento",
+            "docSubType": "Sottotipo",
+            "fragment": "Frammento",
+            "internal": "Interno",
+            "external": "Esterno",
+            "publication": "Pubblicazione"
         },
         "es": {
             "title": "Editor de metadatos",
@@ -157,7 +175,13 @@ Ext.define('AknMetadata.Strings', {
             "seeelement": "Show associated element",
             "selectKeyword": "Select one of the following keywords",
             "emptySelection": "No item selected",
-            "classifyConfirm": "Are you sure to classify the selected node as <b>{keyword}</b>?"
+            "classifyConfirm": "Are you sure to classify the selected node as <b>{keyword}</b>?",
+            "referenceWidgetTitle": "Datos de referencia",
+            "docSubType": "Subtipo",
+            "fragment": "Fragmento",
+            "internal": "Interno",
+            "external": "Externo",
+            "publication": "Publicación"
         }
     },
 

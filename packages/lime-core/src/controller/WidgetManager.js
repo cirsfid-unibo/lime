@@ -132,6 +132,10 @@ Ext.define('LIME.controller.WidgetManager', {
                 widget = this.createWidget(elId, widgetConfig);
                 this.setWidgetContent(widget);
                 this.tab.add(widget);    
+            } else {
+                widget = this.tab.down();
+                if (widget)
+                    this.setWidgetContent(widget);
             }
             // Calculates the height of the panel base on numer of fields in the widget
             panelHeight = (widgetConfig.list.length*30)+102;

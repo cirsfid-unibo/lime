@@ -73,15 +73,15 @@ Ext.define('LIME.view.MarkingMenu', {
          * Array containing references to the currently opened buttons
          */
         this.shown = [];
-        this.title = Locale.strings.eastToolbarTitle;
+        this.title = Locale.getString('eastToolbarTitle');
         this.items = [{
             xtype: 'markingMenuTreePanel',
-            title: Locale.strings.documentStructure,
+            title: Locale.getString('documentStructure'),
             cls: 'x-tree-custom structure',
             id: 'treeStructure'
         },{
             xtype: 'markingMenuTreePanel',
-            title: Locale.strings.commonButtons,
+            title: Locale.getString('commonButtons'),
             cls: 'x-tree-custom commons',
             id: 'treeCommons'
         }],

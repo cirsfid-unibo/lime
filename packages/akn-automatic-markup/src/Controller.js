@@ -834,6 +834,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
     addMetaReference: function(data) {
         var store = Ext.getStore('metadata').getMainDocument();
+        data.showAs = data.showAs ? data.showAs.trim() : data.showAs;
         if ( !store.references().findRecord('eid', data.eid, 0, false, false, true) )
             store.references().add(data);
     },
@@ -2772,7 +2773,8 @@ Ext.define('AknAutomaticMarkup.Controller', {
             app = me.application, buttonName;
 
         if (!DocProperties.getLang()) {
-            Ext.MessageBox.alert(Locale.strings.parsersErrors.LANG_MISSING_ERROR_TITLE, Locale.strings.parsersErrors.langMissingError);
+            var strings = Locale.getString("parsersErrors", me.getPluginName());
+            Ext.MessageBox.alert(strings.LANG_MISSING_ERROR_TITLE, strings.langMissingError);
             return;
         }
         app.fireEvent(Statics.eventsNames.progressStart, null, {

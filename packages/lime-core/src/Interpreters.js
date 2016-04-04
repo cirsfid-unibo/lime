@@ -315,6 +315,7 @@ Ext.define('LIME.Interpreters', {
                 tempWidget.displayField = 'type';
                 tempWidget.valueField = 'type';
             }
+            widget.label = Ext.String.capitalize(Locale.getString(widget.label.toLowerCase()));
             if (how > 1) {
                 tempWidget.emptyText = widget.label;
                 if (title != "")
