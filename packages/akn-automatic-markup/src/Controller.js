@@ -834,6 +834,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
     addMetaReference: function(data) {
         var store = Ext.getStore('metadata').getMainDocument();
+        data.showAs = data.showAs ? data.showAs.trim() : data.showAs;
         if ( !store.references().findRecord('eid', data.eid, 0, false, false, true) )
             store.references().add(data);
     },

@@ -56,6 +56,9 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
                 maindocumentchanged: 'onMetadataUpdate',
                 update: 'onMetadataUpdate'
             }
+        },
+        global: {
+            nodeAttributesChanged: 'onAttributeChange'
         }
     },
 
@@ -65,8 +68,7 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
 
     init: function () {
         this.application.on({
-            nodeChangedExternally: this.onNodeMarked.bind(this),
-            nodeAttributesChanged: this.onAttributeChange.bind(this)
+            nodeChangedExternally: this.onNodeMarked.bind(this)
         });
     },
 
@@ -99,19 +101,19 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
 
     addRefersTo: function (node, type) {
         var meta = Ext.getStore('metadata').getMainDocument(),
-            text = node.textContent,
+            text = node.textContent.trim(),
             showAs = text.substring(0, 40),
-            eid = showAs.toLowerCase().replace(/[^\w]/g, '')
+            eid = showAs.toLowerCase().replace(/[^\w]/g, ''),
             data = {
                 eid: eid,
                 type: type,
-                href: '',
+                href: '/ontology/'+DomUtils.getNameByNode(node)+'/'+meta.get('country')+'/'+eid,
                 showAs: showAs
             };
         if(eid) {
             node.setAttribute('akn_refersto', '#' + eid);
-            // this.application.fireEvent('nodeAttributesChanged', node);
             meta.references().add(data);
+            Ext.GlobalEvents.fireEvent('forceMetadataWidgetRefresh');
         }
     },
 
