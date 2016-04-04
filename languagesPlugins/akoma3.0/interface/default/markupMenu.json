@@ -540,5 +540,21 @@
     },
     "writtenStatements": {
         "pattern": "hcontainer"
+    },
+    "hierarchicalStructure": {
+    },
+    "genericElement": {
+    },
+    "externalFragment": {
+    },
+    "commonsInline": {
+    },
+    "contentInline": {
+    },
+    "commonElement": {
+    },
+    "commonReference": {
+    },
+    "structureNotes":{
     }
 }

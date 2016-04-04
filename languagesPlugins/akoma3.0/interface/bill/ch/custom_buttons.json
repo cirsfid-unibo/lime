@@ -1,5 +1,6 @@
 {
 	"romanI": {
+        "pattern": "hcontainer",
 		"wrapperClass": "patternName patternName",
 		"wrapperRules": {
 			"applyAttributes": {

@@ -95,7 +95,6 @@ Ext.define('LIME.controller.MarkingMenu', {
         var me = this, // Save the scope,
             rootElements = pluginData.markupMenuRules.rootElements,
             commonElements = pluginData.markupMenuRules.commonElements,
-            levelsOrder = ['locale', 'docType', 'defaults'],
             head = document.querySelector("head"),
             styleNode = head.querySelector('#'+me.styleId );
 
@@ -106,15 +105,6 @@ Ext.define('LIME.controller.MarkingMenu', {
         this.buttonsReferences = {};
         this.configReferences = {};
         DocProperties.clearElementConfig();
-
-        for(var i=0; i<levelsOrder.length; i++) {
-            var level = levelsOrder[i];
-            if (pluginData[level] && pluginData[level].markupMenu) {
-               pluginData[level] = Utilities.mergeJson(pluginData[level], pluginData['language'], Utilities.beforeMerge);
-               pluginData.markupMenu = pluginData[level].markupMenu;
-               break;
-            }
-        }
 
         var treeStructure = {
             text: 'Document structure',
@@ -297,28 +287,22 @@ Ext.define('LIME.controller.MarkingMenu', {
         var pluginData = this.getStore('LanguagesPlugin').getConfigData(),
         //  If the button doesn't exist there must be some error in the configuration
         button = (buttons && buttons[name]) ? buttons[name]: pluginData.markupMenu[name],
-        defaultButton = pluginData.defaults.markupMenu[name],
         // Get global patterns from store
         patterns = pluginData.patterns,
         rules = (rules && rules.elements[name]) ? rules: pluginData.markupMenuRules,
         // Get the element's rule
         rule = rules.elements[name] || pluginData.markupMenuRules[name] || {},
         // Dinamically add the translated text
-        label = (button.label) ? button.label: (defaultButton && defaultButton.label) ? defaultButton.label: name,
-        shortLabel = (button.shortLabel) ? button.shortLabel: (defaultButton && defaultButton.shortLabel) ? defaultButton.shortLabel: name,
+        label = (button.label) ? button.label: name,
+        shortLabel = (button.shortLabel) ? button.shortLabel: name,
         widget = null, pattern = null, config = null;
         // If specific configuration is not defined, get the default one
         if (!rule[Utilities.buttonFieldDefault]) {
             rule[Utilities.buttonFieldDefault] = rules.defaults;
         }
 
-        if (button.pattern) {
-            pattern = Interpreters.parsePattern(name, patterns[button.pattern], (defaultButton) ? defaultButton: button);
-        }
-
-        if(!button.buttonStyle && defaultButton) {
-            button.buttonStyle = defaultButton.buttonStyle;
-        }
+        if (button.pattern)
+            pattern = Interpreters.parsePattern(name, patterns[button.pattern], button);
 
         //  Get the element's widget
         widget = (rule) ? Interpreters.parseWidget(rule): null;
