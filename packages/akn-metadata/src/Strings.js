@@ -86,7 +86,8 @@ Ext.define('AknMetadata.Strings', {
             "classifyConfirm": "Are you sure to classify the selected node as <b>{keyword}</b>?",
             "referenceWidgetTitle": "Reference data",
             "docSubType": "Doc. SubType",
-            "fragment": "Fragment"
+            "fragment": "Fragment",
+            "publication": "Publication"
         },
         "it": {
             "title": "Editor metadati",
@@ -136,7 +137,8 @@ Ext.define('AknMetadata.Strings', {
             "docSubType": "Sottotipo",
             "fragment": "Frammento",
             "internal": "Interno",
-            "external": "Esterno"
+            "external": "Esterno",
+            "publication": "Pubblicazione"
         },
         "es": {
             "title": "Editor de metadatos",
@@ -178,7 +180,8 @@ Ext.define('AknMetadata.Strings', {
             "docSubType": "Subtipo",
             "fragment": "Fragmento",
             "internal": "Interno",
-            "external": "Externo"
+            "external": "Externo",
+            "publication": "Publicación"
         }
     },
 
