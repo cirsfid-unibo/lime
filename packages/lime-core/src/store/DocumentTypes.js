@@ -47,8 +47,11 @@
 /**
  * This store lists the types of documnets which can be
  * written in a markup language.
+ * _KOH_05-04-2015 :
+ * i18n_name localized name for docType ( which is captured
+ * in "name" )
  */
 Ext.define('LIME.store.DocumentTypes', {
     extend : 'Ext.data.Store',
-    fields : ['name']
+    fields : ['name', 'i18n_name']
 }); 
