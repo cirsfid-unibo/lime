@@ -212,10 +212,34 @@ Ext.define('LIME.Config', {
         }
         return null;
     },
-    
+
+    /**
+     * _KOH_05-04-2015 :
+     * In the new document dialog, the document type names shown
+     * are literal document types as they are in an Akoma-Ntoso document.
+     * In live scenarios an organization typically uses a different nomenclature
+     * for such names example debateReport can be called "Debate Minutes" or
+     * "act" can be called "code" and so on. This change allows showing a localized
+     * name for the document type. You need to introduce a localized i18n string for
+     * the doctype name prefixed with "type_", for example if the docType name is
+     * "debateReport", the localized string name should be "type_debateReport"
+     * @param lang
+     * @returns {*}
+     */
     getDocTypesByLang: function(lang) {
         if (this.pluginStructure[lang]) {
-            return this.pluginStructure[lang].docTypes;     
+            var arrDocsByLang = this.pluginStructure[lang].docTypes;
+            if (arrDocsByLang != false) {
+                for (var i = 0; i < arrDocsByLang.length; i++) {
+                    var objName = arrDocsByLang[i].name;
+                    if ("type_" + objName in Locale.strings) {
+                        arrDocsByLang[i].i18n_name = Locale.strings["type_" + objName];
+                    } else {
+                        arrDocsByLang[i].i18n_name = objName;
+                    }
+                }
+            }
+            return arrDocsByLang;
         }
         return false;
     },

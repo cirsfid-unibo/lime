@@ -53,7 +53,13 @@ Ext.define('LIME.view.DocumentTypeSelector', {
     alias: 'widget.docTypeSelector',
     name: 'docType',
     //valueField: 'code',
-    displayField: 'name',
+    /**
+     * _KOH_05-04-2015:
+     * set the localized name as the displayField,
+     * see DocumentTypes store.
+     */
+    valueField: 'name',
+    displayField: 'i18n_name',
     queryMode: 'local',
     typeAhead: true,
     store: 'DocumentTypes',

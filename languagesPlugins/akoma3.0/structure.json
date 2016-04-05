@@ -3,6 +3,14 @@
     "formulaName": "formulaIniziale",
 	"docTypes": [
 		{
+			"name": "debateReport",
+			"locales": [
+				{
+					"name": "uk"
+				}
+			]
+		},
+		{
 			"name": "bill",
 			"locales": [
 				{

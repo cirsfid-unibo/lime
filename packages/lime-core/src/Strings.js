@@ -176,7 +176,8 @@ Ext.define('LIME.Strings', {
             "closeAllTabsText": "Close All Tabs",
             "unmark": "Unmark",
             "unmarkElement": "Unmark this element",
-            "unmarkElementChildren": "Unmark this element and its children"
+            "unmarkElementChildren": "Unmark this element and its children",
+            "type_debateReport": "DC Document"
         },
         "it": {
             "error": "Errore",

@@ -1,0 +1,73 @@
+{
+	"rootElements": ["coverPage", "preface", "mainBody", "conclusions", "attachments", "components"],
+	"commonElements": ["commonsInline", "contentInline", "commonReference"],
+	
+	"elements": {
+		"preface" : {
+			"children": ["docAuthority", "date", "location", "p"]
+		},
+		"p": {
+			"askFor": {
+				"class": {
+					"label": "class",
+					"type": "text",
+					"insert": {
+						"attribute": {
+							"name": "class"
+						}
+					}
+				}
+			}
+		},
+		"date": {
+			"askFor": {
+				"date1": {
+					"label": "Date",
+					"type": "date",
+					"insert": {
+						"attribute": {
+							"name": "date"
+						}
+					}
+				},
+				"refersTo": {
+					"label": "refersTo",
+					"type": "list",
+					"values": [
+						"#startDayCouncil",
+						"#endDayCouncil"
+					],
+					"insert": {
+						"attribute": {
+							"name": "refersTo"
+						}
+					}
+				}
+			}
+		},
+
+		"mainBody": {
+			"children": [
+				"hcontainer"
+			]
+		},
+
+		"hcontainer": {
+			"children": [
+				"num",
+				"heading",
+				"paragraph"
+			]
+		},
+
+		"commonsInline": {
+			"children": ["def", "decoration", "docPurpose"]
+		},
+		"contentInline": {
+			"children": ["del", "omissis",  "outcome", "ins", "eop", "noteRef", "authorialNote"]
+		},
+		"commonReference": {
+			"children": ["ref", "rref", "mref"]
+		}
+	}
+}
