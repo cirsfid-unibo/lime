@@ -55,10 +55,13 @@ $rules = Array(
     
 	"preambleInitList" => Array(
 							   "La\s+Camera\s+dei\s+deputati\s+ed\s+il\s+Senato\s+della\s+Repubblica\s+hanno\s+approvato;\s+IL\s+PRESIDENTE\s+DELLA\s+REPUBBLICA",
-							   "IL\s+PRESIDENTE\s+DELLA\s+REPUBBLICA",	
+							   "IL\s+PRESIDENTE\s+DELLA\s+REPUBBLICA",
+							   "IL DIRETTORE GENERALE\s+DEL TESORO",
+							   "IL MINISTRO DELLA GIUSTIZIA",
 							   //"Il\s+Presidente\s+della\s+Repubblica\s*",						   
 							   "Attesto che",
 							   "Il [Cc]onsiglio regionale ha approvato\.?",
+							   "omissis",
 							   ),
     
 	"preambleEndList" => Array (
@@ -70,10 +73,12 @@ $rules = Array(
 								),
 			   
     "conclusionsInitList" => Array(
-    							   "Il\s+presente\s+decreto,",
+    							   "Il\s+presente\s+decreto,?",
 								   "La\s+presente\s+legge,",
+								   "Il +presente +decreto +sar.{1,2} +pubblicato +nella +Gazzetta +Ufficiale +della +Repubblica +italiana.",
 								   "La +presente +legge +regionale +sarà +pubblicata +nel +Bollettino +Ufficiale +della +Regione.",
 								   "Data a Roma,?",
+								   "Roma,"
 								   )
 
 );
