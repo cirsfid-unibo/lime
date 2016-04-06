@@ -6,6 +6,9 @@
 			"name": "debateReport",
 			"subType": "dc",
 			"editorType": "debateReport-dc",
+			"label": {
+				"en": "DC Document"
+			},
 			"locales": [
 				{
 					"name": "uk"

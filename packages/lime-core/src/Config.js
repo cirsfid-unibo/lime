@@ -229,13 +229,17 @@ Ext.define('LIME.Config', {
     getDocTypesByLang: function(lang) {
         if (this.pluginStructure[lang]) {
             var arrDocsByLang = this.pluginStructure[lang].docTypes;
+            var langi18n = Locale.getLang();
             if (arrDocsByLang != false) {
                 for (var i = 0; i < arrDocsByLang.length; i++) {
-                    var objName = arrDocsByLang[i].editorType;
-                    if ("type_" + objName in Locale.strings) {
-                        arrDocsByLang[i].i18n_name = Locale.strings["type_" + objName];
+                    if (arrDocsByLang[i].label) {
+                        if (langi18n in arrDocsByLang[i].label) {
+                            arrDocsByLang[i].i18n_name = arrDocsByLang[i].label[langi18n];
+                        } else {
+                            arrDocsByLang[i].i18n_name = arrDocsByLang[i].editorType;
+                        }
                     } else {
-                        arrDocsByLang[i].i18n_name = objName;
+                        arrDocsByLang[i].i18n_name = arrDocsByLang[i].editorType;
                     }
                 }
             }
