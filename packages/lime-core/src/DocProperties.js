@@ -93,6 +93,8 @@ Ext.define('LIME.DocProperties', {
     documentInfoTemplate : {
         nationality : null,
         docType : null,
+        docSubType: null,
+        docEditorType: null,
         docLocale : null,
         date : null,
         number : null,
@@ -128,6 +130,14 @@ Ext.define('LIME.DocProperties', {
      */
     getDocType : function() {
         return this.documentInfo.docType;
+    },
+
+    getEditorType: function() {
+        return this.documentInfo.docEditorType;
+    },
+
+    getSubType: function() {
+        return this.documentInfo.docSubType;
     },
 
     /**

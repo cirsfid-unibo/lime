@@ -76,8 +76,9 @@ Ext.define('LIME.controller.Language', {
         config = this.beforeLoadManager(config);
 
         var success = Config.setLanguage(config.docMarkingLanguage);
-        if (!success || !config.docType || !config.docLang || !config.docLocale)
+        if (!success || !config.docType || !config.docLang || !config.docLocale) {
             return this.openNewDocumentWindow(config, !success);
+        }
 
         this.application.fireEvent(Statics.eventsNames.progressStart, null, {
             value:0.1, text: Locale.strings.progressBar.loadingDocument
@@ -101,6 +102,8 @@ Ext.define('LIME.controller.Language', {
         DocProperties.documentInfo.docLocale = config.docLocale;
         DocProperties.documentInfo.originalDocId = config.originalDocId;
         DocProperties.documentInfo.docMarkingLanguage = config.docMarkingLanguage;
+        DocProperties.documentInfo.docSubType = config.docSubType;
+        DocProperties.documentInfo.docEditorType = config.docEditorType;
     },
 
     loadLanguageConf: function(config, callback) {
@@ -111,7 +114,7 @@ Ext.define('LIME.controller.Language', {
         });
         var docType =  Ext.isString(config.alternateDocType) ? config.alternateDocType : config.docType;
         Ext.defer(function() { // TODO: check and remove defer
-            me.getStore('LanguagesPlugin').loadPluginData(me.application, docType, config.docLocale);
+            me.getStore('LanguagesPlugin').loadPluginData(me.application, docType, config.docSubType, config.docEditorType, config.docLocale);
         }, 200, me);
     },
 

@@ -74,10 +74,21 @@ Ext.define('LIME.view.modal.NewDocument', {
         var form = this.down('form').getForm();
         if (!form.isValid())
             return null;
-        return form.getValues(false, false, false, true);
+        var formData =  form.getValues(false, false, false, true);
+        formData["docEditorType"] = this.editorType;
+        formData["docSubType"] = this.subType;
+        return formData;
     },
 
     initComponent: function() {
+        /**
+         *  _KOH_2016-04-05 :
+         * subType and editorType are set in the select event
+         * of the doctype selector combobox
+         * and returned as part of form data via getData()
+         */
+        this.subType = "";
+        this.editorType = "";
         this.title = Locale.strings.newDocument,
         this.items = [{
             // Form to type username and password (including buttons)

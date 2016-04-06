@@ -177,7 +177,7 @@ Ext.define('LIME.Strings', {
             "unmark": "Unmark",
             "unmarkElement": "Unmark this element",
             "unmarkElementChildren": "Unmark this element and its children",
-            "type_debateReport": "DC Document"
+            "type_debateReport-dc": "DC Document"
         },
         "it": {
             "error": "Errore",

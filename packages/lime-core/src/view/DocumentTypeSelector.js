@@ -54,7 +54,7 @@ Ext.define('LIME.view.DocumentTypeSelector', {
     name: 'docType',
     //valueField: 'code',
     /**
-     * _KOH_05-04-2015:
+     * _KOH_2016-04-05:
      * set the localized name as the displayField,
      * see DocumentTypes store.
      */
@@ -72,6 +72,11 @@ Ext.define('LIME.view.DocumentTypeSelector', {
         },
         beforedestroy: function(cmp){
             cmp.hideAction(cmp);
+        },
+        select: function(cmp, record){
+            var wnd =  cmp.up("window");
+            wnd.editorType = record.data["editorType"];
+            wnd.subType  =record.data["subType"];
         }
     },
     allowBlank: false,

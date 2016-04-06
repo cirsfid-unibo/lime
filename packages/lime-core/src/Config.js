@@ -214,7 +214,7 @@ Ext.define('LIME.Config', {
     },
 
     /**
-     * _KOH_05-04-2015 :
+     * _KOH_2016-04-05 :
      * In the new document dialog, the document type names shown
      * are literal document types as they are in an Akoma-Ntoso document.
      * In live scenarios an organization typically uses a different nomenclature
@@ -231,7 +231,7 @@ Ext.define('LIME.Config', {
             var arrDocsByLang = this.pluginStructure[lang].docTypes;
             if (arrDocsByLang != false) {
                 for (var i = 0; i < arrDocsByLang.length; i++) {
-                    var objName = arrDocsByLang[i].name;
+                    var objName = arrDocsByLang[i].editorType;
                     if ("type_" + objName in Locale.strings) {
                         arrDocsByLang[i].i18n_name = Locale.strings["type_" + objName];
                     } else {
