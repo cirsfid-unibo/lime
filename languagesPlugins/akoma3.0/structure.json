@@ -4,7 +4,7 @@
 	"docTypes": [
 		{
 			"name": "debateReport",
-			"subName": "dc",
+			"subType": "dc",
 			"editorType": "debateReport-dc",
 			"locales": [
 				{
