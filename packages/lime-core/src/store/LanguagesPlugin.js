@@ -105,18 +105,17 @@ Ext.define('LIME.store.LanguagesPlugin', {
         }]
     },
 
-    /* Initially empty, loaded dinamically */
     dataObjects : {},
 
-    requestSyncLoader: function(reqObjects) {
+    requestSyncLoader: function(callback, reqObjects) {
         var me = this, app = this.app;
         Ext.each(reqObjects, function(obj) {
             me.dataObjects[obj.name] = Utilities.mergeJson(me.dataObjects[obj.name], obj.content, Utilities.beforeMerge);
         });
 
-        me.fireEvent('filesloaded', me.dataObjects, me.styleUrls.map(function(el) {return el.url;}));
         me.lastConfiguration.loaded = true;
         app.fireEvent(Statics.eventsNames.progressUpdate, Locale.strings.progressBar.configurationFiles);
+        callback(me.dataObjects, me.styleUrls.map(function(el) {return el.url;}));
     },
 
     /**
@@ -127,15 +126,16 @@ Ext.define('LIME.store.LanguagesPlugin', {
      * the directory structure. This function is event based and simulate
      * a series of synchronous requests (because order matters!).
      */
-    loadPluginData : function(app, docType, docLocale) {
+    loadPluginData : function(app, docType, docLocale, callback) {
         var me = this;
         /**
          * If the last loaded configuration is the same of the passed configuration
          * all files is already loaded
          */
-        if (this.lastConfiguration.markingLanguage == Config.getLanguage() && this.lastConfiguration.loaded && this.lastConfiguration.docType == docType && this.lastConfiguration.docLocale == docLocale) {
-            this.fireEvent('filesloaded', this.dataObjects);
-            return;
+        if (this.lastConfiguration.markingLanguage == Config.getLanguage()
+            && this.lastConfiguration.loaded && this.lastConfiguration.docType == docType
+            && this.lastConfiguration.docLocale == docLocale) {
+            return callback(this.dataObjects);
         }
 
         /* For each directory retrieve all the needed json files starting from the languageRoot */
@@ -210,13 +210,14 @@ Ext.define('LIME.store.LanguagesPlugin', {
             }
         }
         me.reqUrls = reqUrls;
-        Server.filterUrls(styleUrls, false, me.setStyleAndRequestFiles, me.setStyleAndRequestFiles, me);
+        Server.filterUrls(styleUrls, false, me.setStyleAndRequestFiles.bind(me, callback), me.setStyleAndRequestFiles.bind(me, callback), me);
     },
 
-    setStyleAndRequestFiles: function(styleUrls) {
-        var me = this;
-        me.styleUrls = styleUrls;
-        Server.filterUrls(me.reqUrls, true, me.requestSyncLoader, me.requestSyncLoader, me);
+    setStyleAndRequestFiles: function(callback, styleUrls) {
+        this.styleUrls = styleUrls;
+        Server.filterUrls(this.reqUrls, true, 
+                this.requestSyncLoader.bind(this, callback), 
+                this.requestSyncLoader.bind(this, callback), this);
     },
 
     // Get the new empty document template for the current configuration.
