@@ -80,9 +80,12 @@ Ext.define('AknMetadata.newMeta.LifecycleTab', {
             {
                 text: Locale.getString('type', 'akn-metadata'),
                 dataIndex: 'type',
+                renderer: function (r) { return Locale.getString(r, 'akn-metadata')},
                 editor: {
                     xtype: 'combo',
-                    store: ['generation', 'amendment', 'repeal'],
+                    store: ['generation', 'amendment', 'repeal'].map(function(name) {
+                        return [name, Locale.getString(name, 'akn-metadata')];
+                    }),
                     forceSelection: true
                 }
             }

@@ -92,22 +92,6 @@ Ext.define('AknMetadata.newMeta.DocumentTab', {
         boxLabel: Locale.getString('authoritative', 'akn-metadata'),
         bind: '{document.authoritative}'
     }, {
-        xtype: 'panel',
-        title: Locale.getString('publication', 'akn-metadata'),
-        items: [{
-            xtype: 'datefield',
-            fieldLabel: Locale.getString('date', 'akn-metadata'),
-            bind: '{document.pubblicationDate}'
-        },{
-            xtype: 'textfield',
-            fieldLabel: Locale.getString('name'),
-            bind: '{document.pubblicationName}'
-        },{
-            xtype: 'textfield',
-            fieldLabel: Locale.getString('number', 'akn-metadata'),
-            bind: '{document.pubblicationNumber}'
-        }]
-    }, {
         xtype: 'metadataeditortable',
         title: Locale.getString('aliases', 'akn-metadata'),
         hideHeaders: true,
