@@ -600,7 +600,8 @@ Ext.define('AknAutomaticMarkup.Controller', {
             markButtonDocDate = DocProperties.getChildConfigByName(button,"docDate"),
             markButton = DocProperties.getChildConfigByName(button, "date") ||
                          DocProperties.getFirstButtonByName("date");
-            attributeName = markButton.rules.askFor.date1.insert.attribute.name;
+            attributeName = markButton.rules.askFor.date1.insert.attribute.name,
+            markings = [];
 
         if (dates) {
             dates = Ext.Object.getValues(dates).sort(function(a,b) {
@@ -622,9 +623,13 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 markedNodes = me.searchInlinesToMark(node, dateParsed.match.trim(), config);
                 markedNodes.forEach(function (node) {
                     Ext.GlobalEvents.fireEvent('nodeAttributesChanged', node);
+                    markings.push({node: node, data:dateParsed});
                 })
             }, me);
         }
+        // Return the list of marked elements in order to be able to 
+        // add custom behaviour when overriding this function
+        return markings;
     },
 
     parseEnactingFormula: function(data, node, button) {
