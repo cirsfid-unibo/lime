@@ -47,7 +47,9 @@
         { "path": "lib/plupload/js/plupload.html5.js" },
         { "path": "lib/plupload/js/plupload.flash.js" },
         { "path": "lib/plupload/js/plupload.silverlight.js" },
-        { "path": "lib/wgxpath/wgxpath.js" }
+        { "path": "lib/wgxpath/wgxpath.js" },
+        { "path": "lib/stringPolyfill/startswith.js" },
+        { "path": "lib/stringPolyfill/endswith.js" }
     ],
     "resources": [
         "lib",
