@@ -44,35 +44,39 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-describe ('AknMain.Reference', function () {
-    it ('"" -> Unexpected empty string: ""', function () {
-        var fn = function () { AknMain.Reference.parse(''); };
-        expect(fn).toThrowError('Unexpected empty string: ""');
+describe ('AknMain.IdGenerator', function () {
+    it ('partListToId: without arguments', function () {
+        var id = AknMain.IdGenerator.partListToId();
+        expect(id).toEqual('');
     });
 
-    it ('"#art_5" -> Internel ref, only fragment', function () {
-        var refStr = '#art_5';
-        var ref = AknMain.Reference.parse(refStr);
-        expect(ref.internal).toEqual(true);
-        expect(ref.id).toEqual('art_5');
+    it ('partListToId: passing empty list', function () {
+        var id = AknMain.IdGenerator.partListToId([]);
+        expect(id).toEqual('');
     });
 
-    it ('"/akn/ke/act/decree/MinetryForeightAffairs/2005-07-12/3 -> without fragment"', function () {
-        var refStr = '/akn/ke/act/decree/MinetryForeightAffairs/2005-07-12/3';
-        var ref = AknMain.Reference.parse(refStr);
-        expect(ref.internal).toEqual(false);
-        expect(ref.id).toEqual(undefined);
+    it ('partListToId: single part abbr', function () {
+        var id = AknMain.IdGenerator.partListToId([{article:3}]);
+        expect(id).toEqual('art_3');
     });
 
-    it ('"/akn/it/act/2015-07-21/ita@/main#sec_10"', function () {
-        var refStr = '/akn/it/act/2015-07-21/ita@/main#sec_10';
-        var ref = AknMain.Reference.parse(refStr);
-        expect(ref.internal).toEqual(false);
-        expect(ref.id).toEqual('sec_10');
-        // should be work level without version part
-        expect(ref.ref()).toEqual('/akn/it/act/2015-07-21/main#sec_10');
+    it ('partListToId: single part without abbr', function () {
+        var id = AknMain.IdGenerator.partListToId([{item:'b'}]);
+        expect(id).toEqual('item_b');
+    });
+
+    it ('partListToId: two parts', function () {
+        var id = AknMain.IdGenerator.partListToId([{article:'4-bis'}, {paragraph: '2'}]);
+        expect(id).toEqual('art_4-bis__para_2');
+    });
+
+    it ('partListToId: more parts', function () {
+        var id = AknMain.IdGenerator.partListToId([{chapter:'IV'}, {article:10}, {paragraph: 3}, {list: 1}, {item:'b)'}]);
+        expect(id).toEqual('chp_IV__art_10__para_3__list_1__item_b)');
+    });
+
+    it ('partListToId: more parts with num', function () {
+        var id = AknMain.IdGenerator.partListToId([{article:2}, {paragraph: 10}, {item:'a'}, {num:3}]);
+        expect(id).toEqual('art_2__para_10__item_a__num_3');
     });
 });
-
-
-
