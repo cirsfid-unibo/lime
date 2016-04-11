@@ -88,8 +88,10 @@ Ext.define('AknMetadata.sync.ImportController', {
         } catch(e) {
             console.warn('Exception parsing xml: ', e);
         }
-        if (!metaNodes.length)
-            metaNodes = AknMain.xml.Document.parse(this.generateMetaXml(config), 'akn').select('//akn:meta');
+        if (!metaNodes.length) {
+            var xml = this.generateMetaXml(config);
+            metaNodes = xml && AknMain.xml.Document.parse(xml, 'akn').select('//akn:meta') || [];
+        }
 
         return metaNodes;
     },

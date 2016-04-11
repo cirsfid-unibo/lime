@@ -54,6 +54,7 @@ Ext.define('AknMetadata.newMeta.Editor', {
         'AknMetadata.newMeta.Model',
         'AknMetadata.newMeta.Controller',
         'AknMetadata.newMeta.DocumentTab',
+        'AknMetadata.newMeta.PublicationTab',
         'AknMetadata.newMeta.LifecycleTab',
         'AknMetadata.newMeta.WorkflowTab',
         'AknMetadata.newMeta.ClassificationTab',
@@ -78,6 +79,7 @@ Ext.define('AknMetadata.newMeta.Editor', {
 
     items: [
         { xtype: 'akn-metadata-tab-document' },
+        { xtype: 'akn-metadata-tab-publication' },
         { xtype: 'akn-metadata-tab-lifecycle' },
         { xtype: 'akn-metadata-tab-workflow' },
         { xtype: 'akn-metadata-tab-classification' },

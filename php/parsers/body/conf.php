@@ -50,9 +50,9 @@ $rules = Array(
     "roman" => "\b[IVX]+\b",
     "number" => "\d+|{{roman}}+|(U|Ú)NICO",
     "book" => "/(?<![\w\.\,] )(?P<num>({{bookList}})\s*({{number}}\s*[º°\.]*))/",
-    "title" => "/(?<![\w\.\,] )(?P<num>({{titleList}})\s*({{number}}))/",
+    "title" => "/(?<![\w\.\,] )(?P<num>({{titleList}})\s*({{number}})([ -]*{{latino}})?)/",
     "section" => "/(?<![\w\.\,] )(?P<num>({{sectionList}})\s*({{number}}\s*[º°\.]*))/",
-    "chapter" => "/(?<![\w\.\,] )(?P<num>({{chapterList}})\s*({{number}}))/",
+    "chapter" => "/(?<![\w\.\,] )(?P<num>({{chapterList}})\s*({{number}})([ -]*{{latino}})?)/",
     "article" => "/(?<![\w\.\,] )(?P<num>({{articleList}})\s*({{number}}\s*[º°\.]*)([ -]*{{latino}})?)\s*({{heading}})?/",
 
     "heading" => "\([A-Z][^\(^\)]+\)\.?",

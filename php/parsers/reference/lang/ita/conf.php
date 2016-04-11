@@ -133,6 +133,26 @@ $rules = Array(
 						 "numero",
 						 "numeri",
 						 ),
+
+	// string not regex
+	"partition_type" => Array("article" 	=> Array("articolo",
+													 "articoli",
+													 "art.",
+													 "artt.",
+													 ),
+
+	                          "paragraph" 	=> Array("comma",
+	                          	                     "commi",
+		                       						),
+
+	                          "item"		=> Array("lettera",
+						 							 "lettere",
+						 							 ),
+
+	                          "num"			=> Array("numero",
+						 							 "numeri",
+						 							 ),
+		                     ),
 );
 
 ?>

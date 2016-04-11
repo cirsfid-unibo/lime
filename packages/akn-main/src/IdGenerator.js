@@ -180,5 +180,14 @@ Ext.define('AknMain.IdGenerator', {
             }
         }
         return elNum;
+    },
+
+    partListToId: function(list) {
+        if (!list) return '';
+        return list.map(function(partObj) {
+            var part = Object.keys(partObj)[0],
+                name = this.abbreviations[part] || part;
+            return name+this.numSeparator+partObj[part];
+        }, this).join(this.prefixSeparator);
     }
 });

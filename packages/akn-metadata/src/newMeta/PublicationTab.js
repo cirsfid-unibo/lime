@@ -44,66 +44,27 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('AknMetadata.newMeta.DocumentTab', {
+Ext.define('AknMetadata.newMeta.PublicationTab', {
     extend: 'AknMetadata.newMeta.EditorTab',
-    xtype: 'akn-metadata-tab-document',
+    xtype: 'akn-metadata-tab-publication',
     requires: [
         'AknMetadata.newMeta.EditorTab',
         'AknMetadata.newMeta.EditorTable'
     ],
-    title: Locale.getString('document', 'akn-metadata'),
-    glyph: 'xf0f6@FontAwesome',
+    title: Locale.getString('publication', 'akn-metadata'),
+    glyph: 'xf1ea@FontAwesome',
+
     items: [{
         xtype: 'datefield',
         fieldLabel: Locale.getString('date', 'akn-metadata'),
-        bind: '{document.date}'
-    }, {
-        xtype: 'datefield',
-        fieldLabel: Locale.getString('versionDate', 'akn-metadata'),
-        bind: '{document.version}'
-    }, {
+        bind: '{document.pubblicationDate}'
+    },{
+        xtype: 'textfield',
+        fieldLabel: Locale.getString('name'),
+        bind: '{document.pubblicationName}'
+    },{
         xtype: 'textfield',
         fieldLabel: Locale.getString('number', 'akn-metadata'),
-        bind: '{document.name}'
-    }, {
-        xtype: 'combobox',
-        store: 'Nationalities',
-        displayField: 'name',
-        valueField: 'alpha-2',
-        fieldLabel: Locale.getString('nation', 'akn-metadata'),
-        bind: '{document.country}'
-    }, {
-        xtype: 'combobox',
-        store: 'DocumentLanguages',
-        displayField: 'name',
-        valueField: 'code',
-        fieldLabel: Locale.getString('language', 'akn-metadata'),
-        bind: '{document.language}'
-    }, {
-        xtype: 'textfield',
-        fieldLabel: Locale.getString('author', 'akn-metadata'),
-        bind: '{document.author}'
-    }, {
-        xtype: 'checkboxfield',
-        boxLabel: Locale.getString('prescriptive', 'akn-metadata'),
-        bind: '{document.prescriptive}'
-    }, {
-        xtype: 'checkboxfield',
-        boxLabel: Locale.getString('authoritative', 'akn-metadata'),
-        bind: '{document.authoritative}'
-    }, {
-        xtype: 'metadataeditortable',
-        title: Locale.getString('aliases', 'akn-metadata'),
-        hideHeaders: true,
-        bind: {
-            store: '{document.aliases}'
-        },
-        columns: [
-            { text: 'Value', dataIndex: 'value', flex: 1, editor: 'textfield', allowBlank: false }
-        ],
-        custom: {
-            level: function () { return 'work'; },
-            name: function () { return 'alias'; }
-        }
+        bind: '{document.pubblicationNumber}'
     }]
 });

@@ -87,7 +87,10 @@ Ext.define('AknMetadata.Strings', {
             "referenceWidgetTitle": "Reference data",
             "docSubType": "Doc. SubType",
             "fragment": "Fragment",
-            "publication": "Publication"
+            "publication": "Publication",
+            "generation": "Generation",
+            "amendment": "Amendment",
+            "repeal": "Repeal"
         },
         "it": {
             "title": "Editor metadati",
@@ -102,7 +105,7 @@ Ext.define('AknMetadata.Strings', {
             "author": "Autore",
             "prescriptive": "Prescrittivo",
             "authoritative": "Autorevole",
-            "aliases": "Pseodomini",
+            "aliases": "Alias",
             "addItem": "Aggiungi nuovo elemento",
             "removeItem": "Elimina gli elementi selezionati",
             "events": "Eventi",
@@ -138,7 +141,10 @@ Ext.define('AknMetadata.Strings', {
             "fragment": "Frammento",
             "internal": "Interno",
             "external": "Esterno",
-            "publication": "Pubblicazione"
+            "publication": "Pubblicazione",
+            "generation": "Generazione",
+            "amendment": "Emendamento",
+            "repeal": "Abrogazione"
         },
         "es": {
             "title": "Editor de metadatos",

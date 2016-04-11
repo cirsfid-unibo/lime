@@ -146,7 +146,6 @@ Ext.define('AknModsMarker.Controller', {
     showModInfo: function(node) {
         var mod = this.getModFromNode(node, 'passive');
         if(!mod || !mod.modElement) return;
-
         switch(mod.textMod.get('modType')) {
             case "substitution":
                 if(mod.modElement.get('type') == 'new')
@@ -511,7 +510,7 @@ Ext.define('AknModsMarker.Controller', {
 
     addModContextMenuItem: function(node, menu) {
         if(menu.down("*[name=modType]")) return;
-
+        node = this.ensureModNode(node);
         var me = this,
             mod = this.getModFromNode(node, 'active'),
             modType = mod && mod.textMod.get('modType');
@@ -625,6 +624,7 @@ Ext.define('AknModsMarker.Controller', {
 
             return posMenu;
         };
+        me.addModContextMenuItem(node, menu);
         var markedParent = DomUtils.getFirstMarkedAncestor(node.parentNode);
         if (!markedParent || DomUtils.getElementNameByNode(markedParent) != 'mod' ) {
             me.addExternalContextMenuItems(menu, node, name, markedParent);
@@ -684,7 +684,7 @@ Ext.define('AknModsMarker.Controller', {
 
     getModFromElId: function(id, amendmentType) {
         var mod = this.modsMap[id];
-        if (!mod) return;
+        if (!mod || mod.get('amendmentType') != amendmentType) return;
         var modEls = mod.getSourceDestinations()
                         .concat(mod.getTextualChanges())
                         .filter(function(modEl) {
@@ -780,14 +780,31 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     onModTypeSelected: function(cmp, checked) {
-        var me = this;
-        if(checked && cmp.refNode) {
-            var mod = me.getModFromNode(cmp.refNode);
+        var me = this,
+            node = me.ensureModNode(cmp.refNode, true);
+        if(checked && node) {
+            var mod = me.getModFromNode(node);
             if (mod && mod.textMod.get('modType') == cmp.modType) return;
-            me.addModMetadata(cmp.refNode, cmp.modType);
+            me.addModMetadata(node, cmp.modType);
         } else if(!checked) {
-            me.setModDataAttributes(cmp.refNode, false);
+            me.setModDataAttributes(node, false);
         }
+    },
+
+    ensureModNode: function(node, wrapWithMod) {
+        if (DomUtils.getNameByNode(node) == 'mod') return node;
+        var parent = DomUtils.getFirstMarkedAncestor(node.parentNode);
+        if (DomUtils.getNameByNode(parent) == 'mod') return parent;
+        if (!wrapWithMod) return node;
+        var mod = node.ownerDocument.createElement('div');
+        node.parentNode.insertBefore(mod, node);
+        mod.appendChild(node);
+        this.getController("Marker").autoWrap(DocProperties.getFirstButtonByName('mod'), {
+            silent : true,
+            noEvent : true,
+            nodes : [mod]
+        });
+        return mod;
     },
 
     addModMetadata: function(node, type) {

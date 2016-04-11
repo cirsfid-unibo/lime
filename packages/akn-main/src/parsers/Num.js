@@ -52,14 +52,13 @@
 // "Title IV" -> "IV"
 Ext.define('AknMain.parsers.Num', {
     singleton: true,
-    
-    numReg: new RegExp(/(?:[\u00C0-\u1FFF\u2C00-\uD7FF\w]+\W*\s+)*((\w+[\.)\s]*)+)/),
+
+    numReg: new RegExp(/(?:[\u00C0-\u1FFF\u2C00-\uD7FF\w]+\W*\s+)?((?:\w+[\.)]?)+(?:[- ]+\w{3,10}){0,1})/),
     romanReg: new RegExp(/M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3})/),
 
     normalize: function(str) {
         var normalized = "",
             numMatch = str.match(this.numReg);
-
         if ( numMatch && numMatch.length ) {
             normalized = numMatch[1];
         }

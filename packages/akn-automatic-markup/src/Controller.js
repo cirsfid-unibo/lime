@@ -47,7 +47,7 @@
 Ext.define('AknAutomaticMarkup.Controller', {
     extend : 'Ext.app.Controller',
 
-    requires: ['AknMain.Reference', 'AknMain.LangProp'],
+    requires: ['AknMain.Reference', 'AknMain.LangProp', 'AknMain.IdGenerator'],
 
     config : {
         pluginName : 'akn-automatic-markup'
@@ -600,7 +600,8 @@ Ext.define('AknAutomaticMarkup.Controller', {
             markButtonDocDate = DocProperties.getChildConfigByName(button,"docDate"),
             markButton = DocProperties.getChildConfigByName(button, "date") ||
                          DocProperties.getFirstButtonByName("date");
-            attributeName = markButton.rules.askFor.date1.insert.attribute.name;
+            attributeName = markButton.rules.askFor.date1.insert.attribute.name,
+            markings = [];
 
         if (dates) {
             dates = Ext.Object.getValues(dates).sort(function(a,b) {
@@ -622,9 +623,13 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 markedNodes = me.searchInlinesToMark(node, dateParsed.match.trim(), config);
                 markedNodes.forEach(function (node) {
                     Ext.GlobalEvents.fireEvent('nodeAttributesChanged', node);
+                    markings.push({node: node, data:dateParsed});
                 })
             }, me);
         }
+        // Return the list of marked elements in order to be able to 
+        // add custom behaviour when overriding this function
+        return markings;
     },
 
     parseEnactingFormula: function(data, node, button) {
@@ -1904,7 +1909,8 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
     parseReference: function(data, callback) {
         var me = this, editor = me.getController("Editor"), attrs = [],
-            body = editor.getBody(), nodesToMark = [], button = DocProperties.getFirstButtonByName('ref');
+            body = editor.getBody(), nodesToMark = [],
+            button = DocProperties.getFirstButtonByName('ref');
 
         var todayDate = Ext.Date.format(new Date(), 'Y-m-d');
         
@@ -1959,11 +1965,21 @@ Ext.define('AknAutomaticMarkup.Controller', {
             }
         };
 
+        var numDataToId = function(data) {
+            if (!Array.isArray(data)) return data;
+            data = data.map(function(part) {
+                for (var name in part) {
+                    part[name] = part[name][0];
+                }
+                return part;
+            });
+            return AknMain.IdGenerator.partListToId(data);
+        };
+
         var getRefHref = function(refData) {
-            //console.log(refData);
             var ref = AknMain.Reference.empty();
             ref.internal = (refData.num && !refData.date && !refData.docnum && !refData.type) ? true : false;
-            ref.id = refData.fragment || refData.num;
+            ref.id = numDataToId(refData.num) || refData.fragment;
             ref.uri.country = DocProperties.documentInfo.docLocale;
             ref.uri.type = 'act';
             ref.uri.name = refData.docnum;
@@ -1979,36 +1995,80 @@ Ext.define('AknAutomaticMarkup.Controller', {
             return href;
         };
 
+        var wrapRefStr = function(str, root, passControl) {
+            var nodes = [],
+                ranges = DomUtils.findText(str, root);
+            if ( !ranges.length ) return nodes;
+
+            if (passControl) {
+                ranges = ranges.filter(function(range) {
+                    return me.canPassNode(range.startContainer.firstChild,
+                                            button.id, [DomUtils.tempParsingClass]);
+                });
+            }
+
+            ranges.forEach(function(range) {
+                var span = range.startContainer.ownerDocument.createElement("span");
+                span.setAttribute("class", DomUtils.tempParsingClass);
+                try {
+                    range.surroundContents(span);
+                    nodes.push(span);
+                } catch(e) {
+                    Ext.log({level: "error"}, e);
+                }
+            });
+            return nodes;
+        };
+
+        var isMref = function(obj) {
+            if (!obj.num || obj.num.length != 1) return false;
+            var partName = Object.keys(obj.num[0]);
+            return Array.isArray(obj.num[0][partName]) && obj.num[0][partName].length > 1;
+        };
+
+        var addNodesToMark = function(nodes, href) {
+            nodes.forEach(function(node) {
+                attrs.push({ name: 'href', value: href });
+                nodesToMark.push(node);
+            });
+        };
+
+        var wrapMrefRefs = function(obj, node) {
+            var part = obj.num[0],
+                name = Object.keys(part)[0];
+
+            part[name].sort(function(a, b) {
+                return b.length - a.length;
+            });
+            part[name].forEach(function(num) {
+                var refNodes = wrapRefStr(num, node, true),
+                    refData = Ext.clone(obj),
+                    newNum = {};
+
+                newNum[name] = [num];
+                refData.num = [newNum];
+                addNodesToMark(refNodes, getRefHref(refData));
+            });
+        };
+
+        var mrefBtn = DocProperties.getFirstButtonByName('mref');
         var next = function(index) {
             index = index || total-nums;
             var obj = filtredData[index];
 
             try {
-                var matchStr = obj.ref;
-                var ranges = DomUtils.findText(matchStr, body);
-                href = getRefHref(obj);
-                //console.log(nums, matchStr, ranges.length);
-                if ( ranges.length ) {
-                    Ext.each(ranges, function(range) {
-                        if(!me.canPassNode(range.startContainer.firstChild, button.id, [DomUtils.tempParsingClass])){
-                            // console.log(matchStr, "cannot pass");
-                            return;
-                        }
+                var nodes = wrapRefStr(obj.ref, body, true);
+                if (Array.isArray(obj.num))
+                    obj.num.reverse();
 
-                        var span = range.startContainer.ownerDocument.createElement("span");
-                        span.setAttribute("class", DomUtils.tempParsingClass);
-                        try {
-                            range.surroundContents(span);
-                            attrs.push({ name: 'href', value: href });
-                            // console.log(matchStr, span);
-                            nodesToMark.push(span);
-                        } catch(e) {
-                            Ext.log({level: "error"}, e);
-                        }
-                    });
+                if (isMref(obj) && mrefBtn) {
+                    me.requestMarkup(mrefBtn, {silent:true, noEvent : true, nodes:nodes});
+                    nodes.forEach(wrapMrefRefs.bind(me, obj));
+                } else {
+                    addNodesToMark(nodes, getRefHref(obj));
                 }
             } catch(e) {
-                console.warn('Error finding reference '+ matchStr);
+                console.warn('Error finding or wrapping reference '+ obj.ref);
                 console.warn(e);
             }
 
