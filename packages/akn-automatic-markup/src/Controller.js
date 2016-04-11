@@ -47,7 +47,7 @@
 Ext.define('AknAutomaticMarkup.Controller', {
     extend : 'Ext.app.Controller',
 
-    requires: ['AknMain.Reference', 'AknMain.LangProp'],
+    requires: ['AknMain.Reference', 'AknMain.LangProp', 'AknMain.IdGenerator'],
 
     config : {
         pluginName : 'akn-automatic-markup'
@@ -1964,11 +1964,22 @@ Ext.define('AknAutomaticMarkup.Controller', {
             }
         };
 
+        var numDataToId = function(data) {
+            if (!Array.isArray(data)) return data;
+            data.reverse();
+            data = data.map(function(part) {
+                for (var name in part) {
+                    part[name] = part[name][0]; //TODO: support mref
+                }
+                return part;
+            });
+            return AknMain.IdGenerator.partListToId(data);
+        };
+
         var getRefHref = function(refData) {
-            //console.log(refData);
             var ref = AknMain.Reference.empty();
             ref.internal = (refData.num && !refData.date && !refData.docnum && !refData.type) ? true : false;
-            ref.id = refData.fragment || refData.num;
+            ref.id = numDataToId(refData.num) || refData.fragment;
             ref.uri.country = DocProperties.documentInfo.docLocale;
             ref.uri.type = 'act';
             ref.uri.name = refData.docnum;
