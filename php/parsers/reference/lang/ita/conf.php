@@ -134,10 +134,11 @@ $rules = Array(
 						 "numeri",
 						 ),
 
+	// string not regex
 	"partition_type" => Array("article" 	=> Array("articolo",
 													 "articoli",
-													 "art\.",
-													 "artt\.",
+													 "art.",
+													 "artt.",
 													 ),
 
 	                          "paragraph" 	=> Array("comma",
