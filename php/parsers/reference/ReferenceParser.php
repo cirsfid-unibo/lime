@@ -79,12 +79,6 @@ class ReferenceParser {
 							"end" => $offset+strlen($match),
 							"regex" => $ref,
 							);
-						
-						if (array_key_exists("fragment", $result)) {
-							if(is_array($result["fragment"])) {
-								$entry["fragment"] = $result["fragment"][$i][0];
-							}
-						}
 
 						if (array_key_exists("type", $result)) {
 							if(is_array($result["type"])) {
@@ -93,16 +87,22 @@ class ReferenceParser {
 						}
 						
 						if (array_key_exists("num", $result)) {
-							//$entry["num"] = $result["num"][$i][0];
 
-							$fragment = $result["fragment"][$i][0];
-							foreach (array_reverse($this->parserRules['partition_type']) as $key => $list) {
-								for($j=0; $j<count($list); $j++) {
-									$sub_fragment = explode($list[$j], $fragment);
-									if (count($sub_fragment) > 1) {
-										$result_array = Array($key => array_map('trim', array_filter(preg_split('/(?: +e +|, +)/', $sub_fragment[1]))));
-										$entry["num"][] = $result_array;
-										$fragment = $sub_fragment[0];
+							if (!array_key_exists("fragment", $result)) {
+								$entry["num"] = $result["num"][$i][0];
+
+							} else {
+
+								$fragment = $result["fragment"][$i][0];
+								$entry["fragment"] = $fragment;				
+								foreach (array_reverse($this->parserRules['partition_type']) as $key => $list) {
+									for($j=0; $j<count($list); $j++) {
+										$sub_fragment = explode($list[$j], $fragment);
+										if (count($sub_fragment) > 1) {
+											$result_array = Array($key => array_map('trim', array_filter(preg_split('/(?: +e +|, +)/', $sub_fragment[1]))));
+											$entry["num"][] = $result_array;
+											$fragment = $sub_fragment[0];
+										}
 									}
 								}
 							}
