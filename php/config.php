@@ -59,20 +59,8 @@
     // the xslt that translates akomantoso2 to xhtml
     define('AKN2_TO_HTML', XSLT_BASE_DIR . 'Akn20ToXhtml.xsl');
 
-    // the xslt that translates akomantoso2 to a package for ebook
-    define('AKN20_TO_XHTML', XSLT_BASE_DIR . 'AknToXhtml20.xsl');
-
-    // the xslt that translates akomantoso2 to a package for ebook
-    define('AKN30_TO_XHTML', XSLT_BASE_DIR . 'AknToXhtml30.xsl');
-
     // the xslt that translates akomantoso3 to xhtml
     define('AKN3_TO_HTML', XSLT_BASE_DIR . 'Akn30ToXhtml.xsl');
-
-    // the xslt that translates akomantoso2 to xhtml italian
-    define('AKN2_TO_HTML_ITA', XSLT_BASE_DIR . 'Akn20ToXhtml_ita_senato.xsl');
-
-    // the xslt that translates akomantoso3 to xhtml italian
-    define('AKN3_TO_HTML_ITA', XSLT_BASE_DIR . 'Akn30ToXhtml_ita_senato.xsl');
 
     // the xslt that cleans an abiword converted document's html up
     define('CLEAN_CONVERTED_HTML', XSLT_BASE_DIR . 'CleanConvertedHtml.xsl');
@@ -103,15 +91,3 @@
 
     // the name of pdf files
     define('PDFFILENAME', 'final.pdf');
-
-    // the name of scf files
-    define('SCF_FILENAME', 'ebook-scf.xml');
-
-    // the name of epub files
-    define('EPUBFILENAME', 'ebook.epub');
-
-    // the scriba command
-    define('SCRIBA_COMMAND', "java -Xmx1024m -jar ".realpath(dirname(__FILE__)."/lib/scriba/ScribaEBookMaker.jar")." -t EPUB -c %s -o %s");
-
-    // the absolute path of scf template
-    define('SCF_TEMPLATE', realpath(dirname(__FILE__)."/lib/scriba/scf-template.xml"));

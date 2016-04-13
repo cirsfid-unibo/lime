@@ -82,11 +82,6 @@
 				//	header("Content-Type: text/xml");
 					$this->_service = new Proxies_Services_XSLTTransform($this->_params);
 					break;
-				case 'AKN_TO_EPUB':
-					header("Content-Type: application/epub+zip");
-					header('Content-disposition: attachment; filename="document.epub"');
-					$this->_service = new Proxies_Services_AknToEpub($this->_params, true);
-					break;
 				case 'AKN_TO_HTML_DOWNLOAD':
 					header("Content-Type: text/html");
 					header('Content-disposition: attachment; filename="document.html"');

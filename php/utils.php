@@ -51,8 +51,6 @@ require_once('lib/Text_LanguageDetect/Text/LanguageDetect.php');
 function aknToHtml($input,$stylesheet=FALSE,$language=FALSE, $fullOutput=FALSE, $akn2xsl=FALSE, $akn3xsl=FALSE) {
 	
 	$AKN20NameSpace = "http://www.akomantoso.org/2.0";
-	$akn2xsl = ($akn2xsl) ? $akn2xsl : AKN20_TO_XHTML;
-	$akn3xsl = ($akn3xsl) ? $akn3xsl : AKN30_TO_XHTML;
 	$result; $xsl = new DOMDocument;
 	if (gettype($input) == "string") {
 		$doc = new DOMDocument();
@@ -63,7 +61,7 @@ function aknToHtml($input,$stylesheet=FALSE,$language=FALSE, $fullOutput=FALSE, 
 	
 	$uriNamespace = $doc -> documentElement -> lookupnamespaceURI(NULL);
 
-	if ($uriNamespace == $AKN20NameSpace) {
+	if ($uriNamespace == $AKN20NameSpace && $akn2xsl) {
 		$xsl -> load($akn2xsl);
 		$language = 'akoma2.0';
 		
