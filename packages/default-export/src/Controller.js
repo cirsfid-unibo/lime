@@ -44,6 +44,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+//TODO: add feedback, loading
 Ext.define('DefaultExport.Controller', {
     extend : 'Ext.app.Controller',
 
@@ -88,12 +89,7 @@ Ext.define('DefaultExport.Controller', {
             },
             'menu [name=exportEbookButton]': {
                 click: function() {
-                    //TODO: set the right title of document
-                    me.exportDocument(Server.getAjaxUrl(), {
-                        requestedService: Statics.services.aknToEpub,
-                        lang: DocProperties.getLang(),
-                        title: 'LIME ebook'
-                    });
+                    me.exportEbook(DocProperties.getDocId());
                 }
             }
         });
@@ -150,5 +146,12 @@ Ext.define('DefaultExport.Controller', {
             var parameters = Ext.Object.merge(params, {source: xml});
             downloadManager.fireEvent(downloadManager.eventActivate, url, parameters);
         }, {complete: true});
+    },
+
+    exportEbook: function(path) {
+        Server.aknToEpub(path, function (data) {
+            var blob = new Blob([data], {type: 'application/epub+zip'});
+            saveAs(blob, "document.epub");
+        });
     }
 });

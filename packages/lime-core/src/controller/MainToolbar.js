@@ -129,15 +129,9 @@ Ext.define('LIME.controller.MainToolbar', {
      * operations (replace editor's content and document's id)
      */
     createNewDocument : function(params){
-       var documentId = DocProperties.currentEditorFile.id,
-           config = {
+       var config = {
                docText: '<div> &nbsp; </div>'
            };
-       // If a document's id is not specified it means the document is saved
-       // in a temporary file on the server, we have to make the user save it with save as
-       if (Ext.isEmpty(documentId)) {
-           // TODO Dialog for save as
-       }
        // Load an empty document with empty id
        Ext.GlobalEvents.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(config, params));
     },
