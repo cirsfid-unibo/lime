@@ -115,13 +115,6 @@ Ext.define('LIME.DocProperties', {
 
     elementsConfig : {},
     elementsConfigByName: {},
-    /**
-     * @property {Object} currentEditorFile
-     * This object contains information about opened document
-     */
-    currentEditorFile : {
-        id : ''
-    },
 
     /**
      * Return the document's type
@@ -153,7 +146,6 @@ Ext.define('LIME.DocProperties', {
      */
     removeAll : function() {
         this.markedElements = {};
-        this.currentEditorFile.id = '';
     },
 
     setElementWidget: function(name, widget) {
@@ -254,7 +246,10 @@ Ext.define('LIME.DocProperties', {
      */
     setDocId : function(id) {
         this.documentInfo.docId = id;
-        this.currentEditorFile.id = id;
+    },
+
+    getDocId: function() {
+        return this.documentInfo.docId;
     },
 
     /**

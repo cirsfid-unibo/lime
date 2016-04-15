@@ -2538,13 +2538,9 @@ Ext.define('AknAutomaticMarkup.Controller', {
         var me = this;
         var fly = Ext.fly(node);
         var searchAfter = fly.last('.num,.heading,.subheading', true);
-        var headings = [], subheadings = [];
+        var headings = [];
         var hcontainerChild = fly.child('.hcontainer', true);
         var headingNode = fly.child('.heading', true) || Ext.DomHelper.createDom({
-            tag : 'span',
-            cls : DomUtils.tempParsingClass
-        });
-        var subHeadingNode = fly.child('.subheading', true) || Ext.DomHelper.createDom({
             tag : 'span',
             cls : DomUtils.tempParsingClass
         });
@@ -2552,20 +2548,10 @@ Ext.define('AknAutomaticMarkup.Controller', {
         if ( searchAfter ) {
             var iterNode = searchAfter;
             while ( iterNode.nextSibling && DomUtils.getNodeNameLower(iterNode.nextSibling) != 'div' ) {
-                if ( Ext.isEmpty(DomUtils.getTextOfNode(headingNode).trim()) ) {
-                    headingNode.appendChild(iterNode.nextSibling);
-                } else {
-                    subHeadingNode.appendChild(iterNode.nextSibling);
-                }
+                headingNode.appendChild(iterNode.nextSibling);
             }
             if ( !Ext.isEmpty(DomUtils.getTextOfNode(headingNode).trim()) ) {
                 Ext.fly(headingNode).insertAfter(searchAfter);
-                if ( !Ext.isEmpty(DomUtils.getTextOfNode(subHeadingNode).trim()) ) {
-                    Ext.fly(subHeadingNode).insertAfter(headingNode);
-                    subheadings.push(subHeadingNode);
-                } else {
-                    DomUtils.moveChildrenNodes(subheadings, headingNode, true);
-                }
                 headings.push(headingNode);
             } else {
                 while ( headingNode.firstChild ) {
@@ -2573,6 +2559,12 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 }
             }
         }
+
+        Ext.Array.toArray(headingNode.querySelectorAll('br')).forEach(function(node) {
+            node.parentNode.replaceChild(document.createTextNode(' '), node);
+        });
+
+        headingNode.normalize();
 
         var markup = function(nodes, name) {
             Ext.each(nodes, function(node) {
@@ -2589,7 +2581,6 @@ Ext.define('AknAutomaticMarkup.Controller', {
         }
 
         markup(headings, 'heading');
-        markup(subheadings, 'subheading');
     },
 
     addHcontainerHeadings: function(node) {

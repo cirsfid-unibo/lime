@@ -136,7 +136,6 @@ Ext.define('LIME.Statics', {
          htmlToPdf: 'HTML_TO_PDF',
          pdfExport: 'HTML_TO_PDF_DOWNLOAD',
          htmlExport: 'AKN_TO_HTML_DOWNLOAD',
-         aknToEpub: 'AKN_TO_EPUB',
          xsltTrasform: 'XSLT_TRANSFORM',
          fileToHtml: 'FILE_TO_HTML',
          filterUrls: 'FILTER_URLS'
