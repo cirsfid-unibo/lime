@@ -50,8 +50,8 @@
 
 Ext.define('Ext.ux.DownloadManager', {
     extend: 'Ext.AbstractPlugin',
-    
     alias: 'plugin.downloadmanager',
+    requires: ['Ext.form.action.StandardSubmit'],
     
     /**
      *@property {String}  eventActivate The name of event to fire for plugin activation
