@@ -214,9 +214,7 @@ Ext.define('LIME.Config', {
     },
     
     getDocTypesByLang: function(lang) {
-        console.log(" XXXX YYY lang ", lang);
         if (this.pluginStructure[lang]) {
-            console.log(" XXX YYY pluginStructure ", this.pluginStructure[lang]);
             var arrDocsByLang = this.pluginStructure[lang].docTypes;
             var langi18n = Locale.getLang();
             if (arrDocsByLang != false) {
