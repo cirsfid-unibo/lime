@@ -214,8 +214,25 @@ Ext.define('LIME.Config', {
     },
     
     getDocTypesByLang: function(lang) {
+        console.log(" XXXX YYY lang ", lang);
         if (this.pluginStructure[lang]) {
-            return this.pluginStructure[lang].docTypes;     
+            console.log(" XXX YYY pluginStructure ", this.pluginStructure[lang]);
+            var arrDocsByLang = this.pluginStructure[lang].docTypes;
+            var langi18n = Locale.getLang();
+            if (arrDocsByLang != false) {
+                for (var i=0; i < arrDocsByLang.length; i++) {
+                    if (arrDocsByLang[i].label) {
+                        if (langi18n in arrDocsByLang[i].label) {
+                            arrDocsByLang[i].i18n_name = arrDocsByLang[i].label[langi18n];
+                        } else {
+                            arrDocsByLang[i].i18n_name = arrDocsByLang[i].name;
+                        }
+                    } else {
+                        arrDocsByLang[i].i18n_name = arrDocsByLang[i].name;
+                    }
+                }
+            }
+            return arrDocsByLang;
         }
         return false;
     },
