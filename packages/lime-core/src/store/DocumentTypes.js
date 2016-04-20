@@ -50,5 +50,5 @@
  */
 Ext.define('LIME.store.DocumentTypes', {
     extend : 'Ext.data.Store',
-    fields : ['name']
+    fields : ['name', 'i18n_name']
 }); 

@@ -50,6 +50,10 @@
 			]
 		}, {
 			"name": "act",
+			"label": {
+				"en": "Act",
+				"it": "Legge"
+			},
 			"locales": [
 				{
 					"name": "ke"
