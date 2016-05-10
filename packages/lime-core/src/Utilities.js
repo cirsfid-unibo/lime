@@ -243,6 +243,12 @@ Ext.define('LIME.Utilities', {
         return Ext.isDate(date) && !isNaN(date.getTime());
     },
 
+    // Update date time calculating the time with timezone
+    fixDateTime: function(date) {
+        date.setTime(date.getTime() + date.getTimezoneOffset()*60*1000);
+        return date;
+    },
+
     // This function is ment to be overridden by some language package
     // Returns the ISO string of the date, removing the time
     normalizeDate: function (date) {
