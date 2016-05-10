@@ -120,7 +120,7 @@ class Proxies_Services_FileToHtml implements Proxies_Services_Interface
 						$output['success'] = true;
 						$output['marked'] = true;
 						$output['html'] = $resultXml;
-						$output['xml'] = utf8_encode($xmlString);
+						$output['xml'] = forceUTF8($xmlString);
 					} else {
 						$output['success'] = false;
 						$output['html'] = "Unable to transform XML file";
