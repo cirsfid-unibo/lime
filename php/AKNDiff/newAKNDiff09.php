@@ -204,7 +204,6 @@ class newAKNDiff09 extends AKNDiff {
 		$result = array();
 		$nums = count($words);
 		$index = $nums;
-
 		while($index) {
 			$str =  ($fromEnd) ? implode(" ", array_slice($words, $nums-$index)) 
 							   : implode(" ", array_slice($words, 0, $index));
@@ -240,7 +239,6 @@ class newAKNDiff09 extends AKNDiff {
 		$searchText = trim($searchText);
 		$wrapNodes = array();
 		$nodes = $this->getTextNodesContaining($node, $searchText);
-
 		if(count($nodes)) {
 			foreach($nodes as $node) {
 				if($wrapperClass !== FALSE) {
@@ -252,16 +250,16 @@ class newAKNDiff09 extends AKNDiff {
 			if(count($nodes)) {
 				$firtPart = $nodes[0];
 				$lastPart = $nodes[count($nodes)-1];
-				$wrapNode = $this->wrapTextNode($firtPart["node"], $firtPart["str"], $wrapperClass);
-				$siblings = $this->getNextSiblingsContaining($wrapNode, $lastPart["node"]);
-				foreach($siblings as $sibling) {
-					$wrapNode->appendChild($sibling);
-				}
-
-				if ( $this->removeSpaces($wrapNode->nodeValue) == $this->removeSpaces($searchText) ) {
-					$wrapNodes[] = $wrapNode;
-				} else {
-					$this->unwrapNode($wrapNode, FALSE);
+				
+				$lastNodes = $this->splitTextNode($lastPart["node"], $lastPart["str"]);
+				$firstNodes = $this->splitTextNode($firtPart["node"], $firtPart["str"]);
+				$txtNodes = $this->findTextNodeCombination($firstNodes, $lastNodes, $searchText);
+				if(count($txtNodes)) {
+					$wrapNode = $this->wrapTextNodesInterval($txtNodes[0], $txtNodes[1]);
+					if($wrapNode) {
+						$wrapNode->setAttribute("class", $wrapperClass);
+						$wrapNodes[] = $wrapNode;
+					}
 				}
 			}
 
@@ -269,6 +267,71 @@ class newAKNDiff09 extends AKNDiff {
 
 		$nodes = ($wrapperClass === FALSE) ? $nodes	: $wrapNodes;
 		return (count($nodes)) ? $nodes : FALSE;
+	}
+
+	protected function splitTextNode($tNode, $str, $includeStr = FALSE) {
+		$textNodes = array();
+		$encoding = mb_detect_encoding($str);
+		$len = mb_strlen($str, $encoding);
+		$positions = $this->strpos_all($tNode->data, $str);
+		for($i = count($positions)-1; $i>=0; $i--) {
+			$pos = $positions[$i];
+			if ($pos > 0) {
+				$newNode = $tNode->splitText($pos);
+			} else {
+				$newNode = $tNode;
+			}
+			$newNode->splitText($len);
+			array_unshift($textNodes, $newNode);
+		}
+		return $textNodes;
+	}
+
+	protected function findTextNodeCombination($firstNodes, $lastNodes, $str) {
+		$str = $this->removeSpaces($str);
+		foreach ($firstNodes as $firstNode) {
+			foreach ($lastNodes as $lastNode) {
+				$text = $this->joinText($firstNode, $lastNode);
+				if ($this->removeSpaces($text) == $str) {
+					return [$firstNode, $lastNode];
+				}
+			}
+		}
+		return [];
+	}
+
+	protected function strpos_all($str, $needle) {
+		$encoding = mb_detect_encoding($str);
+		$lastPos = 0;
+		$positions = array();
+
+		while (($lastPos = mb_strpos($str, $needle, $lastPos, $encoding))!== false) {
+		    $positions[] = $lastPos;
+		    $lastPos = $lastPos + mb_strlen($needle, $encoding);
+		}
+
+		return $positions;
+	}
+
+	protected function joinText($from, $to) {
+		$siblings = $this->getNextSiblingsContaining($from, $to);
+		$text = $from->textContent;
+		foreach ($siblings as $node) {
+			$text.=$node->textContent;
+		}
+		return $text;
+	}
+
+	protected function wrapTextNodesInterval($from, $to) {
+		if(!$from->parentNode) return FALSE;
+		$wrapNode = $from->ownerDocument->createElement('span');
+		$from->parentNode->insertBefore($wrapNode, $from);
+		$wrapNode->appendChild($from);
+		$siblings = $this->getNextSiblingsContaining($wrapNode, $to);
+		foreach ($siblings as $node) {
+			$wrapNode->appendChild($node);
+		}
+		return $wrapNode;
 	}
 	
 	protected function wrapTextNode($tNode, $str, $class = "textWrapper", $caseSensitive = FALSE, $precedingText = FALSE) {

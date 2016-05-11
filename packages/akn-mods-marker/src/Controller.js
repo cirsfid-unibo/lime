@@ -416,10 +416,12 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     detectExistingMods: function() {
+        //TODO ensure that this is called after import metadata
         var me = this, editorBody = me.getController("Editor").getBody();
 
         var getNodeByModRec = function(rec) {
-            return editorBody.querySelector("*[" + LangProp.attrPrefix + "eid='"+rec.get('href')+"']");
+            return editorBody.querySelector("*[" + LangProp.attrPrefix + "eid='"+rec.get('href')+"']") ||
+                    editorBody.querySelector("*[" + DomUtils.elementIdAttribute + "='"+rec.get('href')+"']");
         };
 
         var setModAttrs = function(mod, rec) {
@@ -684,7 +686,7 @@ Ext.define('AknModsMarker.Controller', {
 
     getModFromElId: function(id, amendmentType) {
         var mod = this.modsMap[id];
-        if (!mod || mod.get('amendmentType') != amendmentType) return;
+        if (!mod || amendmentType && mod.get('amendmentType') != amendmentType) return;
         var modEls = mod.getSourceDestinations()
                         .concat(mod.getTextualChanges())
                         .filter(function(modEl) {
