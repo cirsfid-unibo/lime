@@ -70,7 +70,8 @@
             "quotedType": "Type",
             "oldText": "The old text",
             "haveToSelectElement": "You have to select {name} element",
-            "splitOnlySiblings": "You can split only sibling nodes"
+            "splitOnlySiblings": "You can split only sibling nodes",
+            "causedRenumbering": "This modification has caused a renumbering?"
         },
         "it": {
             "insertion": "Inserimento",
@@ -94,7 +95,8 @@
             "quotedType": "Tipo",
             "oldText": "Testo precedente",
             "haveToSelectElement": "Devi selezionere un elemento {name}",
-            "splitOnlySiblings": "Puoi dividere solo elementi vicini"
+            "splitOnlySiblings": "Puoi dividere solo elementi vicini",
+            "causedRenumbering": "Questa modifica ha causato una rinumerazione?"
         },
         "es": {
             "insertion": "Insertion",
@@ -117,8 +119,9 @@
             "externalRef": "Set external ref",
             "quotedType": "Type",
             "oldText": "El texto anterior",
-            "haveToSelectElement": "You have to select {name} element",
-            "splitOnlySiblings": "You can split only sibling nodes"
+            "haveToSelectElement": "Usted tiene que seleccionar el elemento {name}",
+            "splitOnlySiblings": "Se puede dividir nodos único hermano",
+            "causedRenumbering": "Esta modificación ha provocado una nueva numeración?"
         }
     },
 

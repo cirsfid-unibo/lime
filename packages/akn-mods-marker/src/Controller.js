@@ -1022,6 +1022,18 @@ Ext.define('AknModsMarker.Controller', {
             editor = me.getController('Editor'),
             selectionRange = editor.lastSelectionRange || editor.getEditor().selection.getRng();
 
+        var getNextSiblingsSameCls = function (node) {
+            var siblings = [],
+                cls = node.getAttribute('class');
+            
+            while(node.nextSibling) {
+                node = node.nextSibling;
+                if (node.getAttribute('class') === cls)
+                    siblings.push(node);
+            }
+            return siblings;
+        }
+
         if ( selectionRange.toString() ) {
             var aliasButton = DocProperties.getFirstButtonByName('ins');
             me.application.fireEvent('markingMenuClicked', aliasButton, {
@@ -1029,11 +1041,20 @@ Ext.define('AknModsMarker.Controller', {
             });
         } else {
             var focusedNode = editor.getFocusedNode();
+            if ( !focusedNode ) return;
+            
+            var button = DomUtils.getButtonByElement(focusedNode);
+            me.insertionHandler(button, [focusedNode]);
 
-            if ( focusedNode ){
-                var button = DomUtils.getButtonByElement(focusedNode);
-                me.insertionHandler(button, [focusedNode]);
-            }
+            me.askForRenumbering(function() {
+                // Add the wid attribute to every similar sibling
+                getNextSiblingsSameCls(focusedNode).forEach(function(node, index, arr) {
+                    var prevNode = (index != 0) ? arr[index-1] : focusedNode;
+                    var eid = prevNode.getAttribute(LangProp.attrPrefix+'eid');
+                    if (eid)
+                        node.setAttribute(LangProp.attrPrefix+'wid', eid);
+                });
+            });
         }
     },
 
@@ -1043,10 +1064,7 @@ Ext.define('AknModsMarker.Controller', {
             sourceDestinations: [{type:'destination', href: node.getAttribute(DomUtils.elementIdAttribute)}]
         };
         this.setModDataAttributes(node, "insertion");
-        var textualMod = this.addPassiveMeta(node, 'insertion', meta);
-        if ( DocProperties.documentState != 'diffEditingScenarioB' ) {
-            this.askForRenumbering(node, textualMod);
-        }
+        return this.addPassiveMeta(node, 'insertion', meta);;
     },
 
     renumberingHandler: function(button) {
@@ -1953,37 +1971,12 @@ Ext.define('AknModsMarker.Controller', {
         return panel;
     },
 
-    askForRenumbering: function(modEl, textualMod) { //TODO: localize
-        var me = this, win = Ext.widget("window", {
-            title: "This modification has caused a renumbering?",
-            closable: false,
-            width: 300,
-            modal: true,
-            dockedItems : [{
-                xtype : 'toolbar',
-                dock : 'bottom',
-                ui : 'footer',
-                items : ['->', {
-                    xtype : 'button',
-                    icon : 'resources/images/icons/cancel.png',
-                    text : "No",
-                    handler: function() {
-                        this.up("window").close();
-                    }
-                }, {
-                    xtype : 'button',
-                    icon : 'resources/images/icons/accept.png',
-                    text : "Yes",
-                    handler: function() {
-                        this.up("window").close();
-                        me.addRenumberingAfterMod(modEl, textualMod);
-                    }
-                }]
-            }]
-        }).show();
-    },
-
-    addRenumberingAfterMod: function(modEl, textualMod) {
-        //TODO: implement
+    askForRenumbering: function(callback) {
+        Ext.Msg.confirm(Locale.getString("renumbering", this.getPluginName()),
+            Locale.getString("causedRenumbering", this.getPluginName()),
+            function(res) {
+                if (res === 'yes' && callback)
+                    callback();
+            });
     }
 });
