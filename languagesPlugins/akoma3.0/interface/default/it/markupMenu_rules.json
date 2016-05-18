@@ -7,30 +7,6 @@
 					"label": "Data"
 				}
 			}
-		},
-        "role": {
-            "askFor": {
-                "refersTo": {
-                    "label": "Riferimento"
-                }
-            }
-        },
-        "location": {
-            "askFor": {
-                "refersTo": {
-                    "label": "Riferimento"
-                }
-            }
-        },
-        "person": {
-            "askFor": {
-                "refersTo": {
-                    "label": "Riferimento"
-                },
-                "as1": {
-                    "label": "Come"
-                }
-            }
-        }
+		}
 	}
 }

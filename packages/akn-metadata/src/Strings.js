@@ -90,7 +90,9 @@ Ext.define('AknMetadata.Strings', {
             "publication": "Publication",
             "generation": "Generation",
             "amendment": "Amendment",
-            "repeal": "Repeal"
+            "repeal": "Repeal",
+            "refersTo": "Refers to",
+            "as": "As"
         },
         "it": {
             "title": "Editor metadati",
@@ -144,7 +146,9 @@ Ext.define('AknMetadata.Strings', {
             "publication": "Pubblicazione",
             "generation": "Generazione",
             "amendment": "Emendamento",
-            "repeal": "Abrogazione"
+            "repeal": "Abrogazione",
+            "refersTo": "Riferito a",
+            "as": "Come"
         },
         "es": {
             "title": "Editor de metadatos",
@@ -172,7 +176,7 @@ Ext.define('AknMetadata.Strings', {
             "workflow": "Workflow",
             "steps": "Pasos",
             "actor": "Actor",
-            "role": "Papel",
+            "role": "Rol",
             "outcome": "Resultado",
             "dictionary": "Uri thesaurus",
             "associated": "Associated to",
@@ -187,7 +191,9 @@ Ext.define('AknMetadata.Strings', {
             "fragment": "Fragmento",
             "internal": "Interno",
             "external": "Externo",
-            "publication": "Publicación"
+            "publication": "Publicación",
+            "refersTo": "Se refiere a",
+            "as": "Como"
         }
     },
 
