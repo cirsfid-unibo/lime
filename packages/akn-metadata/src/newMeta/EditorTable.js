@@ -62,16 +62,16 @@ Ext.define('AknMetadata.newMeta.EditorTable', {
         pluginId: 'rowediting',
         clicksToEdit: 1,
         listeners: {
-            validateedit: function(editor, context) {
-                var custom = context.grid.custom || {};
-                Object.keys(custom).forEach(function (prop) {
-                    context.record.set(prop, custom[prop](context));
-                });
-
+            edit: function(editor, context) {
                 var referenceFix = context.grid.referenceFix || {};
                 Object.keys(referenceFix).forEach(function (prop) {
                     context.newValues[prop] =
                         AknMetadata.newMeta.ReferenceCombo.customSave(prop, referenceFix[prop], context);
+                });
+
+                var custom = context.grid.custom || {};
+                Object.keys(custom).forEach(function (prop) {
+                    context.record.data[prop] = custom[prop](context);
                 });
             }
         }
