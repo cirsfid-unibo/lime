@@ -48,16 +48,16 @@
 Ext.define('DefaultExport.Server', {
     override: 'LIME.Server',
 
-    aknToEpub: function (path, success, failure) {
+    aknExportTo: function(path, extension, accept, success, failure) {
         var username = User.username,
             password = User.password;
 
         this.authRequest({
             method: 'GET',
             binary: true,
-            url: '{nodeServer}/documentsdb/Documents' + path + '.epub',
+            url: '{nodeServer}/documentsdb/Documents' + path + '.'+extension,
             headers: {
-                Accept: 'application/epub+zip'
+                Accept: accept
             },
             success: function (response) {
                 success(response.responseBytes);

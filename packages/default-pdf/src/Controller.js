@@ -43,7 +43,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
+window.URL = window.URL || window.webkitURL;
 Ext.define('DefaultPdf.Controller', {
     extend : 'Ext.app.Controller',
     
@@ -79,7 +79,20 @@ Ext.define('DefaultPdf.Controller', {
     
     callPdfService: function(html) {
         var me = this, pdfTab = me.getPdf(), viewport = me.getAppViewport();
-        
+
+        // TODO: get this work on IE
+        // viewport.setLoading(true);
+        // var exportCtl = me.getController('DefaultExport.Controller');
+        // var extension = 'pdf';
+        // var mime = exportCtl.getMime(extension);
+        // console.log('calling export', mime);
+        // Server.aknExportTo(DocProperties.getDocId(), extension, mime, function (data) {
+        //     var blob = new Blob([data], {type: mime});
+        //     var url = window.URL.createObjectURL(blob);
+        //     pdfTab.setPdf(url);
+        //     viewport.setLoading(false);
+        // });
+
         viewport.setLoading(true);
         Ext.Ajax.request({
             url : Server.getAjaxUrl(),
@@ -108,6 +121,6 @@ Ext.define('DefaultPdf.Controller', {
             failure: function() {
                 viewport.setLoading(false);
             }
-        });  
+        });
     }
 });

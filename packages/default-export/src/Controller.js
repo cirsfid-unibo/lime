@@ -85,11 +85,13 @@ Ext.define('DefaultExport.Controller', {
                             source: editor.getDocHtml()
                         };
                     downloadManager.fireEvent(downloadManager.eventActivate, Server.getAjaxUrl(), parameters);
+                    // TODO: this is the new way, remove the above method
+                    // me.exportAkn(DocProperties.getDocId(), 'pdf');
                 }
             },
             'menu [name=exportEbookButton]': {
                 click: function() {
-                    me.exportEbook(DocProperties.getDocId());
+                    me.exportAkn(DocProperties.getDocId(), 'epub');
                 }
             }
         });
@@ -148,10 +150,22 @@ Ext.define('DefaultExport.Controller', {
         }, {complete: true});
     },
 
-    exportEbook: function(path) {
-        Server.aknToEpub(path, function (data) {
-            var blob = new Blob([data], {type: 'application/epub+zip'});
-            saveAs(blob, "document.epub");
+    exportAkn: function(path, extension) {
+        var mime = this.getMime(extension);
+        Server.aknExportTo(path, extension, mime, function (data) {
+            var blob = new Blob([data], {type: mime});
+            saveAs(blob, 'document.'+extension);
         });
+    },
+
+    getMime: function(extension) {
+        switch(extension) {
+            case 'pdf':
+            return 'application/pdf';
+            case 'epub':
+            return 'application/epub+zip';
+            default:
+            return 'text/html';
+        }
     }
 });
