@@ -97,7 +97,10 @@ Ext.define('AknMetadata.newMeta.WorkflowTab', {
             }
         ],
         custom: {
-            eid: function (context) { return 'w' + context.rowIdx; }
+            eid: function (context) { return 'w' + context.rowIdx; },
+            actor: function (context) { return context.newValues.actor; },
+            role: function (context) { return context.newValues.role; },
+            outcome: function (context) { return context.newValues.outcome; }
         },
         referenceFix: {
             actor: { defaultType: 'TLCOrganization', idPrefix: 'actor' },

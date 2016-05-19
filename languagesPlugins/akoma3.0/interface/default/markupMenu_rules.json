@@ -447,54 +447,6 @@
                 "p"
             ]
         },
-        "role": {
-            "askFor": {
-                "refersTo": {
-                    "label": "refersTo",
-                    "type": "text",
-                    "insert": {
-                        "attribute": {
-                            "name": "refersTo"
-                        }
-                    }
-                }
-            }
-        },
-        "location": {
-            "askFor": {
-                "refersTo": {
-                    "label": "refersTo",
-                    "type": "text",
-                    "insert": {
-                        "attribute": {
-                            "name": "refersTo"
-                        }
-                    }
-                }
-            }
-        },
-        "person": {
-            "askFor": {
-                "refersTo": {
-                    "label": "refersTo",
-                    "type": "text",
-                    "insert": {
-                        "attribute": {
-                            "name": "refersTo"
-                        }
-                    }
-                },
-                "as1": {
-                    "label": "as",
-                    "type": "text",
-                    "insert": {
-                        "attribute": {
-                            "name": "as"
-                        }
-                    }
-                }
-            }
-        },
         "a": {
             "askFor": {
                 "href": {

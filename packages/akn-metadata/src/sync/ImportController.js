@@ -251,7 +251,7 @@ Ext.define('AknMetadata.sync.ImportController', {
         function importWork() {
             var date = new Date(akn.getValue('.//akn:FRBRWork/akn:FRBRdate/@date') || uri.date);
             date = (Utilities.isValidDate(date)) ? date : new Date();
-            store.set('date', date);
+            store.set('date', Utilities.fixDateTime(date));
             store.set('author',  uri.author);
             store.set('number',  akn.getValue('.//akn:FRBRWork/akn:FRBRnumber/@value'));
             store.set('name',    akn.getValue('.//akn:FRBRWork/akn:FRBRname/@value'));
@@ -267,7 +267,7 @@ Ext.define('AknMetadata.sync.ImportController', {
         function importExpression () {
             var date = new Date(akn.getValue('.//akn:FRBRExpression/akn:FRBRdate/@date') || uri.version);
             if (Utilities.isValidDate(date))
-                store.set('version', date);
+                store.set('version', Utilities.fixDateTime(date));
             store.set('language', akn.getValue('.//akn:FRBRExpression/akn:FRBRlanguage/@language') || uri.language);
             store.setExpressionAuthor(getReference('.//akn:FRBRExpression/akn:FRBRauthor/@href'));
             store.setExpressionAuthorRole(getReference('.//akn:FRBRExpression/akn:FRBRauthor/@as'));

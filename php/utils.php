@@ -47,6 +47,8 @@
 
 require_once('config.php');
 require_once('lib/Text_LanguageDetect/Text/LanguageDetect.php');
+require_once('lib/Encoding.php');
+use \ForceUTF8\Encoding;
  
 function aknToHtml($input,$stylesheet=FALSE,$language=FALSE, $fullOutput=FALSE, $akn2xsl=FALSE, $akn3xsl=FALSE) {
 	
@@ -193,6 +195,10 @@ function detectLanguage($text, $length = 2) {
 	} catch (Text_LanguageDetect_Exception $e) {
 	    return NULL;
 	}
+}
+
+function forceUTF8($str) {
+	return Encoding::toUTF8($str);
 }
 
 

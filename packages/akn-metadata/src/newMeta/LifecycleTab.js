@@ -91,7 +91,8 @@ Ext.define('AknMetadata.newMeta.LifecycleTab', {
             }
         ],
         custom: {
-            eid: function (context) { return 'e' + context.rowIdx; }
+            eid: function (context) { return 'e' + context.rowIdx; },
+            source: function (context) { return context.newValues.source; }
         },
         referenceFix: {
             source: {

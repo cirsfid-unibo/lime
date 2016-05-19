@@ -112,7 +112,7 @@ Ext.define('AknMain.xml.DocumentCollection', {
         var meta = new AknMain.metadata.Document();
         meta.set('country', this.getDocLocale());
         meta.set('type', 'documentCollection');
-        meta.set('date', new Date());
+        meta.set('date', Utilities.fixDateTime(new Date()));
         meta.set('language', this.getDocLang());
         meta.set('media', 'main.xml');
         meta.set('pubblicationDate', new Date());

@@ -445,13 +445,13 @@ Ext.define('LIME.controller.Storage', {
 
         var docDate = new Date(values.date);
         if (!isNaN(docDate.getTime())) {
-            meta.set('date', docDate);
+            meta.set('date', Utilities.fixDateTime(docDate));
         }
         var version = (versionDate.indexOf(':') != -1) ? 
                             versionDate.substring(0,versionDate.indexOf(':')) : versionDate;
         version = new Date(version);
         if (!isNaN(version.getTime())) {
-            meta.set('version', version);
+            meta.set('version', Utilities.fixDateTime(version));
         }
         if (values.docProponent) {
             meta.set('author', values.docProponent);

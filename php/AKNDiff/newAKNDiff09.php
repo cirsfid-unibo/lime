@@ -204,7 +204,6 @@ class newAKNDiff09 extends AKNDiff {
 		$result = array();
 		$nums = count($words);
 		$index = $nums;
-
 		while($index) {
 			$str =  ($fromEnd) ? implode(" ", array_slice($words, $nums-$index)) 
 							   : implode(" ", array_slice($words, 0, $index));
@@ -240,7 +239,6 @@ class newAKNDiff09 extends AKNDiff {
 		$searchText = trim($searchText);
 		$wrapNodes = array();
 		$nodes = $this->getTextNodesContaining($node, $searchText);
-
 		if(count($nodes)) {
 			foreach($nodes as $node) {
 				if($wrapperClass !== FALSE) {
@@ -252,16 +250,16 @@ class newAKNDiff09 extends AKNDiff {
 			if(count($nodes)) {
 				$firtPart = $nodes[0];
 				$lastPart = $nodes[count($nodes)-1];
-				$wrapNode = $this->wrapTextNode($firtPart["node"], $firtPart["str"], $wrapperClass);
-				$siblings = $this->getNextSiblingsContaining($wrapNode, $lastPart["node"]);
-				foreach($siblings as $sibling) {
-					$wrapNode->appendChild($sibling);
-				}
-
-				if ( $this->removeSpaces($wrapNode->nodeValue) == $this->removeSpaces($searchText) ) {
-					$wrapNodes[] = $wrapNode;
-				} else {
-					$this->unwrapNode($wrapNode, FALSE);
+				
+				$lastNodes = $this->splitTextNode($lastPart["node"], $lastPart["str"]);
+				$firstNodes = $this->splitTextNode($firtPart["node"], $firtPart["str"]);
+				$txtNodes = $this->findTextNodeCombination($firstNodes, $lastNodes, $searchText);
+				if(count($txtNodes)) {
+					$wrapNode = $this->wrapTextNodesInterval($txtNodes[0], $txtNodes[1]);
+					if($wrapNode) {
+						$wrapNode->setAttribute("class", $wrapperClass);
+						$wrapNodes[] = $wrapNode;
+					}
 				}
 			}
 
@@ -269,6 +267,71 @@ class newAKNDiff09 extends AKNDiff {
 
 		$nodes = ($wrapperClass === FALSE) ? $nodes	: $wrapNodes;
 		return (count($nodes)) ? $nodes : FALSE;
+	}
+
+	protected function splitTextNode($tNode, $str, $includeStr = FALSE) {
+		$textNodes = array();
+		$encoding = mb_detect_encoding($str);
+		$len = mb_strlen($str, $encoding);
+		$positions = $this->strpos_all($tNode->data, $str);
+		for($i = count($positions)-1; $i>=0; $i--) {
+			$pos = $positions[$i];
+			if ($pos > 0) {
+				$newNode = $tNode->splitText($pos);
+			} else {
+				$newNode = $tNode;
+			}
+			$newNode->splitText($len);
+			array_unshift($textNodes, $newNode);
+		}
+		return $textNodes;
+	}
+
+	protected function findTextNodeCombination($firstNodes, $lastNodes, $str) {
+		$str = $this->removeSpaces($str);
+		foreach ($firstNodes as $firstNode) {
+			foreach ($lastNodes as $lastNode) {
+				$text = $this->joinText($firstNode, $lastNode);
+				if ($this->removeSpaces($text) == $str) {
+					return [$firstNode, $lastNode];
+				}
+			}
+		}
+		return [];
+	}
+
+	protected function strpos_all($str, $needle) {
+		$encoding = mb_detect_encoding($str);
+		$lastPos = 0;
+		$positions = array();
+
+		while (($lastPos = mb_strpos($str, $needle, $lastPos, $encoding))!== false) {
+		    $positions[] = $lastPos;
+		    $lastPos = $lastPos + mb_strlen($needle, $encoding);
+		}
+
+		return $positions;
+	}
+
+	protected function joinText($from, $to) {
+		$siblings = $this->getNextSiblingsContaining($from, $to);
+		$text = $from->textContent;
+		foreach ($siblings as $node) {
+			$text.=$node->textContent;
+		}
+		return $text;
+	}
+
+	protected function wrapTextNodesInterval($from, $to) {
+		if(!$from->parentNode) return FALSE;
+		$wrapNode = $from->ownerDocument->createElement('span');
+		$from->parentNode->insertBefore($wrapNode, $from);
+		$wrapNode->appendChild($from);
+		$siblings = $this->getNextSiblingsContaining($wrapNode, $to);
+		foreach ($siblings as $node) {
+			$wrapNode->appendChild($node);
+		}
+		return $wrapNode;
 	}
 	
 	protected function wrapTextNode($tNode, $str, $class = "textWrapper", $caseSensitive = FALSE, $precedingText = FALSE) {
@@ -318,7 +381,7 @@ class newAKNDiff09 extends AKNDiff {
 	
 	protected function getTextNodesBy($node, $fn) {
 		$textList = array();
-		if(get_class($node) == 'DOMNodeList') {
+		if(get_class($node) == 'DOMNodeList' || is_array($node)) {
 			foreach($node as $childNode) {
 				$textList = array_merge($textList, $this->getTextNodesBy($childNode, $fn));
 			}
@@ -876,12 +939,20 @@ class newAKNDiff09 extends AKNDiff {
 
 	protected function applyModSubstitution($mod, $xpath, $table) {
 		$precedingText = FALSE;
+		$subsNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId ='$mod->id' or contains(@parent, '$mod->id')]", $table);
+
 		$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId ='$mod->id' or @akn_currentId ='$mod->destination' or contains(@parent, '$mod->destination')]", $table);
 		//echo $destNodes->length.' - '.$mod->old.' - '.$mod->id.' - '.$mod->destination.'<br>';
-		$newNode = $xpath->query("(//*[@class='newVersion']//*[@akn_currentId ='$mod->id' or contains(@parent, '$mod->destination')])[last()]", $table)->item(0);
-		if($newNode) {
-			$precedingText = $this->getPrecedingText($newNode);
+
+		if ($subsNodes->length == 1) {
+			$precedingText = $this->getPrecedingText($subsNodes->item(0));
+		} else {
+			$newNode = $xpath->query("(//*[@class='newVersion']//*[@akn_currentId ='$mod->id' or  contains(@parent, '$mod->destination')])[last()]", $table)->item(0);
+			if($newNode) {
+				$precedingText = $this->getPrecedingText($newNode);
+			}
 		}
+		
 		if(!$destNodes->length && $mod->old) {
 			if($newNode) {
 				$parent = $newNode->parentNode;
@@ -896,19 +967,64 @@ class newAKNDiff09 extends AKNDiff {
 			}
 		}
 
-		$subsNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId ='$mod->id' or contains(@parent, '$mod->id')]", $table);
-		//echo $mod->destination." - ".$destNodes->length. " - ".$mod->id." - ".$mod->old." - ".$precedingText."<br>";					
-		$this->setAllAttribute($subsNodes, "title", "Old string: ".$mod->old);
-		$this->setAllAttribute($subsNodes, "class", $mod->type);
-		if($mod->old && $destNodes->length) {
-			if($this->findAndwrapTextNode($mod->old, $destNodes, $mod->type, $precedingText) === FALSE) {
-				$this->setAllAttribute($subsNodes, "class", "errorSubstitution");
-				$this->setAllAttribute($subsNodes, "data-old", $mod->old);
-				$this->setAllAttribute($subsNodes, "title", $mod->old." not found", FALSE);
+		$targetNodes = $xpath->query("(//*[@class='newVersion']//*[@akn_currentId= '$mod->destination' or @akn_wId= '$mod->destination' or contains(@parent, '$mod->destination')])[last()]", $table);
+
+
+		if ($targetNodes->length) {
+			$parentWithWid = $this->getNodeWithAttribute($targetNodes, "akn_wId");
+			if (!$parentWithWid) {
+				$parentWithWid = $this->getNodeWithAttribute($targetNodes, "parentWid");
+				if ($parentWithWid) {
+					$parentWid = explode(" ", $parentWithWid->getAttribute("parentWid"));
+					$parentWid = end($parentWid);
+					$parentWithWid->setAttribute('akn_wId', $parentWid);
+				}
 			}
-		} else {
-			//echo $mod->destination." - ".$mod->id." - ".$mod->old." - ".$precedingText."<br>";					
-			$this->setAllAttribute($destNodes, "class", $mod->type);	
+		}
+
+
+		$searchSubstitution = function($destNodes, $setErrors = TRUE) use ($mod, $xpath, $table, $precedingText, $subsNodes) {
+			//echo $mod->destination." - ".$destNodes->length. " - ".$mod->id." - ".$mod->old." - ".$precedingText."<br>";					
+			$this->setAllAttribute($subsNodes, "title", "Old string: ".$mod->old);
+			$this->setAllAttribute($subsNodes, "class", $mod->type);
+			$length = get_class($destNodes) == 'DOMNodeList' ? $destNodes->length : count($destNodes);
+
+			if($mod->old && $length) {
+				// Filter nodes based on preceding text
+				if ($precedingText && $length > 1) {
+					$txt = $this->removeSpaces($precedingText);
+					$nodes = array();
+					foreach ($destNodes as $nd) {
+						if ( strpos($this->removeSpaces($nd->textContent), $txt) !== FALSE ){
+							$nodes[] = $nd;
+						}
+					}
+					if (count($nodes)){
+						$destNodes = $nodes;
+					}
+				}
+
+				if($this->findAndwrapTextNode($mod->old, $destNodes, $mod->type, $precedingText) === FALSE) {
+					if ($setErrors) {
+						$this->setAllAttribute($subsNodes, "class", "errorSubstitution");
+						$this->setAllAttribute($subsNodes, "data-old", $mod->old);
+						$this->setAllAttribute($subsNodes, "title", $mod->old." not found", FALSE);
+					}
+					return FALSE;
+				}
+			} else {
+				//echo $mod->destination." - ".$mod->id." - ".$mod->old." - ".$precedingText."<br>";					
+				$this->setAllAttribute($destNodes, "class", $mod->type);	
+			}
+			return TRUE;
+		};
+
+
+		if ((!$destNodes->length || !$searchSubstitution($destNodes, $parentWithWid ? FALSE : TRUE)) && $parentWithWid) {
+			$destNodes = $this->findOldNodes($parentWithWid, $table);
+			if (count($destNodes)) {
+				$searchSubstitution($destNodes);
+			}
 		}
 	}
 

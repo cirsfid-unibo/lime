@@ -107,7 +107,7 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         // Workflow
         '   <div class="workflow" source="#{source}">',
         '<tpl for="workflowSteps">' +
-        '        <div class="step" date="{date}" {[this.uriAttr("as", values.role)]} {[this.uriAttr("actor", values.actor)]} {[this.uriAttr("outcome", values.outcome)]} {[this.uriAttr("refersTo", values.refers)]}/>',
+        '        <div class="step" eId="{eid}" date="{date}" {[this.uriAttr("as", values.role)]} {[this.uriAttr("actor", values.actor)]} {[this.uriAttr("outcome", values.outcome)]} {[this.uriAttr("refersTo", values.refers)]}/>',
         '</tpl>' +
         '   </div>',
         // Analysis
@@ -126,7 +126,11 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         // References
         '   <div class="references" source="#{source}">',
         '<tpl for="references">' +
-        '        <div class="{type}" eId="{eid}" href="{href}" showAs="{showAs}"/>',
+        '    <tpl if="type==\'TLCReference\'">' +
+        '        <div class="{type}" eId="{eid}" name="" {[this.uriAttr("href", values.href, true)]} showAs="{showAs}"/>',
+        '    <tpl else>' +
+        '        <div class="{type}" eId="{eid}" {[this.uriAttr("href", values.href, true)]} showAs="{showAs}"/>',
+        '    </tpl>' +
         '</tpl>' +
         '   </div>',
 
@@ -174,10 +178,20 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
 
         function mapModifications(store) {
             var res = [];
-            store.each(function (d) {
+            store.each(function (d, index) {
                 var data = d.getData();
+                // Update the eid in order to ensure uniqueness
+                data.eid = data.eid.split('_').slice(0,1).concat(index).join('_');
                 data.sourceDestinations = mapData(d.sourceDestinations());
                 data.textualChanges = mapData(d.textualChanges());
+
+                var existSource = data.sourceDestinations.some(function(data) {
+                    return data.type == 'source';
+                });
+                // Source is mandatory eventually add it
+                if(!existSource)
+                    data.sourceDestinations.unshift({type: 'source', href: ''});
+
                 res.push(data);
             });
             return res;
@@ -192,15 +206,17 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
             return data;
         }
 
-        function mapEvent(data) {
+        function mapEvent(data, i) {
             data.date = AknMain.metadata.XmlSerializer.normalizeDate(data.date);
+            data.eid = data.eid || 'e'+i;
             mapRef(data, 'source');
             mapRef(data, 'refers');
             return data;
         }
 
-        function mapStep(data) {
+        function mapStep(data, i) {
             data.date = AknMain.metadata.XmlSerializer.normalizeDate(data.date);
+            data.eid = data.eid || 'w'+i;
             mapRef(data, 'refers');
             mapRef(data, 'role');
             mapRef(data, 'outcome');

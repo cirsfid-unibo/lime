@@ -46,19 +46,25 @@
 
 Ext.define('AknMetadata.tagAttributes.Controller', {
     extend: 'Ext.app.Controller',
-    requires: ['AknMain.Reference', 'AknMetadata.tagAttributes.RefPanel', 'AknMain.LangProp'],
+    requires: ['AknMain.Reference', 'AknMetadata.tagAttributes.RefPanel', 'AknMain.LangProp',
+                'AknMetadata.newMeta.ReferenceCombo'],
 
     tabGroupName: "tagAttributesManager",
     tagAttributesTab: null,
 
     init: function () {
-        this.application.on(Statics.eventsNames.editorDomNodeFocused, this.showNodeAttributes, this);
+        this.application.on(Statics.eventsNames.editorDomNodeFocused,
+                            function(node) {
+                                // Defer the execution in order to get the eventually updated attributes
+                                setTimeout(this.showNodeAttributes.bind(this, node), 100);
+                            },
+                            this);
 
         this.control({
-            "refPanel [itemId=save]": {
+            "markedElementWidget [itemId=save]": {
                 click: function(cmp) {
-                    var refPanel = cmp.up('refPanel');
-                    refPanel.onSave(refPanel);
+                    cmp = cmp.up('markedElementWidget');
+                    cmp.onSave(cmp);
                 }
             }
         });
@@ -72,6 +78,27 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
             case 'ref':
                 panel = this.createRefPanel(node);
             break;
+            case 'role':
+                panel = this.createNodeRefsPanel(node, [{
+                    attr: 'refersTo',
+                    filters: ['TLCRole']
+                }]);
+            break;
+            case 'location':
+                panel = this.createNodeRefsPanel(node, [{
+                    attr: 'refersTo',
+                    filters: ['TLCLocation']
+                }]);
+            break;
+            case 'person':
+                panel = this.createNodeRefsPanel(node, [{
+                    attr: 'refersTo',
+                    filters: ['TLCPerson']
+                },{
+                    attr: 'as',
+                    filters: ['TLCRole']
+                }]);
+            break;
             default:
                 return;
         }
@@ -80,7 +107,7 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
         this.tagAttributesTab.removeAll(true);
         this.tagAttributesTab.add(panel);
         this.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
-                                    true, this.tabGroupName);
+                                    true, this.tabGroupName, panel.contextHeight);
         Ext.GlobalEvents.fireEvent('scrollToActiveNode');
     },
 
@@ -134,6 +161,66 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
     closeContextPanel: function() {
         this.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
                                     false, this.tabGroupName);
+    },
+
+    createNodeRefsPanel: function(node, items) {
+        var me = this,
+            references = Ext.getStore('metadata').getMainDocument().references();
+
+        items = items.map(function(item) {
+            var refers = (node.getAttribute(LangProp.attrPrefix+item.attr) || '').substring(1), // Remove #
+                rec = refers && references.getById(refers),
+                showAs = rec && rec.get('showAs');
+
+            item.value = showAs || refers;
+            item.name = Locale.getString(item.attr, 'akn-metadata');
+            return item;
+        });
+
+        var beforeSave = function(panel) {
+            var allSaved = items.every(function(item) {
+                    var cmb = panel.down('[itemId='+item.attr+']'),
+                        value = cmb.getValue() || '';
+                    if (Ext.isString(value)) {
+                        var rec = references.findRecord('eid', value) ||
+                                    references.findRecord('showAs', value);
+                        if(!rec)
+                            return save(item.attr, value);
+                        value = rec;
+                    }
+                    return save(item.attr, value.get('eid'));
+                });
+            if (allSaved)
+                me.closeContextPanel();
+        };
+
+        var save = function(name, value) {
+            if (!name || !value) return;
+            value = value.charAt(0) != '#' ? '#'+value: value;
+            node.setAttribute(LangProp.attrPrefix+name, value);
+            return true;
+        }
+
+        return Ext.widget('markedElementWidget', {
+            title: Locale.getString('references', 'akn-metadata'),
+            contextHeight: 85+items.length*30,
+            onSave: beforeSave,
+            fieldDefaults: {
+                labelWidth: Ext.Array.max(items.map(function(item) {
+                    return item.name.length;
+                }))*7
+            },
+            items: items.map(function(item) {
+                return {
+                    xtype: 'akn-metadata-tab-referencecombo',
+                    queryMode: 'local',
+                    itemId: item.attr,
+                    fieldLabel: item.name,
+                    filteredTypes: item.filters,
+                    value: item.value
+                }
+            })
+        });
     },
 
     // Wrapper function to create and add the attributes tab to the context panel.
