@@ -38,12 +38,12 @@
             <target name="-before-build"/>
             <target name="-after-build"/>
     -->
-    <target name="-after-build">
-		<echo><![CDATA[Copying ExtJs locale files.]]></echo>
-		<copy todir="${basedir}/ext/locale">  
-			<fileset dir="${build.dir}/config/locale/ext" includes="**"/>  
-		</copy>
-        <echo><![CDATA[Copying images and compiled css.]]></echo>
-	</target>
-
+    <target name="-before-build">
+        <x-echo message="Removing old resources from build"/>
+        <delete dir="${build.dir}/languagesPlugins" />
+        <delete dir="${build.dir}/lib" />
+        <delete dir="${build.dir}/php" />
+        <delete dir="${build.dir}/resources" />
+        <delete dir="${build.dir}/config" />
+    </target>
 </project>
