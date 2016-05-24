@@ -98,18 +98,17 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
     
     validateXml : function(xml) {
         var me = this, app = me.application, schema = Config.getLanguageSchemaPath(),
-            // temporary solution
-            aknVersion = xml.match('"http://docs.oasis-open.org/legaldocml/ns/akn/3.0/(CSD\\d\\d)"')[1];
+            schemaReg = Config.getLanguageConfig().schemaRegex,
+            schemaSuffix = xml.match(schemaReg);
         app.fireEvent(Statics.eventsNames.progressStart, null, {
             value : 0.2,
             text : " "
         });
+        schemaSuffix = schemaSuffix && schemaSuffix[2];
 
-        // temporary solution
-        if(!Ext.isEmpty(aknVersion)) {
-            schema = schema.replace(".xsd", "_"+aknVersion+".xsd");
+        if(!Ext.isEmpty(schemaSuffix)) {
+            schema = schema.replace(".xsd", "_"+schemaSuffix+".xsd");
         }
-
         Ext.Ajax.request({
             url : Server.getAjaxUrl(),
             method : 'POST',
@@ -159,6 +158,8 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
             this.createErrorsResult();
         } else if ( errorData.started ) {
             this.createSuccessResult();
+        } else {
+            Ext.Msg.alert(Locale.getString('error'), errorData.msg);
         }
     },
 
