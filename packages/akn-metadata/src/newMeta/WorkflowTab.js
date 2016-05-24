@@ -66,7 +66,9 @@ Ext.define('AknMetadata.newMeta.WorkflowTab', {
                 text: Locale.getString('date', 'akn-metadata'),
                 dataIndex: 'date',
                 editor: 'datefield',
-                renderer: Ext.util.Format.dateRenderer(Ext.util.Format.dateFormat)
+                renderer: function() {
+                    return Ext.util.Format.dateRenderer(Ext.util.Format.dateFormat).apply(this, arguments)
+                }
             },
             {
                 text: Locale.getString('actor', 'akn-metadata'),
