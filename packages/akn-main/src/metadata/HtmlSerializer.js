@@ -233,7 +233,10 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         data.aliases = mapData(model.aliases());
         data.lifecycleEvents = mapData(model.lifecycleEvents()).map(mapEvent);
         data.workflowSteps = mapData(model.workflowSteps()).map(mapStep);
-        data.classificationKeywords = mapData(model.classificationKeywords());
+        data.classificationKeywords = mapData(model.classificationKeywords())
+                                        .filter(function(keyword) {
+                                            return !keyword.discardEmpty || keyword.href;
+                                        });
         data.modifications = mapModifications(model.modifications());
         var uri = model.getUri();
         data.uri = {
