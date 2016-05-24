@@ -161,7 +161,8 @@ Ext.define('AknMetadata.sync.ImportController', {
                 var data = {
                     eid: step.getAttribute('eId'),
                     date: new Date(step.getAttribute('date')),
-                    actor: getReference(xpathIndex+'/@actor'),
+                    actor: getReference(xpathIndex+'/@actor')
+                            || getReference(xpathIndex+'/@by'),
                     role: getReference(xpathIndex+'/@as'),
                     outcome: getReference(xpathIndex+'/@outcome'),
                     refers: getReference(xpathIndex+'/@refersTo')

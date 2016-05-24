@@ -107,7 +107,7 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         // Workflow
         '   <div class="workflow" source="#{source}">',
         '<tpl for="workflowSteps">' +
-        '        <div class="step" eId="{eid}" date="{date}" {[this.uriAttr("as", values.role)]} {[this.uriAttr("actor", values.actor)]} {[this.uriAttr("outcome", values.outcome)]} {[this.uriAttr("refersTo", values.refers)]}/>',
+        '        <div class="step" eId="{eid}" date="{date}" {[this.uriAttr("as", values.role)]} {[this.uriAttr("by", values.actor)]} {[this.uriAttr("outcome", values.outcome)]} {[this.uriAttr("refersTo", values.refers)]}/>',
         '</tpl>' +
         '   </div>',
         // Analysis
