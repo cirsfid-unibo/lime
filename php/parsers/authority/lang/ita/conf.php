@@ -46,9 +46,12 @@
  */
  
 $rules = Array(
-	"rules" => Array("main"),
-	"main" => "/(({{signature}},(\s+))?{{authority}})/i",
-	"signature" => "{{persone}}"
+
+
+	"rules" => Array("r1"),
+	
+	"r1" => "/(({{signature}},(\s+))?{{authority}})/i",
+	"signature" => "{{person}}",
 );
 
 ?>
