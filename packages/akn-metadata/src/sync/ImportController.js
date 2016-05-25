@@ -141,12 +141,14 @@ Ext.define('AknMetadata.sync.ImportController', {
             var xpath = './/akn:lifecycle/akn:eventRef';
             akn.select(xpath).forEach(function (event, index) {
                 var xpathIndex = xpath+'['+(index+1)+']';
+                var date = new Date(event.getAttribute('date'));
+                date = Utilities.isValidDate(date) && Utilities.fixDateTime(date);
                 var data = {
                     eid: event.getAttribute('eId'),
                     type: event.getAttribute('type'),
                     href: event.getAttribute('href'),
                     showAs: event.getAttribute('showAs'),
-                    date: new Date(event.getAttribute('date')),
+                    date: date,
                     source: getReference(xpathIndex+'/@source'),
                     refers: getReference(xpathIndex+'/@refersTo')
                 }
@@ -158,9 +160,11 @@ Ext.define('AknMetadata.sync.ImportController', {
             var xpath = './/akn:workflow/akn:step';
             akn.select(xpath).forEach(function (step, index) {
                 var xpathIndex = xpath+'['+(index+1)+']';
+                var date = new Date(step.getAttribute('date'));
+                date = Utilities.isValidDate(date) && Utilities.fixDateTime(date);
                 var data = {
                     eid: step.getAttribute('eId'),
-                    date: new Date(step.getAttribute('date')),
+                    date: date,
                     actor: getReference(xpathIndex+'/@actor')
                             || getReference(xpathIndex+'/@by'),
                     role: getReference(xpathIndex+'/@as'),
@@ -287,7 +291,7 @@ Ext.define('AknMetadata.sync.ImportController', {
             store.set('pubblicationNumber', akn.getValue('.//akn:publication/@number'));
             var date = new Date(akn.getValue('.//akn:publication/@date'));
             if (Utilities.isValidDate(date))
-                store.set('pubblicationDate', date);
+                store.set('pubblicationDate', Utilities.fixDateTime(date));
         }
 
         function getReference (xpath, fallback) {
