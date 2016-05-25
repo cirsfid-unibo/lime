@@ -52,9 +52,9 @@ $rules = Array(
 						  "ref_1"
 						  ),
 
-	"ref_1" => "/{{partition}}\s+{{num}}\s+(de la|del|de)\s+{{source}}/",
-	"ref_2" => "/({{partition}}\s+{{num}}(\s+(de la|del|de)\s+))?{{type}}\s+N(º|°)\s+{{docnum}}/",
-	"ref_3" => "/({{partition}}\s+{{num}}(\s+(de la|del|de)\s+))?{{type}}\s+N(º|°)\s+{{docnum}}\,?\s*{{date}}/",
+	"ref_1" => "/(?P<fragment>{{partition}}\s+{{num}})\s+(de la|del|de)\s+{{source}}/",
+	"ref_2" => "/((?P<fragment>{{partition}}\s+{{num}})(\s+(de la|del|de)\s+))?{{type}}\s+N(º|°)\s+{{docnum}}/",
+	"ref_3" => "/((?P<fragment>{{partition}}\s+{{num}})(\s+(de la|del|de)\s+))?{{type}}\s+N(º|°)\s+{{docnum}}\,?\s*{{date}}/",
 
     "type" => Array(
 					"Decreto Ley",
@@ -71,6 +71,17 @@ $rules = Array(
 	"partition" => Array("artículo",
 		                 "artículos",
 						 "inciso"),
+
+	// string not regex
+	"partition_type" => Array("article" 	=> Array("artículo",
+		                                             "artículos",
+													 "art.",
+													 "artt.",
+													 ),
+
+	                          "paragraph" 	=> Array("inciso",
+		                       						),
+		                     ),
 						 
 	"source" => Array("Constitución de la República",
 					  "Constitución",
