@@ -47,10 +47,12 @@
 Ext.define('AknMain.IdGenerator', {
     singleton : true,
 
-    noPrefixElements : ["collectionBody", "body", "mainBody", "documentRef", "componentRef", "authorialNote"],
+    noPrefixElements : ["collectionBody", "body", "mainBody", "documentRef", "componentRef", "authorialNote",
+                        "ref", "person", "role", "location"],
     noIdElements: ["preface", "preamble", "body", "mainBody", "collectionBody"],
     noIdPatterns: ["block", "inline"],
-    exceptIdElements: ["mod", "documentRef", "componentRef", "heading", "ins", "del", "quotedText"],
+    exceptIdElements: ["mod", "documentRef", "componentRef", "heading", "ins", "del", "quotedText",
+                        "ref", "person", "role", "location"],
     documentContextElements: ["mod", "article"],
     noIdNumElements: ["components", "conclusions", "content", "heading"],
     prefixSeparator: "__",
@@ -103,6 +105,9 @@ Ext.define('AknMain.IdGenerator', {
                 markingId = me.getMarkingIdParentPart(elName, markedParent, documentContext);
 
                 var context = markedParent || root;
+                if (this.noPrefixElements.indexOf(elName) != -1) {
+                    context = documentContext.dom;
+                }
                 var alternativeContext = Ext.fly(node).parent('.collectionBody', true);
                 context = (alternativeContext) ? alternativeContext : context;
 
