@@ -184,8 +184,17 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
                     if (Ext.isString(value)) {
                         var rec = references.findRecord('eid', value) ||
                                     references.findRecord('showAs', value);
-                        if(!rec)
-                            return save(item.attr, value);
+                        if(!rec) {
+                            var type = (item.filters && item.filters.length)
+                                            ? item.filters[0] : 'TLCReference';
+                            var eid = value.toLowerCase().replace(/[^\w]/g, '');
+                            rec = references.add({
+                                    eid: eid,
+                                    type: type,
+                                    href: '',
+                                    showAs: value
+                                })[0];
+                        }
                         value = rec;
                     }
                     return save(item.attr, value.get('eid'));

@@ -1965,26 +1965,33 @@ Ext.define('AknAutomaticMarkup.Controller', {
             }
         };
 
+        var normalizeRefValue = function(str) {
+            str = str || '';
+            return str.toLowerCase().replace(/[^\w]/g, '');
+        }
+
         var numDataToId = function(data) {
-            if (!Array.isArray(data)) return data;
+            if (!Array.isArray(data)) return normalizeRefValue(data);
             data = data.map(function(part) {
                 for (var name in part) {
-                    part[name] = part[name][0];
+                    part[name] = normalizeRefValue(part[name][0]);
                 }
                 return part;
             });
             return AknMain.IdGenerator.partListToId(data);
         };
 
+
         var getRefHref = function(refData) {
             var ref = AknMain.Reference.empty();
             ref.internal = (refData.num && !refData.date && !refData.docnum && !refData.type) ? true : false;
-            ref.id = numDataToId(refData.num) || refData.fragment;
+            ref.id = numDataToId(refData.num) || normalizeRefValue(refData.fragment);
             ref.uri.country = DocProperties.documentInfo.docLocale;
             ref.uri.type = 'act';
-            ref.uri.name = refData.docnum;
+            ref.uri.name = normalizeRefValue(refData.docnum);
             ref.uri.date = refData.date || todayDate;
             ref.uri.language = DocProperties.documentInfo.docLang;
+            ref.uri.component = 'main';
             var href = "";
             try {
                 href = ref.ref();
