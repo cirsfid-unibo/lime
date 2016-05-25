@@ -78,6 +78,7 @@ Ext.define('AknMetadata.newMeta.ReferenceTab', {
                         return Ext.String.capitalize(Locale.getString(str, 'akn-metadata'))
                     };
                     switch (r) {
+                    case 'original': return getStr('original');
                     case 'TLCPerson': return getStr('person');
                     case 'TLCOrganization': return getStr('organization');
                     case 'TLCConcept': return getStr('concept');
@@ -93,7 +94,7 @@ Ext.define('AknMetadata.newMeta.ReferenceTab', {
                 },
                 editor: {
                     xtype: 'combo',
-                    store: ['TLCPerson', 'TLCOrganization', 'TLCConcept', 'TLCObject', 'TLCEvent', 'TLCLocation', 'TLCProcess', 'TLCRole', 'TLCTerm', 'TLCReference'],
+                    store: ['original', 'TLCPerson', 'TLCOrganization', 'TLCConcept', 'TLCObject', 'TLCEvent', 'TLCLocation', 'TLCProcess', 'TLCRole', 'TLCTerm', 'TLCReference'],
                     forceSelection: true
                 }
             }
