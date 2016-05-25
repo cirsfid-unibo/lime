@@ -50,7 +50,8 @@ Ext.define('AknMain.Language', {
     requires: [
         'AknMain.notes.Controller',
         'AknMain.LangProp',
-        'AknMain.IdGenerator'
+        'AknMain.IdGenerator',
+        'AknMain.utilities.String'
     ],
 
     config: {
@@ -145,6 +146,12 @@ Ext.define('AknMain.Language', {
         return meta;
     },
 
+    performLoad: function(config) {
+        // Remove diacritics from attributes
+        config.docText = AknMain.utilities.String.removeDiacriticsFromAttrs(config.docText);
+        this.callParent(arguments);
+    },
+
     afterLoad: function(params) {
         this.callParent(arguments);
         
@@ -198,6 +205,7 @@ Ext.define('AknMain.Language', {
             includeFiles : Config.getLocaleXslPath()
         };
         var xslt = Config.getLanguageTransformationFile("LIMEtoLanguage");
+        html = AknMain.utilities.String.removeDiacriticsFromAttrs(html)
         Server.applyXslt(html, xslt, success, failure, config);
     },
 

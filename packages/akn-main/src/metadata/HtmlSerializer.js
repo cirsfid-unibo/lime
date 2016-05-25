@@ -230,7 +230,9 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         data.pubblicationDate = AknMain.metadata.XmlSerializer.normalizeDate(data.pubblicationDate);
         data.today = AknMain.metadata.XmlSerializer.normalizeDate(new Date());
         data.references = mapData(model.references());
-        data.aliases = mapData(model.aliases());
+        data.aliases = mapData(model.aliases()).filter(function(alias) {
+            return alias.value;
+        });
         data.lifecycleEvents = mapData(model.lifecycleEvents()).map(mapEvent);
         data.workflowSteps = mapData(model.workflowSteps()).map(mapStep);
         data.classificationKeywords = mapData(model.classificationKeywords())
