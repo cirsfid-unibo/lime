@@ -110,10 +110,10 @@ describe ('AknMain.Uri', function () {
         expect(uri.component).toEqual('main');
         expect(uri.media).toEqual('xml');
 
-        expect(uri.work()).toEqual('/akn/it/act/2015-07-21/main');
+        expect(uri.work()).toEqual('/akn/it/act/2015-07-21/!main');
         expect(uri.work(true)).toEqual('/akn/it/act/2015-07-21');
         expect(uri.expression(true)).toEqual('/akn/it/act/2015-07-21/ita@');
-        expect(uri.manifestation()).toEqual(uriStr);
+        expect(uri.manifestation()).toEqual(uriStr+'/!main');
     });
 
     it ('"/akn/it/act/1970-01-01/ita@/main.xml"', function () {
@@ -137,9 +137,10 @@ describe ('AknMain.Uri', function () {
         expect(uri.work()).toEqual('/akn/uy/bill/ejecutivo/2005-04-04/carpeta137-2005');
     });
 
-    it ('/akn/it/judgment/sentenza/cc/1999-12-17/1/2000/ita@!eucases/main.xml', function () {
+    it ('/akn/it/judgment/sentenza/cc/1999-12-17/1/2000/ita@/main.xml', function () {
         // Should ignore nonstandard components 2000
         var uri = AknMain.Uri.parse('/akn/it/judgment/sentenza/cc/1999-12-17/1/2000/ita@/main.xml');
+        console.log(uri)
         expect(uri.country).toEqual('it');
         expect(uri.type).toEqual('judgment');
         expect(uri.subtype).toEqual('sentenza');
@@ -169,7 +170,16 @@ describe ('AknMain.Uri', function () {
     it ('/akn/uy/bill/CRR/CRR/2000-03-26/Asunto4517/spa@2005-03-26/undefined.undefined', function () {
         var uriStr = '/akn/uy/bill/CRR/CRR/2000-03-26/Asunto4517/spa@2005-03-26/undefined.undefined';
         var uri = AknMain.Uri.parse(uriStr);
-        expect(uri.manifestation()).toEqual(uriStr+'.xml');
+        expect(uri.manifestation()).toEqual('/akn/uy/bill/CRR/CRR/2000-03-26/Asunto4517/spa@2005-03-26/undefined.undefined.xml/!undefined.undefined');
+    });
+
+    it ('/akn/uy/bill/CRR/test/1996-06-08/esp@2002-10-03/main.xml/!main', function () {
+        var uriStr = '/akn/uy/bill/CRR/test/1996-06-08/esp@2002-10-03/main.xml/!main';
+        var uri = AknMain.Uri.parse(uriStr);
+        expect(uri.work()).toEqual('/akn/uy/bill/CRR/test/1996-06-08/!main');
+        expect(uri.expression()).toEqual('/akn/uy/bill/CRR/test/1996-06-08/esp@2002-10-03/!main');
+        expect(uri.manifestation()).toEqual(uriStr);
+        expect(uri.manifestation(true)).toEqual('/akn/uy/bill/CRR/test/1996-06-08/esp@2002-10-03.xml');
     });
     
 });

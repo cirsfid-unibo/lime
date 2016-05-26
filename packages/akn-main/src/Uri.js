@@ -139,6 +139,9 @@ Ext.define('AknMain.Uri', {
             }
         }
 
+        uri.component = (uri.component !== undefined && uri.component.charAt(0) == '!')
+                            ? uri.component.substring(1) : uri.component;
+
         function optional(test, failure) {
             var item = components.shift();
             if (test(item)) {
@@ -208,6 +211,7 @@ Ext.define('AknMain.Uri', {
             return item && !!item.match(/^[a-zA-Z\.]*$/);
         },
         component: function (item) {
+            item = item && item.charAt(0) == '!' ? item.substring(1) : item;
             return item && [
                 'main',
                 'table',
@@ -227,7 +231,7 @@ Ext.define('AknMain.Uri', {
                    (this.author ? '/' + this.author : '') +
                    '/' + this.date +
                    (this.name ? '/' + this.name : '') +
-                   ((this.component && !hideComponent) ? '/' + this.component : '');
+                   ((this.component && !hideComponent) ? '/!' + this.component : '');
         },
 
         expression: function (hideComponent) {
@@ -236,7 +240,7 @@ Ext.define('AknMain.Uri', {
                    '/' + this.language +
                    '@' + version +
                    (this.official ? '!' + this.official : '') +
-                   ((this.component && !hideComponent) ? '/' + this.component : '');
+                   ((this.component && !hideComponent) ? '/!' + this.component : '');
         },
 
         /**
@@ -248,8 +252,8 @@ Ext.define('AknMain.Uri', {
          */
         manifestation: function (forFrbrUri) {
             return this.expression(true) +
-                '/' + this.component + '.' +
-                (!forFrbrUri ? this.media: 'akn' );
+                    (forFrbrUri ? '.' + this.media :
+                    '/' + this.component + '.' +this.media + '/!' + this.component);
         },
 
         item: function () {

@@ -70,7 +70,7 @@ describe ('AknMain.Reference', function () {
         expect(ref.internal).toEqual(false);
         expect(ref.id).toEqual('sec_10');
         // should be work level without version part
-        expect(ref.ref()).toEqual('/akn/it/act/2015-07-21/main#sec_10');
+        expect(ref.ref()).toEqual('/akn/it/act/2015-07-21/!main/#sec_10');
     });
 });
 
