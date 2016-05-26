@@ -73,6 +73,7 @@ Ext.define('AknMetadata.newMeta.WorkflowTab', {
             {
                 text: Locale.getString('actor', 'akn-metadata'),
                 dataIndex: 'actor',
+                flex: 1,
                 renderer: function (r) { return r && r.data ? r.data.showAs : r; },
                 editor: {
                     xtype: 'akn-metadata-tab-referencecombo',
@@ -82,6 +83,7 @@ Ext.define('AknMetadata.newMeta.WorkflowTab', {
             {
                 text: Locale.getString('role', 'akn-metadata'),
                 dataIndex: 'role',
+                flex: 1,
                 renderer: function (r) { return r && r.data ? r.data.showAs : r; },
                 editor: {
                     xtype: 'akn-metadata-tab-referencecombo',
@@ -91,6 +93,7 @@ Ext.define('AknMetadata.newMeta.WorkflowTab', {
             {
                 text: Locale.getString('outcome', 'akn-metadata'),
                 dataIndex: 'outcome',
+                flex: 1,
                 renderer: function (r) { return r && r.data ? r.data.showAs : r; },
                 editor: {
                     xtype: 'akn-metadata-tab-referencecombo',
