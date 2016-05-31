@@ -83,7 +83,9 @@ class DateParser {
                 $counter = array();
                 foreach ($n["0"] as $k => $value) {
                     $offset = $n["0"][$k][1];
-                    $match = $n["0"][$k][0];
+                    if (isset($n['date_match'][$k][0]))
+                        $match = $n["date_match"][$k][0];    
+                    else $match = $n["0"][$k][0];
                     $offsetEnd = $offset+strlen($match);
 
                     // Skip imcomplete or already saved matches
@@ -106,9 +108,23 @@ class DateParser {
                     if ($counter[$match] == 1) {
                         $return['dates'][$match]['rule'] = $element[$key];
                         $return['dates'][$match]['match'] = $match;
+
                         /*if ($debug) {
                             $return['dates'][$match]['pattern'] = $this->patterns[$element[$key]];
                         }*/
+
+                        if (isset($n['name'][$k][0])) {
+                            $return['dates'][$match]['name'] = $n['name'][$k][0];
+                        }
+
+                        if (isset($n['number'][$k][0])) {
+                            $return['dates'][$match]['number'] = $n['number'][$k][0];
+                        }
+
+                        if (isset($n['date_match'][$k][0])) {
+                            $return['dates'][$match]['date_match'] = $n['date_match'][$k][0];
+                        }
+
                         if (isset($n['day'][$k][0])) {
                             $tmp_day = $n['day'][$k][0];
                         }
