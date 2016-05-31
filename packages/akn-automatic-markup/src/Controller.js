@@ -743,10 +743,13 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
         if( !Ext.isArray(signatures) ) return;
 
+        signatures.sort(function compare(a,b) {
+            return b.value.length - a.value.length;
+        });
+
         signatures = signatures.filter(function(obj, index, arr) {
             var itemLikeMe = arr.filter(function(item) {
-                return ((item.value == obj.value)
-                    && ( obj.start >= item.start && obj.end <= item.end ));
+                return ( obj.start >= item.start && obj.end <= item.end );
             })[0];
 
             return arr.indexOf(itemLikeMe) === index;
