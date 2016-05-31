@@ -81,11 +81,14 @@ class AuthorityParser {
 					//print_r($result);
 
 					for ($i = 0; $i < $success; $i++) {
-						$match = $result["authority"][$i][0];
-						$aOffset = $result["authority"][$i][1];
-						$totalMatch = $result[0][$i][0];
-						$offset = $result[0][$i][1];
-						$entry = Array("authority" => $match, "start" => $offset, "value" => $totalMatch, "end" => $offset + strlen($totalMatch), "aStart" => $aOffset, "aEnd" => $aOffset + strlen($match));
+
+						if (array_key_exists("authority", $result)) {
+							$match = $result["authority"][$i][0];
+							$aOffset = $result["authority"][$i][1];
+							$totalMatch = $result[0][$i][0];
+							$offset = $result[0][$i][1];
+							$entry = Array("authority" => $match, "start" => $offset, "value" => $totalMatch, "end" => $offset + strlen($totalMatch), "aStart" => $aOffset, "aEnd" => $aOffset + strlen($match));
+					    }
 
 						if (array_key_exists("signature", $result)) {
 							if (is_array($result["signature"])) {
@@ -94,8 +97,15 @@ class AuthorityParser {
 								$entry["sStart"] = $offset;
 								$entry["sEnd"] = $offset + strlen($match);
 								$entry["signature"] = $match;
-								$entry["name"] = (array_key_exists("name", $result)) ? trim(trim($result["name"][$i][0], '.')) : "";
-								$entry["surname"] = (array_key_exists("surname", $result)) ? trim(trim($result["surname"][$i][0], '.')) : "";
+								if (array_key_exists("name", $result))
+									$entry["name"] = trim(trim($result["name"][$i][0], '.'));
+								if (array_key_exists("surname", $result))
+									$entry["surname"] = trim(trim($result["surname"][$i][0], '.'));
+								if (array_key_exists("keeper", $result))
+									$entry["type"] = 'keeper';
+								if (array_key_exists("subscription", $result))
+									$entry["type"] = 'subscription';
+
 							}
 						}
 						
@@ -106,8 +116,10 @@ class AuthorityParser {
 								$entry["sStart"] = $offset;
 								$entry["sEnd"] = $offset + strlen($match);
 								$entry["signature"] = $match;
-								$entry["name"] = (array_key_exists("n", $result)) ? trim(trim($result["n"][$i][0], '.')) : "";
-								$entry["surname"] = (array_key_exists("s", $result)) ? trim(trim($result["s"][$i][0], '.')) : "";
+								if (array_key_exists("n", $result))
+									$entry["name"] = 	trim(trim($result["n"][$i][0], '.'));
+								if (array_key_exists("s", $result))
+									$entry["surname"] = trim(trim($result["s"][$i][0], '.'));
 							}
 						}
 

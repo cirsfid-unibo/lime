@@ -48,10 +48,14 @@
 $rules = Array(
 
 
-	"rules" => Array("r1"),
+	"rules" => Array("r1","r2","r3"),
 	
-	"r1" => "/(({{signature}},(\s+))?{{authority}})/i",
+	"r1" => "/(?P<subscription>({{signature}},(\s+))?{{authority}})/i",
 	"signature" => "{{person}}",
+
+	"r2" => "/(?P<keeper>Visto,(?: il (?P<authority>Guardasigilli):)?) +{{signature}}/i",
+
+	"r3" => "/{{signature}}(?P<authority>)/i",
 );
 
 ?>
