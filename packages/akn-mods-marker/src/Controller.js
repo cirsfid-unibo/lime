@@ -1724,10 +1724,12 @@ Ext.define('AknModsMarker.Controller', {
         } else {
             var focusedNode = editor.getFocusedNode();
             if ( focusedNode ){
+                me.setMaskEditors(false, true);
                 var button = DomUtils.getButtonByElement(focusedNode);
                 me.createSubstitutionBlock(focusedNode, false, false, function(obj) {
                     var oldText = DomUtils.getTextOfNode(obj.node);
                     me.updateSubsMetadata(focusedNode, oldText);
+                    me.setMaskEditors(false, false);
 
                     me.setElementStyles([focusedNode], button, button, {
                         shortLabel: button.shortLabel+" "+Locale.getString("replaced", me.getPluginName()),
@@ -1741,6 +1743,7 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     substitutionHandler: function(aliasButton, elements, button) {
+        this.setMaskEditors(false, true);
         this.createSubstitution(elements[0]);
     },
 
@@ -1833,7 +1836,7 @@ Ext.define('AknModsMarker.Controller', {
 
                 grid.store.loadData([{
                     name: markButton.shortLabel,
-                    content: node.textContent,
+                    content: node.textContent.trim(),
                     id: node.getAttribute(DomUtils.elementIdAttribute),
                     eId: node.getAttribute(LangProp.attrPrefix+'eid')
                 }], false);
@@ -1869,12 +1872,15 @@ Ext.define('AknModsMarker.Controller', {
 
     createSubstitution: function(node, formText, update) {
         if ( DocProperties.documentState == 'diffEditingScenarioB' )
-            this.createSubstitutionConsolidation(node, update);
+            if (update)
+                this.createSubstitutionConsolidationUpdate(node, update);
+            else
+                this.createSubstitutionConsolidation(node);
         else
             this.createSubstitutionAmendment(node, formText, update);
     },
 
-    createSubstitutionConsolidation: function(node, update) {
+    createSubstitutionConsolidationUpdate: function(node, update) {
         var me = this, 
             oldText = (update) ? node.getAttribute('data-old-text') : '';
         me.createAndShowFloatingForm(node, Locale.getString("oldText", me.getPluginName()), oldText, false, function(cmp, text) {
@@ -1885,7 +1891,43 @@ Ext.define('AknModsMarker.Controller', {
             if ( !update )
                 DomUtils.unwrapNode(node);
         });
-    },    
+    },
+
+    createSubstitutionConsolidation: function(node) {
+        var me = this;
+        var winCmp = me.createAndShowFloatingForm(node, 'Select the old portion of text', false, false, function(cmp) {
+            if (!cmp.selectedText) {
+                return Ext.MessageBox.alert("Error", 'No text was selected');
+            }
+            me.updateSubsMetadata(node, cmp.selectedText);
+            cmp.close();
+        }, function() {
+            cmp.close();
+            DomUtils.unwrapNode(node);
+        }, {
+            items : [{
+                xtype: 'box',
+                itemId: 'selectedMsg',
+                margin: '0 0 20 0'
+            }],
+            width: 400
+        });
+
+        me.secondEditorClickHandlerCustom = function(node, evt, ed) {
+            var msg = "";
+            var selectedText = ed.selection.getContent().trim();
+            if (selectedText) {
+                var tpl = new Ext.Template("<h4 style=\"margin: 0px;\">You've selected the following portion of text:</h4>{text}");
+                msg = tpl.apply({text: selectedText.trim()});
+                winCmp.selectedText = selectedText;
+                winCmp.selectedNode = me.ensureHcontainerNode(node);
+            } else {
+                winCmp.selectedText = '';
+                winCmp.selectedNode = null;
+            }
+            winCmp.down('[itemId=selectedMsg]').setHtml(msg);
+        };
+    },
 
     createSubstitutionAmendment: function(node, oldText, update) {
         var me = this, editor = me.getController("Editor");
@@ -1920,7 +1962,6 @@ Ext.define('AknModsMarker.Controller', {
                       y: (editorBoundingRect.top+elementBoundingRect.top+boxMargin.top)},
             panel, buttons;
 
-
         if(!readOnly) {
             buttons = [{
                 text : Locale.getString("openFileWindowSouthCancelButtonLabel"),
@@ -1947,6 +1988,11 @@ Ext.define('AknModsMarker.Controller', {
             floating : true,
             frame : true,
             layout : 'fit',
+            listeners: {
+                close: function () {
+                    me.setMaskEditors(false, false);
+                }
+            },
             items : customConfig.items || [{
                 xtype : "textareafield",
                 name : 'newText',
