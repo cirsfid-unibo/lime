@@ -94,6 +94,9 @@
                     '@class="analysis" or '+
                     '@class="activeModifications" or '+
                     '@class="passiveModifications" or '+
+                    '@class="mappings" or '+
+                    '@class="temporalData" or '+
+                    '@class="temporalGroup" or '+
                     '@class="references"]'+
                     '[not(child::*)]';
         

@@ -327,3 +327,35 @@ Ext.define('AknMain.metadata.TextualChange', {
         type: { type: 'inclusion', list: ['old', 'new'] }
     }
 });
+
+Ext.define('AknMain.metadata.Mapping', {
+    extend: 'AknMain.metadata.Base',
+    fields: [
+        { name: 'documentId', reference: 'Document' },
+        { name: 'eid', type: 'string' },
+        { name: 'original', type: 'string' },
+        { name: 'current', type: 'string' },
+        { name: 'start', reference: 'TemporalGroup' },
+        { name: 'end', reference: 'TemporalGroup' }
+    ]
+});
+
+Ext.define('AknMain.metadata.TemporalGroup', {
+    extend: 'AknMain.metadata.Base',
+    fields: [
+        { name: 'documentId', reference: 'Document' },
+        { name: 'eid', type: 'string' }
+    ]
+});
+
+Ext.define('AknMain.metadata.TimeInterval', {
+    extend: 'AknMain.metadata.Base',
+    fields: [
+        { name: 'temporalGroup', reference: 'TemporalGroup' },
+        { name: 'eid', type: 'string' },
+        { name: 'duration', type: 'string' },
+        { name: 'start', reference: 'LifecycleEvent' },
+        { name: 'end', reference: 'LifecycleEvent' },
+        { name: 'refers', reference: 'Reference' }
+    ]
+});

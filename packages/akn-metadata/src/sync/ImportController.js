@@ -109,6 +109,8 @@ Ext.define('AknMetadata.sync.ImportController', {
             importClassificationKeywords();
             importAliases();
             importModifications();
+            importTemporalGroups();
+            importMappings();
 
             importWork();
             importExpression();
@@ -253,6 +255,52 @@ Ext.define('AknMetadata.sync.ImportController', {
             akn.select('.//akn:textualMod').forEach(addModification);
         }
 
+        function importTemporalGroups() {
+            var addTimeInterval = function(node, tgroup) {
+                var data = {
+                    eid: node.getAttribute('eId'),
+                    duration: node.getAttribute('duration'),
+                    refers: getReferenceByRef(node.getAttribute('refersTo')),
+                    start: getEventByRef(node.getAttribute('start')),
+                    end: getEventByRef(node.getAttribute('end'))
+                };
+                tgroup.timeIntervals().add(data);
+            }
+
+            var addTemporalGroup = function(node) {
+                var data = {
+                    eid: node.getAttribute('eId')
+                };
+
+                var tgroup = store.temporalGroups().add(data)[0];
+                akn.select('./akn:timeInterval', node).forEach(function(nd) {
+                    addTimeInterval(nd, tgroup);
+                });
+            }
+
+            akn.select('.//akn:temporalGroup').forEach(addTemporalGroup);
+        }
+
+        function getEventByRef (ref, fallback) {
+            return getRecordByRef(ref, 'lifecycleEvents', fallback);
+        }
+
+        function importMappings () {
+            akn.select('.//akn:analysis//akn:mapping').forEach(function (node) {
+                var data = {
+                    eid: node.getAttribute('eId'),
+                    original: AknMain.metadata.HtmlSerializer.normalizeHref(node.getAttribute('original')),
+                    current: AknMain.metadata.HtmlSerializer.normalizeHref(node.getAttribute('current')),
+                    start: getTmpGroupByRef(node.getAttribute('start')),
+                    end: getTmpGroupByRef(node.getAttribute('end'))
+                };
+                store.mappings().add(data);
+            });
+            function getTmpGroupByRef (ref, fallback) {
+                return getRecordByRef(ref, 'temporalGroups', fallback);
+            }
+        }
+
         function importWork() {
             var date = new Date(akn.getValue('.//akn:FRBRWork/akn:FRBRdate/@date') || uri.date);
             date = (Utilities.isValidDate(date)) ? date : new Date();
@@ -295,13 +343,23 @@ Ext.define('AknMetadata.sync.ImportController', {
         }
 
         function getReference (xpath, fallback) {
-            var eid = akn.getValue(xpath).substring(1),
-                reference = eid && store.references().findRecord('eid', eid);
+            var eid = akn.getValue(xpath).substring(1);
 
-            if (reference)
-                return reference;
+            return getReferenceByRef(eid, fallback);
+        }
+
+        function getReferenceByRef (ref, fallback) {
+            return getRecordByRef(ref, 'references', fallback);
+        }
+
+        function getRecordByRef (ref, where, fallback) {
+            var eid = AknMain.metadata.HtmlSerializer.normalizeHref(ref),
+                record = eid && store[where]().findRecord('eid', eid);
+
+            if (record)
+                return record;
             else if (fallback)
-                return store.references().add(fallback)[0];
+                return store[where]().add(fallback)[0];
         }
     },
 

@@ -122,6 +122,22 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         '           {[this.modification(values)]}',
         '</tpl></tpl>' +
         '      </div>',
+        '      <div class="mappings" source="#{source}">',
+        '<tpl for="mappings">' +
+        '      <div class="mapping" eId="{eid}" {[this.uriAttr("original", values.original)]} {[this.uriAttr("current", values.current)]} {[this.uriAttr("start", values.start)]} {[this.uriAttr("end", values.end)]} >',
+        '      </div>',
+        '</tpl>' +
+        '      </div>',
+        '   </div>',
+        '   <div class="temporalData" source="#{source}">',
+        '<tpl for="temporalGroups">' +
+        '      <div class="temporalGroup" eId="{eid}">',
+                '<tpl for="timeIntervals">' +
+                '      <div class="timeInterval" {[this.optAttr("eId", values.eid)]} {[this.optAttr("duration", values.duration)]} {[this.uriAttr("refersTo", values.refers, true)]} {[this.uriAttr("start", values.start)]} {[this.uriAttr("end", values.end)]}>',
+                '      </div>',
+                '</tpl>' +
+        '      </div>',
+        '</tpl>' +
         '   </div>',
         // References
         '   <div class="references" source="#{source}">',
@@ -139,6 +155,9 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
             uriAttr: function(attr, value, allowEmpty) {
                 attrVal = (value && (value.startsWith('/') || value.startsWith('#'))) ? value : '#'+value;
                 return (value || allowEmpty) ? attr+'="'+attrVal+'"' : '';
+            },
+            optAttr: function(attr, value) {
+                return (value) ? attr+'="'+value+'"' : '';
             },
             modification: function(data) {
                 return this.modificationTpl.apply(data);
@@ -224,6 +243,30 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
             return data;
         }
 
+        function mapTemporalGroups(store) {
+            var res = [];
+            store.each(function (d, index) {
+                var data = d.getData();
+                data.eid = data.eid || 'tmpGrp'+i;
+                data.timeIntervals = mapData(d.timeIntervals()).map(function (tData) {
+                    mapRef(tData, 'refers');
+                    mapRef(tData, 'start');
+                    mapRef(tData, 'end');
+                    return tData;
+                });
+
+                res.push(data);
+            });
+            return res;
+        }
+
+        function mapMapping(data, i) {
+            data.eid = data.eid || 'map'+i;
+            mapRef(data, 'start');
+            mapRef(data, 'end');
+            return data;
+        }
+
         var data = model.getData();
         data.date = AknMain.metadata.XmlSerializer.normalizeDate(data.date);
         data.version = AknMain.metadata.XmlSerializer.normalizeDate(data.version);
@@ -240,6 +283,9 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
                                             return !keyword.discardEmpty || keyword.href;
                                         });
         data.modifications = mapModifications(model.modifications());
+        data.temporalGroups = mapTemporalGroups(model.temporalGroups());
+        data.mappings = mapData(model.mappings()).map(mapMapping);
+
         var uri = model.getUri();
         data.uri = {
             work: uri.work(),
