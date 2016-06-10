@@ -100,39 +100,46 @@ Ext.define('DefaultExport.Controller', {
     addExportItem: function() {
         var me = this;
         menu = {
-            text : Locale.getString("exportDocument", me.getPluginName()),
-            icon : 'resources/images/icons/export-icon.png',
-            name : 'exportAs',
-            id : 'exportMenu',
+            text: Locale.getString("exportDocument", me.getPluginName()),
+            icon: 'resources/images/icons/export-icon.png',
+            name: 'exportAs',
+            id: 'exportMenu',
             hideOnClick: false,
-            menu : {
-                plain : true,
-                items : [{
-                    text : Locale.getString("exportXml", me.getPluginName()),
-                    tooltip : Locale.getString("exportXmlTooltip", me.getPluginName()),
-                    icon : 'resources/images/icons/file-xml.png',
-                    name : 'exportXmlButton'
-                }, {
-                    text : Locale.getString("exportHtml", me.getPluginName()),
-                    tooltip : Locale.getString("exportHtmlTooltip", me.getPluginName()),
-                    icon : 'resources/images/icons/html.png',
-                    name : 'exportHtmlButton'
-                }, {
-                    text : Locale.getString("exportPdf", me.getPluginName()),
-                    tooltip : Locale.getString("exportPdfTooltip", me.getPluginName()),
-                    icon : 'resources/images/icons/file-pdf.png',
-                    name : 'exportPdfButton'
-                }, {
-                    text : Locale.getString("exportEbook", me.getPluginName()),
-                    tooltip : Locale.getString("exportEbookTooltip", me.getPluginName()),
-                    icon : 'resources/images/icons/file-epub.png',
-                    name : 'exportEbookButton'
-                }]
+            menu: {
+                plain: true,
+                items: me.getMenuItems()
             }
         };
         me.application.fireEvent("addMenuItem", me, {
-            menu : "fileMenuButton"
+            menu: "fileMenuButton"
         }, menu);
+    },
+
+    // Return the items, it's convenient to have it in a separate function
+    // in order to be able to add or remove items by overriding it
+    getMenuItems: function() {
+        var name = this.getPluginName();
+        return [{
+            text : Locale.getString("exportXml", name),
+            tooltip : Locale.getString("exportXmlTooltip", name),
+            icon : 'resources/images/icons/file-xml.png',
+            name : 'exportXmlButton'
+        }, {
+            text : Locale.getString("exportHtml", name),
+            tooltip : Locale.getString("exportHtmlTooltip", name),
+            icon : 'resources/images/icons/html.png',
+            name : 'exportHtmlButton'
+        }, {
+            text : Locale.getString("exportPdf", name),
+            tooltip : Locale.getString("exportPdfTooltip", name),
+            icon : 'resources/images/icons/file-pdf.png',
+            name : 'exportPdfButton'
+        }, {
+            text : Locale.getString("exportEbook", name),
+            tooltip : Locale.getString("exportEbookTooltip", name),
+            icon : 'resources/images/icons/file-epub.png',
+            name : 'exportEbookButton'
+        }];
     },
 
     /**

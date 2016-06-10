@@ -9,7 +9,7 @@
     xmlns="http://www.normeinrete.it/nir/2.2/"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:dsp="http://www.normeinrete.it/nir/disposizioni/2.2/"
-    xmlns:akn="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD13"
+    xmlns:akn="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/WD17"
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:h="http://www.w3.org/HTML/1998/html4"
     xmlns:cirsfid="http://www.cirsfid.unibo.it/norma/proprietario/"

@@ -44,83 +44,29 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Plugin to display and export a NIR conversion
-// of the AkomaNtoso document.
-Ext.define('DefaultNir.controller.NirPreview', {
-    extend : 'Ext.app.Controller',
-    
-    views: ["DefaultNir.view.NirPreviewMainTab"],
+ Ext.define('DefaultNir.controller.Export', {
+    override: 'DefaultExport.Controller',
 
-    refs : [{
-        selector : 'appViewport',
-        ref : 'appViewport'
-    }, {
-        selector: 'nirPreviewMainTab',
-        ref: 'xml'
-    }, {
-        selector: 'menuitem#exportMenu menu',
-        ref: 'exportMenu'
-    }, {
-        ref : 'downloadManager',
-        selector : 'downloadManager'
-    }],
-
-
-    init: function() {
-        this.application.on(Statics.eventsNames.afterLoad, this.showPreview, this);
-        this.control({
-            'nirPreviewMainTab' : {
-                activate: this.showPreview
-            }
+    // Add NIR item to export menu.
+    getMenuItems: function() {
+        var items = this.callParent(arguments);
+        items.push({
+            text: 'NIR',
+            icon: 'resources/images/icons/file-xml.png',
+            name: 'ExportNIR',
+            handler: this.onExportNIR.bind(this)
         });
+        return items;
     },
 
-    // Show the NirPreviewPanel
-    showPreview: function() {
-        var me = this;
+    // Download NIR file using downloadManager.
+    onExportNIR: function () {
+        var me = this,
+            nirCnt = me.getController('DefaultNir.controller.NirPreview');
 
-        var xml = me.getXml();
-        if (!xml) return;
-        var activeTab = xml.up("main").getActiveTab();
-        if (activeTab != xml) return;
-
-        me.translateToNir(function (nirXml) {
-        console.log(5)
-            if (me.getXml()) {
-                me.getXml().down('codemirror').setValue(nirXml);
-            }
+        nirCnt.translateToNir(function (nirXml) {
+            var blob = new Blob([nirXml], {type: "text/xml;charset=utf-8"});
+            saveAs(blob, "document.xml");
         });
-    },
-
-    // Call cb with the NIR conversion of the current document.
-    translateToNir: function (cb) {
-        var me = this;
-
-        // HTMLToso to AkomaNtoso
-        console.log(1)
-        me.application.fireEvent(Statics.eventsNames.translateRequest, function (aknXml) {
-        console.log(2)
-            Server.getResourceFile('AknToNir.xsl', 'default-nir', function (xsltPath) {
-        console.log(3)
-                // AkomaNtoso to NIR
-                aknXml = me.forceLatestVersion(aknXml);
-                Server.applyXslt(aknXml, xsltPath, cb, function () {
-        console.log(4)
-                    Ext.Msg.alert('Nir conversion failed');
-                });
-            });
-        }, me.getXml());
-    },
-
-    // Force latest version of AkomaNtoso.
-    // Our XSLT expects a specific version of AKN 3.
-    // This is a hack which may cause bugs.
-    forceLatestVersion: function (aknXml) {
-        var targetNamespace = 'http://docs.oasis-open.org/legaldocml/ns/akn/3.0/WD17',
-            schemaReg = Config.getLanguageConfig().schemaRegex,
-            schemaMatch = schemaReg && aknXml.match(schemaReg);
-        if (schemaMatch && schemaMatch[1])
-            return aknXml.replace(schemaMatch[1], targetNamespace);
-        return aknXml;
     }
 });
