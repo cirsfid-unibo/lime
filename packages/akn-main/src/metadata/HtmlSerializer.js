@@ -170,6 +170,9 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         '<tpl for="sourceDestinations">' +
         '        <div class="{type}" {[this.uriAttr("href", values.href, true)]} {[this.uriAttr("pos", values.pos)]}/>',
         '</tpl>' +
+        '<tpl if="previous">'+
+        '        <div class="previous" {[this.uriAttr("href", values.previous, true)]}/>',
+        '</tpl>'+
         '<tpl for="textualChanges">' +
         '        <div class="{type}" {[this.uriAttr("href", values.href)]}>',
         '           {content}',

@@ -251,6 +251,7 @@ Ext.define('LIME.controller.CustomizationManager', {
             storage.openDocumentNoEditor(dualConfig.notEditableDoc, function(config) {
                 config = language.beforeLoadManager(config, true);
                 me.secondDocumentConfig = config;
+                Ext.GlobalEvents.fireEvent('secondDocumentLoaded', config);
                 editorController.setContent(config.docText, secondEditor, true);
                 storage.openDocument(dualConfig.editableDoc);
             });

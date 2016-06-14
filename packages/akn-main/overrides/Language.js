@@ -235,8 +235,13 @@ Ext.define('AknMain.Language', {
                 }
             });
 
-            if ( newId )
+            if ( newId ) {
+                Ext.each(root.querySelectorAll("[current='#"+intId+"']"), function(node) {
+                    var old = node.getAttribute('current');
+                    node.setAttribute('current', old.replace(intId, newId));
+                });
                 me.aknIdMapping[newId] = intId;
+            }
         });
 
         // Add ids also to wrapping elements

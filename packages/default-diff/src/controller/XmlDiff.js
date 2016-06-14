@@ -159,7 +159,7 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
                         Ext.defer(function() {
                             markingMenuController.filterTreeByFn(structure, function( node ) {
                                 var path = node.getPath();
-                                if ( path.match(/passiveModifications\d+\/action\d+/)  && !path.match(/renumbering/) ) {
+                                if (path.match(/passiveModifications\d+\/action\d+/)) {
                                     return true;
                                 }
                             });

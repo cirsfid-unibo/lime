@@ -74,6 +74,27 @@ Ext.define('AknModsMarker.Controller', {
 
     modsMap: {},
 
+    listen: {
+        global:  {
+            secondDocumentLoaded: 'onSecondDocumentLoaded'
+        }
+    },
+
+    onSecondDocumentLoaded: function(config) {
+        var importMeta = this.getController('AknMetadata.sync.ImportController'),
+            metaNodes = importMeta.getMetadataNodes(config);
+
+        var expUri = '';
+        if (metaNodes.length) {
+            var doc = AknMain.xml.Document.newDocument(metaNodes[0], 'akn');
+            expUri = doc.getValue('.//akn:FRBRExpression/akn:FRBRuri/@value');
+        }
+
+        this.secondDocumentConfig = {
+            expUri: expUri
+        };
+    },
+
     init : function() {
         var me = this;
         me.application.on(Statics.eventsNames.editorDomNodeFocused, me.editorNodeFocused, me);
@@ -322,7 +343,13 @@ Ext.define('AknModsMarker.Controller', {
                 },
                 renumberingCustom: {
                     label: Locale.getString("renumbering", me.getPluginName()),
-                    handler: me.renumberingHandler
+                    handler: function (button) {
+                        if ( DocProperties.documentState == 'diffEditingScenarioB' ) {
+                            me.renumberingHandlerConsolidation(button);
+                        } else {
+                            me.renumberingHandler(button);
+                        }
+                    }
                 },
                 destintionText: {
                     label: Locale.getString("destinationText", me.getPluginName())
@@ -1083,6 +1110,73 @@ Ext.define('AknModsMarker.Controller', {
 
     },
 
+    renumberingHandlerConsolidation: function() {
+        var me = this, editor = me.getController('Editor'),
+            selection = editor.getSelectionObject(null, null, true),
+            renumberNode = me.ensureHcontainerNode(DomUtils.getFirstMarkedAncestor(selection.start));
+
+        if (!renumberNode) {
+            return Ext.MessageBox.alert('Error', 'You have to select a fragment to renumber');
+        }
+        me.setMaskEditors(false, true);
+        var markButton = DomUtils.getButtonByElement(renumberNode);
+
+        var close = function(cmp) {
+            me.setMaskEditors(false, false);
+            cmp.close();
+        }
+
+        var winCmp = me.createAndShowFloatingForm(renumberNode, 'Select the renumbered fragment from the old side', false, false, function(cmp) {
+            if (!cmp.selectedNode) {
+                return Ext.MessageBox.alert("Error", 'You have to select the fragment which was renumbered.');
+            }
+            me.updateRenumberingMetadata(renumberNode, cmp.selectedNode);
+            close(cmp);
+        }, close, {
+            items : [{
+                xtype: 'box',
+                itemId: 'selectedMsg',
+                margin: '0 0 20 0'
+            }],
+            width: 400
+        });
+
+        winCmp.center();
+
+        var setSelectedNode = function(node, name) {
+            var msg = '';
+            var selectedText = node && node.textContent.trim() || '';
+            if (selectedText) {
+                var tpl = new Ext.Template("<h4 style=\"margin: 0px;\">You've selected the fragment {name} containing this text:</h4>{text}");
+                msg = tpl.apply({
+                    text: Ext.String.ellipsis(selectedText.trim(), 200, true),
+                    name: name
+                });
+                winCmp.selectedNode = node;
+            } else {
+                winCmp.selectedNode = null;
+            }
+            
+            winCmp.down('[itemId=selectedMsg]').setHtml(msg);
+        }
+
+        me.secondEditorClickHandlerCustom = function(node, evt, ed) {
+            node = me.ensureHcontainerNode(node);
+            var oldNodeButton = node && DocProperties.getFirstButtonByName(DomUtils.getNameByNode(node));
+            if ( !node || !oldNodeButton || !winCmp || !winCmp.isVisible() ) return;
+
+            if ( markButton.name != oldNodeButton.name ) {
+                winCmp.selectedNode = null;
+                setSelectedNode(null);
+                return Ext.Msg.alert(Locale.strings.error, new Ext.Template(Locale.getString("haveToSelectElement", me.getPluginName())).apply({
+                    name : markButton.name
+                }));
+            }
+
+            setSelectedNode(node, oldNodeButton.name);
+        };
+    },
+
     splitHandler: function(button) {
         var me = this, editor = me.getController("Editor"),
             selection = editor.getSelectionObject(null, null, true),
@@ -1696,19 +1790,40 @@ Ext.define('AknModsMarker.Controller', {
         return this.addPassiveMeta(node, 'substitution', meta);
     },
 
-    updateRenumberingMetadata: function(node, oldText, renumberedNode) {
+    updateRenumberingMetadata: function(node, renumberedNode) {
         var me = this,
-            elId = LangProp.getNodeLangAttr(renumberedNode, "eId").value 
-                    || renumberedNode.getAttribute(DomUtils.elementIdAttribute);
+            prevElId = LangProp.getNodeLangAttr(renumberedNode, "eId").value 
+                    || renumberedNode.getAttribute(DomUtils.elementIdAttribute),
+            elId = node.getAttribute(DomUtils.elementIdAttribute);
 
         this.removeMod(elId); // Remove the possibly existing mod
+
+        var prevUri = me.secondDocumentConfig && me.secondDocumentConfig.expUri || '';
+        prevUri = (prevUri) ? prevUri+'#' : '';
         var meta = {
-            extraData: { previous: elId },
+            extraData: { previous: prevUri+prevElId },
             sourceDestinations: [
                 {type: 'destination', href: elId}
             ]
         };
         this.addPassiveMeta(node, 'renumbering', meta);
+        this.addMapping(prevElId, elId);
+    },
+
+    addMapping: function(original, current) {
+        var mappings = Ext.getStore('metadata').getMainDocument().mappings();
+        var existedMap = false;
+        mappings.each(function(mapping) {
+            if (mapping.get('original') === original &&
+                    mapping.get('current') === current) {
+                existedMap = true;
+            }
+        });
+        if (!existedMap)
+            mappings.add({
+                original: original,
+                current: current
+            });
     },
 
     beforeSubstitutionHandler: function(aliasButton, elements) {
@@ -1751,7 +1866,7 @@ Ext.define('AknModsMarker.Controller', {
         var me = this, editor = me.getController("Editor"),
             panel = me.createAndShowFloatingForm(node, "Insert the new text",formText, false, function(form, text) {
                 var oldText = DomUtils.replaceTextOfNode(form.relatedNode, text);
-                me.updateRenumberingMetadata(form.relatedNode, oldText, form.renumberedNode);
+                me.updateRenumberingMetadata(form.relatedNode, form.renumberedNode);
                 form.renumberedNode.setAttribute(me.getRenumberingAttr(), oldText);
                 var button = DomUtils.getButtonByElement(form.renumberedNode);
                 me.setElementStyles([form.renumberedNode], button, button, {
@@ -1765,7 +1880,7 @@ Ext.define('AknModsMarker.Controller', {
             }, function(form) {
                 if(update) {
                     var oldText = DomUtils.replaceTextOfNode(form.relatedNode, form.originalText);
-                    me.updateRenumberingMetadata(form.relatedNode, oldText, form.renumberedNode);
+                    me.updateRenumberingMetadata(form.relatedNode, form.renumberedNode);
                 } else {
                     //me.application.fireEvent(Statics.eventsNames.unmarkNodes, [form.relatedNode]);
                     //TODO: remove meta
