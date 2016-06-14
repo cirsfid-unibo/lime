@@ -735,14 +735,12 @@ class newAKNDiff09 extends AKNDiff {
 		$xpath = new DOMXPath($table->ownerDocument);
 		$rows = $table->getElementsByTagName("tr");
 		$equalCount = 0;
-		$renumberingCount = 0;
 		foreach($rows as $row) {
 			$cells = $row->getElementsByTagName("td");
 			if($cells->length == 2) {
 				$firstChild = $cells->item(0);
 				$secondChild = $cells->item(1);
 				$modsXpath = ".//*[contains(@class, 'insertion') or contains(@class, 'substitution') or contains(@class, 'repeal')]";
-				$renumberingXpath = ".//*[@renumbering and contains(@parentClass, 'hcontainer')]";
 				$firstMods = $xpath->query($modsXpath, $firstChild);
 				$secondMods = $xpath->query($modsXpath, $secondChild);
 				if(!$firstMods->length && !$secondMods->length && 
@@ -751,18 +749,23 @@ class newAKNDiff09 extends AKNDiff {
 					//$this->setAllAttribute(array($firstChild, $secondChild), "style", "background-color:red;");
 					$equalCount++;
 				}
-				$firstRenumbering = $xpath->query($renumberingXpath, $firstChild);
-				$secondRenumbering = $xpath->query($renumberingXpath, $secondChild);
-				if($firstRenumbering->length) {
-					$this->setAllAttribute(array($firstChild), "renumberingTo", "rnb$renumberingCount");
-					$this->setAllAttribute(array($secondChild), "renumberingFrom", "rnb$renumberingCount");
-					$renumberingCount++;
-				} else if ($secondRenumbering->length) {
-					$this->setAllAttribute(array($secondChild), "renumberingTo", "rnb$renumberingCount");
-					$this->setAllAttribute(array($firstChild), "renumberingFrom", "rnb$renumberingCount");
-					$renumberingCount++;
-				}
 			}
+		}
+
+		$renumberedNodes = $xpath->query(".//*[@renumbering and contains(@parentClass, 'hcontainer')]", $table);
+		$renumberingCount = 0;
+		foreach($renumberedNodes as $node) {
+			$originalId = $node->getAttribute("parentOriginalId");
+			if (!$originalId) continue;
+			$oldNodes = $this->findOldNodes($node, $table, $originalId);
+			if (!count($oldNodes)) continue;
+			$oldNode = $oldNodes[0];
+
+			$tdNew = $this->getParentByName($node, "td");
+			$tdOld = $this->getParentByName($oldNode, "td");
+			$tdOld->setAttribute("renumberingFrom", "rnb$renumberingCount");
+			$tdNew->setAttribute("renumberingTo", "rnb$renumberingCount");
+			$renumberingCount++;
 		}
 	}
 	
@@ -1163,7 +1166,7 @@ class newAKNDiff09 extends AKNDiff {
 		return FALSE;
 	}
 
-	protected function findOldNodes($node, $table) {
+	protected function findOldNodes($node, $table, $id="") {
 		$xpath = new DOMXPath($table->ownerDocument);
 		$wId = $node->getAttribute("akn_wId");
 		if ($wId) {
@@ -1172,7 +1175,8 @@ class newAKNDiff09 extends AKNDiff {
 			$oldNodes = $this->findNodesContainPrentId($wId, $table);
 			if (count($oldNodes)) return $oldNodes;
 		}
-		$eId = $node->getAttribute("akn_eId");
+
+		$eId = (strlen($id)) ? $id : $node->getAttribute("akn_eId");
 		if ($eId) {
 			$oldNodes = $this->nodeListToArray($xpath->query("(//*[@class='oldVersion']//*[@akn_eId='$eId'])", $table));
 			if (count($oldNodes)) return $oldNodes;

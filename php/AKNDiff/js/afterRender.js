@@ -55,12 +55,13 @@ function createRenumberingCellBox(firstCell, secondCell, leftToRight) {
         firstPos = getPos(firstEl),
         secondPos = getPos(secondEl),
         boxX = firstPos.x+widthF,
-        boxH = Math.max(heightS, heightF);
+        startY = Math.min(firstPos.y, secondPos.y),
+        boxH = Math.max(firstPos.y, secondPos.y)-startY+Math.max(heightS, heightF);
 
      var svgBoxSettings = {
         pos : {
             x : boxX,
-            y : firstPos.y
+            y : startY
         },
         size : {
             w : secondPos.x-boxX,
@@ -72,6 +73,9 @@ function createRenumberingCellBox(firstCell, secondCell, leftToRight) {
         !isNaN(svgBoxSettings.pos.y) &&
         !isNaN(svgBoxSettings.size.w) && !isNaN(svgBoxSettings.size.h)) {
         var svgBox = createArrowsBox(svgBoxSettings);
+        firstPos.y = firstPos.y-startY;
+        secondPos.y = secondPos.y-startY;
+
         createRenumberingArrows(svgBox, svgBoxSettings, {
             pos : firstPos,
             size : {
@@ -346,30 +350,34 @@ function createArrows(box, boxSettings, td, oppositeTds, type) {
 }
 
 function createRenumberingArrows(box, boxSettings, first, second, leftToRight) {
-    var xPadding = 5, arrowPadding = 7, middleY, arrowX1, arrowX2;
+    var xPadding = 5, arrowPadding = 7, middleY, arrowX1, arrowX2, arrowY1, arrowY2;
 
     if (leftToRight) {
         arrowX1 = xPadding+arrowPadding/2;
         arrowX2 = boxSettings.size.w-xPadding-arrowPadding;
+        arrowY1 = first.pos.y+(first.size.h/2);
+        arrowY2 = second.pos.y+(second.size.h/2);
     } else {
         arrowX1 = boxSettings.size.w-xPadding-(arrowPadding/2);
         arrowX2 = xPadding+arrowPadding;
+        arrowY1 = second.pos.y;
+        arrowY2 = first.pos.y;
     }
 
     tdLine = createSvgElement("line", {
         x1 : xPadding,
-        y1 : 0,
+        y1 : first.pos.y,
         x2 : xPadding,
-        y2 : boxSettings.size.h,
+        y2 : first.pos.y+first.size.h,
         stroke : "blue",
         "stroke-width" : "2"
     });
     middleY = boxSettings.size.h / 2;
     tdLine2 = createSvgElement("line", {
         x1 : boxSettings.size.w-xPadding,
-        y1 : 0,
+        y1 : second.pos.y,
         x2 : boxSettings.size.w-xPadding,
-        y2 : boxSettings.size.h,
+        y2 : second.pos.y+second.size.h,
         stroke : "blue",
         "stroke-width" : "2"
     });
@@ -378,9 +386,9 @@ function createRenumberingArrows(box, boxSettings, first, second, leftToRight) {
 
     arrow = createSvgElement("line", {
             x1 : arrowX1,
-            y1 : middleY,
+            y1 : arrowY1,
             x2 : arrowX2,
-            y2 : middleY,
+            y2 : arrowY2,
             stroke : "blue",
             "stroke-width" : "2",
             "marker-end" : "url(#triangle)"
