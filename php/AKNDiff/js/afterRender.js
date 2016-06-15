@@ -74,7 +74,9 @@ function createRenumberingCellBox(firstCell, secondCell, leftToRight) {
         !isNaN(svgBoxSettings.size.w) && !isNaN(svgBoxSettings.size.h)) {
         var svgBox = createArrowsBox(svgBoxSettings);
         firstPos.y = firstPos.y-startY;
+        firstPos.x = 0;
         secondPos.y = secondPos.y-startY;
+        secondPos.x = svgBoxSettings.size.w;
 
         createRenumberingArrows(svgBox, svgBoxSettings, {
             pos : firstPos,
@@ -350,48 +352,55 @@ function createArrows(box, boxSettings, td, oppositeTds, type) {
 }
 
 function createRenumberingArrows(box, boxSettings, first, second, leftToRight) {
-    var xPadding = 5, arrowPadding = 7, middleY, arrowX1, arrowX2, arrowY1, arrowY2;
+    var xPadding = 5, arrowPadding = 7, arrowY1, arrowY2,
+        middleX = boxSettings.size.w/2, middleY = boxSettings.size.h / 2,
+        arrowX1 = middleX,
+        pathData = '',
+        firstLineToMiddle = '', secondLineToMiddle = '';
 
     if (leftToRight) {
-        arrowX1 = xPadding+arrowPadding/2;
         arrowX2 = boxSettings.size.w-xPadding-arrowPadding;
-        arrowY1 = first.pos.y+(first.size.h/2);
-        arrowY2 = second.pos.y+(second.size.h/2);
+        arrowY1 = second.pos.y+(second.size.h/2);
+        arrowY2 = arrowY1;
+        firstLineToMiddle = ' m0'+' -'+first.size.h/2+' H'+boxSettings.size.w/2;
     } else {
-        arrowX1 = boxSettings.size.w-xPadding-(arrowPadding/2);
         arrowX2 = xPadding+arrowPadding;
-        arrowY1 = second.pos.y;
-        arrowY2 = first.pos.y;
+        arrowY1 = first.pos.y+(first.size.h/2);
+        arrowY2 = arrowY1;
+        firstLineToMiddle = ' M'+boxSettings.size.w/2+' '+(first.pos.y+first.size.h/2);
+        secondLineToMiddle = ' H'+(boxSettings.size.w-xPadding);
     }
 
-    tdLine = createSvgElement("line", {
-        x1 : xPadding,
-        y1 : first.pos.y,
-        x2 : xPadding,
-        y2 : first.pos.y+first.size.h,
-        stroke : "blue",
-        "stroke-width" : "2"
-    });
-    middleY = boxSettings.size.h / 2;
-    tdLine2 = createSvgElement("line", {
-        x1 : boxSettings.size.w-xPadding,
-        y1 : second.pos.y,
-        x2 : boxSettings.size.w-xPadding,
-        y2 : second.pos.y+second.size.h,
-        stroke : "blue",
-        "stroke-width" : "2"
-    });
-    box.appendChild(tdLine);
-    box.appendChild(tdLine2);
+    var pathData = 'M'+first.pos.x+xPadding+' '+first.pos.y+' V'+(first.pos.y+first.size.h)+
+            firstLineToMiddle+' V'+(second.pos.y+second.size.h/2)+
+            secondLineToMiddle+
+            ' M'+(boxSettings.size.w-xPadding)+' '+second.pos.y+
+            ' v'+second.size.h;
 
+    var path = createSvgElement('path', {
+        d: pathData,
+        stroke : 'blue',
+        'stroke-width' : 2,
+        'fill-opacity': 0 ,
+        'stroke-linejoin': 'round'
+    });
+    box.appendChild(path);
     arrow = createSvgElement("line", {
-            x1 : arrowX1,
-            y1 : arrowY1,
-            x2 : arrowX2,
-            y2 : arrowY2,
-            stroke : "blue",
-            "stroke-width" : "2",
-            "marker-end" : "url(#triangle)"
+        x1 : arrowX1,
+        y1 : arrowY1,
+        x2 : arrowX2,
+        y2 : arrowY2,
+        stroke : "blue",
+        "stroke-width" : "2",
+        "marker-end" : "url(#triangle)"
     });
     box.appendChild(arrow);
+    image = createSvgElement('image', {
+        x: 0,
+        y: middleY-boxSettings.size.w/2,
+        height: boxSettings.size.w,
+        width: boxSettings.size.w
+    });
+    image.setAttributeNS('http://www.w3.org/1999/xlink','href', 'data/renumberIcon.svg')
+    box.appendChild(image);
 }

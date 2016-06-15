@@ -601,13 +601,14 @@ class newAKNDiff09 extends AKNDiff {
 			$tdNew = (array_key_exists($i, $tdsNew)) ? $tdsNew[$i] : FALSE;
 			
 			if ($tdNew) {
-				$parent = $xpath->query(".//*/@parentOriginalId", $tdNew);
-				if ($parent->length > 0) {
-					$parent = $parent->item(0)->nodeValue;
-				} else {
-					$parent = $xpath->query(".//*/@parent", $tdNew);
-					if ($parent->length > 0) $parent = $parent->item(0)->nodeValue;
-				}
+				// TODO: check if this is really need to be removed
+				// $parent = $xpath->query(".//*/@parentOriginalId", $tdNew);
+				// if ($parent->length > 0) {
+				// 	$parent = $parent->item(0)->nodeValue;
+				// } else {
+				// }
+				$parent = $xpath->query(".//*/@parent", $tdNew);
+				if ($parent->length > 0) $parent = $parent->item(0)->nodeValue;
 			}
 			
 
