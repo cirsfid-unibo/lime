@@ -1024,11 +1024,15 @@ class newAKNDiff09 extends AKNDiff {
 		};
 
 
-		if ((!$destNodes->length || !$searchSubstitution($destNodes, $parentWithWid ? FALSE : TRUE)) && $parentWithWid) {
-			$destNodes = $this->findOldNodes($parentWithWid, $table);
-			if (count($destNodes)) {
-				$searchSubstitution($destNodes);
+		$found = FALSE;
+		if ($parentWithWid) {
+			$destNodesW = $this->findOldNodes($parentWithWid, $table);
+			if (count($destNodesW)) {
+				$found = $searchSubstitution($destNodesW, $destNodes->length ? FALSE : TRUE);
 			}
+		}
+		if ($destNodes->length && !$found) {
+			$searchSubstitution($destNodes, TRUE);
 		}
 	}
 
@@ -1174,7 +1178,11 @@ class newAKNDiff09 extends AKNDiff {
 			$oldNodes = $this->nodeListToArray($xpath->query("(//*[@class='oldVersion']//*[@akn_wId='$wId' or @parentWid='$wId' or @akn_eId='$wId'])", $table));
 			if (count($oldNodes)) return $oldNodes;
 			$oldNodes = $this->findNodesContainPrentId($wId, $table);
-			if (count($oldNodes)) return $oldNodes;
+			if (count($oldNodes)) {
+				$filtered = $this->filterNodesParentAttr($oldNodes, $node->getAttribute('parent'));
+				if (count($filtered)) return $filtered;
+				return $oldNodes;
+			}
 		}
 
 		$eId = (strlen($id)) ? $id : $node->getAttribute("akn_eId");
@@ -1182,7 +1190,11 @@ class newAKNDiff09 extends AKNDiff {
 			$oldNodes = $this->nodeListToArray($xpath->query("(//*[@class='oldVersion']//*[@akn_eId='$eId'])", $table));
 			if (count($oldNodes)) return $oldNodes;
 			$oldNodes = $this->findNodesContainPrentId($eId, $table);
-			if (count($oldNodes)) return $oldNodes;
+			if (count($oldNodes)) {
+				$filtered = $this->filterNodesParentAttr($oldNodes, $node->getAttribute('parent'));
+				if (count($filtered)) return $filtered;
+				return $oldNodes;
+			}
 		}
 		return array();
 	}
@@ -1201,11 +1213,26 @@ class newAKNDiff09 extends AKNDiff {
 		$oldNodes = $xpath->query("//*[@class='oldVersion']//*[contains(@parent,'$id')]", $table);
 		$returnNodes = array();
 		foreach ($oldNodes as $node) {
-			$parents = explode(" ", $node->getAttribute('parent'));
+			$parent = $node->getAttribute('parent');
+			$parents = explode(" ", $parent);
 			if (in_array($id, $parents))
 				$returnNodes[] = $node;
 		}
 		return $returnNodes;
+	}
+
+	protected function filterNodesParentAttr($nodes, $parentAttr) {
+		$eId = explode(" ", $parentAttr)[0];
+		$filtered = array();
+		foreach ($nodes as $node) {
+			$parenteId = explode(" ", $node->getAttribute('parent'))[0];
+			// Keep the node with similar ids
+			if ( $this->rebuildwIdFromeId($eId, $parenteId) ==
+					$this->rebuildwIdFromeId($parenteId, $eId)) {
+				$filtered[] = $node;
+			}
+		}
+		return $filtered;
 	}
 
 	protected function getFirstOldParent($nodes, $text, $table) {

@@ -1130,7 +1130,7 @@ Ext.define('AknModsMarker.Controller', {
             if (!cmp.selectedNode) {
                 return Ext.MessageBox.alert("Error", 'You have to select the fragment which was renumbered.');
             }
-            me.updateRenumberingMetadata(renumberNode, cmp.selectedNode);
+            me.registerRenambering(renumberNode, cmp.selectedNode);
             close(cmp);
         }, close, {
             items : [{
@@ -1147,10 +1147,12 @@ Ext.define('AknModsMarker.Controller', {
             var msg = '';
             var selectedText = node && node.textContent.trim() || '';
             if (selectedText) {
-                var tpl = new Ext.Template("<h4 style=\"margin: 0px;\">You've selected the fragment {name} containing this text:</h4>{text}");
+                var num = node && DomUtils.getNodeExtraInfo(node, 'hcontainer', 10);
+                var tpl = new Ext.Template("<h4 style=\"margin: 0px;\">You've selected the fragment {name} ({num}) containing this text:</h4>{text}");
                 msg = tpl.apply({
                     text: Ext.String.ellipsis(selectedText.trim(), 200, true),
-                    name: name
+                    name: name,
+                    num: num
                 });
                 winCmp.selectedNode = node;
             } else {
@@ -1175,6 +1177,39 @@ Ext.define('AknModsMarker.Controller', {
 
             setSelectedNode(node, oldNodeButton.name);
         };
+    },
+
+    registerRenambering: function(node, oldNode) {
+        var me = this;
+        var getAllSibSameClass = function(node) {
+            var cls = node.getAttribute('class'),
+                nodes = [],
+                children = node.parentNode.children;
+            for(var i = 0; i < children.length; i++) {
+                if (children[i].getAttribute('class') === cls)
+                    nodes.push(children[i])
+            }
+            return nodes;
+        }
+        var children = getAllSibSameClass(node);
+        var childrenOld = getAllSibSameClass(oldNode);
+        var nodeIndex = children.indexOf(node);
+        var oldNodeIndex = childrenOld.indexOf(oldNode);
+        var minIndex = Math.min(nodeIndex, oldNodeIndex);
+        var maxIndex = Math.max(nodeIndex, oldNodeIndex);
+
+        this.updateRenumberingMetadata(node, oldNode);
+
+        children = children.slice(minIndex, maxIndex+1);
+        childrenOld = childrenOld.slice(minIndex, maxIndex+1);
+        children.splice(nodeIndex, 1);
+        childrenOld.splice(oldNodeIndex, 1);
+        // Apply renumbering to nodes in the middle
+        children.forEach(function(node, index) {
+            // TODO: understand if some check is needed before set renumbering
+            if (childrenOld[index])
+                me.updateRenumberingMetadata(node, childrenOld[index]);
+        });
     },
 
     splitHandler: function(button) {
@@ -1806,10 +1841,12 @@ Ext.define('AknModsMarker.Controller', {
                 {type: 'destination', href: elId}
             ]
         };
+        node.setAttribute(LangProp.attrPrefix+'wid', prevElId);
         this.addPassiveMeta(node, 'renumbering', meta);
-        this.addMapping(prevElId, elId);
+        // this.addMapping(prevElId, elId);
     },
 
+    // TODO: check how need to be done
     addMapping: function(original, current) {
         var mappings = Ext.getStore('metadata').getMainDocument().mappings();
         var existedMap = false;
