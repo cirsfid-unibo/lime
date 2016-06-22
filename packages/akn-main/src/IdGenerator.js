@@ -100,8 +100,9 @@ Ext.define('AknMain.IdGenerator', {
         try {
             if ( enforce || me.needsElementId(elName, button) ) {
                 var markedParent = DomUtils.getFirstMarkedAncestor(node.parentNode),
-                    documentContext = Ext.fly(node).parent('.document'),
-                    
+                    documentContext = Ext.fly(node).parent('.document');
+
+                documentContext = documentContext || Ext.fly(root);
                 markingId = me.getMarkingIdParentPart(elName, markedParent, documentContext);
 
                 var context = markedParent || root;
