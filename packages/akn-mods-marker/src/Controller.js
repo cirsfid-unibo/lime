@@ -1202,13 +1202,16 @@ Ext.define('AknModsMarker.Controller', {
 
         children = children.slice(minIndex, maxIndex+1);
         childrenOld = childrenOld.slice(minIndex, maxIndex+1);
+        nodeIndex = children.indexOf(node);
+        oldNodeIndex = childrenOld.indexOf(oldNode);
         children.splice(nodeIndex, 1);
         childrenOld.splice(oldNodeIndex, 1);
         // Apply renumbering to nodes in the middle
         children.forEach(function(node, index) {
             // TODO: understand if some check is needed before set renumbering
-            if (childrenOld[index])
+            if (childrenOld[index]) {
                 me.updateRenumberingMetadata(node, childrenOld[index]);
+            }
         });
     },
 

@@ -56,6 +56,7 @@ class nPassiveModification extends PassiveModification {
 	public function __construct($mod) {
 		if ($mod->nodeType == XML_ELEMENT_NODE) {
 			$this->type = $mod->getAttribute('type');
+			$this->eid = $mod->getAttribute('eId');
 			$this->destinations = array();
 			$this->olds = array();
 			$this->destination = substr($mod->getElementsByTagName('destination')->item(0)->getAttribute('href'),1);
@@ -753,10 +754,11 @@ class newAKNDiff09 extends AKNDiff {
 			}
 		}
 
-		$renumberedNodes = $xpath->query(".//*[@renumbering and contains(@parentClass, 'hcontainer')]", $table);
-		$renumberingCount = 0;
+		$renumberedNodes = $xpath->query(".//*[@renumbering and contains(@parentClass, 'container')]", $table);
+
 		foreach($renumberedNodes as $node) {
 			$originalId = $node->getAttribute("parentOriginalId");
+			$renumberingId = $node->getAttribute("renumbering");
 			if (!$originalId) continue;
 			$oldNodes = $this->findOldNodes($node, $table, $originalId);
 			if (!count($oldNodes)) continue;
@@ -764,9 +766,8 @@ class newAKNDiff09 extends AKNDiff {
 
 			$tdNew = $this->getParentByName($node, "td");
 			$tdOld = $this->getParentByName($oldNode, "td");
-			$tdOld->setAttribute("renumberingFrom", "rnb$renumberingCount");
-			$tdNew->setAttribute("renumberingTo", "rnb$renumberingCount");
-			$renumberingCount++;
+			$tdOld->setAttribute("renumberingFrom", $renumberingId);
+			$tdNew->setAttribute("renumberingTo", $renumberingId);
 		}
 	}
 	
@@ -1044,7 +1045,7 @@ class newAKNDiff09 extends AKNDiff {
 
 	protected function applyModRenumbering($mod, $xpath, $table) {
 		$renumberingNodes = $xpath->query("//*[@class='newVersion']//*[@parentOriginalId and (@akn_currentId ='$mod->id' or contains(@parent,'$mod->id'))]", $table);
-		$this->setAllAttribute($renumberingNodes, "renumbering", "true");
+		$this->setAllAttribute($renumberingNodes, "renumbering", $mod->eid);
 	}
 
 	protected function applyModSplit($mod, $xpath, $table) {

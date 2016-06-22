@@ -13,24 +13,57 @@ function isPrintMode() {
 }
 
 function applyRenumbering() {
-    var equalCells = document.querySelectorAll("*[renumberingfrom]");
+    var renbrAttr = 'renumberingfrom';
+    var equalCells = Array.prototype.slice.call(document.querySelectorAll("*["+renbrAttr+"]"));
+    equalCells.sort(function(nodeA, nodeB) {
+        var nrA = nodeA.getAttribute(renbrAttr),
+            nrB = nodeB.getAttribute(renbrAttr);
+        if (nrA < nrB) return -1;
+        if (nrA > nrB) return 1;
+        return 0;
+    })
+
+    var arrowsRenumbering = [], iconsRenumbering = [], pastRenumberings = [];
     for(var i = 0; i < equalCells.length; i++) {
-        var firstCell = equalCells.item(i),
-            equalId = firstCell.getAttribute("renumberingfrom");
+        var firstCell = equalCells[i],
+            equalId = firstCell.getAttribute(renbrAttr);
             secondCell = document.querySelectorAll("*[renumberingto='"+equalId+"']").item(0);
-        if(secondCell) {
+        if(secondCell && pastRenumberings.indexOf(equalId) == -1) {
             try {
                 createWrapper(firstCell);
                 createWrapper(secondCell);
+                var firstOppositeRenumbering = getOppositeTd(firstCell).getAttribute('renumberingto');
+                var secondOppositeRenumbering = getOppositeTd(secondCell).getAttribute(renbrAttr);
+                var drawArrow = !(firstOppositeRenumbering && secondOppositeRenumbering
+                                && ((pastRenumberings.indexOf(firstOppositeRenumbering) != -1)
+                                || (pastRenumberings.indexOf(secondOppositeRenumbering) != -1)));
+                var cells = [];
                 if(getPosInParent(firstCell) > getPosInParent(secondCell)) {
-                    createRenumberingCellBox(secondCell, firstCell);
+                    cells = [secondCell, firstCell, false];
                 } else {
-                    createRenumberingCellBox(firstCell, secondCell, true);
+                    cells = [firstCell, secondCell, true];
                 }
+                if (drawArrow)
+                    arrowsRenumbering.push(cells);
+                else
+                    iconsRenumbering.push(cells);
 
+                pastRenumberings.push(equalId);
             }catch(e){};
         }
     }
+    // Adding the icons first because the spaces could change
+    iconsRenumbering.forEach(function(cells) {
+        createRenumberingIcon(cells[0], cells[1]);
+    });
+    arrowsRenumbering.forEach(function(cells) {
+        createRenumberingCellBox(cells[0], cells[1], cells[2]);
+    });
+}
+
+function getOppositeTd(tdNode) {
+    var tr = getParentByName(tdNode, 'tr');
+    return tr.children[1-getPosInParent(tdNode)];
 }
 
 function createWrapper(element) {
@@ -94,6 +127,22 @@ function createRenumberingCellBox(firstCell, secondCell, leftToRight) {
 
         document.body.appendChild(svgBox);
     }
+}
+
+function createRenumberingIcon(fromNode, toNode) {
+    var targetNode = toNode && toNode.querySelector('p')
+    targetNode = targetNode || toNode;
+    var infoImg = document.createElement('img');
+    var oldText = 'Previous: '+fromNode.textContent;
+    infoImg.setAttribute('src', 'data/renumberIcon.svg');
+    infoImg.setAttribute('width', '40px');
+    infoImg.setAttribute('height', '40px');
+    infoImg.setAttribute('style', 'vertical-align:middle');
+    var aNode = document.createElement('a');
+    aNode.setAttribute('class', 'renumberingIcon');
+    aNode.setAttribute('data-title', oldText);
+    aNode.appendChild(infoImg);
+    targetNode.appendChild(aNode);
 }
 
 function applyJoins() {
