@@ -1049,18 +1049,6 @@ Ext.define('AknModsMarker.Controller', {
             editor = me.getController('Editor'),
             selectionRange = editor.lastSelectionRange || editor.getEditor().selection.getRng();
 
-        var getNextSiblingsSameCls = function (node) {
-            var siblings = [],
-                cls = node.getAttribute('class');
-            
-            while(node.nextSibling) {
-                node = node.nextSibling;
-                if (node.getAttribute('class') === cls)
-                    siblings.push(node);
-            }
-            return siblings;
-        }
-
         if ( selectionRange.toString() ) {
             var aliasButton = DocProperties.getFirstButtonByName('ins');
             me.application.fireEvent('markingMenuClicked', aliasButton, {
@@ -1072,17 +1060,34 @@ Ext.define('AknModsMarker.Controller', {
             
             var button = DomUtils.getButtonByElement(focusedNode);
             me.insertionHandler(button, [focusedNode]);
-
+            // For now ask renumbering only in consolidation mode
+            if ( DocProperties.documentState != 'diffEditingScenarioB' ) return;
             me.askForRenumbering(function() {
-                // Add the wid attribute to every similar sibling
-                getNextSiblingsSameCls(focusedNode).forEach(function(node, index, arr) {
+                me.getNextSiblingsSameCls(focusedNode).forEach(function(node, index, arr) {
                     var prevNode = (index != 0) ? arr[index-1] : focusedNode;
-                    var eid = prevNode.getAttribute(LangProp.attrPrefix+'eid');
-                    if (eid)
-                        node.setAttribute(LangProp.attrPrefix+'wid', eid);
+                    // Register a renumbering as if the previous sibling were the old node
+                    // this works in most cases but not always
+                    // TODO: try to get the real old node from the previous version
+                    me.updateRenumberingMetadata(node, prevNode);
                 });
             });
         }
+    },
+
+    getNextSiblingsSameCls: function(node) {
+        var allSiblings = this.getAllSibSameClass(node);
+        return allSiblings.slice(allSiblings.indexOf(node)+1);
+    },
+
+    getAllSibSameClass: function(node) {
+        var cls = node.getAttribute('class'),
+            nodes = [],
+            children = node.parentNode.children;
+        for(var i = 0; i < children.length; i++) {
+            if (children[i].getAttribute('class') === cls)
+                nodes.push(children[i])
+        }
+        return nodes;
     },
 
     insertionHandler: function(button, markedElements) {
@@ -1181,31 +1186,22 @@ Ext.define('AknModsMarker.Controller', {
 
     registerRenambering: function(node, oldNode) {
         var me = this;
-        var getAllSibSameClass = function(node) {
-            var cls = node.getAttribute('class'),
-                nodes = [],
-                children = node.parentNode.children;
-            for(var i = 0; i < children.length; i++) {
-                if (children[i].getAttribute('class') === cls)
-                    nodes.push(children[i])
-            }
-            return nodes;
-        }
-        var children = getAllSibSameClass(node);
-        var childrenOld = getAllSibSameClass(oldNode);
+        var children = me.getAllSibSameClass(node);
+        var childrenOld = me.getAllSibSameClass(oldNode);
         var nodeIndex = children.indexOf(node);
         var oldNodeIndex = childrenOld.indexOf(oldNode);
         var minIndex = Math.min(nodeIndex, oldNodeIndex);
         var maxIndex = Math.max(nodeIndex, oldNodeIndex);
-
-        this.updateRenumberingMetadata(node, oldNode);
-
+        // Consider the portion of the list from minIndex to maxIndex
         children = children.slice(minIndex, maxIndex+1);
         childrenOld = childrenOld.slice(minIndex, maxIndex+1);
+        // Remove node and oldNode from children list
         nodeIndex = children.indexOf(node);
         oldNodeIndex = childrenOld.indexOf(oldNode);
         children.splice(nodeIndex, 1);
         childrenOld.splice(oldNodeIndex, 1);
+
+        me.updateRenumberingMetadata(node, oldNode);
         // Apply renumbering to nodes in the middle
         children.forEach(function(node, index) {
             // TODO: understand if some check is needed before set renumbering
@@ -1708,12 +1704,16 @@ Ext.define('AknModsMarker.Controller', {
                 if ( !node ) return;
                 var markButton = DocProperties.getFirstButtonByName(DomUtils.getNameByNode(node));
                 var editor = me.getController('Editor');
-                var tpl = new Ext.Template("<h4>You've selected the element <b>{name}</b> which contains the following text:</h4>{text}");
+                var tpl = new Ext.Template("<h4>You've selected the element <b>{name}</b> ({num}) which contains the following text:</h4>{text}");
 
                 editor.unFocusNodes(false, ed.getBody());
                 editor.setFocusStyle(node);
 
-                msg = tpl.apply({text: node.textContent.trim(), name: markButton.shortLabel});
+                msg = tpl.apply({
+                    text: node.textContent.trim(),
+                    num: node && DomUtils.getNodeExtraInfo(node, 'hcontainer', 10),
+                    name: markButton.shortLabel
+                });
                 winCmp.selectedNode = node;
             }
             winCmp.down('[itemId=accept]').enable();
@@ -1761,14 +1761,27 @@ Ext.define('AknModsMarker.Controller', {
                 noEvent : true,
                 nodes : [wrapNode]
             });
+            return wrapNode;
+        };
+
+        var renumbering = function(node, removedNode) {
+            me.askForRenumbering(function() {
+                var nextSiblings = me.getNextSiblingsSameCls(node);
+                var nextSiblingsOld = me.getNextSiblingsSameCls(removedNode);
+                nextSiblings.forEach(function(node, index) {
+                    var prevNode = nextSiblingsOld[index];
+                    me.updateRenumberingMetadata(node, prevNode);
+                });
+            });
         };
 
         var afterDelMarked = function(node) {
             if (removedText && !removedNode)
                 me.addDelMeta(node, removedText);
             else {
-                wrapDelWithNode(node, removedNode);
+                var wrapNode = wrapDelWithNode(node, removedNode);
                 me.addDelMeta(node, removedNode.textContent.trim());
+                renumbering(wrapNode, removedNode);
             }
         };
 
@@ -1845,8 +1858,8 @@ Ext.define('AknModsMarker.Controller', {
             ]
         };
         node.setAttribute(LangProp.attrPrefix+'wid', prevElId);
-        this.addPassiveMeta(node, 'renumbering', meta);
         // this.addMapping(prevElId, elId);
+        return this.addPassiveMeta(node, 'renumbering', meta);
     },
 
     // TODO: check how need to be done

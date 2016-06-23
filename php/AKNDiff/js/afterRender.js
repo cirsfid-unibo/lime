@@ -34,7 +34,7 @@ function applyRenumbering() {
                 createWrapper(secondCell);
                 var firstOppositeRenumbering = getOppositeTd(firstCell).getAttribute('renumberingto');
                 var secondOppositeRenumbering = getOppositeTd(secondCell).getAttribute(renbrAttr);
-                var drawArrow = !(firstOppositeRenumbering && secondOppositeRenumbering
+                var drawArrow = !((firstOppositeRenumbering || secondOppositeRenumbering)
                                 && ((pastRenumberings.indexOf(firstOppositeRenumbering) != -1)
                                 || (pastRenumberings.indexOf(secondOppositeRenumbering) != -1)));
                 var cells = [];
