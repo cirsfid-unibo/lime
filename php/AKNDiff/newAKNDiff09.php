@@ -294,11 +294,11 @@ class newAKNDiff09 extends AKNDiff {
 			foreach ($lastNodes as $lastNode) {
 				$text = $this->joinText($firstNode, $lastNode);
 				if ($this->removeSpaces($text) == $str) {
-					return [$firstNode, $lastNode];
+					return array($firstNode, $lastNode);
 				}
 			}
 		}
-		return [];
+		return array();
 	}
 
 	protected function strpos_all($str, $needle) {
@@ -1223,10 +1223,12 @@ class newAKNDiff09 extends AKNDiff {
 	}
 
 	protected function filterNodesParentAttr($nodes, $parentAttr) {
-		$eId = explode(" ", $parentAttr)[0];
+		$eId = explode(" ", $parentAttr);
+		$eId = $eId[0];
 		$filtered = array();
 		foreach ($nodes as $node) {
-			$parenteId = explode(" ", $node->getAttribute('parent'))[0];
+			$parenteId = explode(" ", $node->getAttribute('parent'));
+			$parenteId = $parenteId[0];
 			// Keep the node with similar ids
 			if ( $this->rebuildwIdFromeId($eId, $parenteId) ==
 					$this->rebuildwIdFromeId($parenteId, $eId)) {
