@@ -987,54 +987,52 @@ class newAKNDiff09 extends AKNDiff {
 			}
 		}
 
-
-		$searchSubstitution = function($destNodes, $setErrors = TRUE) use ($mod, $xpath, $table, $precedingText, $subsNodes) {
-			//echo $mod->destination." - ".$destNodes->length. " - ".$mod->id." - ".$mod->old." - ".$precedingText."<br>";					
-			$this->setAllAttribute($subsNodes, "title", "Old string: ".$mod->old);
-			$this->setAllAttribute($subsNodes, "class", $mod->type);
-			$length = get_class($destNodes) == 'DOMNodeList' ? $destNodes->length : count($destNodes);
-
-			if($mod->old && $length) {
-				// Filter nodes based on preceding text
-				if ($precedingText && $length > 1) {
-					$txt = $this->removeSpaces($precedingText);
-					$nodes = array();
-					foreach ($destNodes as $nd) {
-						if ( strpos($this->removeSpaces($nd->textContent), $txt) !== FALSE ){
-							$nodes[] = $nd;
-						}
-					}
-					if (count($nodes)){
-						$destNodes = $nodes;
-					}
-				}
-
-				if($this->findAndwrapTextNode($mod->old, $destNodes, $mod->type, $precedingText) === FALSE) {
-					if ($setErrors) {
-						$this->setAllAttribute($subsNodes, "class", "errorSubstitution");
-						$this->setAllAttribute($subsNodes, "data-old", $mod->old);
-						$this->setAllAttribute($subsNodes, "title", $mod->old." not found", FALSE);
-					}
-					return FALSE;
-				}
-			} else {
-				//echo $mod->destination." - ".$mod->id." - ".$mod->old." - ".$precedingText."<br>";					
-				$this->setAllAttribute($destNodes, "class", $mod->type);	
-			}
-			return TRUE;
-		};
-
-
 		$found = FALSE;
 		if ($parentWithWid) {
 			$destNodesW = $this->findOldNodes($parentWithWid, $table);
 			if (count($destNodesW)) {
-				$found = $searchSubstitution($destNodesW, $destNodes->length ? FALSE : TRUE);
+				$found = $this->searchSubstitution($destNodesW, $mod, $xpath, $table, $precedingText, $subsNodes, $destNodes->length ? FALSE : TRUE);
 			}
 		}
 		if ($destNodes->length && !$found) {
-			$searchSubstitution($destNodes, TRUE);
+			$this->searchSubstitution($destNodes, $mod, $xpath, $table, $precedingText, $subsNodes, TRUE);
 		}
+	}
+
+	protected function searchSubstitution($destNodes, $mod, $xpath, $table, $precedingText, $subsNodes, $setErrors = TRUE) {
+		//echo $mod->destination." - ".$destNodes->length. " - ".$mod->id." - ".$mod->old." - ".$precedingText."<br>";					
+		$this->setAllAttribute($subsNodes, "title", "Old string: ".$mod->old);
+		$this->setAllAttribute($subsNodes, "class", $mod->type);
+		$length = get_class($destNodes) == 'DOMNodeList' ? $destNodes->length : count($destNodes);
+
+		if($mod->old && $length) {
+			// Filter nodes based on preceding text
+			if ($precedingText && $length > 1) {
+				$txt = $this->removeSpaces($precedingText);
+				$nodes = array();
+				foreach ($destNodes as $nd) {
+					if ( strpos($this->removeSpaces($nd->textContent), $txt) !== FALSE ){
+						$nodes[] = $nd;
+					}
+				}
+				if (count($nodes)){
+					$destNodes = $nodes;
+				}
+			}
+
+			if($this->findAndwrapTextNode($mod->old, $destNodes, $mod->type, $precedingText) === FALSE) {
+				if ($setErrors) {
+					$this->setAllAttribute($subsNodes, "class", "errorSubstitution");
+					$this->setAllAttribute($subsNodes, "data-old", $mod->old);
+					$this->setAllAttribute($subsNodes, "title", $mod->old." not found", FALSE);
+				}
+				return FALSE;
+			}
+		} else {
+			//echo $mod->destination." - ".$mod->id." - ".$mod->old." - ".$precedingText."<br>";					
+			$this->setAllAttribute($destNodes, "class", $mod->type);	
+		}
+		return TRUE;
 	}
 
 	protected function applyModInsertion($mod, $xpath, $table) {
