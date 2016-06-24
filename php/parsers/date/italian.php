@@ -61,9 +61,9 @@ $monthsNames = array(
 );
 
 $localpatterns = array(
+	"vigenza"    => "/(?<=Vigente al: )(?P<day>$day)\s*$date_sep\s*(?P<month>$num_month)\s*$date_sep\s*(?P<year>$year)/i",
 	"dd mm yyyy" => "/(?P<day>$day)\s*$date_sep\s*(?P<month>$num_month)\s*$date_sep\s*(?P<year>$year)/i",
 	"pubblicazione"    => "/(?:(?P<name>GU) n\.(?P<number>\d+) del )(?P<date_match>(?P<day>$day)\s*$date_sep\s*(?P<month>$num_month)\s*$date_sep\s*(?P<year>$year))/i",
-    "vigenza"    => "/(?<=Vigente al: )(?P<day>$day)\s*$date_sep\s*(?P<month>$num_month)\s*$date_sep\s*(?P<year>$year)/i",
 ) ;
 
 

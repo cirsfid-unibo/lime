@@ -55,13 +55,14 @@ $rules = Array(
     
 	"preambleInitList" => Array(
 							   "La\s+Camera\s+dei\s+deputati\s+ed\s+il\s+Senato\s+della\s+Repubblica\s+hanno\s+approvato;\s+IL\s+PRESIDENTE\s+DELLA\s+REPUBBLICA",
+							   "IL\s+MINISTRO\s+DEL\s+LAVORO\s+E\s+DELLE\s+POLITICHE\s+SOCIALI\s+di\s+concerto\s+",
 							   "IL\s+PRESIDENTE\s+DELLA\s+REPUBBLICA",
 							   "IL DIRETTORE GENERALE\s+DEL TESORO",
 							   "IL MINISTRO DELLA GIUSTIZIA",
-							   //"Il\s+Presidente\s+della\s+Repubblica\s*",						   
 							   "Attesto che",
 							   "Il [Cc]onsiglio regionale ha approvato\.?",
 							   "omissis",
+							   //"Il\s+Presidente\s+della\s+Repubblica\s*",
 							   ),
     
 	"preambleEndList" => Array (

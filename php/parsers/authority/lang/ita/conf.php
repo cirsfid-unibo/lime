@@ -55,7 +55,7 @@ $rules = Array(
 
 	"r2" => "/(?P<keeper>Visto,(?: il (?P<authority>Guardasigilli):)?) +{{signature}}/i",
 
-	"r3" => "/{{signature}}(?P<authority>)/i",
+	"r3" => "/\b{{signature}}\b(?P<authority>)/i",
 );
 
 ?>
