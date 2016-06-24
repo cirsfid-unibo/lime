@@ -807,6 +807,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             return wrapper;
         };
 
+        var markedElements = [];
         if (signatures.length) {
             Ext.each(signatures, function(item) {
                 var wrapper = findAndWrap(item.value, node, sigButton);
@@ -818,6 +819,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                     });
                     markRole(item, wrapper);
                     markPerson(item, wrapper);
+                    markedElements.push([item, wrapper]);
                 }
             }, me);
 
@@ -826,6 +828,9 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 me.addPersonMetadata(personNodes);
             }, 100);
         }
+        // Returning the marked elements in order to implement 
+        // custom behaviours by overriding this function
+        return markedElements;
     },
 
     wrapRange: function(range, tag) {
