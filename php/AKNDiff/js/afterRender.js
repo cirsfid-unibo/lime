@@ -45,9 +45,8 @@ function applyRenumbering() {
                 }
                 if (drawArrow)
                     arrowsRenumbering.push(cells);
-                else
-                    iconsRenumbering.push(cells);
 
+                iconsRenumbering.push(cells);
                 pastRenumberings.push(equalId);
             }catch(e){};
         }
@@ -444,12 +443,4 @@ function createRenumberingArrows(box, boxSettings, first, second, leftToRight) {
         "marker-end" : "url(#triangle)"
     });
     box.appendChild(arrow);
-    image = createSvgElement('image', {
-        x: 0,
-        y: middleY-boxSettings.size.w/2,
-        height: boxSettings.size.w,
-        width: boxSettings.size.w
-    });
-    image.setAttributeNS('http://www.w3.org/1999/xlink','href', 'data/renumberIcon.svg')
-    box.appendChild(image);
 }

@@ -241,9 +241,9 @@ class newAKNDiff09 extends AKNDiff {
 		$wrapNodes = array();
 		$nodes = $this->getTextNodesContaining($node, $searchText);
 		if(count($nodes)) {
-			foreach($nodes as $node) {
-				if($wrapperClass !== FALSE) {
-					$wrapNodes[] = $this->wrapTextNode($node, $searchText, $wrapperClass, FALSE,  $precedingText);	
+			if($wrapperClass !== FALSE) {
+				foreach($nodes as $node) {
+					$wrapNodes[] = $this->wrapTextNode($node, $searchText, $wrapperClass, FALSE,  $precedingText);
 				}
 			}	
 		} else {
@@ -343,7 +343,6 @@ class newAKNDiff09 extends AKNDiff {
 		$textData = $tNode->data;
 
 		$strings = explode($str, $textData);
-
 		if ( $precedingText && strlen($precedingText) && $precedingPos === 0 && count($strings) > 2 ) {
 			$stringsPrev = explode($str, $precedingText);
 
@@ -1133,7 +1132,8 @@ class newAKNDiff09 extends AKNDiff {
 				return;
 			}
 			if($mod->old) {
-				$repealNodes = $this->findAndwrapTextNode($mod->old, $destNodes, $mod->type);
+				$precedingText = ($firstTarget) ? $this->getPrecedingText($firstTarget) : "";
+				$repealNodes = $this->findAndwrapTextNode($mod->old, $destNodes, $mod->type, $precedingText);
 				if($repealNodes === FALSE) {
 					$this->setAllAttribute($targetNodes, "class", "errorRepeal");
 					$this->setAllAttribute($targetNodes, "data-old", $mod->old);
