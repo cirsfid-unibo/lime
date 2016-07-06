@@ -333,32 +333,6 @@
                 "person"
             ]
         },
-        "date": {
-            "askFor": {
-                "date1": {
-                    "label": "Date",
-                    "type": "date",
-                    "insert": {
-                        "attribute": {
-                            "name": "date"
-                        }
-                    }
-                }
-            }
-        },
-        "docDate": {
-            "askFor": {
-                "date1": {
-                    "label": "Date",
-                    "type": "date",
-                    "insert": {
-                        "attribute": {
-                            "name": "date"
-                        }
-                    }
-                }
-            }
-        },
         "list": {
             "children": [
                 "intro",
