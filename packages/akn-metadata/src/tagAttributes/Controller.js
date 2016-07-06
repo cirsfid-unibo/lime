@@ -99,6 +99,10 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
                     filters: ['TLCRole']
                 }]);
             break;
+            case 'docDate':
+            case 'date':
+                panel = this.createDatePanel(node);
+            break;
             default:
                 return;
         }
@@ -181,7 +185,7 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
             var allSaved = items.every(function(item) {
                     var cmb = panel.down('[itemId='+item.attr+']'),
                         value = cmb.getValue() || '';
-                    if (Ext.isString(value)) {
+                    if (Ext.isString(value) && value) {
                         var rec = references.findRecord('eid', value) ||
                                     references.findRecord('showAs', value);
                         if(!rec) {
@@ -197,7 +201,7 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
                         }
                         value = rec;
                     }
-                    return save(item.attr, value.get('eid'));
+                    return value && save(item.attr, value.get('eid'));
                 });
             if (allSaved)
                 me.closeContextPanel();
@@ -230,6 +234,36 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
                 }
             })
         });
+    },
+
+    createDatePanel: function(node) {
+        var me = this,
+            dateAttr = LangProp.attrPrefix+'date',
+            date = node.getAttribute(dateAttr);
+        date = date && Utilities.fixDateTime(new Date(date));
+        // Create a refs panel and change it by adding the date field
+        var panel = this.createNodeRefsPanel(node, [{
+            attr: 'refersTo',
+            filters: ['TLCEvent']
+        }]);
+        panel.setTitle(Locale.getString('date', 'akn-metadata'));
+        panel.contextHeight+=30;
+        panel.insert(0, {
+            xtype: 'datefield',
+            name: 'date',
+            fieldLabel: Locale.getString('date', 'akn-metadata'),
+            value: date
+        });
+        var onSaveRefers = panel.onSave;
+        panel.onSave = function(panel) {
+            var date = panel.down('[name=date]').getValue();
+            date = Utilities.isValidDate(date) && Utilities.normalizeDate(date);
+            if (date)
+                node.setAttribute(dateAttr, date);
+            me.closeContextPanel();
+            return onSaveRefers(panel);
+        }
+        return panel;
     },
 
     // Wrapper function to create and add the attributes tab to the context panel.
