@@ -84,6 +84,14 @@ Ext.define('AknMetadata.newMeta.DocumentTab', {
         fieldLabel: Locale.getString('author', 'akn-metadata'),
         bind: '{document.author}'
     }, {
+        xtype: 'textfield',
+        fieldLabel: Locale.getString('docSubType', 'akn-metadata'),
+        bind: '{document.subtype}'
+    }, {
+        xtype: 'textfield',
+        fieldLabel: Locale.getString('component', 'akn-metadata'),
+        bind: '{document.component}'
+    }, {
         xtype: 'checkboxfield',
         boxLabel: Locale.getString('prescriptive', 'akn-metadata'),
         bind: '{document.prescriptive}'

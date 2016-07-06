@@ -85,14 +85,15 @@ Ext.define('AknMetadata.Strings', {
             "emptySelection": "No item selected",
             "classifyConfirm": "Are you sure to classify the selected node as <b>{keyword}</b>?",
             "referenceWidgetTitle": "Reference data",
-            "docSubType": "Doc. SubType",
+            "docSubType": "SubType",
             "fragment": "Fragment",
             "publication": "Publication",
             "generation": "Generation",
             "amendment": "Amendment",
             "repeal": "Repeal",
             "refersTo": "Refers to",
-            "as": "As"
+            "as": "As",
+            "component": "Component"
         },
         "it": {
             "title": "Editor metadati",
@@ -148,7 +149,8 @@ Ext.define('AknMetadata.Strings', {
             "amendment": "Emendamento",
             "repeal": "Abrogazione",
             "refersTo": "Riferito a",
-            "as": "Come"
+            "as": "Come",
+            "component": "Componente"
         },
         "es": {
             "title": "Editor de metadatos",
@@ -193,7 +195,8 @@ Ext.define('AknMetadata.Strings', {
             "external": "Externo",
             "publication": "Publicación",
             "refersTo": "Se refiere a",
-            "as": "Como"
+            "as": "Como",
+            "component": "Componente"
         }
     },
 
