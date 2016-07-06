@@ -320,7 +320,9 @@ Ext.define('AknMain.metadata.TextualChange', {
         { name: 'modification', reference: 'Modification' },
         { name: 'type', type: 'string' },
         { name: 'content', type: 'string' },
-        { name: 'href', type: 'string' }
+        { name: 'href', type: 'string' },
+        { name: 'textBefore', type: 'string' },
+        { name: 'textAfter', type: 'string' }
     ],
 
     validators: {

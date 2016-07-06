@@ -146,7 +146,7 @@ Ext.define('AknModsMarker.Controller', {
             'repealWindow [itemId=accept]': {
                 click: function(btn) {
                     var cmp = btn.up('window');
-                    me.delHandlerConsolidation(cmp.selectedText, cmp.selectedNode);
+                    me.delHandlerConsolidation(cmp.selection.text, cmp.selectedNode, cmp.selection.textBefore, cmp.selection.textAfter);
                     cmp.close();
                 }
             }
@@ -1690,14 +1690,15 @@ Ext.define('AknModsMarker.Controller', {
         var winCmp = Ext.widget('repealWindow').show().center();
 
         me.setMaskEditors(false, true);
-
+        winCmp.selection = {};
         me.secondEditorClickHandlerCustom = function(node, evt, ed) {
-            var msg = "";
-            var selectedText = ed.selection.getContent().trim();
+            var msg = "",
+                selection = me.getSelectionObj(ed),
+                selectedText = selection.text;
             if (selectedText) {
                 var tpl = new Ext.Template("<h4>You've selected the following portion of text:</h4>{text}");
                 msg = tpl.apply({text: selectedText});
-                winCmp.selectedText = selectedText;
+                winCmp.selection = selection;
                 winCmp.selectedNode = false;
             } else {
                 node = me.ensureHcontainerNode(node);
@@ -1715,10 +1716,48 @@ Ext.define('AknModsMarker.Controller', {
                     name: markButton.shortLabel
                 });
                 winCmp.selectedNode = node;
+                winCmp.selection = {};
             }
             winCmp.down('[itemId=accept]').enable();
             winCmp.down('[itemId=selectedMsg]').setHtml(msg);
         };
+    },
+
+    getSelectionObj: function(ed) {
+        var selection = ed.selection,
+            rng = selection.getRng();
+
+        var getPrevText = function (node) {
+            var txt = '';
+            while( node.previousSibling ) {
+                node = node.previousSibling;
+                txt = node.textContent + txt;
+            }
+            return txt;
+        }
+        var getNextText = function (node) {
+            var txt = '';
+            while( node.nextSibling ) {
+                node = node.nextSibling;
+                txt += node.textContent;
+            }
+            return txt;
+        }
+        var res = {
+            text: selection.getContent().trim()
+        };
+        if (res.text && rng.startContainer && rng.endContainer) {
+            var maxLength = 50;
+            res.textBefore = (getPrevText(rng.startContainer)+
+                            rng.startContainer.textContent.substring(0, rng.startOffset)).trim();
+            res.textAfter = (rng.endContainer.textContent.substring(rng.endOffset)+
+                            getNextText(rng.endContainer)).trim();
+
+            res.textBefore = (res.textBefore.length > maxLength) ?
+                                res.textBefore.substring(res.textBefore.length-maxLength) : res.textBefore;
+            res.textAfter = res.textAfter.substring(0, maxLength);
+        }
+        return res;
     },
 
     beforeDelHandlerAmendment: function() {
@@ -1748,7 +1787,7 @@ Ext.define('AknModsMarker.Controller', {
         }
     },
 
-    delHandlerConsolidation: function(removedText, removedNode) {
+    delHandlerConsolidation: function(removedText, removedNode, textBefore, textAfter) {
         var me = this;
         if (!removedText && !removedNode) return;
         var wrapDelWithNode = function(delNode, wrapOld) {
@@ -1777,7 +1816,7 @@ Ext.define('AknModsMarker.Controller', {
 
         var afterDelMarked = function(node) {
             if (removedText && !removedNode)
-                me.addDelMeta(node, removedText);
+                me.addDelMeta(node, removedText, textBefore, textAfter);
             else {
                 var wrapNode = wrapDelWithNode(node, removedNode);
                 me.addDelMeta(node, removedNode.textContent.trim());
@@ -1789,10 +1828,10 @@ Ext.define('AknModsMarker.Controller', {
         afterDelMarked(me.getController('Marker').wrapRaw(delButton));
     },
 
-    addDelMeta: function(node, oldText) {
+    addDelMeta: function(node, oldText, textBefore, textAfter) {
         var meta = {
             sourceDestinations: [{type:'destination', href: node.getAttribute(DomUtils.elementIdAttribute)}],
-            textualChanges: [{type: 'old', content: oldText}]
+            textualChanges: [{type: 'old', content: oldText, textBefore: textBefore, textAfter: textAfter}]
         };
         return this.addPassiveMeta(node, 'repeal', meta);
     },
@@ -1822,7 +1861,7 @@ Ext.define('AknModsMarker.Controller', {
         }
     },
 
-    updateSubsMetadata: function(node, oldText) {
+    updateSubsMetadata: function(node, oldText, textBefore, textAfter) {
         var me = this,
             elId = node.getAttribute(DomUtils.elementIdAttribute),
             parent = this.ensureHcontainerNode(node),
@@ -1833,7 +1872,7 @@ Ext.define('AknModsMarker.Controller', {
         var meta = {
             sourceDestinations: [{type:'destination', href: destId}],
             textualChanges: [
-                {type: 'old', content: oldText},
+                {type: 'old', content: oldText, textBefore: textBefore, textAfter: textAfter},
                 {type: 'new', href: elId}]
         };
 
@@ -2064,10 +2103,10 @@ Ext.define('AknModsMarker.Controller', {
     createSubstitutionConsolidation: function(node) {
         var me = this;
         var winCmp = me.createAndShowFloatingForm(node, 'Select the old portion of text', false, false, function(cmp) {
-            if (!cmp.selectedText) {
+            if (!cmp.selection || !cmp.selection.text ) {
                 return Ext.MessageBox.alert("Error", 'No text was selected');
             }
-            me.updateSubsMetadata(node, cmp.selectedText);
+            me.updateSubsMetadata(node, cmp.selection.text, cmp.selection.textBefore, cmp.selection.textAfter);
             cmp.close();
         }, function() {
             cmp.close();
@@ -2082,15 +2121,16 @@ Ext.define('AknModsMarker.Controller', {
         });
 
         me.secondEditorClickHandlerCustom = function(node, evt, ed) {
-            var msg = "";
-            var selectedText = ed.selection.getContent().trim();
+            var msg = "",
+                selection = me.getSelectionObj(ed),
+                selectedText = selection.text;
             if (selectedText) {
                 var tpl = new Ext.Template("<h4 style=\"margin: 0px;\">You've selected the following portion of text:</h4>{text}");
                 msg = tpl.apply({text: selectedText.trim()});
-                winCmp.selectedText = selectedText;
+                winCmp.selection = selection;
                 winCmp.selectedNode = me.ensureHcontainerNode(node);
             } else {
-                winCmp.selectedText = '';
+                winCmp.selection = {};
                 winCmp.selectedNode = null;
             }
             winCmp.down('[itemId=selectedMsg]').setHtml(msg);
