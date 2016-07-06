@@ -58,6 +58,7 @@ Ext.define('AknMain.LangProp', {
             case 'documentCollection':
                 return 'collectionBody';
             case 'doc':
+            case 'debateReport':
                 return 'mainBody';
             default:
                 return 'body';
