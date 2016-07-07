@@ -600,7 +600,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             markButtonDocDate = DocProperties.getChildConfigByName(button,"docDate"),
             markButton = DocProperties.getChildConfigByName(button, "date") ||
                          DocProperties.getFirstButtonByName("date");
-            attributeName = markButton.rules.askFor.date1.insert.attribute.name,
+            attributeName = 'date',
             markings = [];
 
         if (dates) {
