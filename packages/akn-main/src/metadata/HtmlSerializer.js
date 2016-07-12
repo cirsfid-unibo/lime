@@ -176,6 +176,16 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         '<tpl for="textualChanges">' +
         '        <div class="{type}" {[this.uriAttr("href", values.href)]}>',
         '           {content}',
+        '<tpl if="textBefore">'+
+        '        <div class="before">',
+        '           {textBefore}',
+        '        </div>',
+        '</tpl>'+
+        '<tpl if="textAfter">'+
+        '        <div class="after">',
+        '           {textAfter}',
+        '        </div>',
+        '</tpl>'+
         '        </div>',
         '</tpl>' +
         '</div>'

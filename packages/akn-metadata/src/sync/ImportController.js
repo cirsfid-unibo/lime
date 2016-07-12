@@ -208,10 +208,14 @@ Ext.define('AknMetadata.sync.ImportController', {
 
         function importModifications () {
             var addTextualChanges = function(node, mod) {
+                var content = akn.getValue("./*[local-name(.) = 'text']", node)
+                                || akn.getValue('./text()', node);
                 var data = {
                     type: node.tagName,
                     href: AknMain.metadata.HtmlSerializer.normalizeHref(node.getAttribute('href')),
-                    content: akn.getValue('.//text()', node).trim()
+                    content: content.trim(),
+                    textBefore: akn.getValue("./*[local-name(.) = 'before']", node).trim(),
+                    textAfter: akn.getValue("./*[local-name(.) = 'after']", node).trim()
                 };
                 mod.textualChanges().add(data);
             }

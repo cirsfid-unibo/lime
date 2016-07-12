@@ -163,7 +163,9 @@ function addIncludesToXsl($dom, $paths) {
 		if ( $path ) {
 			$include = $dom->createElementNS("http://www.w3.org/1999/XSL/Transform", "xsl:include");
 			$include->setAttribute("href", $path);
-			$insertFirst($dom->documentElement, $include);
+			//$insertFirst($dom->documentElement, $include);
+			// TODO: understand if append is really better
+			$dom->documentElement->appendChild($include);
 		}
 	}
 }
