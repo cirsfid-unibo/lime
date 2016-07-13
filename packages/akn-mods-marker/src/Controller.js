@@ -411,12 +411,14 @@ Ext.define('AknModsMarker.Controller', {
 
     setMaskEditors: function(leftMask, rightMask) {
         var rightEditor = this.getMainEditor().up(),
-            leftEditor = this.getSecondEditor().up();
+            leftEditor = this.getSecondEditor() && this.getSecondEditor().up();
 
-        if (leftMask)
-            leftEditor.mask();
-        else
-            leftEditor.unmask();
+        if (leftEditor) {
+            if (leftMask)
+                leftEditor.mask();
+            else
+                leftEditor.unmask();
+        }
 
         if (rightMask)
             rightEditor.mask();
@@ -1744,7 +1746,7 @@ Ext.define('AknModsMarker.Controller', {
             return txt;
         }
         var res = {
-            text: selection.getContent().trim()
+            text: selection.getContent({format: 'text'}).trim()
         };
         if (res.text && rng.startContainer && rng.endContainer) {
             var maxLength = 50;

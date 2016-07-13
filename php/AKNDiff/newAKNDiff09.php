@@ -66,7 +66,10 @@ class nPassiveModification extends PassiveModification {
 			$this->previousId = ($previous) ? substr($previous, strrpos($previous, "#")+1) : NULL;
 			$oldNode = NULL;
 			foreach ($mod->getElementsByTagName('old') as $old) {
-				$this->old = $old->nodeValue;
+				$this->old = $this->getChValue($old, 'text');
+				$this->old = ($this->old) ? $this->old : $old->nodeValue;
+				$this->textBefore = $this->getChValue($old, 'before');
+				$this->textAfter = $this->getChValue($old, 'after');
 				$oldNode = $old;
 			}
 			
@@ -89,6 +92,13 @@ class nPassiveModification extends PassiveModification {
 			
 			//$this->id = (!$this->new && $nodeNew) ? $this->newHref : $this->destination;
 			$this->id = ($this->newHref && $nodeNew) ? $this->newHref : $this->destination;
+		}
+	}
+
+	protected function getChValue($node, $name) {
+		$ch = $node->getElementsByTagName($name);
+		if ($ch->length) {
+			return $ch->item(0)->nodeValue;
 		}
 	}	
 }
@@ -236,25 +246,26 @@ class newAKNDiff09 extends AKNDiff {
 		return $result;
 	}
 
-	protected function findAndwrapTextNode($searchText, $node, $wrapperClass = FALSE, $precedingText = FALSE) {
+	protected function findAndwrapTextNode($searchText, $node, $wrapperClass = FALSE, $textBefore = FALSE, $textAfter = FALSE) {
 		$searchText = trim($searchText);
 		$wrapNodes = array();
 		$nodes = $this->getTextNodesContaining($node, $searchText);
 		if(count($nodes)) {
 			if($wrapperClass !== FALSE) {
 				foreach($nodes as $node) {
-					$wrapNodes[] = $this->wrapTextNode($node, $searchText, $wrapperClass, FALSE,  $precedingText);
+					$txtNode = $this->getSplittedTxtNode($node, $searchText, $textBefore, $textAfter);
+					if ($txtNode) {
+						$wrapper = $this->wrapNode($txtNode, $wrapperClass);
+						$wrapNodes[] = $wrapper;
+					}
 				}
 			}	
 		} else {
-			$nodes = $this->getTextNodesContainingTextSmart($node, $searchText);
+			$nodes = $this->getUniqueObjNodes($this->getTextNodesContainingTextSmart($node, $searchText));
 			if(count($nodes)) {
-				$firtPart = $nodes[0];
-				$lastPart = $nodes[count($nodes)-1];
-				
-				$lastNodes = $this->splitTextNode($lastPart["node"], $lastPart["str"]);
-				$firstNodes = $this->splitTextNode($firtPart["node"], $firtPart["str"]);
-				$txtNodes = $this->findTextNodeCombination($firstNodes, $lastNodes, $searchText);
+				$allTxtNodes = $this->splitAllObjNodes($nodes);
+				$combinations = $this->findTextNodeCombination($allTxtNodes, $allTxtNodes, $searchText);
+				$txtNodes = $this->getBestIntervalNode($combinations, $textBefore, $textAfter);
 				if(count($txtNodes)) {
 					$wrapNode = $this->wrapTextNodesInterval($txtNodes[0], $txtNodes[1]);
 					if($wrapNode) {
@@ -268,6 +279,64 @@ class newAKNDiff09 extends AKNDiff {
 
 		$nodes = ($wrapperClass === FALSE) ? $nodes	: $wrapNodes;
 		return (count($nodes)) ? $nodes : FALSE;
+	}
+
+	// Remove duplicates from the $objs returned from getTextNodesContainingTextSmart
+	protected function getUniqueObjNodes($objs) {
+		$result = array();
+		$passed = array();
+
+		foreach ($objs as $obj) {
+			if (!array_key_exists($obj["str"], $passed)) {
+				$passed[$obj["str"]] = array();
+			}
+			if ($this->domnode_array_search($obj["node"], $passed[$obj["str"]]) === FALSE) {
+				$passed[$obj["str"]][] = $obj["node"];
+				$result[] = $obj;	
+			}
+		}
+		return $result;
+	}
+
+	protected function domnode_array_search($node, $arr) {
+		foreach ($arr as $arrnd) {
+			if ($arrnd->isSameNode($node)) {
+				return $arrnd;
+			}
+		}
+		return FALSE;
+	}
+
+	protected function splitAllObjNodes($nodes) {
+		$allNodes = array();
+		foreach ($nodes as $node) {
+			$txtNodes = $this->splitTextNode($node["node"], $node["str"]);
+			$allNodes = array_merge($allNodes, $txtNodes);
+		}
+		return $allNodes;
+	}
+
+	// Find the best interval node based on textBefore and textAfter
+	protected function getBestIntervalNode($intervalNodes, $textBefore, $textAfter) {
+		$textBefore = $this->removeSpaces($textBefore);
+		$textAfter = $this->removeSpaces($textAfter);
+		foreach ($intervalNodes as $intNode) {
+			if ($textBefore) {
+				$prevText = $this->removeSpaces($this->getPrecedingText($intNode[0]));
+				if (!$this->endswith($prevText, $textBefore)) {
+					continue;
+				}
+			}
+			if ($textAfter) {
+				$nextText = $this->removeSpaces($this->getFollowingText($intNode[1]));
+				if (!$this->startswith($nextText, $textAfter)) {
+					continue;
+				}
+			}
+			// This can be needed occurence or 
+			// the first one if the $textBefore and $textAfter are empty
+			return $intNode;
+		}
 	}
 
 	protected function splitTextNode($tNode, $str, $includeStr = FALSE) {
@@ -290,15 +359,16 @@ class newAKNDiff09 extends AKNDiff {
 
 	protected function findTextNodeCombination($firstNodes, $lastNodes, $str) {
 		$str = $this->removeSpaces($str);
+		$pairs = array();
 		foreach ($firstNodes as $firstNode) {
 			foreach ($lastNodes as $lastNode) {
 				$text = $this->joinText($firstNode, $lastNode);
 				if ($this->removeSpaces($text) == $str) {
-					return array($firstNode, $lastNode);
+					$pairs[] = array($firstNode, $lastNode);
 				}
 			}
 		}
-		return array();
+		return $pairs;
 	}
 
 	protected function strpos_all($str, $needle) {
@@ -334,14 +404,13 @@ class newAKNDiff09 extends AKNDiff {
 		}
 		return $wrapNode;
 	}
-	
+	// Old function TODO: remove if is useless
 	protected function wrapTextNode($tNode, $str, $class = "textWrapper", $caseSensitive = FALSE, $precedingText = FALSE) {
 		$wrapNode = NULL;
 		$encoding = mb_detect_encoding($tNode->data);
 		$precedingPos = ($precedingText) ? mb_strpos(strtolower($tNode->data), strtolower($precedingText), 0, $encoding) : 0;
-		$precedingPos = ($precedingPos === 0 && $precedingText) ? mb_strlen($precedingText, $encoding) : 0;
+		$precedingPos = ($precedingPos !== FALSE && $precedingText) ? $precedingPos+mb_strlen($precedingText, $encoding) : 0;
 		$textData = $tNode->data;
-
 		$strings = explode($str, $textData);
 		if ( $precedingText && strlen($precedingText) && $precedingPos === 0 && count($strings) > 2 ) {
 			$stringsPrev = explode($str, $precedingText);
@@ -377,6 +446,57 @@ class newAKNDiff09 extends AKNDiff {
 			}
 		}
 		return $wrapNode;
+	}
+
+	protected function wrapNode($node, $class = "wrapper") {
+		$span = $node->ownerDocument->createElement('span');
+		$span->setAttribute("class", $class);
+		if($node->parentNode) {
+			$node->parentNode->insertBefore($span, $node);
+			$span->appendChild($node);
+			$span->parentNode->normalize();
+		}
+	}
+
+	// Choose one of the occurences of $str in $txtNode based on $textBefore and $textAfter
+	// and return the text node which has the same content of $str
+	protected function getSplittedTxtNode($txtNode, $str, $textBefore, $textAfter) {
+		$nodes = $this->splitTextNode($txtNode, $str);
+		// Ignore spaces they are not relevant
+		$textBefore = $this->removeSpaces($textBefore);
+		$textAfter = $this->removeSpaces($textAfter);
+		// Iterate and the nodes occurences
+		foreach ($nodes as $node) {
+			if ($textBefore) {
+				$prevText = $this->removeSpaces($this->getPrecedingText($node));
+				if (!$this->endswith($prevText, $textBefore)) {
+					continue;
+				}
+			}
+			if ($textAfter) {
+				$nextText = $this->removeSpaces($this->getFollowingText($node));
+				if (!$this->startswith($nextText, $textAfter)) {
+					continue;
+				}
+			}
+			// This can be needed occurence or 
+			// the first one if the $textBefore and $textAfter are empty
+			return $node;
+		}
+	}
+
+	protected function endswith($string, $test) {
+		$strlen = strlen($string);
+		$testlen = strlen($test);
+		if ($testlen > $strlen) return false;
+		return substr_compare($string, $test, $strlen - $testlen, $testlen) === 0;
+	}
+
+	protected function startswith($string, $test) {
+		$strlen = strlen($string);
+		$testlen = strlen($test);
+		if ($testlen > $strlen) return false;
+		return substr_compare($string, $test, 0, $testlen) === 0;
 	}
 	
 	protected function getTextNodesBy($node, $fn) {
@@ -886,15 +1006,20 @@ class newAKNDiff09 extends AKNDiff {
 		}
 		return -1;
 	}
-
 	protected function getPrecedingText($node) {
-		// $parent = $node->parentNode;
-		// $encoding = mb_detect_encoding($parent->nodeValue);
-		// $precedingText = mb_substr($parent->nodeValue, 0, (mb_strpos($parent->nodeValue, $node->nodeValue, 0, $encoding)), $encoding);
 		$text = "";
 		while ($node->previousSibling) {
-			$text .= $node->previousSibling->nodeValue;
+			$text = $node->previousSibling->nodeValue . $text;
 			$node = $node->previousSibling;
+		}
+		return $text;
+	}
+
+	protected function getFollowingText($node) {
+		$text = "";
+		while ($node->nextSibling) {
+			$text .= $node->nextSibling->nodeValue;
+			$node = $node->nextSibling;
 		}
 		return $text;
 	}
@@ -942,19 +1067,16 @@ class newAKNDiff09 extends AKNDiff {
 	}
 
 	protected function applyModSubstitution($mod, $xpath, $table) {
-		$precedingText = FALSE;
+		$precedingText = $mod->textBefore;
 		$subsNodes = $xpath->query("//*[@class='newVersion']//*[@akn_currentId ='$mod->id' or contains(@parent, '$mod->id')]", $table);
 
 		$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId ='$mod->id' or @akn_currentId ='$mod->destination' or contains(@parent, '$mod->destination')]", $table);
 		//echo $destNodes->length.' - '.$mod->old.' - '.$mod->id.' - '.$mod->destination.'<br>';
 
 		if ($subsNodes->length == 1) {
-			$precedingText = $this->getPrecedingText($subsNodes->item(0));
+			$newNode = $subsNodes->item(0);
 		} else {
 			$newNode = $xpath->query("(//*[@class='newVersion']//*[@akn_currentId ='$mod->id' or  contains(@parent, '$mod->destination')])[last()]", $table)->item(0);
-			if($newNode) {
-				$precedingText = $this->getPrecedingText($newNode);
-			}
 		}
 		
 		if(!$destNodes->length && $mod->old) {
@@ -990,15 +1112,16 @@ class newAKNDiff09 extends AKNDiff {
 		if ($parentWithWid) {
 			$destNodesW = $this->findOldNodes($parentWithWid, $table);
 			if (count($destNodesW)) {
-				$found = $this->searchSubstitution($destNodesW, $mod, $xpath, $table, $precedingText, $subsNodes, $destNodes->length ? FALSE : TRUE);
+				$found = $this->searchSubstitution($destNodesW, $mod, $xpath, $table, $subsNodes, $destNodes->length ? FALSE : TRUE);
 			}
 		}
 		if ($destNodes->length && !$found) {
-			$this->searchSubstitution($destNodes, $mod, $xpath, $table, $precedingText, $subsNodes, TRUE);
+			$this->searchSubstitution($destNodes, $mod, $xpath, $table, $subsNodes, TRUE);
 		}
 	}
 
-	protected function searchSubstitution($destNodes, $mod, $xpath, $table, $precedingText, $subsNodes, $setErrors = TRUE) {
+	protected function searchSubstitution($destNodes, $mod, $xpath, $table, $subsNodes, $setErrors = TRUE) {
+		$precedingText = $mod->textBefore;
 		//echo $mod->destination." - ".$destNodes->length. " - ".$mod->id." - ".$mod->old." - ".$precedingText."<br>";					
 		$this->setAllAttribute($subsNodes, "title", "Old string: ".$mod->old);
 		$this->setAllAttribute($subsNodes, "class", $mod->type);
@@ -1019,7 +1142,7 @@ class newAKNDiff09 extends AKNDiff {
 				}
 			}
 
-			if($this->findAndwrapTextNode($mod->old, $destNodes, $mod->type, $precedingText) === FALSE) {
+			if($this->findAndwrapTextNode($mod->old, $destNodes, $mod->type, $mod->textBefore, $mod->textAfter) === FALSE) {
 				if ($setErrors) {
 					$this->setAllAttribute($subsNodes, "class", "errorSubstitution");
 					$this->setAllAttribute($subsNodes, "data-old", $mod->old);
@@ -1132,8 +1255,7 @@ class newAKNDiff09 extends AKNDiff {
 				return;
 			}
 			if($mod->old) {
-				$precedingText = ($firstTarget) ? $this->getPrecedingText($firstTarget) : "";
-				$repealNodes = $this->findAndwrapTextNode($mod->old, $destNodes, $mod->type, $precedingText);
+				$repealNodes = $this->findAndwrapTextNode($mod->old, $destNodes, $mod->type, $mod->textBefore, $mod->textAfter);
 				if($repealNodes === FALSE) {
 					$this->setAllAttribute($targetNodes, "class", "errorRepeal");
 					$this->setAllAttribute($targetNodes, "data-old", $mod->old);
@@ -1155,6 +1277,7 @@ class newAKNDiff09 extends AKNDiff {
 	}
 
 	protected function removeSpaces($str) {
+		$str = ($str) ? $str : "";
 		$str = str_replace(chr(0xC2).chr(0xA0), " ", $str);
 		$str = str_replace("&#160", " ", $str);
 		$str = str_replace("&#xa0", " ", $str);
