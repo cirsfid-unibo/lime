@@ -1727,21 +1727,30 @@ Ext.define('AknModsMarker.Controller', {
 
     getSelectionObj: function(ed) {
         var selection = ed.selection,
-            rng = selection.getRng();
+            rng = selection.getRng(),
+            upperNodeLimit = this.getUpperTextLimit(selection.getNode());
 
         var getPrevText = function (node) {
             var txt = '';
+            if (!node) return txt;
             while( node.previousSibling ) {
                 node = node.previousSibling;
                 txt = node.textContent + txt;
+            }
+            if (upperNodeLimit && node.parentNode !== upperNodeLimit) {
+                txt = getPrevText(node.parentNode) + txt;
             }
             return txt;
         }
         var getNextText = function (node) {
             var txt = '';
+            if (!node) return txt;
             while( node.nextSibling ) {
                 node = node.nextSibling;
                 txt += node.textContent;
+            }
+            if (upperNodeLimit && node.parentNode !== upperNodeLimit) {
+                txt += getNextText(node.parentNode);
             }
             return txt;
         }
@@ -1760,6 +1769,19 @@ Ext.define('AknModsMarker.Controller', {
             res.textAfter = res.textAfter.substring(0, maxLength);
         }
         return res;
+    },
+
+    getUpperTextLimit: function(node) {
+        if (!node) return;
+        if (node.classList && (node.classList.contains('hcontainer')
+                            || node.classList.contains('container')
+                            || node.classList.contains('block')
+                            || node.classList.contains('num')
+                            || node.classList.contains('heading')
+                            || node.classList.contains('subheading'))) {
+            return node;
+        }
+        return this.getUpperTextLimit(node.parentNode);
     },
 
     beforeDelHandlerAmendment: function() {

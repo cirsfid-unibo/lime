@@ -1072,7 +1072,6 @@ class newAKNDiff09 extends AKNDiff {
 
 		$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId ='$mod->id' or @akn_currentId ='$mod->destination' or contains(@parent, '$mod->destination')]", $table);
 		//echo $destNodes->length.' - '.$mod->old.' - '.$mod->id.' - '.$mod->destination.'<br>';
-
 		if ($subsNodes->length == 1) {
 			$newNode = $subsNodes->item(0);
 		} else {
@@ -1095,7 +1094,6 @@ class newAKNDiff09 extends AKNDiff {
 
 		//TODO: understand if this is not correct "or @akn_wId= '$mod->destination'"
 		$targetNodes = $xpath->query("(//*[@class='newVersion']//*[@akn_currentId= '$mod->destination' or contains(@parent, '$mod->destination')])[last()]", $table);
-
 		if ($targetNodes->length) {
 			$parentWithWid = $this->getNodeWithWid($targetNodes);
 		}
@@ -1118,7 +1116,7 @@ class newAKNDiff09 extends AKNDiff {
 			$node = $this->getNodeWithAttribute($nodes, "parentWid");
 			if ($node) {
 				$parentWid = explode(" ", $node->getAttribute("parentWid"));
-				$parentWid = end($parentWid);
+				$parentWid = $parentWid[0];
 				$node->setAttribute('akn_wId', $parentWid);
 			}
 		}
