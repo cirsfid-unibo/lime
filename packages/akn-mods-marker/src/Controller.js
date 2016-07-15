@@ -2110,7 +2110,7 @@ Ext.define('AknModsMarker.Controller', {
             }
             me.updateSubsMetadata(node, cmp.selection.text, cmp.selection.textBefore, cmp.selection.textAfter);
             cmp.close();
-        }, function() {
+        }, function(cmp) {
             cmp.close();
             DomUtils.unwrapNode(node);
         }, {

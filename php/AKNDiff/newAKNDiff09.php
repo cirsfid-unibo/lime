@@ -1093,19 +1093,11 @@ class newAKNDiff09 extends AKNDiff {
 			}
 		}
 
-		$targetNodes = $xpath->query("(//*[@class='newVersion']//*[@akn_currentId= '$mod->destination' or @akn_wId= '$mod->destination' or contains(@parent, '$mod->destination')])[last()]", $table);
-
+		//TODO: understand if this is not correct "or @akn_wId= '$mod->destination'"
+		$targetNodes = $xpath->query("(//*[@class='newVersion']//*[@akn_currentId= '$mod->destination' or contains(@parent, '$mod->destination')])[last()]", $table);
 
 		if ($targetNodes->length) {
-			$parentWithWid = $this->getNodeWithAttribute($targetNodes, "akn_wId");
-			if (!$parentWithWid) {
-				$parentWithWid = $this->getNodeWithAttribute($targetNodes, "parentWid");
-				if ($parentWithWid) {
-					$parentWid = explode(" ", $parentWithWid->getAttribute("parentWid"));
-					$parentWid = end($parentWid);
-					$parentWithWid->setAttribute('akn_wId', $parentWid);
-				}
-			}
+			$parentWithWid = $this->getNodeWithWid($targetNodes);
 		}
 
 		$found = FALSE;
@@ -1118,6 +1110,19 @@ class newAKNDiff09 extends AKNDiff {
 		if ($destNodes->length && !$found) {
 			$this->searchSubstitution($destNodes, $mod, $xpath, $table, $subsNodes, TRUE);
 		}
+	}
+
+	protected function getNodeWithWid($nodes) {
+		$node = $this->getNodeWithAttribute($nodes, "akn_wId");
+		if (!$node) {
+			$node = $this->getNodeWithAttribute($nodes, "parentWid");
+			if ($node) {
+				$parentWid = explode(" ", $node->getAttribute("parentWid"));
+				$parentWid = end($parentWid);
+				$node->setAttribute('akn_wId', $parentWid);
+			}
+		}
+		return $node;
 	}
 
 	protected function searchSubstitution($destNodes, $mod, $xpath, $table, $subsNodes, $setErrors = TRUE) {
@@ -1196,7 +1201,7 @@ class newAKNDiff09 extends AKNDiff {
 		}
 	}
 	
-
+	// This function needs to be refactored/rewritten
 	protected function applyModRepeal($mod, $xpath, $table) {
 		$idCond = "";
 		$parentIdCond = "";
@@ -1213,7 +1218,7 @@ class newAKNDiff09 extends AKNDiff {
 			//echo "<br>".$mod->destination." - ".$mod->old." - ".$targetParents->length."!!<br>";
 			if($targetParents->length) {
 				$firstTargetParent = $targetParents->item($targetParents->length-1);
-				$parentWithWid = $this->getNodeWithAttribute($targetParents, "akn_wId");
+				$parentWithWid = $this->getNodeWithWid($targetParents);
 				$parentStatusRemoved = $this->getNodeWithAttribute($targetParents, "akn_status", "removed");
 				// $originalId = $firstTargetParent->getAttribute("parentOriginalId");
 				// $parentId = ($originalId) ? $originalId : $firstTargetParent->getAttribute("parent");
@@ -1248,24 +1253,41 @@ class newAKNDiff09 extends AKNDiff {
 				$destNodes = $xpath->query("//*[@class='oldVersion']//*[@akn_currentId = '$parentWid']", $table);
 			}
 		}
-		if($destNodes->length == 1 ) {
-			if ( $parentStatusRemoved && $this->removeSpaces($mod->old) == $this->removeSpaces($destNodes->item(0)->textContent) ) {
-				// Set as removed the entire element
-				$this->setAllAttribute(array($destNodes->item(0)), "class", "repeal");
-				return;
+
+		$found = FALSE;
+		if ($parentWithWid) {
+			$destNodesW = $this->findOldNodes($parentWithWid, $table);
+			if (count($destNodesW)) {
+				$found = $this->searchRepeal($destNodesW, $parentStatusRemoved, $mod, $xpath, $table, $targetNodes, $destNodes->length ? FALSE : TRUE);
 			}
-			if($mod->old) {
-				$repealNodes = $this->findAndwrapTextNode($mod->old, $destNodes, $mod->type, $mod->textBefore, $mod->textAfter);
-				if($repealNodes === FALSE) {
+		}
+		if ($destNodes->length && !$found) {
+			$this->searchRepeal($destNodes, $parentStatusRemoved, $mod, $xpath, $table, $subsNodes, TRUE);
+		}
+	}
+
+	protected function searchRepeal($destNodes, $parentStatusRemoved, $mod, $xpath, $table, $targetNodes, $setErrors = TRUE) {
+		$length = get_class($destNodes) == 'DOMNodeList' ? $destNodes->length : count($destNodes);
+
+		if($length == 1 && $mod->old) {
+			$firstNode = get_class($destNodes) == 'DOMNodeList' ? $destNodes->item(0) : $destNodes[0];
+			if ( $parentStatusRemoved && $this->removeSpaces($mod->old) == $this->removeSpaces($firstNode->textContent) ) {
+				// Set as removed the entire element
+				$this->setAllAttribute($destNodes, "class", "repeal");
+				return TRUE;
+			}
+			
+			if($this->findAndwrapTextNode($mod->old, $destNodes, $mod->type, $mod->textBefore, $mod->textAfter) === FALSE) {
+				if ($setErrors) {
 					$this->setAllAttribute($targetNodes, "class", "errorRepeal");
 					$this->setAllAttribute($targetNodes, "data-old", $mod->old);
-				}	
-			} else if($destNodes->length == 1) {
-				$this->setAllAttribute($destNodes, "class", $mod->type);		
+				}
+				return FALSE;
 			}
 		} else {
 			$this->setAllAttribute($destNodes, "class", $mod->type);
 		}
+		return TRUE;
 	}
 
 	protected function getTextFromNodes($nodes) {
@@ -1297,7 +1319,9 @@ class newAKNDiff09 extends AKNDiff {
 		$xpath = new DOMXPath($table->ownerDocument);
 		$wId = $node->getAttribute("akn_wId");
 		if ($wId) {
-			$oldNodes = $this->nodeListToArray($xpath->query("(//*[@class='oldVersion']//*[@akn_wId='$wId' or @parentWid='$wId' or @akn_eId='$wId'])", $table));
+			// TODO: understand if need to search in akn_wId or parentWid attribute
+			//$oldNodes = $this->nodeListToArray($xpath->query("(//*[@class='oldVersion']//*[@akn_wId='$wId' or @parentWid='$wId' or @akn_eId='$wId'])", $table));
+			$oldNodes = $this->nodeListToArray($xpath->query("(//*[@class='oldVersion']//*[ @akn_eId='$wId'])", $table));
 			if (count($oldNodes)) return $oldNodes;
 			$oldNodes = $this->findNodesContainPrentId($wId, $table);
 			if (count($oldNodes)) {
