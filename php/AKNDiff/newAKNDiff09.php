@@ -1086,7 +1086,7 @@ class newAKNDiff09 extends AKNDiff {
 				
 				//echo $destNodes->length.' - '.$mod->old.' - '.$parentId.'<br>';
 
-				if (!$destNodes->length) {
+				if (!$destNodes->length && $precedingText) {
 					$destNodes = $xpath->query("//*[@class='oldVersion']//*[contains(., '$precedingText')]", $table);
 				}
 			}
@@ -1096,13 +1096,26 @@ class newAKNDiff09 extends AKNDiff {
 		$targetNodes = $xpath->query("(//*[@class='newVersion']//*[@akn_currentId= '$mod->destination' or contains(@parent, '$mod->destination')])[last()]", $table);
 		if ($targetNodes->length) {
 			$parentWithWid = $this->getNodeWithWid($targetNodes);
+			$parentJoined = $this->getNodeWithAttribute($targetNodes, "joined");
+			$parentSplitted = $this->getNodeWithAttribute($targetNodes, "splittedBy");
 		}
-
 		$found = FALSE;
 		if ($parentWithWid) {
 			$destNodesW = $this->findOldNodes($parentWithWid, $table);
 			if (count($destNodesW)) {
 				$found = $this->searchSubstitution($destNodesW, $mod, $xpath, $table, $subsNodes, $destNodes->length ? FALSE : TRUE);
+			}
+		}
+		if (!$found && $parentJoined) {
+			$destNodesW = $this->findOldNodesByAttr($parentJoined, 'joined', 'joinInto', $table);
+			if ($destNodesW && $destNodesW->length) {
+				return $this->searchSubstitution($destNodesW, $mod, $xpath, $table, $subsNodes, $destNodes->length ? FALSE : TRUE);
+			}
+		}
+		if (!$found && $parentSplitted) {
+			$destNodesW = $this->findOldNodesByAttr($parentSplitted, 'splittedBy', 'toSplit', $table);
+			if ($destNodesW && $destNodesW->length) {
+				return $this->searchSubstitution($destNodesW, $mod, $xpath, $table, $subsNodes, $destNodes->length ? FALSE : TRUE);
 			}
 		}
 		if ($destNodes->length && !$found) {
@@ -1158,6 +1171,13 @@ class newAKNDiff09 extends AKNDiff {
 			$this->setAllAttribute($destNodes, "class", $mod->type);	
 		}
 		return TRUE;
+	}
+
+	protected function findOldNodesByAttr($joinedNode, $newAttr, $oldAttr, $table) {
+		$xpath = new DOMXPath($table->ownerDocument);
+		$attrValue = $joinedNode->getAttribute($newAttr);
+		if (!$attrValue) return FALSE;
+		return $xpath->query("(//*[@class='oldVersion']//*[@$oldAttr='$attrValue'])", $table);
 	}
 
 	protected function applyModInsertion($mod, $xpath, $table) {
@@ -1217,6 +1237,8 @@ class newAKNDiff09 extends AKNDiff {
 			if($targetParents->length) {
 				$firstTargetParent = $targetParents->item($targetParents->length-1);
 				$parentWithWid = $this->getNodeWithWid($targetParents);
+				$parentJoined = $this->getNodeWithAttribute($targetParents, "joined");
+				$parentSplitted = $this->getNodeWithAttribute($targetParents, "splittedBy");
 				$parentStatusRemoved = $this->getNodeWithAttribute($targetParents, "akn_status", "removed");
 				// $originalId = $firstTargetParent->getAttribute("parentOriginalId");
 				// $parentId = ($originalId) ? $originalId : $firstTargetParent->getAttribute("parent");
@@ -1257,6 +1279,18 @@ class newAKNDiff09 extends AKNDiff {
 			$destNodesW = $this->findOldNodes($parentWithWid, $table);
 			if (count($destNodesW)) {
 				$found = $this->searchRepeal($destNodesW, $parentStatusRemoved, $mod, $xpath, $table, $targetNodes, $destNodes->length ? FALSE : TRUE);
+			}
+		}
+		if (!$found && $parentJoined) {
+			$destNodesW = $this->findOldNodesByAttr($parentJoined, 'joined', 'joinInto', $table);
+			if ($destNodesW && $destNodesW->length) {
+				return $this->findAndwrapTextNode($mod->old, $destNodesW, $mod->type, $mod->textBefore, $mod->textAfter);
+			}
+		}
+		if (!$found && $parentSplitted) {
+			$destNodesW = $this->findOldNodesByAttr($parentSplitted, 'splittedBy', 'toSplit', $table);
+			if ($destNodesW && $destNodesW->length) {
+				return $this->findAndwrapTextNode($mod->old, $destNodesW, $mod->type, $mod->textBefore, $mod->textAfter);
 			}
 		}
 		if ($destNodes->length && !$found) {
@@ -1307,7 +1341,7 @@ class newAKNDiff09 extends AKNDiff {
 
 	protected function getNodeWithAttribute($nodes, $attr, $value=FALSE) {
 		for($i = $nodes->length-1; $i >= 0; $i--) {
-			if ($nodes->item($i)->hasAttribute($attr) && (!$value || $nodes->item($i)->getAttribute($attr) == $value) )
+			if ($nodes->item($i)->hasAttribute($attr) && $nodes->item($i)->getAttribute($attr) && (!$value || $nodes->item($i)->getAttribute($attr) == $value) )
 				return $nodes->item($i);
 		}
 		return FALSE;
