@@ -194,7 +194,7 @@ div.noMods {
     bottom: 26px;
     color: #fff;
     content: attr(data-title);
-    left: 20%;
+    right: 0;
     padding: 5px 15px;
     position: absolute;
     z-index: 98;
@@ -208,7 +208,7 @@ div.noMods {
     border-width: 6px 6px 0 6px;
     bottom: 20px;
     content: "";
-    left: 50%;
+    left: 40%;
     position: absolute;
     z-index: 99;
 }
