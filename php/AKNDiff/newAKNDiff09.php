@@ -501,7 +501,7 @@ class newAKNDiff09 extends AKNDiff {
 	
 	protected function getTextNodesBy($node, $fn) {
 		$textList = array();
-		if(get_class($node) == 'DOMNodeList' || is_array($node)) {
+		if(is_array($node) || get_class($node) == 'DOMNodeList') {
 			foreach($node as $childNode) {
 				$textList = array_merge($textList, $this->getTextNodesBy($childNode, $fn));
 			}
@@ -1012,6 +1012,10 @@ class newAKNDiff09 extends AKNDiff {
 			$text = $node->previousSibling->nodeValue . $text;
 			$node = $node->previousSibling;
 		}
+		$limitNode = $this->getUpperTextLimit($node);
+		if ($limitNode && $node->parentNode !== $limitNode) {
+			$text = $this->getPrecedingText($node->parentNode) . $text;
+		}
 		return $text;
 	}
 
@@ -1021,7 +1025,36 @@ class newAKNDiff09 extends AKNDiff {
 			$text .= $node->nextSibling->nodeValue;
 			$node = $node->nextSibling;
 		}
+		$limitNode = $this->getUpperTextLimit($node);
+		if ($limitNode && $node->parentNode !== $limitNode) {
+			$text .= $this->getFollowingText($node->parentNode);
+		}
 		return $text;
+	}
+
+	protected function getUpperTextLimit($node) {
+		if (!$node) return;
+		$cls = '';
+		if ($node->nodeType == XML_ELEMENT_NODE) {
+			$cls = $node->getAttribute('class');
+			$cls = (!$cls) ? $node->getAttribute('parentClass') : $cls;
+		}
+
+		if ($node->nodeName == 'td' ||
+			$this->containsWord($cls, 'hcontainer') ||
+			$this->containsWord($cls, 'container') ||
+			$this->containsWord($cls, 'block') ||
+			$this->containsWord($cls, 'num') ||
+			$this->containsWord($cls, 'heading') ||
+			$this->containsWord($cls, 'subheading')) {
+			return $node;
+		}
+
+		return $this->getUpperTextLimit($node->parentNode);
+	}
+
+	protected function containsWord($string, $word) {
+		return preg_match("/\b$word/", $string);
 	}
 	
 	protected function applyMods($table) {
@@ -1141,7 +1174,7 @@ class newAKNDiff09 extends AKNDiff {
 		//echo $mod->destination." - ".$destNodes->length. " - ".$mod->id." - ".$mod->old." - ".$precedingText."<br>";					
 		$this->setAllAttribute($subsNodes, "title", "Old string: ".$mod->old);
 		$this->setAllAttribute($subsNodes, "class", $mod->type);
-		$length = get_class($destNodes) == 'DOMNodeList' ? $destNodes->length : count($destNodes);
+		$length = is_array($destNodes) ? count($destNodes) : $destNodes->length;
 
 		if($mod->old && $length) {
 			// Filter nodes based on preceding text
@@ -1299,10 +1332,10 @@ class newAKNDiff09 extends AKNDiff {
 	}
 
 	protected function searchRepeal($destNodes, $parentStatusRemoved, $mod, $xpath, $table, $targetNodes, $setErrors = TRUE) {
-		$length = get_class($destNodes) == 'DOMNodeList' ? $destNodes->length : count($destNodes);
+		$length = is_array($destNodes) ? count($destNodes) : $destNodes->length;
 
 		if($length == 1 && $mod->old) {
-			$firstNode = get_class($destNodes) == 'DOMNodeList' ? $destNodes->item(0) : $destNodes[0];
+			$firstNode = is_array($destNodes) ? $destNodes[0] : $destNodes->item(0);
 			if ( $parentStatusRemoved && $this->removeSpaces($mod->old) == $this->removeSpaces($firstNode->textContent) ) {
 				// Set as removed the entire element
 				$this->setAllAttribute($destNodes, "class", "repeal");
