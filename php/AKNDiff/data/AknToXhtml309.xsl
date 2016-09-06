@@ -489,23 +489,9 @@
 	        </span>
 	</xsl:template>
 	
+	<!-- documentRef is not relevant for diff -->
 	<xsl:template match="akn:documentRef">
-	        <xsl:variable name="idref" select="substring-after(@href,'#')" />
-	        <xsl:variable name="uri" select="//akn:component[@eId=$idref]//akn:FRBRManifestation//akn:FRBRthis/@value"/>
-	        <span>
-	        	<xsl:attribute name="class">
-		         	<xsl:value-of select="concat('inline ',name(.))" />
-		         </xsl:attribute>
-		         <xsl:attribute name="internalid">
-		         	<xsl:value-of select="name(.)" />
-		         </xsl:attribute>
-		         
-		         
-	        	<!-- ATTRIBUTE'S GENERIC TEMPLATE -->
-	        	<xsl:apply-templates select="@*" mode="elementAttributes" />
-	        	<xsl:value-of select="$uri" />
-	        	<xsl:apply-templates />
-	        </span>
+	        <xsl:apply-templates />
 	</xsl:template>
 	
 	<!-- Html elements -->
