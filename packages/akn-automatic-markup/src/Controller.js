@@ -187,44 +187,38 @@ Ext.define('AknAutomaticMarkup.Controller', {
     },
 
     addChildWrapper: function(nodes, config) {
-        var me = this, button, nodesToMark = [];
+        var me = this;
         Ext.each(nodes, function(node) {
-            button = DomUtils.getButtonByElement(node);
-            if(button && (button.name == 'preface' ||
-                          button.name == 'preamble' ||
-                          button.name == 'formula' ||
-                          button.name == 'conclusions')) {
-                var pButton = DocProperties.getChildConfigByName(button, 'p') || DocProperties.getFirstButtonByName("p", "common");
-
-                var textGroups = me.getTextChildrenGroups(node);
-
-                if ( textGroups.length ) {
-                    Ext.each(textGroups, function(group) {
-                        var beakingSpans = group.filter(function(el) {
-                            return DomUtils.nodeHasClass(el, DomUtils.breakingElementClass);
-                        });
-                        if ( beakingSpans.length != group.length ) {
-                            var wrapper = me.wrapListOfNodes(group);
-                            nodesToMark.push({
-                                node: wrapper,
-                                button: pButton
-                            });
-                        }
-                    });
-                }
+            var name = DomUtils.getNameByNode(node);
+            if( name == 'preface' || name == 'preamble' ||
+                name == 'formula' || name == 'conclusions' ) {
+                me.addPTextWrappers(node);
             }
         });
+    },
 
-        if(nodesToMark.length) {
-            Ext.each(nodesToMark, function(el) {
-                var button = el.button || DocProperties.getFirstButtonByName("p", "common");
-                me.requestMarkup(button, {
-                    silent : true,
-                    noEvent : true,
-                    nodes : el.node
-                });
+    // Add a p wrapper to every group of text nodes
+    addPTextWrappers: function(node) {
+        var me = this;
+        var pButton = DocProperties.getChildConfigByName(DomUtils.getButtonByElement(node), 'p') ||
+                        DocProperties.getFirstButtonByName('p', 'common');
+        var textGroups = me.getTextChildrenGroups(node);
+
+        if ( !textGroups.length ) return;
+
+        textGroups.forEach(function(group) {
+            var beakingSpans = group.filter(function(el) {
+                return DomUtils.nodeHasClass(el, DomUtils.breakingElementClass);
             });
-        }
+            if ( beakingSpans.length == group.length ) return;
+
+            var wrapper = me.wrapListOfNodes(group);
+            me.requestMarkup(pButton, {
+                silent : true,
+                noEvent : true,
+                nodes : [wrapper]
+            });
+        });
     },
 
     wrapListOfNodes: function(nodes) {
@@ -2718,10 +2712,8 @@ Ext.define('AknAutomaticMarkup.Controller', {
     normalizeNodes: function(node) {
         var me = this;
 
-        // Add text wrapping to items that not contain h?containers
         Ext.each(node.querySelectorAll('.item'), function(item) {
-            if (!AknMain.xml.Document.newDocument(item).select("*[contains(@class, 'container')]").length)
-                me.wrapItemText(item);
+            me.addPTextWrappers(item);
         });
 
         var hcontainers = Ext.Array.toArray(node.querySelectorAll('.article')).filter(function(el) {
