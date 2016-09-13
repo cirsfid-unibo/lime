@@ -706,7 +706,7 @@
     "commonReport": {
     	"label": "debateReport/report"
     },
-    "structureNotes":{
+    "structureNotes": {
         "label": "Note"
     }
 }
