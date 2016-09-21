@@ -9,9 +9,6 @@
     "devel": true,
     "globals": {
         "Ext": true,
-        "DomUtils": true,
-        "Ext": true,
-        "Ext": true,
-        "Ext": true,
+        "DomUtils": true
     }
 }
