@@ -53,7 +53,7 @@ require_once('../config.php');
 
 class DocumentDiff {
 	
-	const DIFFSTYLE = "https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js";
+	const DIFFSTYLE = "https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js";
 	const CSS = "data/diff.css";
 	const XML = 'xml'; const TEXT = 'text';
 	private $from,$to,$css,$format,$doc;
