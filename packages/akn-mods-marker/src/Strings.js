@@ -71,7 +71,8 @@
             "oldText": "The old text",
             "haveToSelectElement": "You have to select {name} element",
             "splitOnlySiblings": "You can split only sibling nodes",
-            "causedRenumbering": "This modification has caused a renumbering?"
+            "causedRenumbering": "This modification has caused a renumbering?",
+            "propagationRenumbering": "Do you want to propagate the renumbering?"
         },
         "it": {
             "insertion": "Inserimento",
@@ -96,7 +97,8 @@
             "oldText": "Testo precedente",
             "haveToSelectElement": "Devi selezionere un elemento {name}",
             "splitOnlySiblings": "Puoi dividere solo elementi vicini",
-            "causedRenumbering": "Questa modifica ha causato una rinumerazione?"
+            "causedRenumbering": "Questa modifica ha causato una rinumerazione?",
+            "propagationRenumbering": "Vuoi propagare la rinumerazione?"
         },
         "es": {
             "insertion": "Insertion",
@@ -121,7 +123,8 @@
             "oldText": "El texto anterior",
             "haveToSelectElement": "Usted tiene que seleccionar el elemento {name}",
             "splitOnlySiblings": "Se puede dividir nodos único hermano",
-            "causedRenumbering": "Esta modificación ha provocado una nueva numeración?"
+            "causedRenumbering": "Esta modificación ha provocado una nueva numeración?",
+            "propagationRenumbering": "¿Quieres propagar la renumeración?"
         }
     },
 

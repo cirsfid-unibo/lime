@@ -1131,7 +1131,7 @@ Ext.define('AknModsMarker.Controller', {
         var close = function(cmp) {
             me.setMaskEditors(false, false);
             cmp.close();
-        }
+        };
 
         var winCmp = me.createAndShowFloatingForm(renumberNode, 'Select the renumbered fragment from the old side', false, false, function(cmp) {
             if (!cmp.selectedNode) {
@@ -1167,9 +1167,9 @@ Ext.define('AknModsMarker.Controller', {
             }
             
             winCmp.down('[itemId=selectedMsg]').setHtml(msg);
-        }
+        };
 
-        me.secondEditorClickHandlerCustom = function(node, evt, ed) {
+        me.secondEditorClickHandlerCustom = function(node) {
             node = me.ensureHcontainerNode(node);
             var oldNodeButton = node && DocProperties.getFirstButtonByName(DomUtils.getNameByNode(node));
             if ( !node || !oldNodeButton || !winCmp || !winCmp.isVisible() ) return;
@@ -1188,36 +1188,54 @@ Ext.define('AknModsMarker.Controller', {
 
     registerRenambering: function(node, oldNode) {
         var me = this;
-        var children = me.getAllSibSameClass(node);
-        var childrenOld = me.getAllSibSameClass(oldNode);
-        var nodeIndex = children.indexOf(node);
-        var oldNodeIndex = childrenOld.indexOf(oldNode);
-        var minIndex = Math.min(nodeIndex, oldNodeIndex);
-        var maxIndex = Math.max(nodeIndex, oldNodeIndex);
-        // Consider the portion of the list from minIndex to maxIndex
-        children = children.slice(minIndex, maxIndex+1);
-        childrenOld = childrenOld.slice(minIndex, maxIndex+1);
-        // Remove node and oldNode from children list
-        nodeIndex = children.indexOf(node);
-        oldNodeIndex = childrenOld.indexOf(oldNode);
-        children.splice(nodeIndex, 1);
-        childrenOld.splice(oldNodeIndex, 1);
+        // Propagate the renumbering by adding implicit renumberings
+        // based on the position of nodes so it's not very precise
+        // The idea is to simulate the removal of node and oldNode
+        // from the interval of siblings in the middle of the two nodes
+        // and adding a renumbering for each pair of nodes old-new.
+        var propagateRenumbering = function() {
+            var children = me.getAllSibSameClass(node);
+            var childrenOld = me.getAllSibSameClass(oldNode);
+            var nodeIndex = children.indexOf(node);
+            var oldNodeIndex = childrenOld.indexOf(oldNode);
+            var minIndex = Math.min(nodeIndex, oldNodeIndex);
+            var maxIndex = Math.max(nodeIndex, oldNodeIndex);
+            // Consider the portion of the list from minIndex to maxIndex
+            children = children.slice(minIndex, maxIndex+1);
+            childrenOld = childrenOld.slice(minIndex, maxIndex+1);
+            // Remove node and oldNode from children list
+            nodeIndex = children.indexOf(node);
+            oldNodeIndex = childrenOld.indexOf(oldNode);
+            children.splice(nodeIndex, 1);
+            childrenOld.splice(oldNodeIndex, 1);
 
+            // Apply renumbering to nodes in the middle
+            children.forEach(function(node, index) {
+                // TODO: understand if some check is needed before set renumbering
+                if (childrenOld[index]) {
+                    me.updateRenumberingMetadata(node, childrenOld[index]);
+                }
+            });
+        };
         me.updateRenumberingMetadata(node, oldNode);
-        // Apply renumbering to nodes in the middle
-        children.forEach(function(node, index) {
-            // TODO: understand if some check is needed before set renumbering
-            if (childrenOld[index]) {
-                me.updateRenumberingMetadata(node, childrenOld[index]);
+        me.askForRenumberingPropagation(propagateRenumbering);
+    },
+
+    askForRenumberingPropagation: function(callback) {
+        Ext.Msg.confirm(
+            Locale.getString("renumbering", this.getPluginName()),
+            Locale.getString("propagationRenumbering", this.getPluginName()),
+            function(res) {
+                if (res === 'yes' && callback) callback();
             }
-        });
+        );
     },
 
     splitHandler: function(button) {
         var me = this, editor = me.getController("Editor"),
             selection = editor.getSelectionObject(null, null, true),
             node = DomUtils.getFirstMarkedAncestor(selection.node),
-            formTitle = "Select the element to split", button;
+            formTitle = "Select the element to split";
 
         if(node && selection.start == selection.node && selection.node == selection.start) {
             // Save a reference of the selection
@@ -1773,12 +1791,14 @@ Ext.define('AknModsMarker.Controller', {
 
     getUpperTextLimit: function(node) {
         if (!node) return;
-        if (node.classList && (node.classList.contains('hcontainer')
-                            || node.classList.contains('container')
-                            || node.classList.contains('block')
-                            || node.classList.contains('num')
-                            || node.classList.contains('heading')
-                            || node.classList.contains('subheading'))) {
+        if (node.classList && (
+                node.classList.contains('hcontainer') ||
+                node.classList.contains('container') ||
+                node.classList.contains('block') ||
+                node.classList.contains('num') ||
+                node.classList.contains('heading') ||
+                node.classList.contains('subheading')
+            )) {
             return node;
         }
         return this.getUpperTextLimit(node.parentNode);
@@ -1886,8 +1906,7 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     updateSubsMetadata: function(node, oldText, textBefore, textAfter) {
-        var me = this,
-            elId = node.getAttribute(DomUtils.elementIdAttribute),
+        var elId = node.getAttribute(DomUtils.elementIdAttribute),
             parent = this.ensureHcontainerNode(node),
             destId = (parent) ? parent.getAttribute(DomUtils.elementIdAttribute) : elId;
 
@@ -1906,8 +1925,8 @@ Ext.define('AknModsMarker.Controller', {
 
     updateRenumberingMetadata: function(node, renumberedNode) {
         var me = this,
-            prevElId = LangProp.getNodeLangAttr(renumberedNode, "eId").value 
-                    || renumberedNode.getAttribute(DomUtils.elementIdAttribute),
+            prevElId = LangProp.getNodeLangAttr(renumberedNode, "eId").value ||
+                        renumberedNode.getAttribute(DomUtils.elementIdAttribute),
             elId = node.getAttribute(DomUtils.elementIdAttribute);
 
         this.removeMod(elId); // Remove the possibly existing mod
