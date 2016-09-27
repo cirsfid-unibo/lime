@@ -1,3 +1,9 @@
+// Global counter of triangle markers used to generate unique ids
+// it's important to have unique id because there can be multiple
+// markers within nodes that can be colored differently
+var markersCount = 0;
+
+// This function is called from body's "onload" attribute
 function addVisualizationLayouts() {
     if(isPrintMode()) {
         document.body.style.width = '595px';
@@ -21,34 +27,39 @@ function applyRenumbering() {
         if (nrA < nrB) return -1;
         if (nrA > nrB) return 1;
         return 0;
-    })
+    });
 
     var arrowsRenumbering = [], iconsRenumbering = [], pastRenumberings = [];
     for(var i = 0; i < equalCells.length; i++) {
         var firstCell = equalCells[i],
-            equalId = firstCell.getAttribute(renbrAttr);
+            equalId = firstCell.getAttribute(renbrAttr),
             secondCell = document.querySelectorAll("*[renumberingto='"+equalId+"']").item(0);
         if(secondCell && pastRenumberings.indexOf(equalId) == -1) {
             try {
                 createWrapper(firstCell);
                 createWrapper(secondCell);
-                var firstOppositeRenumbering = getOppositeTd(firstCell).getAttribute('renumberingto');
-                var secondOppositeRenumbering = getOppositeTd(secondCell).getAttribute(renbrAttr);
-                var drawArrow = !((firstOppositeRenumbering || secondOppositeRenumbering)
-                                && ((pastRenumberings.indexOf(firstOppositeRenumbering) != -1)
-                                || (pastRenumberings.indexOf(secondOppositeRenumbering) != -1)));
+                // TODO: uncomment to limit the arrows to one arrow per line
+                // var firstOppositeRenumbering = getOppositeTd(firstCell).getAttribute('renumberingto');
+                // var secondOppositeRenumbering = getOppositeTd(secondCell).getAttribute(renbrAttr);
+                // var drawArrow = !((firstOppositeRenumbering || secondOppositeRenumbering) &&
+                //                 ((pastRenumberings.indexOf(firstOppositeRenumbering) != -1) ||
+                //                 (pastRenumberings.indexOf(secondOppositeRenumbering) != -1)));
                 var cells = [];
                 if(getPosInParent(firstCell) > getPosInParent(secondCell)) {
                     cells = [secondCell, firstCell, false];
                 } else {
                     cells = [firstCell, secondCell, true];
                 }
-                if (drawArrow)
+                //if (drawArrow) {
+                    cells.push(getRandColor(2));
                     arrowsRenumbering.push(cells);
+                //}
 
                 iconsRenumbering.push(cells);
                 pastRenumberings.push(equalId);
-            }catch(e){};
+            } catch(e) {
+                console.error(e);
+            }
         }
     }
     // Adding the icons first because the spaces could change
@@ -56,7 +67,7 @@ function applyRenumbering() {
         createRenumberingIcon(cells[0], cells[1]);
     });
     arrowsRenumbering.forEach(function(cells) {
-        createRenumberingCellBox(cells[0], cells[1], cells[2]);
+        createRenumberingCellBox(cells[0], cells[1], cells[2], cells[3]);
     });
 }
 
@@ -75,15 +86,15 @@ function createWrapper(element) {
     }
 }
 
-function createRenumberingCellBox(firstCell, secondCell, leftToRight) {
+function createRenumberingCellBox(firstCell, secondCell, leftToRight, color) {
     var firstEl = firstCell.firstChild || firstCell,
         secondEl = secondCell.firstChild || secondCell,
         styleFist = window.getComputedStyle(firstEl),
-        widthF = parseInt(styleFist.getPropertyValue("width")),
-        heightF = parseInt(styleFist.getPropertyValue("height")),
+        widthF = parseInt(styleFist.getPropertyValue('width')),
+        heightF = parseInt(styleFist.getPropertyValue('height')),
         styleSecond = window.getComputedStyle(secondEl),
-        widthS = parseInt(styleSecond.getPropertyValue("width")),
-        heightS = parseInt(styleSecond.getPropertyValue("height")),
+        widthS = parseInt(styleSecond.getPropertyValue('width')),
+        heightS = parseInt(styleSecond.getPropertyValue('height')),
         firstPos = getPos(firstEl),
         secondPos = getPos(secondEl),
         boxX = firstPos.x+widthF,
@@ -105,12 +116,12 @@ function createRenumberingCellBox(firstCell, secondCell, leftToRight) {
         !isNaN(svgBoxSettings.pos.y) &&
         !isNaN(svgBoxSettings.size.w) && !isNaN(svgBoxSettings.size.h)) {
         var svgBox = createArrowsBox(svgBoxSettings);
+        var svgGroup = createColoredGroup(svgBox, color);
         firstPos.y = firstPos.y-startY;
         firstPos.x = 0;
         secondPos.y = secondPos.y-startY;
         secondPos.x = svgBoxSettings.size.w;
-
-        createRenumberingArrows(svgBox, svgBoxSettings, {
+        createRenumberingArrows(svgGroup, svgBoxSettings, {
             pos : firstPos,
             size : {
                 w : widthF,
@@ -128,8 +139,24 @@ function createRenumberingCellBox(firstCell, secondCell, leftToRight) {
     }
 }
 
+function getRandColor(brightness) {
+    //6 levels of brightness from 0 to 5, 0 being the darkest
+    var rgb = [Math.random() * 256, Math.random() * 256, Math.random() * 256];
+    var mix = [brightness*51, brightness*51, brightness*51]; //51 => 255/5
+    var mixedrgb = [rgb[0] + mix[0], rgb[1] + mix[1], rgb[2] + mix[2]].map(function(x){ return Math.round(x/2.0);});
+    return "rgb(" + mixedrgb.join(",") + ")";
+}
+
+function createColoredGroup(node, color) {
+    var g = createSvgElement('g', {
+        stroke: color,
+        fill: color
+    });
+    return node.appendChild(g);
+}
+
 function createRenumberingIcon(fromNode, toNode) {
-    var targetNode = toNode && toNode.querySelector('p')
+    var targetNode = toNode && toNode.querySelector('p');
     targetNode = targetNode || toNode;
     var infoImg = document.createElement('img');
     var oldText = 'Previous: '+fromNode.textContent;
@@ -196,7 +223,8 @@ function drawArrows(el, td, oppositeTdsBBox, arrowsType) {
     };
 
     var svgBox = createArrowsBox(svgBoxSettings);
-    createArrows(svgBox, svgBoxSettings, {
+    var svgGroup = createColoredGroup(svgBox, 'blue');
+    createArrows(svgGroup, svgBoxSettings, {
         pos : pos,
         size : {
             w : width,
@@ -258,7 +286,7 @@ function applySplits() {
 }
 
 function getPos(el) {
-    for (var lx = 0, ly = 0; el != null; lx += el.offsetLeft, ly += el.offsetTop, el = el.offsetParent);
+    for (var lx = 0, ly = 0; el !== null; lx += el.offsetLeft, ly += el.offsetTop, el = el.offsetParent);
     return {
         x : lx,
         y : ly
@@ -306,29 +334,34 @@ function getParentByName(node, name) {
 }
 
 function createArrowsBox(settings) {
-    var svg = createSvg(settings.size.w, settings.size.h, "position:absolute; top: " + settings.pos.y + "; left: " + settings.pos.x + "; background-color:rgba(0,255,0,0);");
-    var marker = createSvgElement("marker", {
-        id : "triangle",
-        viewBox : "0 0 10 10",
-        refX : "0",
-        refY : "5",
-        markerUnits : "strokeWidth",
-        markerWidth : "4",
-        markerHeight : "3",
-        orient : "auto"
-    });
-    var path = createSvgElement("path", {
-        d : "M 0 0 L 10 5 L 0 10 z",
-        style : "fill: #0000FF;"
-    });
-
-    marker.appendChild(path);
-    svg.appendChild(marker);
+    var svg = createSvg(settings.size.w, settings.size.h, 
+                'position:absolute; top: ' + settings.pos.y +
+                '; left: ' + settings.pos.x + '; background-color:rgba(0,255,0,0);');
     return svg;
 }
 
+function addMarker(node) {
+    var id = 'triangle'+markersCount++;
+    var marker = createSvgElement('marker', {
+        id : id,
+        viewBox : '0 0 10 10',
+        refX : '0',
+        refY : '5',
+        markerUnits : 'strokeWidth',
+        markerWidth : '4',
+        markerHeight : '3',
+        orient : 'auto'
+    });
+    var path = createSvgElement('path', {
+        d : 'M 0 0 L 10 5 L 0 10 z'
+    });
+    marker.appendChild(path);
+    node.appendChild(marker);
+    return id;
+}
+
 function createArrows(box, boxSettings, td, oppositeTds, type) {
-    var xPadding = 3, arrow,  tdLineY1, tdLineY2, middleTdY, tdLine, tdLineX;
+    var xPadding = 3,  tdLineY1, tdLineY2, middleTdY, tdLine, tdLineX;
     type = type || 'join';
     if(td.direction) {
         tdLineY1 = td.pos.y - boxSettings.pos.y;
@@ -341,17 +374,16 @@ function createArrows(box, boxSettings, td, oppositeTds, type) {
         middleTdY = tdLineY1 + td.size.h / 2;
         tdLineX = xPadding;
     }
-
-    tdLine = createSvgElement("line", {
+    tdLine = createSvgElement('line', {
         x1 : tdLineX,
         y1 : tdLineY1,
         x2 : tdLineX,
         y2 : tdLineY2,
-        stroke : "blue",
-        "stroke-width" : "2"
+        'stroke-width' : '2'
     });
     box.appendChild(tdLine);
 
+    var markerId = addMarker(box);
     for (var i = 0; i < oppositeTds.elements.length; i++) {
         var el = oppositeTds.elements[i], arrow, middleY, lineX;
 
@@ -365,22 +397,20 @@ function createArrows(box, boxSettings, td, oppositeTds, type) {
             lineX =  boxSettings.size.w - xPadding;
         }
 
-        tdLine = createSvgElement("line", {
+        tdLine = createSvgElement('line', {
             x1 : lineX,
             y1 : tdLineY1,
             x2 : lineX,
             y2 : tdLineY2,
-            stroke : "blue",
-            "stroke-width" : "2"
+            'stroke-width' : '2'
         });
 
         middleY = tdLineY1 + (el.size.h / 2);
         box.appendChild(tdLine);
 
-        arrowCfg = {
-            stroke : "blue",
-            "stroke-width" : "2",
-            "marker-end" : "url(#triangle)"
+        var arrowCfg = {
+            'stroke-width' : '2',
+            'marker-end' : 'url(#'+markerId+')'
         };
         if (type == 'split') {
             arrowCfg.x1 = tdLineX;
@@ -394,28 +424,29 @@ function createArrows(box, boxSettings, td, oppositeTds, type) {
             arrowCfg.y2 = middleTdY+(i*xPadding*3);
         }
 
-        arrow = createSvgElement("line", arrowCfg);
+        arrow = createSvgElement('line', arrowCfg);
         box.appendChild(arrow);
     }
 }
 
 function createRenumberingArrows(box, boxSettings, first, second, leftToRight) {
-    var xPadding = 5, arrowPadding = 7, arrowY1, arrowY2,
-        middleX = boxSettings.size.w/2, middleY = boxSettings.size.h / 2,
-        arrowX1 = middleX,
-        pathData = '',
+    var xPadding = 5, arrowPadding = 7,
+        verticalLineX = boxSettings.size.w/2,
+        arrowX1 = verticalLineX,
+        arrowX2 = 0,
+        arrowY1 = 0,
+        arrowY2 = 0,
         firstLineToMiddle = '', secondLineToMiddle = '';
-
     if (leftToRight) {
         arrowX2 = boxSettings.size.w-xPadding-arrowPadding;
         arrowY1 = second.pos.y+(second.size.h/2);
         arrowY2 = arrowY1;
-        firstLineToMiddle = ' m0'+' -'+first.size.h/2+' H'+boxSettings.size.w/2;
+        firstLineToMiddle = ' m0'+' -'+first.size.h/2+' H'+verticalLineX;
     } else {
         arrowX2 = xPadding+arrowPadding;
         arrowY1 = first.pos.y+(first.size.h/2);
         arrowY2 = arrowY1;
-        firstLineToMiddle = ' M'+boxSettings.size.w/2+' '+(first.pos.y+first.size.h/2);
+        firstLineToMiddle = ' M'+verticalLineX+' '+(first.pos.y+first.size.h/2);
         secondLineToMiddle = ' H'+(boxSettings.size.w-xPadding);
     }
 
@@ -425,22 +456,21 @@ function createRenumberingArrows(box, boxSettings, first, second, leftToRight) {
             ' M'+(boxSettings.size.w-xPadding)+' '+second.pos.y+
             ' v'+second.size.h;
 
+    var markerId = addMarker(box);
     var path = createSvgElement('path', {
         d: pathData,
-        stroke : 'blue',
         'stroke-width' : 2,
         'fill-opacity': 0 ,
         'stroke-linejoin': 'round'
     });
     box.appendChild(path);
-    arrow = createSvgElement("line", {
+    var arrow = createSvgElement('line', {
         x1 : arrowX1,
         y1 : arrowY1,
         x2 : arrowX2,
         y2 : arrowY2,
-        stroke : "blue",
-        "stroke-width" : "2",
-        "marker-end" : "url(#triangle)"
+        'stroke-width' : 2,
+        'marker-end' : 'url(#'+markerId+')'
     });
     box.appendChild(arrow);
 }
