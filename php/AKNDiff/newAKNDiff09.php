@@ -1257,7 +1257,7 @@ class newAKNDiff09 extends AKNDiff {
 		$idCond = "";
 		$parentIdCond = "";
 		$targetNodes = $xpath->query("(//*[@class='newVersion']//*[@akn_currentId= '$mod->destination' or @akn_wId= '$mod->destination' or contains(@parent, '$mod->destination')])[last()]", $table);
-		//echo $targetNodes->length. " - ".$mod->destination." - ".$mod->old." - ".$targetNodes->item(0)->nodeName."<br>";
+		//echo $targetNodes->length. " - ".$mod->destination." - ".$mod->old." - ".$mod->textBefore."<br>";
 
 		if($targetNodes->length) {
 			$firstTarget = $targetNodes->item(0);
@@ -1333,7 +1333,9 @@ class newAKNDiff09 extends AKNDiff {
 
 	protected function searchRepeal($destNodes, $parentStatusRemoved, $mod, $xpath, $table, $targetNodes, $setErrors = TRUE) {
 		$length = is_array($destNodes) ? count($destNodes) : $destNodes->length;
-
+		// Search the string only if there is only one destination node
+		// This check is needed because of the case when a whole partition
+		// is removed and the length can be more than one when there's a <num> inside
 		if($length == 1 && $mod->old) {
 			$firstNode = is_array($destNodes) ? $destNodes[0] : $destNodes->item(0);
 			if ( $parentStatusRemoved && $this->removeSpaces($mod->old) == $this->removeSpaces($firstNode->textContent) ) {
