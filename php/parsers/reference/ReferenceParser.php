@@ -48,10 +48,13 @@
 require_once(dirname(__FILE__)."/../utils.php");
 require_once(dirname(__FILE__)."/../date/DateParser.php");
 
+
+
 class ReferenceParser {
     
     public $lang, $docType;
     private $parserRules = array();
+
     
     public function __construct($lang, $docType) {
         $this->lang = $lang;
@@ -59,6 +62,15 @@ class ReferenceParser {
         $this->dirName = dirname(__FILE__);
 
         $this->loadConfiguration();
+
+        if($this->lang=="ita") {
+        	$csv_file = file(realpath($this->dirName."/lang/ita/attinoti.csv"));
+        	$csv = array_map(function($csv_line) { return str_getcsv($csv_line, $delimiter=";"); }, $csv_file);
+        	$this->attinoti = Array();
+        	for ($i=0;$i<sizeof($csv);$i++) {
+        		$this->attinoti[$csv[$i][0]] = $csv[$i][1];
+        	}
+        }
     }
 
     public function parse($content, $jsonOutput = FALSE) {
@@ -123,8 +135,20 @@ class ReferenceParser {
 									$entry["date"] = $last['date'];		
 								}
 							}
+						} elseif (array_key_exists("type", $entry)) {
+
+							if (array_key_exists(strtolower($entry['type']), $this->attinoti)) {
+								$date = $this->requestDate($this->attinoti[strtolower($entry['type'])]);
+								if(array_key_exists("dates", $date['response'])) {
+									$date = $date['response']['dates'];
+									if(!empty($date)) {
+										$last = end($date);
+										$entry["date"] = $last['date'];
+									}
+							    }
+							}
 						}
-						
+
 						$return[] = $entry;
 					}
 			}

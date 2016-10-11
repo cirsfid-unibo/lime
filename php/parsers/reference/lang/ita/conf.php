@@ -48,7 +48,10 @@
 $rules = Array(
 
 	"references" => Array(
-		                  "ref_1","ref_1a","ref_1b","ref_1c","ref_1d","ref_1e","ref_1f",
+						  #"ref_0",
+		                  "ref_1","ref_1a","ref_1b","ref_1c",
+		                  #"ref_1cbis",
+		                  "ref_1d","ref_1e","ref_1f",
 						  "ref_range",
 
 						  "ref_3","ref_3b","ref_3c",
@@ -58,11 +61,13 @@ $rules = Array(
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
+
+	"ref_0"  => "/(?P<fragment>{{partnum}}{{numlist}}?,)+\s+(?:della|del|dello|dell(’|'))\s*{{type}}\s+{{date}}\s*,\s*n\.\s*{{docnum}}/",
 	"ref_1"  => "/(?P<fragment>{{partnum}}{{numlist}}?),?\s+(?:della|del|dello|dell(’|'))\s*{{type}}\s+{{date}}\s*,\s*n\.\s*{{docnum}}/",
 	"ref_1a" => "/(?P<fragment>{{partnum}}{{numlist}}?),?\s+(?:della|del|dello|dell(’|'))\s*{{type}}\s*n\.\s*{{docnum}}/",
 	"ref_1b" => "/(?P<fragment>{{partnum}}{{numlist}}?),?\s+(?:della|del|dello|dell(’|'))\s*{{type}}\s+del\s+{{date}}/",
 	"ref_1c" => "/(?P<fragment>{{partnum}}{{numlist}}?),?\s+(?:della|del|dello|dell(’|'))\s*{{type}}/",
+	"ref_1cbis" => "/(?P<fragment>{{partnum}}{{numlist}}?),?\s+(?:della|del|dello|dell(’|'))\s*(?P<fragments>{{partnum}}{{numlist}}?)/",
 	"ref_1d" => "/{{type}}\s+{{date}}\s*,\s*n\.\s*{{docnum}}/",
 	"ref_1e" => "/(?P<fragment>{{partnum}}{{numlist}})/",
 	"ref_1f" => "/(?P<fragment>{{partnum}})/",
