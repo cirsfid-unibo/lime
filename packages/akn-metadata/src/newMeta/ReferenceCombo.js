@@ -49,7 +49,7 @@ Ext.define('AknMetadata.newMeta.ReferenceCombo', {
     xtype: 'akn-metadata-tab-referencecombo',
     store: [],
     config: {
-        filteredTypes: AknMain.metadata.Reference.validators.type.list
+        filteredTypes: AknMain.metadata.Reference.validators.type[0].list
     },
     listeners: {
         beforequery: function () {
