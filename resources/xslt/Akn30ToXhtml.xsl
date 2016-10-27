@@ -1899,7 +1899,7 @@
          <xsl:apply-templates/>
       </div>
    </xsl:template>
-   <xsl:template match="akn:extractText">
+   <xsl:template match="akn:embeddedText">
       <xsl:variable name="class" select="concat(local-name(.),' ')"/>
       <span>
          <xsl:attribute name="class" select="$class"/>
@@ -1910,7 +1910,7 @@
          <xsl:apply-templates/>
       </span>
    </xsl:template>
-   <xsl:template match="akn:extractStructure">
+   <xsl:template match="akn:embeddedStructure">
       <xsl:variable name="class" select="concat(local-name(.),' inline')"/>
       <div>
          <xsl:attribute name="class" select="$class"/>

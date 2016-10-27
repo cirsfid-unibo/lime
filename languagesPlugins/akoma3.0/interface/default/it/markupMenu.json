@@ -251,11 +251,11 @@
         "label": "Evento",
         "shortLabel": "evento"
     },
-    "extractStructure": {
+    "embeddedStructure": {
         "label": "Estratto di struttura",
         "shortLabel": "estratto-struttura"
     },
-    "extractText": {
+    "embeddedText": {
         "label": "Estratto di testo",
         "shortLabel": "estratto-testo"
     },

@@ -394,7 +394,7 @@
 						*[local-name()='debateBody'] |
 						*[local-name()='amendmentBody'] |
 						*[local-name()='fragment'] |
-						*[local-name()='extractStructure'] |
+						*[local-name()='embeddedStructure'] |
 						*[local-name()='subFlow']
 						">
 	        <div>
@@ -479,7 +479,7 @@
 						 *[local-name()='decoration'] |
 						 *[local-name()='docProponent'] |
 						 *[local-name()='omissis'] |
-						 *[local-name()='extractText'] |
+						 *[local-name()='embeddedText'] |
 						 *[local-name()='narrative'] |
 						 *[local-name()='summery'] |
 						 *[local-name()='tocItem']">

@@ -205,10 +205,10 @@
     },
     "externalFragment": {
     },
-    "extractStructure": {
+    "embeddedStructure": {
         "pattern": "container"
     },
-    "extractText": {
+    "embeddedText": {
         "pattern": "inline"
     },
     "fillIn": {

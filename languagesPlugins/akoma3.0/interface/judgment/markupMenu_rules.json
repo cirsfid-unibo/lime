@@ -81,12 +81,12 @@
         },
         "externalFragment": {
             "children": [
-                "extractText",
+                "embeddedText",
                 "rmod",
                 "mmod",
                 "mod",
                 "quotedText",
-                "extractStructure",
+                "embeddedStructure",
                 "quotedStructure"
             ]
         },

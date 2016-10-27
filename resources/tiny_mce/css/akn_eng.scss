@@ -31,7 +31,7 @@
     .components             { @include Label('components'); }
     .coverPage              { @include Label('coverPage'); }
     .decision               { @include Label('decision'); }
-    .extractStructure       { @include Label('extractStructure'); }
+    .embeddedStructure       { @include Label('embeddedStructure'); }
     .foreign                { @include Label('foreign'); }
     .formula                { @include Label('formula'); }
     .introduction           { @include Label('introduction'); }
@@ -113,7 +113,7 @@
     .documentRef      { @include Label('documentRef'); }
     .entity           { @include Label('entity'); }
     .event            { @include Label('event'); }
-    .extractText      { @include Label('extractText'); }
+    .embeddedText      { @include Label('embeddedText'); }
     .fillIn           { @include Label('fillIn'); }
     .from             { @include Label('from'); }
     .ins              { @include Label('ins'); }

@@ -243,11 +243,11 @@
         "label": "Set event",
         "shortLabel": "event"
     },
-    "extractStructure": {
+    "embeddedStructure": {
         "label": "Set extract structure",
         "shortLabel": "extract structure"
     },
-    "extractText": {
+    "embeddedText": {
         "label": "Set extract text",
         "shortLabel": "extract text"
     },

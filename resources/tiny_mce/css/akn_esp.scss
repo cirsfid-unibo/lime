@@ -59,8 +59,8 @@
     .eol { @include Label('fine-linea') }
     .eop { @include Label('Final-pagina') }
     .event { @include Label('evento') }
-    .extractStructure { @include Label('estratto-struttura') }
-    .extractText { @include Label('estratto-testo') }
+    .embeddedStructure { @include Label('estratto-struttura') }
+    .embeddedText { @include Label('estratto-testo') }
     .fillIn { @include Label('campo-form') }
     .foreign { @include Label('inclusione-esterna') }
     .formula { @include Label('formula') }

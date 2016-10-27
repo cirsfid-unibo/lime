@@ -267,7 +267,7 @@
 						akn:amendmentBody |
 						akn:judgementBody |
 						akn:fragment |
-						akn:extractStructure |
+						akn:embeddedStructure |
 						akn:subFlow
 						">
 	        <div>
@@ -450,7 +450,7 @@
 						 akn:decoration |
 						 akn:docProponent |
 						 akn:omissis |
-						 akn:extractText |
+						 akn:embeddedText |
 						 akn:narrative |
 						 akn:summery |
 						 akn:tocItem">
