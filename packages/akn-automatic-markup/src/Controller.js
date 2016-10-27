@@ -1883,7 +1883,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
             next(0);
         } else { // mark all as body
-            markButton = DocProperties.getFirstButtonByName('body');
+            markButton = DocProperties.getFirstButtonByName(LangProp.getBodyName());
             var editor = me.getController('Editor'),
                 docNode = editor.getBody().querySelector('.document');
 
@@ -2455,8 +2455,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
     restoreQuotes: function(node, callback) {
         var me = this, finalQuotes,
-             markButton = DocProperties.getFirstButtonByName('body') ||
-                          DocProperties.getFirstButtonByName('mainBody'),
+             markButton = DocProperties.getFirstButtonByName(LangProp.getBodyName()),
              markStructureButton = DocProperties.getFirstButtonByName('quotedStructure'),
              quotedTextLimit = 50;
         me.application.fireEvent(Statics.eventsNames.progressUpdate);
