@@ -55,6 +55,8 @@ function importJson($filePath) {
 function resolveRegex($value, $configArray,$lang,$documentType, $directory = "") {
 	$keyRe  = "/\{\{(\w+)#?(\w+)?\}\}/";
 	$directory = empty($directory) ? getcwd() : $directory;
+	//if (!file_exists($directory . "/lang/" . $lang . "/" . $documentType)
+	//or $directory . "/docType/" . $documentType) $documentType = "bill";
 	
 	if(is_array($value)) {
 		$value = array_map('trim',$value);
@@ -139,6 +141,9 @@ function importParserConfiguration($lang, $documentType, $directory = "") {
 	$directory = empty($directory) ? getcwd() : $directory;
 	// get parser's common configuration
 	$filename = $directory . "/../common/conf.php";
+	//if (!file_exists($directory . "/lang/" . $lang . "/" . $documentType)
+	//	or $directory . "/docType/" . $documentType) $documentType = "bill";
+
 	if (file_exists($filename)) {
 		require_once($filename);
 		$parserRules = array_merge($parserRules, $rules);

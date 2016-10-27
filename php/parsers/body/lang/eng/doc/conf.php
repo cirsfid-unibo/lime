@@ -56,6 +56,20 @@ $rules = Array(
      * SUBCLAUSE
      * LIST
      * SUBLIST (iterata)
+
+     * Book
+     * Part (CODEX)
+     * Title
+     * Section
+     * Chapter
+     * Division
+     * Article (CONSTIUTION
+     * Rule (BASIC TEXTS)
+     * Paragraph
+     * Alinea
+     * Subparagraph
+     * List
+     *
 	 */
     
     "hierarchy" => Array("part","section","subsection","paragraph","subparagraph","clause","subclause"),
