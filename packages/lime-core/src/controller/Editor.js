@@ -1180,11 +1180,15 @@ Ext.define('LIME.controller.Editor', {
         });
 
         me.lastRange = this.getEditor().selection.getRng();
-
         // Hide the context menu
         this.getContextMenu().hide();
         if (Ext.Object.getSize(selectedNode)===0) {
-            selectedNode = DomUtils.getFirstMarkedAncestor(e.target);
+            // When the click release after a selection is outside the editor
+            // e.target in Chrome is setted to <html> and the selectedNode is not found.
+            // In this case the common ancestor of the range is used to
+            // find the selectedNode
+            selectedNode = DomUtils.getFirstMarkedAncestor(e.target) ||
+                            DomUtils.getFirstMarkedAncestor(me.lastRange.commonAncestorContainer);
             if(DomUtils.isBreakingNode(e.target)) {
                 var content = Ext.fly(e.target).getHtml();
                 var newElement = Ext.DomHelper.createDom({
