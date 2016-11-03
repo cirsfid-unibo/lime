@@ -52,7 +52,8 @@ Ext.define('AknMetadata.sync.ImportController', {
     requires: [
         'AknMain.xml.Document',
         'AknMain.Uri',
-        'AknMain.metadata.HtmlSerializer'
+        'AknMain.metadata.HtmlSerializer',
+        'AknMain.TLCIri'
     ],
 
     listen: {
@@ -122,7 +123,7 @@ Ext.define('AknMetadata.sync.ImportController', {
             store.setSource(getReference('.//akn:identification/@source', {
                 eid: 'source',
                 type: 'TLCPerson',
-                href: '/ontology/person/somebody',
+                href: AknMain.TLCIri.create('TLCPerson', 'somebody').toString(),
                 showAs: 'Somebody'
             }));
         }

@@ -47,7 +47,8 @@
 Ext.define('AknAutomaticMarkup.Controller', {
     extend : 'Ext.app.Controller',
 
-    requires: ['AknMain.Reference', 'AknMain.LangProp', 'AknMain.IdGenerator'],
+    requires: ['AknMain.Reference', 'AknMain.LangProp', 'AknMain.IdGenerator',
+                'AknMain.TLCIri'],
 
     config : {
         pluginName : 'akn-automatic-markup'
@@ -701,7 +702,6 @@ Ext.define('AknAutomaticMarkup.Controller', {
             me.addMetaReference({
                 eid: id,
                 type: "TLCLocation",
-                href: "/ontology/location/"+DocProperties.documentInfo.docLocale+"/"+id,
                 showAs: text
             });
         });
@@ -842,8 +842,13 @@ Ext.define('AknAutomaticMarkup.Controller', {
     addMetaReference: function(data) {
         var store = Ext.getStore('metadata').getMainDocument();
         data.showAs = data.showAs ? data.showAs.trim() : data.showAs;
-        if ( !store.references().findRecord('eid', data.eid, 0, false, false, true) )
+        if ( !store.references().findRecord('eid', data.eid, 0, false, false, true) ) {
+            // Check if the document locale as tlc subclass is ok
+            // check the id, it has to be with dots
+            data.href = AknMain.TLCIri.create(data.type, data.eid,
+                            DocProperties.documentInfo.docLocale).toString();
             store.references().add(data);
+        }
     },
 
     addRoleMetadata: function(nodes) {
@@ -853,11 +858,10 @@ Ext.define('AknAutomaticMarkup.Controller', {
             var text = DomUtils.getTextOfNode(node);
                 id = text.replace(/\s/g, "").toLowerCase().trim();
             node.setAttribute(attr, "#"+id);
-
+            //TODO: fix undefined ids
             me.addMetaReference({
                 eid: id,
                 type: "TLCRole",
-                href: "/ontology/roles/"+DocProperties.documentInfo.docLocale+"/"+id,
                 showAs: text
             });
         });
@@ -874,7 +878,6 @@ Ext.define('AknAutomaticMarkup.Controller', {
             me.addMetaReference({
                 eid: id,
                 type: "TLCOrganization",
-                href: "/ontology/organizations/"+DocProperties.documentInfo.docLocale+"/"+id,
                 showAs: text
             });
         });
@@ -904,7 +907,6 @@ Ext.define('AknAutomaticMarkup.Controller', {
             me.addMetaReference({
                 eid: id,
                 type: "TLCPerson",
-                href: "/ontology/persons/"+DocProperties.documentInfo.docLocale+"/"+id,
                 showAs: text
             });
         });

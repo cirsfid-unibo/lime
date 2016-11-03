@@ -47,7 +47,7 @@
 Ext.define('AknMetadata.tagAttributes.Controller', {
     extend: 'Ext.app.Controller',
     requires: ['AknMain.Reference', 'AknMetadata.tagAttributes.RefPanel', 'AknMain.LangProp',
-                'AknMetadata.newMeta.ReferenceCombo'],
+                'AknMetadata.newMeta.ReferenceCombo', 'AknMain.TLCIri'],
 
     tabGroupName: "tagAttributesManager",
     tagAttributesTab: null,
@@ -219,7 +219,8 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
                             rec = references.add({
                                     eid: eid,
                                     type: type,
-                                    href: '',
+                                    href: AknMain.TLCIri.create(type, eid,
+                                                    DocProperties.documentInfo.docLocale).toString(),
                                     showAs: value
                                 })[0];
                         }

@@ -50,6 +50,8 @@
 Ext.define('AknMetadata.sync.EditorSynchronizer', {
     extend: 'Ext.app.Controller',
 
+    requires: ['AknMain.TLCIri'],
+
     listen: {
         store: {
             '#metadata': {
@@ -107,7 +109,7 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
             data = {
                 eid: eid,
                 type: type,
-                href: '/ontology/'+DomUtils.getNameByNode(node)+'/'+meta.get('country')+'/'+eid,
+                href: AknMain.TLCIri.create(type, eid, meta.get('country')).toString(),
                 showAs: showAs
             };
         if(eid) {
