@@ -762,7 +762,6 @@ Ext.define('AknAutomaticMarkup.Controller', {
         };
 
         var markRole = function(item, node) {
-            var wrapper = null;
             var roleButton = DocProperties.getChildConfigByName(sigButton, "role");
             if(!Ext.isEmpty(item.authority)) {
                 var wrapper = findAndWrap(item.authority, node, roleButton);
@@ -781,13 +780,14 @@ Ext.define('AknAutomaticMarkup.Controller', {
         };
 
         var markPerson = function(item, node) {
-            var wrapper = null;
             var personButton = DocProperties.getChildConfigByName(sigButton, "person");
             if(!Ext.isEmpty(item.signature)) {
                 var wrapper = findAndWrap(item.signature, node, personButton);
                 if(wrapper) {
-                    wrapper.setAttribute('data-name', item.name);
-                    wrapper.setAttribute('data-surname', item.surname);
+                    if (item.name && item.surname) {
+                        wrapper.setAttribute('data-name', item.name);
+                        wrapper.setAttribute('data-surname', item.surname);
+                    }
                     personNodes.push(wrapper);
                     me.requestMarkup(personButton, {
                         silent : true,
@@ -858,7 +858,6 @@ Ext.define('AknAutomaticMarkup.Controller', {
             var text = DomUtils.getTextOfNode(node);
                 id = text.replace(/\s/g, "").toLowerCase().trim();
             node.setAttribute(attr, "#"+id);
-            //TODO: fix undefined ids
             me.addMetaReference({
                 eid: id,
                 type: "TLCRole",
@@ -890,17 +889,15 @@ Ext.define('AknAutomaticMarkup.Controller', {
             var text = DomUtils.getTextOfNode(node);
                 signature = Ext.fly(node).parent(".signature"),
                 name = node.getAttribute('data-name'),
-                surname = node.getAttribute('data-surname'),
-                asAttribute = "", role = null;
-
+                surname = node.getAttribute('data-surname');
 
             var id = ( name && surname ) ? name.replace(/\s/g, "").toLowerCase().trim()+'.'+
                                            surname.replace(/\s/g, "").toLowerCase().trim() : "";
 
             id = id || text.replace(/\s/g, "").toLowerCase().trim();
 
-            role = (signature) ? signature.down(".role", true) : null;
-            asAttribute = (role) ? role.getAttribute(attr) : "";
+            var role = (signature) ? signature.down(".role", true) : null;
+            var asAttribute = (role) ? role.getAttribute(attr) : "";
             node.setAttribute(LangProp.attrPrefix+"as", asAttribute);
             node.setAttribute(attr, "#"+id);
 
