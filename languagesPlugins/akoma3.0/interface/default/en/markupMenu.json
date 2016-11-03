@@ -244,12 +244,12 @@
         "shortLabel": "event"
     },
     "embeddedStructure": {
-        "label": "Set extract structure",
-        "shortLabel": "extract structure"
+        "label": "Set embedded structure",
+        "shortLabel": "embedded structure"
     },
     "embeddedText": {
-        "label": "Set extract text",
-        "shortLabel": "extract text"
+        "label": "Set embedded text",
+        "shortLabel": "embedded text"
     },
     "fillIn": {
         "label": "Set fill in",
