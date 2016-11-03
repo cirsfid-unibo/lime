@@ -71,41 +71,8 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
     },
 
     showNodeAttributes: function(node) {
-        var tag = DomUtils.getNameByNode(node);
-        var panel = null;
-
-        switch(tag) {
-            case 'ref':
-                panel = this.createRefPanel(node);
-            break;
-            case 'role':
-                panel = this.createNodeRefsPanel(node, [{
-                    attr: 'refersTo',
-                    filters: ['TLCRole']
-                }]);
-            break;
-            case 'location':
-                panel = this.createNodeRefsPanel(node, [{
-                    attr: 'refersTo',
-                    filters: ['TLCLocation']
-                }]);
-            break;
-            case 'person':
-                panel = this.createNodeRefsPanel(node, [{
-                    attr: 'refersTo',
-                    filters: ['TLCPerson']
-                },{
-                    attr: 'as',
-                    filters: ['TLCRole']
-                }]);
-            break;
-            case 'docDate':
-            case 'date':
-                panel = this.createDatePanel(node);
-            break;
-            default:
-                return;
-        }
+        var panel = this.getAttributePanel(node);
+        if (!panel) return;
 
         this.tagAttributesTab = this.tagAttributesTab || this.addTab();
         this.tagAttributesTab.removeAll(true);
@@ -113,6 +80,63 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
         this.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
                                     true, this.tabGroupName, panel.contextHeight);
         Ext.GlobalEvents.fireEvent('scrollToActiveNode');
+    },
+
+    getAttributePanel: function(node) {
+        var tag = DomUtils.getNameByNode(node);
+        switch(tag) {
+            case 'ref':
+                return this.createRefPanel(node);
+            case 'role':
+                return this.createNodeRefsPanel(node, [{
+                    attr: 'refersTo',
+                    filters: this.getElementRefTypes(tag)
+                }]);
+            case 'location':
+                return this.createNodeRefsPanel(node, [{
+                    attr: 'refersTo',
+                    filters: this.getElementRefTypes(tag)
+                }]);
+            case 'person':
+                return this.createNodeRefsPanel(node, [{
+                    attr: 'refersTo',
+                    filters: this.getElementRefTypes(tag)
+                },{
+                    attr: 'as',
+                    filters: this.getElementRefTypes('role')
+                }]);
+            case 'docDate':
+            case 'date':
+                return this.createDatePanel(node);
+        }
+        // Show refersTo for all inline elements
+        var pattern = DomUtils.getPatternByNode(node);
+        if (pattern === 'inline')
+            return this.createNodeRefsPanel(node, [{
+                attr: 'refersTo',
+                filters: this.getElementRefTypes(tag)
+            }]);
+    },
+
+    getElementRefTypes: function(name) {
+        switch(name) {
+            case 'date':
+            case 'docDate':
+            case 'time':
+                return ['TLCConcept', 'TLCEvent'];
+            case 'quantity':
+                return ['TLCObject'];
+            case 'def':
+            case 'entity':
+                return ['TLCConcept'];
+            default:
+                var validTypes = AknMain.metadata.Reference.validators.type[0].list;
+                var type = 'TLC'+Ext.String.capitalize(name);
+                if (validTypes.indexOf(type) >= 0)
+                    return [type];
+        }
+
+        return [];
     },
 
     createRefPanel: function(node) {
@@ -224,14 +248,16 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
                 }))*7
             },
             items: items.map(function(item) {
-                return {
+                var obj = {
                     xtype: 'akn-metadata-tab-referencecombo',
                     queryMode: 'local',
                     itemId: item.attr,
                     fieldLabel: item.name,
-                    filteredTypes: item.filters,
                     value: item.value
                 }
+                if (item.filters && item.filters.length)
+                    obj.filteredTypes = item.filters;
+                return obj;
             })
         });
     },
@@ -244,7 +270,7 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
         // Create a refs panel and change it by adding the date field
         var panel = this.createNodeRefsPanel(node, [{
             attr: 'refersTo',
-            filters: ['TLCEvent']
+            filters: this.getElementRefTypes('date')
         }]);
         panel.setTitle(Locale.getString('date', 'akn-metadata'));
         panel.contextHeight+=30;
