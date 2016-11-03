@@ -79,14 +79,33 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
         if (config.unmark) return;
         nodes.forEach(function (node) {
             var tagName = DomUtils.getNameByNode(node);
+            //TODO: move the mapping to a separate file
             switch (tagName) {
             case 'role':
             case 'location':
             case 'person':
+            case 'term':
+            case 'organization':
+            case 'concept':
+            case 'object':
+            case 'event':
+            case 'process':
+            case 'quantity':
+            case 'entity':
+            case 'def':
                 me.addRefersTo(node, {
                     role: 'TLCRole',
                     location: 'TLCLocation',
-                    person: 'TLCPerson'
+                    person: 'TLCPerson',
+                    term: 'TLCTerm',
+                    organization: 'TLCOrganization',
+                    object: 'TLCObject',
+                    event: 'TLCEvent',
+                    process: 'TLCProcess',
+                    quantity: 'TLCObject',
+                    concept: 'TLCConcept',
+                    entity: 'TLCConcept',
+                    def: 'TLCConcept'
                 }[tagName]);
                 break;
             case 'docNumber':
