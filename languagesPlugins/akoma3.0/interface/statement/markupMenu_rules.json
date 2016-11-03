@@ -1,5 +1,5 @@
 {
-	"rootElements": ["coverPage", "preface", "preamble", "mainBody", "conclusions", "attachments", "components"],
+	"rootElements": ["coverPage", "preface", "preamble", "mainBody", "conclusions", "attachments", "components", "commonReference"],
 	"commonElements": ["commonElement", "hierarchicalStructure",  "genericElement", "externalFragment", "commonsInline", "contentInline", "commonReference", "remark",  "foreign"],
 	
 	"elements": {
@@ -23,6 +23,43 @@
 		},
 		"commonReference": {
 			"children": ["ref", "rref", "mref"]
-		}
+		},
+        "mainBody": {
+            "children": [
+                "book",
+                "part",
+                "title",
+                "section",
+                "division",
+                "chapter",
+                "article",
+                "rule",
+                "paragraph",
+                "alinea",
+                "list",
+                "componentRef",
+                "term"
+            ]
+        },
+        "preamble": {
+            "children": [
+                "p",
+                "toc",
+                "formula",
+                "recitals",
+                "citations",
+                "affectedDocument",
+                "longTitle",
+                "list",
+                "container",
+                "block",
+                "term"
+            ]
+        },
+        "components": {
+            "children": [
+                "component"
+            ]
+        }
 	}
 }

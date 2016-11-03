@@ -292,6 +292,9 @@
         },
         "rule": {
             "children": [
+                "num",
+                "heading",
+                "subheading",
                 "subrule"
             ]
         },
@@ -455,6 +458,80 @@
                     "insert": {
                         "attribute": {
                             "name": "placement"
+                        }
+                    }
+                }
+            }
+        },
+        "componentRef": {
+            "askFor": {
+                "src": {
+                    "label": "Source",
+                    "type": "text",
+                    "insert": {
+                        "attribute": {
+                            "name": "src"
+                        }
+                    }
+                },
+                "showAs": {
+                    "label": "Show as",
+                    "type": "text",
+                    "insert": {
+                        "attribute": {
+                            "name": "showAs"
+                        }
+                    }
+                }
+            }
+        },
+        "docCommittee": {
+            "askFor": {
+                "value": {
+                    "label": "Value",
+                    "type": "text",
+                    "insert": {
+                        "attribute": {
+                            "name": "value"
+                        }
+                    }
+                }
+            }
+        },
+        "session": {
+            "askFor": {
+                "value": {
+                    "label": "Value",
+                    "type": "text",
+                    "insert": {
+                        "attribute": {
+                            "name": "value"
+                        }
+                    }
+                }
+            }
+        },
+        "container": {
+            "askFor": {
+                "value": {
+                    "label": "Name",
+                    "type": "text",
+                    "insert": {
+                        "attribute": {
+                            "name": "name"
+                        }
+                    }
+                }
+            }
+        },
+        "block": {
+            "askFor": {
+                "value": {
+                    "label": "Name",
+                    "type": "text",
+                    "insert": {
+                        "attribute": {
+                            "name": "name"
                         }
                     }
                 }
