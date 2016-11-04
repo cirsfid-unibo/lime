@@ -83,9 +83,30 @@ Ext.define('LIME.controller.Marker', {
             selectedNode = editorController.getSelectedNode(), 
             firstMarkedNode = DomUtils.getFirstMarkedAncestor(selectedNode);
         
-        // If marking is not allowed or the node is already been marked just exit
-        if( !this.isAllowedMarking(firstMarkedNode, selectedNode, button) ||
-            (firstMarkedNode && DomUtils.getButtonIdByElementId(firstMarkedNode.getAttribute(DomUtils.elementIdAttribute)) == button.id) ) {
+        var unMarkFirstMarkedNode = false;
+        // If marking is not allowed
+        if( !this.isAllowedMarking(firstMarkedNode, selectedNode, button) ) {
+            // This is tricky and ugly and maybe we shouldn't do it...
+            // Make an exception when the user is trying to mark a container
+            // inside a "p" element, let mark the container and after remove the "p".
+            // Example of this scenario:
+            // <preamble>
+            //   <p> text text text </p>
+            // </preamble>
+            // the user wants to wrap the "text" with an enactingFormula.
+            var markedName = DomUtils.getNameByNode(firstMarkedNode);
+            //TODO: check the root elements
+            if (markedName === 'p' && button.pattern.pattern === 'container') {
+                unMarkFirstMarkedNode = true;
+            } else { // Show error and exit
+                return this.showPatternError(firstMarkedNode, button);
+            }
+        }
+        // If the node is already been marked just exit
+        if (firstMarkedNode &&
+                DomUtils.getButtonIdByElementId(
+                    firstMarkedNode.getAttribute(DomUtils.elementIdAttribute)
+                ) == button.id) {
             return;
         }
 
@@ -95,6 +116,11 @@ Ext.define('LIME.controller.Marker', {
             newElement.appendChild(newElement.ownerDocument.createTextNode("  "));
             setCursorLocation = true;
         }
+
+        if (unMarkFirstMarkedNode) {
+            this.unmarkNode(firstMarkedNode);
+        }
+
         // Warn of the changed nodes
         this.application.fireEvent('nodeChangedExternally', [newElement], Ext.merge(config, Ext.merge(this.nodeChangedConfig, {
             click: (config.silent) ? false : true,
@@ -130,22 +156,23 @@ Ext.define('LIME.controller.Marker', {
 
         if (!Ext.isEmpty(nodePattern.exceptionalAllowedElements) &&
             nodePattern.exceptionalAllowedElements.indexOf(config.name) != -1) {
-
             patternError = false;
         }
 
-        if(patternError) {
-            this.application.fireEvent(Statics.eventsNames.showNotification, {
-                title: Locale.getString('notAllowedMarking'),
-                autoCloseDelay: 5000,
-                content: new Ext.Template(Locale.getString('semanticError')).apply({'name': "<b>"+config.name+"</b>"}),
-                moreInfo: new Ext.Template(Locale.getString('patternNotAllowed')).apply({
-                    'elementPattern': config.pattern.pattern,
-                    'parentPattern': nodePattern.pattern
-                })
-            });
-        }
         return !patternError;
+    },
+
+    showPatternError: function(markedNode, toMarkConfig) {
+        var nodePattern = this.getPatternConfigByNode(markedNode);
+        this.application.fireEvent(Statics.eventsNames.showNotification, {
+            title: Locale.getString('notAllowedMarking'),
+            autoCloseDelay: 5000,
+            content: new Ext.Template(Locale.getString('semanticError')).apply({'name': "<b>"+toMarkConfig.name+"</b>"}),
+            moreInfo: new Ext.Template(Locale.getString('patternNotAllowed')).apply({
+                'elementPattern': toMarkConfig.pattern.pattern,
+                'parentPattern': nodePattern.pattern
+            })
+        });
     },
 
     getPatternConfigByNode: function(node) {

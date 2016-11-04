@@ -5,7 +5,8 @@
 		"wrapperStyle" : "border: 2px solid #CC9944; padding: 5px;",
 		"wrapperClass" : "patternName elementName",
 		"wrapperId": "seqId",
-		"allowedPatterns": ["hcontainer", "container", "inline"]
+		"allowedPatterns": ["hcontainer", "container", "inline"],
+		"exceptionalAllowedElements": ["quotedText","quotedStructure"]
 	},
 	"container": {
 		"wrapperElement": "<div>&content;</div>",
@@ -13,7 +14,8 @@
 		"wrapperStyle" : "border: 2px solid #BBDDFF; padding: 5px;",
 		"wrapperClass" : "patternName elementName",
 		"wrapperId": "seqId",
-		"allowedPatterns": ["container", "block"]
+		"allowedPatterns": ["container", "block"],
+		"exceptionalAllowedElements": ["quotedText","quotedStructure"]
 	},
 	"block": {
 		"wrapperElement": "<div>&content;</div>",
@@ -21,7 +23,8 @@
 		"wrapperStyle" : "background-color: #999955; border: 2px solid #009955;color: #FFFFFF;padding: 5px;",
 		"wrapperClass" : "patternName elementName",
 		"wrapperId": "seqId",
-		"allowedPatterns": ["inline", "marker"]
+		"allowedPatterns": ["inline", "marker"],
+		"exceptionalAllowedElements": ["quotedText","quotedStructure"]
 	},
 	"inline": {
 		"wrapperElement": "<span>&content;</span>",
