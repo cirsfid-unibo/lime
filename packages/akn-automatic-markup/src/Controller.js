@@ -509,9 +509,10 @@ Ext.define('AknAutomaticMarkup.Controller', {
             if (jsonData) {
                 try {
                     me.parseBodyParts(jsonData, node, button);
+                    me.normalizeNodes(node);
                 } catch(e) {
                     Ext.log({level: "error"}, e);
-                };
+                }
             }
             Ext.callback(callback);
         }, callback);
@@ -3004,26 +3005,42 @@ Ext.define('AknAutomaticMarkup.Controller', {
         var getContentToParse = function() {
             return me.getController('Editor').getSelectionContent();
         }
-        //TODO: add loading bar
         var callParser = function() {
             var contentToParse = getContentToParse(),
                 button = DomUtils.getButtonByElement(node);
             
             if (!contentToParse) return;
 
+            me.application.fireEvent(Statics.eventsNames.progressStart,
+                    Locale.getString("parsing", me.getPluginName()),
+                    {value: 0.2, text: ' '});
+
             me.callParser("body", contentToParse, function(result) {
                 var jsonData = Ext.decode(result.responseText, true);
-                if (jsonData) {
+                if (jsonData && !Ext.isEmpty(jsonData.response)) {
                     try {
                         me.parseBodyParts(jsonData, node, button);
+                        me.normalizeNodes(node);
                     } catch(e) {
                         Ext.log({level: "error"}, e);
                     };
                 }
+                me.application.fireEvent(Statics.eventsNames.progressEnd);
             });
         };
 
-        if(menu.down("*[name=autoMarkup]") || !getContentToParse()) return;
+        var isInsideBody = function(node) {
+            if (!node || node.nodeType !== Node.ELEMENT_NODE) return false;
+            if (node.classList.contains('body') ||
+                node.classList.contains('mainBody'))
+                return true;
+            return isInsideBody(node.parentNode);
+        };
+
+        if(menu.down("*[name=autoMarkup]") ||
+            !getContentToParse() ||
+            !isInsideBody(node)) return; // Don't add the menu item
+
         menu.add({
             text : 'Markup automatico',
             name: 'autoMarkup',
