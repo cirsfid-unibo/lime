@@ -54,9 +54,11 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
 
     init: function () {
         this.application.on(Statics.eventsNames.editorDomNodeFocused,
-                            function(node) {
-                                // Defer the execution in order to get the eventually updated attributes
-                                setTimeout(this.showNodeAttributes.bind(this, node), 100);
+                            function(node, actions) {
+                                if (this.haveToShowNodeAttributes(node, actions)) {
+                                    // Defer the execution in order to get the eventually updated attributes
+                                    setTimeout(this.showNodeAttributes.bind(this, node), 100);
+                                }
                             },
                             this);
 
@@ -68,6 +70,39 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
                 }
             }
         });
+    },
+
+    // Decide if the node attributes will be shown.
+    // This is because of the attribute 'refersTo' in all inline elements and the
+    // panel is opening to many times when is not necessary.
+    // This control prevents to open the panel when it's not
+    // immediately necessary and it aims to improve the UX.
+    // e.g. marking the <num>
+    // Anyway the user can open it buy clicking on the node.
+    haveToShowNodeAttributes: function(node, actions) {
+        if (!actions.manualMarking) return true;
+        var tag = DomUtils.getNameByNode(node);
+        // Elements not requiring attributes immediately
+        var noAttrEls = [
+            'num',
+            'heading',
+            'subheading',
+            'docType',
+            'docNumber',
+            'docDate',
+            'docTitle',
+            'docAuthority',
+            'docProponent',
+            'docStage',
+            'docStatus',
+            'docCommittee',
+            'docIntroducer',
+            'docJurisdiction',
+            'docketNumber'
+        ];
+
+        if (noAttrEls.indexOf(tag) >= 0) return false;
+        return true;
     },
 
     showNodeAttributes: function(node) {

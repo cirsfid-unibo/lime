@@ -124,6 +124,7 @@ Ext.define('LIME.controller.Marker', {
         // Warn of the changed nodes
         this.application.fireEvent('nodeChangedExternally', [newElement], Ext.merge(config, Ext.merge(this.nodeChangedConfig, {
             click: (config.silent) ? false : true,
+            manualMarking: true,
             setCursorLocation: setCursorLocation
         })));
         
