@@ -54,33 +54,24 @@ $rules = Array(
     "articleList" => Array("Art\.?","Articolo","ART\.?"),
     
 	"preambleInitList" => Array(
-							   "La\s+Camera\s+dei\s+deputati\s+ed\s+il\s+Senato\s+della\s+Repubblica\s+hanno\s+approvato;\s+IL\s+PRESIDENTE\s+DELLA\s+REPUBBLICA",
-							   "IL\s+MINISTRO\s+DEL\s+LAVORO\s+E\s+DELLE\s+POLITICHE\s+SOCIALI\s+di\s+concerto\s+",
-							   "IL\s+PRESIDENTE\s+DELLA\s+REPUBBLICA",
-							   "IL DIRETTORE GENERALE\s+DEL TESORO",
-							   "IL MINISTRO DELLA GIUSTIZIA",
-							   "Attesto che",
-							   "Il [Cc]onsiglio regionale ha approvato\.?",
-							   "omissis",
-							   //"Il\s+Presidente\s+della\s+Repubblica\s*",
+							   "TIPOGRAFIA DEL SENATO",
+							   "Presentato il [ \w]+ \d{4}",
+							   "Onorevoli Senatori",
 							   ),
     
 	"preambleEndList" => Array (
-								"\s*E\s*m\s*a\s*n\s*a\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|(L|l)a +seguente +(L|l)egge|(i|I)l +seguente +decreto(-| +)legge):?",
-								"EMANA\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|(l|L) +seguente +(L|l)egge|(i|I)l +seguente +decreto(-| +)legge):?",
-								"(P|p)(romulga|ROMULGA)\s+((I|i)l seguente decreto legislativo|(I|i)l\s*seguente\s*(R|r)egolamento|(l|L)a +seguente +(L|l)egge|LA +SEGUENTE +LEGGE|(i|I)l +seguente +decreto(-| +)legge):?",
-								"Attesto che",
-								"Decreta:?",
+								"Disegno di Legge",
+								"RELAZIONE",
+								"DISEGNO DI LEGGE\s+ART\. 1\.",
+								"Art. 1.",
 								),
 			   
-    "conclusionsInitList" => Array(
-    							   "Il\s+presente\s+decreto,?",
-								   "La\s+presente\s+legge,",
-								   "Il +presente +decreto +sar.{1,2} +pubblicato +nella +Gazzetta +Ufficiale +della +Repubblica +italiana.",
-								   "La +presente +legge +regionale +sarà +pubblicata +nel +Bollettino +Ufficiale +della +Regione.",
-								   "Data a Roma,?",
-								   "Roma,"
-								   )
+    "conclusionsInitList" => Array(),
+
+    //REWRITE RULES
+    "structure" => Array("coverPage", "preamble", "body", "conclusions"),
+    "coverPage" => "/{{preambleInitList#i}}[:]?/",
+    "preamble" => "/{{preambleEndList}}[:]?/"
 
 );
 ?>
