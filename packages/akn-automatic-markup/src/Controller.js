@@ -192,7 +192,8 @@ Ext.define('AknAutomaticMarkup.Controller', {
         Ext.each(nodes, function(node) {
             var name = DomUtils.getNameByNode(node);
             if( name == 'preface' || name == 'preamble' ||
-                name == 'formula' || name == 'conclusions' ) {
+                name == 'formula' || name == 'conclusions' ||
+                name == 'container' ) {
                 me.addPTextWrappers(node);
             }
         });
@@ -309,6 +310,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 case 'blockList':
                 case 'list':
                     me.parseInsideList(node, button, callback);
+                    break;
                 default:
                     Ext.callback(callback);
             }
@@ -3000,9 +3002,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
     beforeContextMenuShow: function(menu, node) {
         var me = this;
         var getContentToParse = function() {
-            var editor = me.getController('Editor'),
-                selectionRange = editor.lastSelectionRange || editor.getEditor().selection.getRng();
-            return selectionRange.toString().trim();
+            return me.getController('Editor').getSelectionContent();
         }
         //TODO: add loading bar
         var callParser = function() {
