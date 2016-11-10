@@ -2843,7 +2843,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
         editor.removeBookmarks();
 
-        editor.parserWorking = true;
+        editor.setAutosaveEnabled(false);
 
         var body = editor.getBody();
 
@@ -2857,7 +2857,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 me.normalizeNodes(body);
                 app.fireEvent(Statics.eventsNames.progressUpdate, Locale.getString("postParsing", me.getPluginName()));
                 Ext.defer(function() {
-                    editor.parserWorking = false;
+                    editor.setAutosaveEnabled(true);
                     me.parserActivated = true;
                     Ext.defer(function() {
                         app.fireEvent('nodeChangedExternally', [editor.getBody()], {
