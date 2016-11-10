@@ -44,87 +44,16 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- * The main viewport of the application. It contains all the other views.
- */
-Ext.define('LIME.view.Viewport', {
-    extend : 'Ext.container.Viewport',
+// ViewController for the app Viewport
+Ext.define('LIME.view.ViewportController', {
+    extend: 'Ext.app.ViewController',
+    alias: 'controller.viewport',
 
-    alias : 'widget.appViewport',
-
-    controller: 'viewport',
-
-    requires : [
-        'LIME.view.ViewportController',
-        'LIME.view.MainToolbar',
-        'LIME.view.Main',
-        'LIME.view.ContextMenu',
-        'LIME.view.DownloadManager',
-        'LIME.view.ProgressWindow',
-        'LIME.view.Login',
-        'LIME.view.generic.SimplePagingToolbar'
-    ],
-
-    style : {
-        background : '#FFFFFF'
-    },
-
-    layout : 'border',
-
-    commonItems : [{
-        xtype : 'progressWindow'
-    }],
-
-    loginItems : [{
-        xtype: 'container',
-        region: 'center',
-        layout: {
-            type: 'vbox',
-            align: 'center'
-        },
-        items: [{
-            xtype: 'image',
-            src: 'resources/images/icons/logo_lime.png',
-            autoEl: 'div'
-        }, {
-            xtype: 'login'
-        }]
-    }],
-
-    editorItems : [{
-        region : 'north',
-        items: [{
-            xtype: 'mainToolbar'
-        }, {
-            xtype: 'mainEditorUri'
-        }]
-    }, {
-        xtype : 'main',
-        region : 'center',
-        id: 'mainEditor',
-        expandable : true,
-        resizable : true,
-        margin : 2
-    }, {
-        // Context menu related to the editor
-        xtype : 'contextMenu'
-    }, {
-        xtype : 'downloadManager'
-    }],
-
-    setVisibleEditorToolbar: function(visible) {
-        this.down('main').down('toolbar').setVisible(visible);
-    },
-
-    // Show editor items
-    showEditor: function() {
-        this.removeAll(true);
-        this.add(Ext.Array.merge(this.editorItems, this.commonItems));
-    },
-
-    // Show login items
-    showLogin: function() {
-        this.removeAll(true);
-        this.add(Ext.Array.merge(this.loginItems, this.commonItems));
+    listen: {
+        global: {
+            setAppLoading: function(loading) {
+                this.getView().setLoading(loading);
+            }
+        }
     }
 });
