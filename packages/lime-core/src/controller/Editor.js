@@ -940,13 +940,12 @@ Ext.define('LIME.controller.Editor', {
      * Do NOT rely on the existence of this function.
      * @private
      */
-    autoSaveContent: function(userRequested) {
+    autoSaveContent: function() {
         /* Check if there has been a change */ /* TODO: pensare a una soluzione più intelligente */
-        if (!userRequested && !this.changed || this.parserWorking)
-            return;
-        if (this.getAutosaveEnabled()) {
+        // TODO: show document saved icon or message
+        if (this.getAutosaveEnabled() && this.changed) {
             this.changed = false;
-            this.getController('Storage').saveDocument();
+            Ext.GlobalEvents.fireEvent('saveDocument');
         }
     },
 

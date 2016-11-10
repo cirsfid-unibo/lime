@@ -545,7 +545,7 @@ Ext.define('LIME.controller.MainToolbar', {
                         DocProperties.documentInfo.docId.match("/autosave/")) {
                         Ext.widget('newSavefileMain').show();
                     } else {
-                        this.getController("Editor").autoSaveContent(true);
+                        Ext.GlobalEvents.fireEvent('saveDocument');
                     }
                 }
             },

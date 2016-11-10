@@ -125,8 +125,7 @@ Ext.define('LIME.controller.CustomizationManager', {
     // Save document and restore single editor mode
     finishEditingMode: function(editor, diff) {
         var me = this;
-
-        me.getController('Storage').saveDocument(function() {
+        Ext.GlobalEvents.fireEvent('saveDocument', function() {
             var language = me.getController("Language");
             var html = language.getHtmlToTranslate(null, editor, me.secondDocumentConfig.metaDom);
             language.translateContent(html, function(xml) {

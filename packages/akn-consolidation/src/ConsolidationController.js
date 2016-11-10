@@ -279,7 +279,7 @@ Ext.define('AknConsolidation.ConsolidationController', {
             me.finishEditBtn.up().remove(me.finishEditBtn);
         }
 
-        editorController.autoSaveContent(true);
+        Ext.GlobalEvents.fireEvent('saveDocument');
         editorController.getMainEditor().up().setTitle(me.initialMainEditorTitle);
         Ext.fly(editorController.getBody()).addCls('readOnly');
         //this.getController('MarkingMenu').addMarkingMenu();
@@ -295,7 +295,8 @@ Ext.define('AknConsolidation.ConsolidationController', {
             };
 
             var url = me.secondDocumentConfig.docId.replace("/diff/", "/diff_modified/");
-
+            //TODO: this event is no more available on the application, chage it
+            // to GlobalEvents and update the arguments
             me.application.fireEvent(Statics.eventsNames.saveDocument, url, params, function() {
                 if(diff) {
                     diff.tab.show();
