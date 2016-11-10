@@ -65,6 +65,12 @@ Ext.define('LIME.controller.Storage', {
         ref: 'newDocument'
     }],
 
+    listen: {
+        global: {
+            saveDocument: 'saveDocument'
+        }
+    },
+
     storageColumns: [{
         text: Locale.strings.folderLabel,
         fieldName: "folder",
