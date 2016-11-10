@@ -62,12 +62,7 @@ Ext.define('DefaultExport.Controller', {
         this.addExportItem();
         this.control({
             'menu [name=exportXmlButton]': {
-                click: function() {
-                    Server.getDocument(DocProperties.documentInfo.docId, function (xml) {
-                        var blob = new Blob([xml], {type: "text/xml;charset=utf-8"});
-                        saveAs(blob, "document.xml");
-                    });
-                }
+                click: this.exportTo.bind(this, 'xml')
             },
             'menu [name=exportHtmlButton]': {
                 click: function() {
@@ -85,14 +80,13 @@ Ext.define('DefaultExport.Controller', {
                             source: editor.getDocHtml()
                         };
                     downloadManager.fireEvent(downloadManager.eventActivate, Server.getAjaxUrl(), parameters);
-                    // TODO: this is the new way, remove the above method
-                    // me.exportAkn(DocProperties.getDocId(), 'pdf');
+                    // TODO: this is the new way using the node.js akn to pdf
+                    // converter test the service and remove the above method
+                    // me.exportTo('pdf');
                 }
             },
             'menu [name=exportEbookButton]': {
-                click: function() {
-                    me.exportAkn(DocProperties.getDocId(), 'epub');
-                }
+                click: this.exportTo.bind(this, 'epub')
             }
         });
     },
@@ -157,16 +151,41 @@ Ext.define('DefaultExport.Controller', {
         }, {complete: true});
     },
 
-    exportAkn: function(path, extension) {
+    // First save the document
+    exportTo: function(extension) {
+        var path = DocProperties.getDocId();
         var mime = this.getMime(extension);
-        Server.aknExportTo(path, extension, mime, function (data) {
-            var blob = new Blob([data], {type: mime});
-            saveAs(blob, 'document.'+extension);
-        });
+        var onExportSuccess = (function(data) {
+            this.saveDataAs(data, extension, mime);
+            Ext.GlobalEvents.fireEvent('setAppLoading', false);
+        }).bind(this);
+        var onExportFailure = function(err) {
+            Ext.GlobalEvents.fireEvent('setAppLoading', false);
+            Ext.Msg.alert(Locale.getString('error'), err.statusText);
+        };
+        var exportFn = function () {
+            // The document is saved in xml, so just get it
+            if (extension === 'xml')
+                return Server.getDocument(path, onExportSuccess, onExportFailure);
+
+            Server.aknExportTo(path, extension, mime, onExportSuccess, onExportFailure);
+        };
+
+        Ext.GlobalEvents.fireEvent('setAppLoading', true);
+        // First save the document to be sure to export the updated version
+        Ext.GlobalEvents.fireEvent('saveDocument', exportFn);
+    },
+
+    // Create the Blob data and trigger the browser's saveAs dialog
+    saveDataAs: function(data, extension, mimeType) {
+        var blob = new Blob([data], {type: mimeType});
+        saveAs(blob, 'document.'+extension);
     },
 
     getMime: function(extension) {
         switch(extension) {
+            case 'xml':
+            return 'text/xml;charset=utf-8';
             case 'pdf':
             return 'application/pdf';
             case 'epub':
