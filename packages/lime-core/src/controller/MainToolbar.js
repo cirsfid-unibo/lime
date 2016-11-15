@@ -125,19 +125,6 @@ Ext.define('LIME.controller.MainToolbar', {
     ],
 
     /**
-     * Create a new document by performing all the necessary
-     * operations (replace editor's content and document's id)
-     */
-    createNewDocument : function(params){
-       var config = {
-               docText: '<div> &nbsp; </div>'
-           };
-       // Load an empty document with empty id
-       Ext.GlobalEvents.fireEvent(Statics.eventsNames.loadDocument, Ext.Object.merge(config, params));
-    },
-
-
-    /**
      * Highlight file menu
      * TODO Generalize for different buttons
      */
@@ -501,7 +488,7 @@ Ext.define('LIME.controller.MainToolbar', {
                         DocProperties.clearMetadata(this.application);
                     }
                     data = Ext.Object.merge(newWindow.tmpConfig, newWindow.getData());
-                    this.createNewDocument(data);
+                    Ext.GlobalEvents.fireEvent('createNewDocument', data);
                     newWindow.autoClosed = true;
                     newWindow.close();
                 }
