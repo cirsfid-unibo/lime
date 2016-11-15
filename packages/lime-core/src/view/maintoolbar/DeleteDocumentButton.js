@@ -54,7 +54,7 @@ Ext.define('LIME.view.maintoolbar.DeleteDocumentButton', {
     requires: ['LIME.view.maintoolbar.DeleteDocumentButtonController'],
 
     listeners: {
-        click: 'onDeleteClick',
+        click: 'onDeleteClick'
     },
 
     icon : 'resources/ext/images/icons/page_delete.png',
