@@ -44,42 +44,20 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- * This is the File menu button
- */
-Ext.define('LIME.view.maintoolbar.FileMenuButton', {
-    extend: 'Ext.Button',
+// The button to delete the opened document
+// this is a temporal solution, a document manager is needed
+Ext.define('LIME.view.maintoolbar.DeleteDocumentButton', {
+    extend : 'Ext.menu.Item',
+    alias : 'widget.deleteDocumentButton',
+    controller: 'deleteController',
 
-    alias: 'widget.fileMenuButton',
+    requires: ['LIME.view.maintoolbar.DeleteDocumentButtonController'],
 
-    requires: ['LIME.view.maintoolbar.OpenDocumentButton',
-                'LIME.view.maintoolbar.NewDocumentButton',
-                'LIME.view.maintoolbar.NewDocumentButton',
-                'LIME.view.maintoolbar.SaveAsMenu',
-                'LIME.view.maintoolbar.SaveDocumentButton',
-                'LIME.view.maintoolbar.SaveAsDocumentButton',
-                'LIME.view.maintoolbar.DeleteDocumentButton'],
+    listeners: {
+        click: 'onDeleteClick',
+    },
 
-    
-    
-    initComponent: function() {
-        this.text = Locale.strings.fileMenuButton,
-        this.menu = {
-            xtype: 'menu',
-            plain: true,
-            items: [{
-                xtype: 'newDocumentButton'
-            },{
-                xtype: 'openDocumentButton'
-            },'-', {
-                xtype: 'saveDocumentButton'
-            },{
-                xtype: 'saveAsDocumentButton'
-            }, '-', {
-                xtype: 'deleteDocumentButton'
-            }]
-    
-        },
-        this.callParent(arguments);
-    }
-});
+    icon : 'resources/ext/images/icons/page_delete.png',
+    text: Locale.getString('deleteDocument'),
+    tooltip: Locale.getString('deleteDocumentTooltip')
+}); 

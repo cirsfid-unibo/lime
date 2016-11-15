@@ -176,7 +176,11 @@ Ext.define('LIME.Strings', {
             "closeAllTabsText": "Close All Tabs",
             "unmark": "Unmark",
             "unmarkElement": "Unmark this element",
-            "unmarkElementChildren": "Unmark this element and its children"
+            "unmarkElementChildren": "Unmark this element and its children",
+            "deleteDocument": "Delete current document",
+            "deleteDocumentTooltip": "Delete currently opened document",
+            "deleteDocumentConfirm": "Are you sure you want to delete the document <b>{uri}</b>?",
+            "deletedDocument": "Document <b>{uri}</b> was deleted successfully."
         },
         "it": {
             "error": "Errore",
@@ -313,7 +317,11 @@ Ext.define('LIME.Strings', {
             "languages": {
                 "ita": "Italiano",
                 "spa": "Spagnolo"  
-            }
+            },
+            "deleteDocument": "Elimina il documento aperto",
+            "deleteDocumentTooltip": "Elimina il documento aperto nell'editor",
+            "deleteDocumentConfirm": "Sei sicuro di voler eliminare il documento <b>{uri}</b>?",
+            "deletedDocument": "Il documento <b>{uri}</b> è stato eliminato."
         },
         "es": {
             "error": "Error",
@@ -440,9 +448,13 @@ Ext.define('LIME.Strings', {
             "closeTabText": "Cerrar pestaña",
             "closeOthersTabsText": "Cerrar las demás pestañas",
             "closeAllTabsText": "Cierra todas las pestañas",
-            "unmark": "Unmark",
-            "unmarkElement": "Unmark this element",
-            "unmarkElementChildren": "Unmark this element and its children"
+            "unmark": "Desmarcar",
+            "unmarkElement": "Desmarque este elemento",
+            "unmarkElementChildren": "Desmarque este elemento y sus hijos",
+            "deleteDocument": "Eliminar documento actual",
+            "deleteDocumentTooltip": "Eliminar el documento abierto actualmente",
+            "deleteDocumentConfirm": "¿Está seguro de que desea eliminar el documento <b>{uri}</b>?",
+            "deletedDocument": "El documento <b>{uri}</b> fue eliminado correctamente."
         },
         "ro": {
             "error": "Eroare",

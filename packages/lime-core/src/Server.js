@@ -182,9 +182,6 @@ Ext.define('LIME.Server', {
     },
 
     saveDocument: function (path, content, success, failure) {
-        var username = User.username,
-            password = User.password;
-
         this.authRequest({
             method: 'PUT',
             rawData: content,
@@ -220,6 +217,18 @@ Ext.define('LIME.Server', {
             failure: failure || function (error) {
                 console.warn('Error exporting file', error);
             }
+        });
+    },
+
+    deleteDocument: function(path, success, failure) {
+        this.authRequest({
+            method: 'DELETE',
+            url: '{nodeServer}/documentsdb/Documents' + path,
+            success: function (response) {
+                console.info('deleted', path);
+                success(response.responseText);
+            },
+            failure: failure
         });
     },
 

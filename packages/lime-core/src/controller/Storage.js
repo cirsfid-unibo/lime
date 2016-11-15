@@ -67,7 +67,9 @@ Ext.define('LIME.controller.Storage', {
 
     listen: {
         global: {
-            saveDocument: 'saveDocument'
+            saveDocument: 'saveDocument',
+            deleteDocument: 'deleteDocument',
+            createNewDocument: 'createNewDocument'
         }
     },
 
@@ -493,6 +495,45 @@ Ext.define('LIME.controller.Storage', {
         }, {complete: true});
     },
 
+    // Delete the currenly opened document in case of success
+    // creates a new document, call the callback anyway
+    deleteDocument: function(callback) {
+        var documentPath = DocProperties.getDocId();
+
+        var onDeleteFinish = function(err, response) {
+            Ext.GlobalEvents.fireEvent('setAppLoading', false);
+            if (!err) {
+                this.createNewDefaultDocument();
+                callback(null, response);
+            } else
+                callback(response.statusText, response);
+        };
+
+        Ext.GlobalEvents.fireEvent('setAppLoading', true);
+        Server.deleteDocument(documentPath,
+                                onDeleteFinish.bind(this, false),
+                                onDeleteFinish.bind(this, true));
+    },
+
+    // Create a new document using the default configurations from fieldsDefault
+    // or the first types available
+    createNewDefaultDocument: function() {
+        var config = Ext.clone(Config.fieldsDefaults);
+
+        // Ensure the filling of the required configurations
+        config.docType = config.docType || Config.getDocTypesName()[0];
+        var docLocales = Config.getLocaleByDocType(Config.getLanguage(), config.docType);
+        config.docLocale = config.docLocale || docLocales[0].name;
+        config.docLang = config.docLang || 'eng';
+        this.createNewDocument(config);
+    },
+
+    // Create a new document, this consists of loading an empty document
+    // or importing a document
+    createNewDocument: function(config) {
+       config.docText = config.docText || '<div> &nbsp; </div>';
+       Ext.GlobalEvents.fireEvent(Statics.eventsNames.loadDocument, config);
+    },
 
     fillInFields: function(cmp) {
         var columnDescriptor, value;

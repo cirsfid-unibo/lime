@@ -59,7 +59,7 @@ Ext.define('DefaultImport.controller.Import', {
         };
         me.application.fireEvent("addMenuItem", me, {
             menu : "fileMenuButton",
-            after : "saveAsDocumentButton"
+            after : "deleteDocumentButton"
         }, menu);
         me.addImportItem();
     },
