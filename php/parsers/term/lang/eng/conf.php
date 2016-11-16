@@ -44,34 +44,13 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+ 
 $rules = Array(
 
-	"preamble" => "/(?<=\>)({{titleList}}|{{chapterList}}|{{articleList}})\s*({{number}})|{{preambleEndList#i}}/m",
-	"roman" => "(M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3}))",
-    "number" => "\d+|{{roman}}+",
-	"titleList" => Array("Titolo", "TITOLO"),
-    "chapterList" => Array("Capo","Capitolo","CAPO"),
-    "articleList" => Array("Art\.?","Articolo","ART\.?"),
-    
-	"preambleInitList" => Array(
-							   "TIPOGRAFIA DEL SENATO",
-							   "Presentato il [ \w]+ \d{4}",
-							   "Onorevoli Senatori",
-							   ),
-    
-	"preambleEndList" => Array (
-								"Disegno di Legge",
-								"RELAZIONE",
-								"DISEGNO DI LEGGE\s+ART\. 1\.",
-								"Art. 1.",
-								),
-			   
-    "conclusionsInitList" => Array(),
 
-    //REWRITE RULES
-    "structure" => Array("coverPage", "preamble", "body", "conclusions"),
-    "coverPage" => "/{{preambleInitList#i}}[:]?/",
-    "preamble" => "/{{preambleEndList}}[:]?/",
-
+	"rules" => Array("r1"),
+	
+	"r1" => "/^(?:\w\))?s*{{term}}/i",
 );
+
 ?>
