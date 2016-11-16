@@ -2,40 +2,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -92,8 +92,27 @@ class Proxies_Services_XmlValidation implements Proxies_Services_Interface {
 			$result["msg"] = "Cannot load xml source";
 		}
 
+		$jsonResult = str_replace('\/', '/', json_encode($result));
+
+		if (VALIDATION_LOG) {
+			$this->logValidation($jsonResult);
+		}
+
 		// return the results
-		return str_replace('\/', '/', json_encode($result));
+		return $jsonResult;
+	}
+
+	// Save the validation input and output in the tmp folder for debugging.
+	private function logValidation($result) {
+		$milliseconds = explode(' ', microtime());
+		$milliseconds = round($milliseconds[0]*1000);
+		$dirName = 'validation_'.date("y-m-d_H-i-s-").$milliseconds;
+		$tmpDir = dirname(__FILE__).'/'.TMPSUBDIRLOCALPATH.$dirName;
+		umask(0);
+		if (mkdir($tmpDir, 0777)) {
+			file_put_contents($tmpDir.'/source.xml', $this->_source);
+			file_put_contents($tmpDir.'/validation.json', $result);
+		}
 	}
 
 	private function libxmlErrorToArray($error) {
