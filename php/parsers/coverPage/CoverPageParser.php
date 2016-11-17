@@ -47,6 +47,8 @@
 
 require_once(dirname(__FILE__)."/../utils.php");
 require_once(dirname(__FILE__)."/../date/DateParser.php");
+require_once(dirname(__FILE__)."/../doctype/DocTypeParser.php");
+require_once(dirname(__FILE__)."/../authority/AuthorityParser.php");
 
 
 
@@ -68,64 +70,55 @@ class CoverPageParser {
     public function parse($content, $jsonOutput = FALSE) {
     	$return = array();
     	if($this->lang && $this->docType && !empty($this->parserRules)) {
-    		$references = $this->parserRules['references'];
-	
-			foreach($references as $ref) {
-				$resolved = resolveRegex($this->parserRules[$ref],$this->parserRules,$this->lang, $this->docType, $this->dirName);
-				$success = 	preg_match_all($resolved["value"], $content, $result, PREG_OFFSET_CAPTURE);
-				if ($success) 
-					for ($i = 0; $i < $success; $i++) {
-						$match = trim($result[0][$i][0], ", ");
-						$offset = $result[0][$i][1];
-						$entry = Array(
-							"cover" => $match,
-							"start" => $offset,
-							"end" => $offset+strlen($match),
-							"regex" => $ref,
-							);
 
-						
-						if (array_key_exists("date", $result)) {
-							$date = $this->requestDate($result["date"][$i][0]);
-							if(array_key_exists("dates", $date['response'])) {
-								$date = $date['response']['dates'];
-								if(!empty($date)) {
-									$last = end($date);
-									$entry["date"] = $last['date'];		
-								}
-							}
-						} elseif (array_key_exists("type", $entry)) {
-
-							if (array_key_exists(strtolower($entry['type']), $this->attinoti)) {
-								$date = $this->requestDate($this->attinoti[strtolower($entry['type'])]);
-								if(array_key_exists("dates", $date['response'])) {
-									$date = $date['response']['dates'];
-									if(!empty($date)) {
-										$last = end($date);
-										$entry["date"] = $last['date'];
-									}
-							    }
-							}
-						}
-
-						$return[] = $entry;
-					}
+    		$entry = Array();
+		    $date = $this->requestDate($content);
+			if(array_key_exists("dates", $date['response'])) {
+				$date = $date['response']['dates'];
+			
+				if(!empty($date)) {
+					$last = end($date);
+					$entry["date"] = $last;
+				}
+			
 			}
-    	} else {
-			$return = Array('success' => FALSE);
-		}
+
+		
+			$doctype = $this->requestDocType($content);
+			if(!empty($doctype['response'])) {
+				$doctype = $doctype['response'];
+				$entry["doctype"] = $doctype;
+			}
+
+			$authority = $this->requestAuthority($content);
+			if(!empty($authority['response'])) {
+				$authority = $authority['response'];
+				$entry["authority"] = $authority;
+			}
+
+			$return[] = $entry;
+
+    	} else  $return = Array('success' => FALSE);
 
         $ret = array("response" => $return);
-        if($jsonOutput) {
-            return json_encode($ret);    
-        } else {
-            return $ret;
-        }
+        if($jsonOutput)  return json_encode($ret);    
+        else return $ret;
+  
     }
 
 	private function requestDate($content) {
 		$parser = new DateParser($this->lang);
         return $parser->parse($content);
+	}
+
+	private function requestDocType($content) {
+		$parser = new DocTypeParser($this->lang,$this->docType);
+		return $parser->parse($content);
+	}
+
+	private function requestAuthority($content) {
+		$parser = new AuthorityParser($this->lang,$this->docType);
+		return $parser->parse($content);
 	}
 
     private function loadConfiguration() {
