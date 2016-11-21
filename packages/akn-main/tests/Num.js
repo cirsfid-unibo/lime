@@ -72,6 +72,17 @@ describe ('AknMain.parsers.Num', function () {
         expect(num).toEqual('c');
     });
 
+    it ('normalize: point letters with brackets', function () {
+        var num = AknMain.parsers.Num.normalize('(a)');
+        expect(num).toEqual('a');
+        num = AknMain.parsers.Num.normalize('( b )');
+        expect(num).toEqual('b');
+        num = AknMain.parsers.Num.normalize('b )');
+        expect(num).toEqual('b');
+        num = AknMain.parsers.Num.normalize('( b');
+        expect(num).toEqual('b');
+    });
+
     it ('normalize: simple num special character', function () {
         var num = AknMain.parsers.Num.normalize('Artículo 10º.');
         expect(num).toEqual('10');
