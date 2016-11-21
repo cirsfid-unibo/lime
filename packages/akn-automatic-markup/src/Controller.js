@@ -362,9 +362,8 @@ Ext.define('AknAutomaticMarkup.Controller', {
             var jsonData = Ext.decode(result.responseText, true);
             if (jsonData.response.dates) {
                 var dateObj = Ext.Object.getValues(jsonData.response.dates)[0];
-                if ( dateObj &&widgetConfig &&
-                         widgetConfig.attributes && widgetConfig.attributes.date.name ) {
-                    node.setAttribute(widgetConfig.attributes.date.name, dateObj.date);
+                if (dateObj) {
+                    node.setAttribute(LangProp.attrPrefix+'date', dateObj.date);
                     Ext.GlobalEvents.fireEvent('nodeAttributesChanged', node);
                 }
             }
@@ -391,7 +390,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             });
             DomUtils.insertAfter(wrapper, initTitleNode);
             me.wrapPartNodeSibling(wrapper, function(el) {
-                return isFinishTitle(el.previousSibling.textContent) || 
+                return isFinishTitle(el.previousSibling.textContent) ||
                         DomUtils.nodeHasClass(el, DomUtils.breakingElementClass);
             });
             me.requestMarkup(markButton, {
@@ -625,7 +624,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 })
             }, me);
         }
-        // Return the list of marked elements in order to be able to 
+        // Return the list of marked elements in order to be able to
         // add custom behaviour when overriding this function
         return markings;
     },
@@ -825,7 +824,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 me.addPersonMetadata(personNodes);
             }, 100);
         }
-        // Returning the marked elements in order to implement 
+        // Returning the marked elements in order to implement
         // custom behaviours by overriding this function
         return markedElements;
     },
@@ -1455,14 +1454,14 @@ Ext.define('AknAutomaticMarkup.Controller', {
                     return data;
                 });
                 break;
-                
+
         }
 
         var nodesToMark = [], numsToMark = [], headingsToMark = [],
-            markButton = DocProperties.getChildConfigByName(button, partName) 
+            markButton = DocProperties.getChildConfigByName(button, partName)
                         || DocProperties.getFirstButtonByName(partName),
-            numButton = DocProperties.getChildConfigByName(markButton,"num") || 
-                        DocProperties.getChildConfigByName(button,"num") || 
+            numButton = DocProperties.getChildConfigByName(markButton,"num") ||
+                        DocProperties.getChildConfigByName(button,"num") ||
                         DocProperties.getFirstButtonByName("num"),
             headingButton = DocProperties.getChildConfigByName(markButton,"heading");
 
@@ -1479,7 +1478,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 if ( textBeforeNum ) {
                     if (textBeforeNum.match(finishCharactersReg))
                         return textNodesObjs[i];
-                } else 
+                } else
                     return textNodesObjs[i];
             }
             return textNodesObjs[0];
@@ -1527,15 +1526,15 @@ Ext.define('AknAutomaticMarkup.Controller', {
             me.wrapPartNodeSibling(node, function(sibling) {
                 var elButton = DomUtils.getButtonByElement(sibling);
                 /* If sibling is marked with the same button or it is temp element then stop the loop */
-                if ((elButton && (elButton.id === markButton.id)) 
-                    || (headingsToMark.indexOf(sibling) == -1 
+                if ((elButton && (elButton.id === markButton.id))
+                    || (headingsToMark.indexOf(sibling) == -1
                             && DomUtils.nodeHasClass(sibling, DomUtils.tempParsingClass)) ) {
                     return true;
                 }
                 return false;
             });
         }, this);
-        
+
         if (partName == "item") {
             me.wrapItems(nodesToMark, button);
         }
@@ -1582,7 +1581,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
     wrapItems: function(nodes, button) {
         if (!nodes.length) return;
         var me = this,
-            wrapButton = DocProperties.getChildConfigByName(button,'blockList') 
+            wrapButton = DocProperties.getChildConfigByName(button,'blockList')
                         || DocProperties.getFirstButtonByName('blockList'),
             introButton = DocProperties.getChildConfigByName(wrapButton, 'listIntroduction');
 
@@ -1917,7 +1916,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             button = DocProperties.getFirstButtonByName('ref');
 
         var todayDate = Ext.Date.format(new Date(), 'Y-m-d');
-        
+
         data.sort(function compare(a,b) {
             return b.ref.length - a.ref.length;
         });
@@ -3008,7 +3007,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
         var callParser = function() {
             var contentToParse = getContentToParse(),
                 button = DomUtils.getButtonByElement(node);
-            
+
             if (!contentToParse) return;
 
             me.application.fireEvent(Statics.eventsNames.progressStart,
