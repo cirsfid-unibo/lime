@@ -65,7 +65,7 @@ Ext.onReady(function() {
 
         Ext.Date.parseCodes.S.s = "(?:st|nd|rd|th)";
     }
-    
+
     if (Ext.util && Ext.util.Format) {
         Ext.apply(Ext.util.Format, {
             thousandSeparator: ',',
@@ -103,7 +103,7 @@ Ext.define("Ext.locale.en.picker.Date", {
     prevText: 'Previous Month (Control+Left)',
     monthYearText: 'Choose a month (Control+Up/Down to move years)',
     todayTip: "{0} (Spacebar)",
-    format: "m/d/y",
+    format: "m/d/Y",
     startDay: 0
 });
 
@@ -161,7 +161,7 @@ Ext.define("Ext.locale.en.form.field.Date", {
     minText: "The date in this field must be after {0}",
     maxText: "The date in this field must be before {0}",
     invalidText: "{0} is not a valid date - it must be in the format {1}",
-    format: "m/d/y",
+    format: "m/d/Y",
     altFormats: "m/d/Y|m-d-y|m-d-Y|m/d|m-d|md|mdy|mdY|d|Y-m-d"
 });
 
@@ -328,11 +328,10 @@ Ext.define("Ext.locale.en.window.MessageBox", {
         cancel: "Cancel",
         yes: "Yes",
         no: "No"
-    }    
+    }
 });
 
 // This is needed until we can refactor all of the locales into individual files
-Ext.define("Ext.locale.en.Component", {	
+Ext.define("Ext.locale.en.Component", {
     override: "Ext.Component"
 });
-
