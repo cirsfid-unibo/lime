@@ -71,7 +71,7 @@ Ext.define('LIME.controller.Language', {
     },
 
     loadDocument: function(config) {
-        config.docMarkingLanguage = config.docMarkingLanguage || 
+        config.docMarkingLanguage = config.docMarkingLanguage ||
                                     Config.languages.length == 1 && Config.languages[0].name;
         config = this.beforeLoadManager(config);
 
@@ -198,10 +198,7 @@ Ext.define('LIME.controller.Language', {
             Ext.each(markedElements, function(element) {
                 // My manager forced me to write this "if brutto brutto". I'm sorry.
                 if (DocProperties.documentInfo.docType == 'documentCollection') return;
-                var elName = DomUtils.getNameByNode(element),
-                    button = DocProperties.getFirstButtonByName(elName);
-                
-                wrappingElements = wrappingElements.concat(Interpreters.wrappingRulesHandlerOnTranslate(element, button));
+                wrappingElements = wrappingElements.concat(Interpreters.wrappingRulesHandlerOnTranslate(element));
             }, this);
 
             me.handleMarkedElBeforeTranslate(tmpElement, wrappingElements);
@@ -227,9 +224,9 @@ Ext.define('LIME.controller.Language', {
         if (meta && root) {
             var metaDom = Ext.clone(meta);
             metaDom.setAttribute("class", "meta");
-            
+
             var prevMeta = root.querySelector("*[class*=meta]");
-            if (!prevMeta) 
+            if (!prevMeta)
                 root.insertBefore(metaDom, root.firstChild);
             else
                 prevMeta.parentNode.replaceChild(metaDom, prevMeta);
@@ -269,8 +266,8 @@ Ext.define('LIME.controller.Language', {
                 // IE exception
                 try {
                     docDom = parser.parseFromString(params.docText, "application/xml");
-                    if (!(docDom.documentElement.tagName == "parsererror" || 
-                        docDom.documentElement.querySelector("parseerror") || 
+                    if (!(docDom.documentElement.tagName == "parsererror" ||
+                        docDom.documentElement.querySelector("parseerror") ||
                         docDom.documentElement.querySelector("parsererror"))) {
                         params.docDom = docDom;
                     }

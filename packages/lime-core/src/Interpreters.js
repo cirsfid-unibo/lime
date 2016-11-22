@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -50,10 +50,10 @@
 Ext.define('LIME.Interpreters', {
     singleton : true,
     alternateClassName: 'Interpreters',
-    
+
     /**
      * @property {Object} flags
-     * This object contains flags that are used by interpreters 
+     * This object contains flags that are used by interpreters
      */
     flags : {
         content : '&content;'
@@ -69,17 +69,20 @@ Ext.define('LIME.Interpreters', {
         /*Clone the pattern configuration*/
         var patternConfigClone = Ext.clone(patternConfig);
         var patternName = buttonConfig.pattern;
-        
+
         if(!patternConfigClone) return buttonConfig;
-        
-        
+
+
         if (buttonConfig.remove) {
+            var removeElements = function(name, elementsToRemove) {
+                Ext.each(elementsToRemove, function(elementToRemove) {
+                    delete patternConfigClone[name][elementToRemove];
+                });
+            };
             for (var i in buttonConfig.remove) {
                 var elementsToRemove = buttonConfig.remove[i];
                 if (elementsToRemove.length > 0) {
-                    Ext.each(elementsToRemove, function(elementToRemove) {
-                        delete patternConfigClone[i][elementToRemove];
-                    });
+                    removeElements(i, elementsToRemove);
                 } else {
                     delete patternConfigClone[i];
                 }
@@ -105,20 +108,16 @@ Ext.define('LIME.Interpreters', {
         return newPattern;
     },
     /**
-     * This function applies the given rules to the marked element 
+     * This function applies the given rules to the marked element
      * it is used only before translation
      * @param {HTMLElement} markedNode
      */
-    wrappingRulesHandlerOnTranslate : function(markedNode, button) {
-        var elements = [],
-            elementId = markedNode.getAttribute(DomUtils.elementIdAttribute);
-
-        if (!button)
-            button = (DocProperties.markedElements[elementId]) ? DocProperties.markedElements[elementId].button : null;
-
+    wrappingRulesHandlerOnTranslate : function(markedNode) {
+        var elements = [];
+        var button = DomUtils.getButtonByElement(markedNode);
         var rules = (button) ? button.pattern.wrapperRules : [];
         // Apply the rules
-        for (rule in rules) {
+        for (var rule in rules) {
             var ruleReference = this[rule+'Rule'];
             var elementAdded = ruleReference && ruleReference.bind(this)(rules[rule], markedNode, button);
             if(elementAdded)
@@ -129,12 +128,12 @@ Ext.define('LIME.Interpreters', {
     },
 
     // Apply generic attributes
-    applyAttributesRule: function(rule, markedNode) {
+    applyAttributesRule: function(rule, markedNode, button) {
         if (!rule.values) {
-            Ext.log({level: "error"}, "Couldn't apply the rule \"applyAttributes\". No values specified.");  
+            Ext.log({level: "error"}, "Couldn't apply the rule \"applyAttributes\". No values specified.");
         }
         var attributes = rule.values;
-        for (attribute in attributes) {
+        for (var attribute in attributes) {
             var value = attributes[attribute];
             var key = button.rules[Utilities.buttonFieldDefault].attributePrefix+attribute;
             markedNode.setAttribute(key, value);
@@ -165,12 +164,12 @@ Ext.define('LIME.Interpreters', {
         }
         //  Get the element's widget
         widget = (rule) ? Interpreters.parseWidget(rule) : null;
-        
+
         if(widget) {
             DocProperties.setElementWidget(name, widget);
         }
-        
-        
+
+
         pattern = Interpreters.parsePattern(name, patterns[button.pattern], button);
         //Create the configuration object
         config = {
@@ -239,28 +238,27 @@ Ext.define('LIME.Interpreters', {
 
     /**
      * This function returns a parsed element replacing the flags with
-     * the properties given. 
+     * the properties given.
      * @param {Object} patternConfig
      * @param {Object} properties
      * @returns {String}
      */
     parseElement : function(patternConfig, properties) {
-        var wrapperElement = patternConfig.wrapperElement;
         var finalHtml = patternConfig.replace(this.flags.content, properties.content);
         return finalHtml;
     },
 
     /**
      * This function parse a class string like the following example:
-     * 
+     *
      *  "patternName elementName"
-     * 
+     *
      * in a class string like this:
-     * 
+     *
      *  "container preface"
-     * 
+     *
      * @param {String} cls Class to parse
-     * @param {String} elName Name of the element 
+     * @param {String} elName Name of the element
      * @param {String} patternName Pattern name of the element
      * @returns {String} the parsed class string
      */
@@ -285,13 +283,13 @@ Ext.define('LIME.Interpreters', {
 
     /**
      * This function returns an widget configuration from an object called rule
-     * @param {Object} rule 
+     * @param {Object} rule
      * @returns {Object} widget configuration
      */
     parseWidget : function(rule) {
         var widgetsObject = rule.askFor,
               globalAttributes = rule.attributes || {};
-        
+
         if (!widgetsObject)
             return null;
         var widgetConfig = {
@@ -318,7 +316,7 @@ Ext.define('LIME.Interpreters', {
             widget.label = Ext.String.capitalize(Locale.getString(widget.label.toLowerCase()));
             if (how > 1) {
                 tempWidget.emptyText = widget.label;
-                if (title != "")
+                if (title !== "")
                     title += ", ";
                 title += widget.label;
             } else {
