@@ -9,6 +9,13 @@
     "devel": true,
     "globals": {
         "Ext": true,
-        "DomUtils": true
+        "DomUtils": true,
+        "Locale": true,
+        "Utilities": true,
+        "Statics": true,
+        "DocProperties": true,
+        "Server": true,
+        "User": true,
+        "Interpreters": true
     }
 }
