@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -79,10 +79,10 @@ Ext.define('LIME.controller.Marker', {
      * @return {Array} The array of the wrapped elements
      */
     wrap: function(button, config) {
-        var editorController = this.getController('Editor'), 
-            selectedNode = editorController.getSelectedNode(), 
+        var editorController = this.getController('Editor'),
+            selectedNode = editorController.getSelectedNode(),
             firstMarkedNode = DomUtils.getFirstMarkedAncestor(selectedNode);
-        
+
         var unMarkFirstMarkedNode = false;
         // If marking is not allowed
         if( !this.isAllowedMarking(firstMarkedNode, selectedNode, button) ) {
@@ -127,7 +127,7 @@ Ext.define('LIME.controller.Marker', {
             manualMarking: true,
             setCursorLocation: setCursorLocation
         })));
-        
+
         Ext.callback(config.callback, this, [button, [newElement]]);
     },
 
@@ -148,7 +148,7 @@ Ext.define('LIME.controller.Marker', {
             newParent = this.getParentOfSelectionAfterWrappingRules(markedNode);
             if(newParent && !markedNode.isEqualNode(newParent)) {
                 pattern = DomUtils.getPatternByNode(newParent);
-                if(pattern && patterns[pattern] && 
+                if(pattern && patterns[pattern] &&
                     this.isAllowedPattern(patterns[pattern], config.pattern)) {
                     patternError = false;
                 }
@@ -200,9 +200,11 @@ Ext.define('LIME.controller.Marker', {
         startSelection = editorController.getEditor().selection.getStart();
 
         tmpNode = this.applyWrappingRuleWithoutEffects(node);
-
         tmpStart = tmpNode.querySelector("[data-id='"+startSelection.getAttribute("id")+"']");
-        return tmpStart.parentNode;
+        // Return the first not beaking node parent
+        return DomUtils.findParentNode(tmpStart, function(parent) {
+            return parent.className !== DomUtils.breakingElementClass;
+        });
     },
 
     applyWrappingRuleWithoutEffects: function(node) {
@@ -224,7 +226,7 @@ Ext.define('LIME.controller.Marker', {
     wrapRaw: function(button, config) {
         var isBlock = DomUtils.blockTagRegex.test(button.pattern.wrapperElement);
         var wrapper = (isBlock) ? this.wrapRange(button) : this.wrapRange(button, 'span');
-        
+
         // Common finilizing operations
         var bookmarkParent = Ext.fly(wrapper).parent('.visibleBookmark', true);
         if ( bookmarkParent ) {
@@ -236,7 +238,7 @@ Ext.define('LIME.controller.Marker', {
             DomUtils.unwrapNode(breakingParent);
 
         this.setMarkedElementProperties(wrapper, button, config);
-        
+
         return wrapper;
     },
 
@@ -333,7 +335,7 @@ Ext.define('LIME.controller.Marker', {
      * in the button's wrapperElement rule.
      * This function is used by parsers for fast marking.
      * @param {TreeButton} button The button that was used to mark
-     * @param {Object} config 
+     * @param {Object} config
      */
     autoWrap: function(button, config) {
         if(!config.nodes | !button)
@@ -341,28 +343,28 @@ Ext.define('LIME.controller.Marker', {
         var buttonPattern = button.pattern,
             isBlock = DomUtils.blockTagRegex.test(buttonPattern.wrapperElement),
             markedElements = [];
-          
+
         Ext.each(config.nodes, function(newElement, index) {
             var firstMarkedNode = DomUtils.getFirstMarkedAncestor(newElement);
 
-            if ( !config.noDoubleMarkingCheck && firstMarkedNode && 
+            if ( !config.noDoubleMarkingCheck && firstMarkedNode &&
                 DomUtils.getButtonIdByElementId(firstMarkedNode.getAttribute(DomUtils.elementIdAttribute)) == button.id) {
                 return;
             }
-            
+
             if(!DomUtils.isSameNodeWithHtml(newElement, buttonPattern.wrapperElement)) {
                 if(buttonPattern.pattern == "inline") {
-                    if(newElement.children.length == 1 && 
+                    if(newElement.children.length == 1 &&
                         DomUtils.isSameNodeWithHtml(newElement.firstChild, buttonPattern.wrapperElement)) {
                         newElement = newElement.firstChild;
                     } else {
-                        newElement = this.wrapChildrenInWrapperElement(newElement, buttonPattern);    
+                        newElement = this.wrapChildrenInWrapperElement(newElement, buttonPattern);
                     }
                 } else {
                     newElement = this.wrapElementInWrapperElement(newElement, buttonPattern);
                 }
             }
-            
+
             this.setMarkedElementProperties(newElement, button, Ext.merge(Ext.clone(config), {
                 attribute: (config.attributes) ? config.attributes[index] : null
             }));
@@ -372,9 +374,9 @@ Ext.define('LIME.controller.Marker', {
             }
             markedElements.push(newElement);
         },this);
-        
+
         Ext.callback(config.onFinish, this, [markedElements]);
-        
+
         if (!config.noEvent) {
             config = Ext.merge(Ext.merge({}, this.nodeChangedConfig), config);
             this.application.fireEvent('nodeChangedExternally', markedElements, Ext.merge(config, {
@@ -405,7 +407,7 @@ Ext.define('LIME.controller.Marker', {
      * @param {HTMLElement} markedNode The element to unmark
      * @param {boolean} [unmarkChildren]
      * @private
-     */ 
+     */
     unmarkNode: function(markedNode, unmarkChildren) {
         var unmarkedChildIds = [];
         if (unmarkChildren) {
@@ -420,7 +422,7 @@ Ext.define('LIME.controller.Marker', {
             extNode = Ext.fly(markedNode),
             nextSpaceP = extNode.next('.'+DomUtils.breakingElementClass),
             prevSpaceP = extNode.prev('.'+DomUtils.breakingElementClass);
-        // Replace all the 
+        // Replace all the
         markedNode.normalize();
         while (markedNode.hasChildNodes()) {
             if(DomUtils.markedNodeIsPattern(markedNode, "inline")) {
@@ -430,13 +432,13 @@ Ext.define('LIME.controller.Marker', {
                     Ext.each(DomUtils.getTextNodes(markedNode.firstChild), function(node) {
                          DomUtils.addSpacesInTextNode(node);
                     });
-                    
+
                 }
             }
-            markedNode.parentNode.insertBefore(markedNode.firstChild, markedNode);              
+            markedNode.parentNode.insertBefore(markedNode.firstChild, markedNode);
         }
         if(markedNode.parentNode) markedNode.parentNode.normalize();
-        
+
         if (nextSpaceP) {
             nextSpaceP.remove();
         }
@@ -452,7 +454,7 @@ Ext.define('LIME.controller.Marker', {
         markedNode.parentNode.removeChild(markedNode);
         // Remove any reference to the removed node
         delete DocProperties.markedElements[markedId];
-        
+
         return Ext.Array.merge(markedId, unmarkedChildIds);
     },
 
@@ -470,8 +472,8 @@ Ext.define('LIME.controller.Marker', {
         });
         if(parents.length) {
             Ext.each(parents, function(parent) {
-                me.application.fireEvent('nodeChangedExternally', parent, config);    
-            });    
+                me.application.fireEvent('nodeChangedExternally', parent, config);
+            });
         } else {
             me.application.fireEvent('nodeChangedExternally', documentEl, config);
         }
