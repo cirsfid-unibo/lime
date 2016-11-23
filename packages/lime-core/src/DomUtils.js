@@ -1246,6 +1246,15 @@ Ext.define('LIME.DomUtils', {
         return statistics;
     },
 
+    // Returns the parent node on which fn returns true
+    findParentNode: function(node, fn) {
+        var parent = node.parentNode;
+        while(parent) {
+            if(fn(parent)) return parent;
+            parent = parent.parentNode;
+        }
+    },
+
     constructor: function() {
         this.setBreakingElementHtml("<span class=\""+this.breakingElementClass+"\">&nbsp;</span>");
     }
