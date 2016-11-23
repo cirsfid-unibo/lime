@@ -48,7 +48,7 @@ Ext.define('AknMain.Interpreters', {
     override: 'LIME.Interpreters',
 
     headingElements: ['num', 'heading', 'subheading'],
-    headingsQuery: '', //will be computed from the headingElements
+    headingsQuery: '', //will be computed based on headingElements
 
     // Overwrite the core's wrappingRulesHandlerOnTranslate by wrapping it
     // adding the hcontainer parent control for heading elements
@@ -74,20 +74,57 @@ Ext.define('AknMain.Interpreters', {
     // Call the headingEnsureHcontainerParent function on direct heading nodes
     ensureHcontOnDescHeadings: function(node) {
         // Returns the first hcontainer parent
-        var getHcontainerParent = function(childNode) {
-            var parent = childNode.parentNode;
-            while(parent) {
-                if(DomUtils.getPatternByNode(parent) === 'hcontainer')
-                    return parent;
-                parent = parent.parentNode;
-            }
+        var getHcontainerParent = function(node) {
+            return DomUtils.findParentNode(node, function(parent) {
+                return DomUtils.getPatternByNode(parent) === 'hcontainer';
+            });
         };
-        // Search heading nodes in the node
+        // Returns the first subFlow parent
+        var getSubFlowParent = function(node) {
+            // Elements which contain full structure within a text content.
+            // mod is not a subFlow but it contains subFlow elements
+            var subFlows =  [
+                'mod',
+                'quotedStructure',
+                'embeddedStructure',
+                'authorialNote',
+                'note',
+                'subFlow'
+            ];
+            return DomUtils.findParentNode(node, function(parent) {
+                return subFlows.indexOf(DomUtils.getNameByNode(parent)) > -1;
+            });
+        };
+
+        // Return true if the passed heading node is a direct heading of hcontainer node.
+        // By direct is not meaning direct child but a heading node which belogs to
+        // the hcontainer i.e. if between the heading and the hcontainer there're
+        // no other hcontainers and subFlow elements (which break the context).
+        // e.g.
+        // <article>
+        //    <num>2</num>
+        //    <quotedStructure><num>1</num></quotedStructure>
+        //    <item><num>4</num></item>
+        // </article>
+        // The hcontainer is article.
+        // If heading is <num>2</num> return true
+        // If heading is <num>1</num> return false, the context is quotedStructure
+        // and article is out of it
+        // If heading is <num>4</num> return false
+        // e.g.
+        // <paragraph>
+        //    <p><num>3</num></p>
+        // </paragraph>
+        // The hcontainer is paragraph and the heading is <num>3</num>
+        // return true
+        var isDirectHeading = function(hcontainer, heading) {
+            return getHcontainerParent(heading) === hcontainer &&
+                    !hcontainer.contains(getSubFlowParent(heading));
+        };
+        // Search heading nodes in the node and call headingEnsureHcontainerParent
+        // only on direct heading nodes
         Ext.each(node.querySelectorAll(this.headingsQuery), function(hnode) {
-            // Since querySelectorAll goes down to all descendants
-            // we have to exclude those nodes which have another hcontainer parent
-            // Call the function only if the found parent is node
-            if (getHcontainerParent(hnode) === node)
+            if (isDirectHeading(node, hnode))
                 this.headingEnsureHcontainerParent(hnode);
         }, this);
     },
@@ -122,8 +159,13 @@ Ext.define('AknMain.Interpreters', {
         if (getPrevText(node).trim()) {
             splitNode(node.parentNode, node);
         }
+        var parent = node.parentNode;
         // Move the node before its parentNode
-        node.parentNode.parentNode.insertBefore(node, node.parentNode);
+        parent.parentNode.insertBefore(node, parent);
+        // If the parentNode becomes empty remove it
+        if (!parent.textContent.trim()) {
+            parent.parentNode.removeChild(parent);
+        }
         // Call recursively until the parent will be an hcontainer
         return this.headingEnsureHcontainerParent(node);
     },
