@@ -319,7 +319,6 @@ Ext.define('LIME.controller.Storage', {
         }
 
         data.path = data.path.replace(/%3A/g, ':');
-
         if (record.data.leaf) {
             if(relatedButton) {
                 relatedButton.enable();
@@ -364,29 +363,19 @@ Ext.define('LIME.controller.Storage', {
             });
             this.scrollToListView(nextList, parent);
             relatedWindow.activeList = nextList;
-        }
-        if(!relatedWindow.avoidTitleUpdate) {
-            relatedWindow.currentPath = data.path;
-            this.updateTitle(relatedWindow, data.path);
+
+            if(!relatedWindow.avoidTitleUpdate) {
+                this.updateTitle(relatedWindow, data.path);
+            }
         }
     },
 
     updateTitle: function(relatedWindow, pathToShow) {
-        var regVersion = RegExp("(/([a-z]{3}))\\."),
-            matches = pathToShow.match(regVersion);
-         if (matches) {
-            pathToShow = pathToShow.replace(regVersion, "$1@");
-        }
-        relatedWindow.setTitle(relatedWindow.fullTitle.apply({
-            title: relatedWindow.originalTitle,
-            url: pathToShow
-        }));
+        // TODO: use ViewController
+        relatedWindow.getViewModel().setData({ path: pathToShow });
     },
 
     initFileWindow: function (cmp) {
-        cmp.originalTitle = cmp.title;
-        cmp.setTitle(cmp.fullTitle.apply({title: cmp.originalTitle}));
-
         // Setting the right columns name
         Ext.each(cmp.query('grid'), function(element, index) {
             this.setColumnText(element, index);
@@ -455,7 +444,7 @@ Ext.define('LIME.controller.Storage', {
         if (!isNaN(docDate.getTime())) {
             meta.set('date', Utilities.fixDateTime(docDate));
         }
-        var version = (versionDate.indexOf(':') != -1) ? 
+        var version = (versionDate.indexOf(':') != -1) ?
                             versionDate.substring(0,versionDate.indexOf(':')) : versionDate;
         version = new Date(version);
         if (!isNaN(version.getTime())) {
@@ -465,7 +454,7 @@ Ext.define('LIME.controller.Storage', {
             meta.set('author', values.docProponent);
         }
         if (values.number) {
-            meta.set('name', values.number);   
+            meta.set('name', values.number);
         }
     },
 
@@ -566,11 +555,12 @@ Ext.define('LIME.controller.Storage', {
                 path+=prevListSelected.get("path");
             }
         }
+        path = path || cmp.up('window').getViewModel().get('path');
         store.loadData([{
             "id": newRecordId,
             "leaf": (cmp.indexInParent==(me.storageColumns.length-1)) ? "1" : "",
             "name": name || "",
-            "path": path || cmp.up('window').currentPath,
+            "path": path,
             "cls": newRecordId
          }], true);
          record = store.getById(newRecordId);

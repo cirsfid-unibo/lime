@@ -54,7 +54,7 @@ Ext.define('LIME.view.modal.newOpenfile.ListView', {
     columns : [{
         text : 'Folder', //TODO: localize
         dataIndex : 'name',
-        flex : 1,
+        width: 195,
         renderer : function(value, cmp, record) {
             value = value || "";
             if (!record.data.leaf) {
@@ -63,12 +63,13 @@ Ext.define('LIME.view.modal.newOpenfile.ListView', {
             // Add file type label.
             var suffix = record.data.name.substr(-4);
             if (['.xml', '.doc', '.docx', '.pdf', '.txt'].indexOf(suffix) != -1) {
-                label = suffix.toUpperCase();
+                var label = suffix.toUpperCase();
                 value = '<div style="float:left;">' + value + '</div><i style="float:right;border: 1px solid #888;border-radius: 5px;padding: 0 5px;background: #ccc;">'+label.substring(1)+'</i>';
             }
             return value;
         }
     }],
+    scrollable: 'y',
     width : 195,
     displayField : 'name',
     initComponent : function() {
@@ -79,7 +80,7 @@ Ext.define('LIME.view.modal.newOpenfile.ListView', {
         me.callParent(arguments);
     },
 
-    buildStore : function(me) {
+    buildStore : function() {
         return Ext.create('LIME.store.OpenFile');
     }
 });

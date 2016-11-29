@@ -44,44 +44,10 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- * Main view of Open File Window
- */
-Ext.define('LIME.view.modal.newOpenfile.Main', {
-    extend : 'Ext.window.Window',
-    requires : [
-        'LIME.view.modal.newOpenfile.Model',
-        'LIME.view.modal.newOpenfile.ListView',
-        'LIME.view.modal.newOpenfile.ListFilesPanel',
-        'LIME.view.modal.newOpenfile.Toolbar'
-    ],
-    alias : 'widget.newOpenfileMain',
-
-    viewModel: {
-        type: 'open-file'
-    },
-
-    bind: {
-        title: Locale.strings.openFileWindowMainTitle+' {path}'
-    },
-
-    // it should be closable
-    closable : true,
-    // Remove events from the background
-    modal : true,
-    width : 601,
-    minWidth : 400,
-    height : 450,
-
-    layout : 'border',
-
-    // the items of the modal window
-    items : [{
-        xtype : 'listFilesPanel',
-        region: 'center'
-    },{
-        xtype : 'newOpenfileToolbar',
-        region : 'south',
-        margin : 2
-    }]
+Ext.define('LIME.view.modal.newSavefile.Model', {
+    extend: 'Ext.app.ViewModel',
+    alias: 'viewmodel.save-file',
+    data: {
+        path: ''
+    }
 });
