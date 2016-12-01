@@ -209,12 +209,8 @@ Ext.define('AknAutomaticMarkup.Controller', {
         if ( !textGroups.length ) return;
 
         textGroups.forEach(function(group) {
-            var beakingSpans = group.filter(function(el) {
-                return DomUtils.nodeHasClass(el, DomUtils.breakingElementClass);
-            });
-            if ( beakingSpans.length == group.length ) return;
-
             var wrapper = me.wrapListOfNodes(group);
+            if (!wrapper) return;
             me.requestMarkup(pButton, {
                 silent : true,
                 noEvent : true,
@@ -390,8 +386,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             });
             DomUtils.insertAfter(wrapper, initTitleNode);
             me.wrapPartNodeSibling(wrapper, function(el) {
-                return isFinishTitle(el.previousSibling.textContent) ||
-                        DomUtils.nodeHasClass(el, DomUtils.breakingElementClass);
+                return isFinishTitle(el.previousSibling.textContent);
             });
             me.requestMarkup(markButton, {
                 silent : true,
@@ -510,7 +505,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                     me.parseBodyParts(jsonData, node, button);
                     me.normalizeNodes(node);
                 } catch(e) {
-                    Ext.log({level: "error"}, e);
+                   Ext.log({level: "error"}, e);
                 }
             }
             Ext.callback(callback);
@@ -523,12 +518,9 @@ Ext.define('AknAutomaticMarkup.Controller', {
                          DocProperties.getChildConfigByName(button, "point") ||
                          DocProperties.getFirstButtonByName("item");
 
-        var nodesToMark = me.getTextChildrenGroups(node, [], function(child, fly) {
+        var nodesToMark = me.getTextChildrenGroups(node, [], function(child) {
             if ( child.nodeType != DomUtils.nodeType.TEXT &&
-                 ((child.nodeName.toLowerCase() == 'br') ||
-                (child.nodeName.toLowerCase() == 'span' &&
-                fly.is('.'+DomUtils.breakingElementClass) ) ) ) {
-
+                 ((child.nodeName.toLowerCase() == 'br') ) ) {
                     return false;
             }
             return true;
@@ -1290,8 +1282,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                         return false;
                     }
                     if ( node.nodeType == DomUtils.nodeType.ELEMENT &&
-                                (node.nodeName.toLowerCase() == "br") ||
-                                DomUtils.nodeHasClass(node, DomUtils.breakingElementClass)) {
+                                (node.nodeName.toLowerCase() == "br")) {
                         return false;
                     } else if ( node.nodeType == DomUtils.nodeType.TEXT &&
                                 Ext.isEmpty(node.data.trim()) ) {
@@ -1625,8 +1616,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                     return false;
                 }
                 if ( node.nodeType == DomUtils.nodeType.ELEMENT &&
-                            (node.nodeName.toLowerCase() == "br") ||
-                            DomUtils.nodeHasClass(node, DomUtils.breakingElementClass)) {
+                            (node.nodeName.toLowerCase() == "br")) {
                     return false;
                 } else if ( node.nodeType == DomUtils.nodeType.TEXT &&
                             Ext.isEmpty(node.data.trim()) ) {
@@ -1863,8 +1853,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
             var next = function(index) {
                 var name = structure[index];
-                if ((!Ext.isEmpty(data[name]) || prevPartNode) &&
-                        !DomUtils.allNodesHaveClass(DomUtils.getSiblingsFromNode(prevPartNode), DomUtils.breakingElementClass)) {
+                if ((!Ext.isEmpty(data[name]) || prevPartNode)) {
                     prevPartNode = me.wrapStructurePart(name, data[name], prevPartNode);
 
                     if (prevPartNode) {
@@ -2651,8 +2640,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
         var textGroups = me.getTextChildrenGroups(node, ["table"]).filter(function(group) {
             var beakingSpans = group.filter(function(el) {
                 return ( el.nodeType == DomUtils.nodeType.ELEMENT &&
-                        ( DomUtils.nodeHasClass(el, DomUtils.breakingElementClass) ||
-                        DomUtils.getNodeNameLower(el) == 'br' ) );
+                        (DomUtils.getNodeNameLower(el) == 'br' ) );
             });
 
             return beakingSpans.length != group.length;
@@ -2728,9 +2716,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             if ( textGroups.length ) {
                 Ext.each(textGroups, function(group) {
                     var breakingEls = group.filter(function(el) {
-                        return ( (el.nodeType == DomUtils.nodeType.ELEMENT &&
-                                DomUtils.nodeHasClass(el, DomUtils.breakingElementClass)) ||
-                                (el.nodeType == DomUtils.nodeType.TEXT && Ext.isEmpty(el.data.trim()) ) );
+                        return ((el.nodeType == DomUtils.nodeType.TEXT && Ext.isEmpty(el.data.trim()) ) );
                     });
                     var headingElements = group.filter(function(el) {
                         return (DomUtils.nodeHasClass(el, 'num') ||

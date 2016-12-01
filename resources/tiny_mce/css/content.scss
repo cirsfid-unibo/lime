@@ -15,9 +15,6 @@
     padding: 20px 5px;
 
     // Generic editor rules
-    .breaking {
-    	border-bottom: 1px solid #ccc;
-    }
     hr[data-mce-selected] { outline: 0px solid black; }
     *[focused = 'true'] {
         background-color: #f5f5f5;

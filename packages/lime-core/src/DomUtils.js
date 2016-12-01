@@ -62,11 +62,6 @@ Ext.define('LIME.DomUtils', {
      */
     toRemoveClass : "useless",
     /**
-     * @property {String} breakingElementClass
-     * Class given to those elements that work as "breaker" for the text
-     */
-    breakingElementClass : "breaking",
-    /**
      * @property {String} tempSelectionClass
      * Temporary selection element class for text fragments.
      */
@@ -128,10 +123,6 @@ Ext.define('LIME.DomUtils', {
         NOTATION : 12
     },
 
-    config: {
-        breakingElementHtml: ""
-    },
-
     /**
      * This function take a @first node and a @last node
      * and append all their siblings (first and last included)
@@ -163,7 +154,7 @@ Ext.define('LIME.DomUtils', {
      */
     getTempClassesQuery : function() {
         // TODO rendere le classi iterabili
-        return "." + this.tempSelectionClass + ", ." + this.toRemoveClass + ", ." + this.tempSelectionClass + ", ." + this.breakingElementClass;
+        return "." + this.tempSelectionClass + ", ." + this.toRemoveClass + ", ." + this.tempSelectionClass;
     },
 
     /**
@@ -709,8 +700,7 @@ Ext.define('LIME.DomUtils', {
                 function isInFakeElement (el) {
                     if (el.nodeType == DomUtils.nodeType.TEXT)
                         el = el.parentNode;
-                    return el.dataset['mceType'] == 'bookmark' ||
-                            el.classList[0] == DomUtils.breakingElementClass;
+                    return el.dataset['mceType'] == 'bookmark';
                 }
                 while (isInFakeElement(range.startContainer))
                     range.setStartBefore(range.startContainer);
@@ -1081,10 +1071,6 @@ Ext.define('LIME.DomUtils', {
         });
     },
 
-    isBreakingNode: function(node) {
-        return node && node.nodeType == DomUtils.nodeType.ELEMENT && Ext.fly(node).is('.'+DomUtils.breakingElementClass);
-    },
-
     isNodeFocused: function(node) {
         var cls = node.getAttribute(DocProperties.elementFocusedCls);
         if(cls && cls === "true") {
@@ -1253,9 +1239,5 @@ Ext.define('LIME.DomUtils', {
             if(fn(parent)) return parent;
             parent = parent.parentNode;
         }
-    },
-
-    constructor: function() {
-        this.setBreakingElementHtml("<span class=\""+this.breakingElementClass+"\">&nbsp;</span>");
     }
 });

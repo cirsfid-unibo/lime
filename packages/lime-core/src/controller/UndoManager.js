@@ -146,13 +146,11 @@ Ext.define('LIME.controller.UndoManager', {
     areDifferent: function (a, b) {
         function normalize(str) {
             // In checkpoint comparison ignore:
-            // - breaking spans
             // - newlines
             // - id
             // - data-labelinfo
             // - internal ids
-            return str.replace(/<span class="breaking">\s*<\/span>/g, '')
-                      .replace(/\r?\n|\r/g, '')
+            return str.replace(/\r?\n|\r/g, '')
                       .replace(/ id="[^"]*"/g, '')
                       .replace(/ data-labelinfo="[^"]*"/g, '')
                       .replace(/ internalid="[^"]*"/g, '');

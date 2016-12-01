@@ -102,7 +102,7 @@ Ext.define('LIME.controller.Editor', {
                 pathSwitcherChanged: 'showDocumentIdentifier'
             }
         }
-    },   
+    },
 
     init: function() {
         var me = this;
@@ -625,10 +625,9 @@ Ext.define('LIME.controller.Editor', {
 
     // Change the editor selection to surround node
     selectNode: function(node) {
-        // We want to select the span.breaking before and after the given node
         var range = node.ownerDocument.createRange();
-        range.setStartBefore((DomUtils.isBreakingNode(node.previousSibling) && node.previousSibling) || node);
-        range.setEndAfter((DomUtils.isBreakingNode(node.nextSibling) && node.nextSibling) || node);
+        range.setStartBefore(node);
+        range.setEndAfter(node);
         this.getEditor().selection.setRng(range);
         this.lastSelectionRange = range;
     },
@@ -826,7 +825,7 @@ Ext.define('LIME.controller.Editor', {
     },
 
     addStyles: function(urls, editor) {
-        urls = urls || this.stylesUrl;  
+        urls = urls || this.stylesUrl;
         this.stylesUrl = urls;
 
         var editorDom = this.getDom(editor),
@@ -1170,10 +1169,9 @@ Ext.define('LIME.controller.Editor', {
         var me = this,
            toMarkNodes = me.getBody().querySelectorAll("."+DomUtils.toMarkNodeClass);
 
-        // Replace all empty toMarkNodes with breaking elements
+        // Replace all empty toMarkNodes
         Ext.each(toMarkNodes, function(node) {
            if( Ext.isEmpty(node.textContent.trim()) && node.parentNode ) {
-               Ext.DomHelper.insertHtml('beforeBegin', node, DomUtils.getBreakingElementHtml());
                node.parentNode.removeChild(node);
            }
         });
@@ -1188,28 +1186,13 @@ Ext.define('LIME.controller.Editor', {
             // find the selectedNode
             selectedNode = DomUtils.getFirstMarkedAncestor(e.target) ||
                             DomUtils.getFirstMarkedAncestor(me.lastRange.commonAncestorContainer);
-            if(DomUtils.isBreakingNode(e.target)) {
-                var content = Ext.fly(e.target).getHtml();
-                var newElement = Ext.DomHelper.createDom({
-                    tag : 'div',
-                    html : (content) ? content : '&nbsp;',
-                    cls: DomUtils.toMarkNodeClass
-                });
-                e.target.parentNode.replaceChild(newElement, e.target);
-                //this.setCursorLocation(newElement, 0);
-                if(selectedNode) {
-                    this.lastFocused = selectedNode;
-                    me.focusNode(selectedNode, {click: true});
-                    return;
-                }
-            }
         }
 
         if(selectedNode) {
            var editorNode = this.getSelectedNode(),
                cls = editorNode.getAttribute("class");
            if((cls && cls != DomUtils.toMarkNodeClass) &&
-               !DomUtils.isBreakingNode(editorNode) && editorNode != selectedNode) {
+                editorNode != selectedNode) {
                 //this.setCursorLocation(selectedNode, 0);
            }
            // Expand the selected node's related buttons

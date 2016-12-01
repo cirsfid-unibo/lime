@@ -236,14 +236,14 @@ Ext.define('AknCollection.DocumentCollectionController', {
             Ext.each(documents, function(doc, index) {
                 var docId = doc.getAttribute(DocProperties.docIdAttribute);
                 docId = (docId!=undefined) ? parseInt(docId) : undefined;
-                // The first document is processed by the editor here we process 
+                // The first document is processed by the editor here we process
                 // the documents inside the first document e.g. documentCollection
                 if (docId != 0 && metaConf[docId] && metaConf[docId].metaDom) {
                     var metaDom = Ext.clone(metaConf[docId].metaDom);
                     metaDom.setAttribute("class", "meta");
                     if ( doc.firstChild && Ext.fly(doc.firstChild) && !Ext.fly(doc.firstChild).is('.meta') )
                         doc.insertBefore(metaDom, doc.firstChild);
-                    
+
                     me.getController('Language').overwriteMetadata(metaDom, Ext.getStore('metadata').getAt(docId));
                 }
             }, this);
@@ -320,9 +320,9 @@ Ext.define('AknCollection.DocumentCollectionController', {
             if(!cmpDoc) continue;
 
             var treeData;
-            if (DomUtils.getElementNameByNode(cmpDoc) == 'documentRef') 
-                treeData = this.docToTreeData(this.findDocByDocRef(cmpDoc), dom, 
-                                                    cmpDoc.getAttribute(LangProp.attrPrefix+"href"), 
+            if (DomUtils.getElementNameByNode(cmpDoc) == 'documentRef')
+                treeData = this.docToTreeData(this.findDocByDocRef(cmpDoc), dom,
+                                                    cmpDoc.getAttribute(LangProp.attrPrefix+"href"),
                                                     cmpDoc.getAttribute(LangProp.attrPrefix+'showAs'));
             else if(cmpDoc.classList.contains(DocProperties.documentBaseClass))
                 treeData = this.docToTreeData(cmpDoc, dom);
@@ -450,14 +450,14 @@ Ext.define('AknCollection.DocumentCollectionController', {
             snapshot = me.completeEditorSnapshot;
         if (!snapshot || !snapshot.dom) return;
 
-        // Before loading a new document we need to update 
+        // Before loading a new document we need to update
         // the snapshot with new content from the editor
         var newSnapshot = me.updateEditorSnapshot(snapshot),
             docId = Ext.isString(config.id) ? parseInt(config.id) : config.id,
             docMeta = DocProperties.docsMeta[docId],
             colMod = Ext.isString(config.id) ? (config.id.indexOf(me.getColModSuffix()) != -1) : false;
         // Select the document in the snapshot and load it
-        var doc = (docId === 0) ? snapshot.dom : 
+        var doc = (docId === 0) ? snapshot.dom :
                     snapshot.dom.querySelector("*["+DocProperties.docIdAttribute+"='" + docId + "']");
         var prevColMod = doc.querySelector("[colmod]");
         prevColMod = (prevColMod) ? parseInt(prevColMod.getAttribute("colmod")) : 0;
@@ -484,19 +484,11 @@ Ext.define('AknCollection.DocumentCollectionController', {
 
     snapshotToDocColMod: function(snapshot, docId) {
         // Create a temporary copy of the snapshot, don't modify it directly!
-        var breakingElement, completeSnapshotDom = DomUtils.parseFromString(snapshot.content),
+        var completeSnapshotDom = DomUtils.parseFromString(snapshot.content),
             doc = (docId === 0) ? completeSnapshotDom : completeSnapshotDom.querySelector("*["+DocProperties.docIdAttribute+"='" + docId + "']"),
             docCol = completeSnapshotDom.querySelector("*["+DocProperties.docIdAttribute+"='" + docId + "']"),
             colBody;
         Utilities.removeNodeByQuery(doc, "[class*=components]");
-        if(docCol) {
-            colBody = docCol.querySelector("[class*=collectionBody]");
-            //Utilities.removeNodeByQuery(docCol, "[class*=collectionBody]");
-            if(colBody) {
-                // Add breaking element to be able to insert text
-                Ext.DomHelper.insertHtml('beforeBegin', colBody, "<span class=\""+DomUtils.breakingElementClass+"\"></span>");
-            }
-        }
         return doc;
     },
 

@@ -184,8 +184,8 @@ Ext.define('LIME.controller.Marker', {
     },
 
     isAllowedPattern: function(parentPatternConfig, patternConfig) {
-        if(!Ext.isEmpty(parentPatternConfig.allowedPatterns)
-            && parentPatternConfig.allowedPatterns.indexOf(patternConfig.pattern) == -1) {
+        if(!Ext.isEmpty(parentPatternConfig.allowedPatterns) &&
+            parentPatternConfig.allowedPatterns.indexOf(patternConfig.pattern) == -1) {
             return false;
         }
         return true;
@@ -201,10 +201,7 @@ Ext.define('LIME.controller.Marker', {
 
         tmpNode = this.applyWrappingRuleWithoutEffects(node);
         tmpStart = tmpNode.querySelector("[data-id='"+startSelection.getAttribute("id")+"']");
-        // Return the first not beaking node parent
-        return DomUtils.findParentNode(tmpStart, function(parent) {
-            return parent.className !== DomUtils.breakingElementClass;
-        });
+        return tmpStart.parentNode;
     },
 
     applyWrappingRuleWithoutEffects: function(node) {
@@ -212,7 +209,7 @@ Ext.define('LIME.controller.Marker', {
             var fixId = function(node) {
                 node.setAttribute('data-id', node.getAttribute('id'));
                 node.removeAttribute('id');
-            }
+            };
             fixId(node);
             Ext.each(node.querySelectorAll('[id]'), fixId);
             return node;
@@ -233,9 +230,6 @@ Ext.define('LIME.controller.Marker', {
             DomUtils.insertAfter(wrapper, bookmarkParent);
             bookmarkParent.parentNode.removeChild(bookmarkParent);
         }
-        var breakingParent = Ext.fly(wrapper).parent('.'+DomUtils.breakingElementClass, true);
-        if (breakingParent)
-            DomUtils.unwrapNode(breakingParent);
 
         this.setMarkedElementProperties(wrapper, button, config);
 
@@ -243,10 +237,10 @@ Ext.define('LIME.controller.Marker', {
     },
 
     wrapRange: function(button, element) {
+        element = element || 'div';
         // Bug: IE sometimes creates elements outside main element
         // Example: creating a preface outside of bill.
         var editor = this.getController('Editor'),
-            element = element || 'div'
             selectionRange = editor.lastSelectionRange || editor.getEditor().selection.getRng();
 
         DomUtils.range.normalize(selectionRange);
@@ -254,44 +248,7 @@ Ext.define('LIME.controller.Marker', {
 
         var wrapper = selectionRange.startContainer.ownerDocument.createElement(element);
         selectionRange.surroundContents(wrapper);
-
-        if ( element == 'div' ) {
-            // Add breaking elements so that text can be inserted
-            this.addBreakingElements(wrapper);
-        }
         return wrapper;
-    },
-
-    /**
-     * This function adds breaking elements before and/or after the node so that text can be inserted
-     * @param {HTMLElement} node
-     */
-    addBreakingElements: function(node) {
-        //var breakingElementString = "<p class=\""+DomUtils.breakingElementClass+"\"></p>";
-        var breakingElementString = DomUtils.getBreakingElementHtml();
-        var flyNode = Ext.fly(node);
-
-        Ext.DomHelper.insertHtml('afterBegin',node, breakingElementString);
-        Ext.DomHelper.insertHtml('beforeEnd',node, breakingElementString);
-
-        function needsBreaking (node) {
-            if (node.nodeName.toLowerCase() == 'br') return false;
-            if (node.nodeType != DomUtils.nodeType.ELEMENT) return false;
-            if (Ext.fly(node).hasCls(DomUtils.breakingElementClass)) return false;
-
-            return true;
-        }
-
-        node.parentNode.normalize();
-
-        // Add a breaking element also above the marked element but only if there isn't another breaking element
-        if (!node.previousSibling || needsBreaking(node.previousSibling)) {
-            Ext.DomHelper.insertHtml('beforeBegin',node, breakingElementString);
-        }
-
-        if (!node.nextSibling || needsBreaking(node.nextSibling)) {
-            Ext.DomHelper.insertHtml('afterEnd',node, breakingElementString);
-        }
     },
 
     setMarkedElementProperties: function(node, button, config) {
@@ -338,10 +295,9 @@ Ext.define('LIME.controller.Marker', {
      * @param {Object} config
      */
     autoWrap: function(button, config) {
-        if(!config.nodes | !button)
+        if(!config.nodes || !button)
             return;
         var buttonPattern = button.pattern,
-            isBlock = DomUtils.blockTagRegex.test(buttonPattern.wrapperElement),
             markedElements = [];
 
         Ext.each(config.nodes, function(newElement, index) {
@@ -369,9 +325,6 @@ Ext.define('LIME.controller.Marker', {
                 attribute: (config.attributes) ? config.attributes[index] : null
             }));
 
-            if(isBlock) {
-                this.addBreakingElements(newElement);
-            }
             markedElements.push(newElement);
         },this);
 
@@ -417,11 +370,7 @@ Ext.define('LIME.controller.Marker', {
                 unmarkedChildIds = Ext.Array.merge(unmarkedChildIds, this.unmarkNode(child));
             }, this);
         }
-        var markedParent = markedNode.parentNode,
-            markedId = markedNode.getAttribute(DomUtils.elementIdAttribute),
-            extNode = Ext.fly(markedNode),
-            nextSpaceP = extNode.next('.'+DomUtils.breakingElementClass),
-            prevSpaceP = extNode.prev('.'+DomUtils.breakingElementClass);
+        var markedId = markedNode.getAttribute(DomUtils.elementIdAttribute);
         // Replace all the
         markedNode.normalize();
         while (markedNode.hasChildNodes()) {
@@ -429,27 +378,12 @@ Ext.define('LIME.controller.Marker', {
                 if(markedNode.firstChild.nodeType == DomUtils.nodeType.TEXT) {
                     DomUtils.addSpacesInTextNode(markedNode.firstChild);
                 } else {
-                    Ext.each(DomUtils.getTextNodes(markedNode.firstChild), function(node) {
-                         DomUtils.addSpacesInTextNode(node);
-                    });
-
+                    Ext.each(DomUtils.getTextNodes(markedNode.firstChild), DomUtils.addSpacesInTextNode);
                 }
             }
             markedNode.parentNode.insertBefore(markedNode.firstChild, markedNode);
         }
         if(markedNode.parentNode) markedNode.parentNode.normalize();
-
-        if (nextSpaceP) {
-            nextSpaceP.remove();
-        }
-
-        if (prevSpaceP) {
-            var prevSibling = prevSpaceP.prev();
-            //Remove the space p if the previous sibling is not marked
-            if(!prevSibling || !prevSibling.getAttribute(DomUtils.elementIdAttribute)){
-                prevSpaceP.remove();
-            }
-        }
 
         markedNode.parentNode.removeChild(markedNode);
         // Remove any reference to the removed node
@@ -483,7 +417,7 @@ Ext.define('LIME.controller.Marker', {
     // Link marked elements with buttons and build documentProprieties
     searchAndManageMarkedElements: function(node) {
         var markedElements = node.querySelectorAll("*[" + DomUtils.elementIdAttribute + "]");
-        Ext.each(markedElements, function(node, index) {
+        Ext.each(markedElements, function(node) {
             var elId = node.getAttribute(DomUtils.elementIdAttribute),
                 button = this.findButton(node);
 
@@ -499,9 +433,6 @@ Ext.define('LIME.controller.Marker', {
 
             node.removeAttribute('style'); //remove inline style
             node.setAttribute(DomUtils.elementIdAttribute, elId);
-
-            if(DomUtils.blockTagRegex.test(button.pattern.wrapperElement))
-                this.addBreakingElements(node);
         }, this);
     },
 

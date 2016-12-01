@@ -181,9 +181,8 @@ Ext.define('LIME.controller.Language', {
         try {
             //Remove all unused elements
             Ext.each(unusedElements, function(element) {
-                var classes = element.getAttribute("class");
-                //Remove all elements including breaking elements that don't have children
-                if (classes != DomUtils.breakingElementClass || !element.hasChildNodes()) {
+                //Remove all elements that don't have children
+                if (!element.hasChildNodes()) {
                     element.parentNode.removeChild(element);
                 }
             });

@@ -492,13 +492,6 @@
         <xsl:apply-templates />
     </xsl:template>
 
-    <xsl:template match="p[contains(@class, 'breaking')] |
-                         span[contains(@class, 'breaking')]">
-        <xsl:if test="translate(translate(normalize-space(), ' ',''), '&#xa0;','')">
-            <xsl:apply-templates />
-        </xsl:if>
-    </xsl:template>
-
     <!-- Called template -->
     <xsl:template match="div[contains(@class,'meta')]//div">
     	<xsl:variable name="aknName">
