@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet 
+<xsl:stylesheet
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:html="http://www.w3.org/1999/xhtml"
@@ -8,13 +8,13 @@
     exclude-result-prefixes="xs"
     version="1.0">
     <xsl:output method="xml" indent="yes" encoding="UTF-8" />
-    
+
     <xsl:template match="/">
     	<akomaNtoso>
         	<xsl:apply-templates />
 		</akomaNtoso>
     </xsl:template>
-	
+
     <xsl:template mode="aknPrefixAttributes" match="@*" >
     	<xsl:variable name="attName"><xsl:value-of select="substring-after(name(.),'_')"/></xsl:variable>
         <xsl:choose>
@@ -99,25 +99,25 @@
             </xsl:when>
         </xsl:choose>
     </xsl:template>
-    
+
     <xsl:template mode="notAknPrefixAttributes" match="@*" >
     	<xsl:if test="not(substring-before(name(.),'_') = 'akn') and not(contains(name(.), 'internalid'))">
         	<xsl:attribute name="{name(.)}"><xsl:value-of select="." /></xsl:attribute>
-        </xsl:if>	
+        </xsl:if>
     </xsl:template>
-    
+
     <xsl:template mode="aknPrefixAttributesWithoutId" match="@*" >
     	<xsl:variable name="attName"><xsl:value-of select="substring-after(name(.),'_')"/></xsl:variable>
     	<xsl:if test="substring-before(name(.),'_') = 'akn' and $attName != 'id'">
 			<xsl:attribute name="{$attName}"><xsl:value-of select="." /></xsl:attribute>
-        </xsl:if>	
+        </xsl:if>
     </xsl:template>
-    
+
     <xsl:template mode="allAttributes" match="@*" >
 		<xsl:attribute name="{name(.)}"><xsl:value-of select="." /></xsl:attribute>
     </xsl:template>
-    
-	<xsl:template match="   div| 
+
+	<xsl:template match="   div|
     						span[@internalid]">
         <xsl:variable name="aknName">
             <xsl:if test="substring-after(./@class,' ') != ''">
@@ -137,15 +137,15 @@
 		    				$aknName='doc' or
 		    				$aknName='judgement' or
 		    				$aknName='amendmentList' or
-		    				$aknName='amendment' or 
-		    				$aknName='debateReport' or 
+		    				$aknName='amendment' or
+		    				$aknName='debateReport' or
 		    				$aknName='officialGazette' or
 		    				$aknName='debate'">
         	    <xsl:element name="{$aknName}">
 		        	<xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
 		       		<xsl:apply-templates />
        			</xsl:element>
-        	</xsl:when> 
+        	</xsl:when>
         	<!-- All elements -->
 		    <xsl:when test="$aknName != ''">
         	    <xsl:element name="{$aknName}">
@@ -177,7 +177,7 @@
             <xsl:apply-templates />
         </xsl:element>
     </xsl:template>
-    
+
     <xsl:template match="div[contains(@class,'preface')] |
     					 div[contains(@class,'preamble')] |
     					 div[contains(@class,'conclusions')]">
@@ -197,7 +197,7 @@
 			<xsl:call-template name="manageImplicitP" />
 		</xsl:element>
 	</xsl:template>
-    
+
     <xsl:template match="p[@internalid]">
         <xsl:variable name="aknName">
             <xsl:if test="substring-after(./@class,' ') != ''">
@@ -215,8 +215,7 @@
        		<xsl:apply-templates />
 		</xsl:element>
     </xsl:template>
-	
-	
+
 	<!-- Content element -->
 	<xsl:template match="div[contains(@class,'content')]">
 		<xsl:variable name="aknName">
@@ -267,7 +266,7 @@
             <xsl:otherwise>
                 <xsl:call-template name="addImplicitP"/>
             </xsl:otherwise>
-        </xsl:choose> 
+        </xsl:choose>
     </xsl:template>
 
     <xsl:template name="addImplicitP">
@@ -304,7 +303,7 @@
             </xsl:choose>
         </xsl:for-each>
     </xsl:template>
-	
+
 	<xsl:template match="span[contains(@class,'documentRef')]">
 		<xsl:variable name="aknName">
             <xsl:if test="substring-after(./@class,' ') != ''">
@@ -321,7 +320,7 @@
 			<xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
 		</xsl:element>
 	</xsl:template>
-	
+
 	<xsl:template match="*[contains(@class,'collectionBody')]">
 		<xsl:variable name="aknName">
             <xsl:if test="substring-after(./@class,' ') != ''">
@@ -339,11 +338,11 @@
 			<xsl:apply-templates />
 		</xsl:element>
 	</xsl:template>
-	
+
 	<!-- Authorial note -->
 	<xsl:template match="div[contains(@class,'authorialNote')]">
 	</xsl:template>
-	
+
 	<xsl:template match="div[contains(@class,'authorialNote')]" mode="replaceNote">
 		<xsl:variable name="aknName">
 			<xsl:if test="substring-after(./@class,' ') != ''">
@@ -370,17 +369,17 @@
 			</xsl:choose>
 		</xsl:element>
 	</xsl:template>
-	
+
 	<xsl:template match="html:span[@class='posTmpSpan']">
 		<xsl:variable name="noteId" select="@noteref" />
-		<xsl:apply-templates  mode="replaceNote" select="//div[contains(@class,'authorialNote')][@notetmpid=$noteId]"/> 
+		<xsl:apply-templates  mode="replaceNote" select="//div[contains(@class,'authorialNote')][@notetmpid=$noteId]"/>
 	</xsl:template>
-	
+
 	<xsl:template match="span[@class='posTmpSpan']">
 		<xsl:variable name="noteId" select="@noteref" />
-		<xsl:apply-templates  mode="replaceNote" select="//div[contains(@class,'authorialNote')][@notetmpid=$noteId]"/> 
+		<xsl:apply-templates  mode="replaceNote" select="//div[contains(@class,'authorialNote')][@notetmpid=$noteId]"/>
 	</xsl:template>
-    
+
     <!-- Wrap quotedText/quotedStructures with mod if it is missing -->
     <xsl:template match="span[contains(@class,'quotedText')][not(contains(../@class, 'mod'))]">
         <mod>
@@ -390,7 +389,7 @@
             </quotedText>
         </mod>
     </xsl:template>
-    
+
     <xsl:template match="div[contains(@class,'quotedStructure')][not(contains(../@class, 'mod'))]">
         <mod>
             <quotedStructure>
@@ -400,7 +399,7 @@
         </mod>
     </xsl:template>
 
-	
+
 	<xsl:template match="*">
         <xsl:element name="{name(.)}">
         	<xsl:for-each select="@*">
@@ -412,7 +411,7 @@
             <xsl:apply-templates />
         </xsl:element>
     </xsl:template>
-    
+
     <!-- HTML elements -->
     <xsl:template match="br">
         <xsl:variable name="parentPattern">
@@ -482,12 +481,13 @@
 		    <xsl:apply-templates />
     	</xsl:element>
     </xsl:template>
-    
+
 	<!-- Elements to ignore -->
-    <xsl:template match="   div[contains(@class,'akoma_ntoso')] | 
+    <xsl:template match="   div[contains(@class,'akoma_ntoso')] |
                             div[contains(@class, 'toMarkNode')] |
                             div[contains(@class, 'block p') and contains(../@class, 'hcontainer') and not(contains(../@class, 'item'))] |
                             div[contains(@class,'notesContainer')] |
+                            div[contains(@class, 'block p')]/div[contains(@class, 'block p')] |
                             span[not(@*)]">
         <xsl:apply-templates />
     </xsl:template>
@@ -498,9 +498,9 @@
             <xsl:apply-templates />
         </xsl:if>
     </xsl:template>
-    
+
     <!-- Called template -->
-    <xsl:template match="div[contains(@class,'meta')]//div">  	
+    <xsl:template match="div[contains(@class,'meta')]//div">
     	<xsl:variable name="aknName">
             <xsl:choose>
                 <xsl:when test="substring-after(./@class,' ') != ''">
@@ -518,8 +518,8 @@
 		</xsl:element>
     </xsl:template>
 
-    <xsl:template match="div[contains(@class,'meta')]//div[contains(@class,'FRBRWork') or 
-                             contains(@class,'FRBRExpression') or 
+    <xsl:template match="div[contains(@class,'meta')]//div[contains(@class,'FRBRWork') or
+                             contains(@class,'FRBRExpression') or
                              contains(@class,'FRBRManifestation')]">
         <xsl:variable name="aknName">
             <xsl:choose>
@@ -541,15 +541,15 @@
             <xsl:apply-templates select="./*[@class = 'FRBRauthor']"/>
             <xsl:apply-templates select="./*[@class = 'FRBRcountry']"/>
 
-            <xsl:apply-templates select="./*[not(@class = 'FRBRthis') and 
-                                            not(@class = 'FRBRuri') and 
-                                            not(@class = 'FRBRalias') and 
-                                            not(@class = 'FRBRdate') and 
-                                            not(@class = 'FRBRauthor')and 
+            <xsl:apply-templates select="./*[not(@class = 'FRBRthis') and
+                                            not(@class = 'FRBRuri') and
+                                            not(@class = 'FRBRalias') and
+                                            not(@class = 'FRBRdate') and
+                                            not(@class = 'FRBRauthor')and
                                             not(@class = 'FRBRcountry')]"/>
         </xsl:element>
     </xsl:template>
-    
+
     <!-- <xsl:template match="text()">
         <xsl:value-of select="normalize-space(.)"/>
    </xsl:template> -->
