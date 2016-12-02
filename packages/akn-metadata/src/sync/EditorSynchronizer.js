@@ -93,6 +93,7 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
             case 'quantity':
             case 'entity':
             case 'def':
+            case 'docPurpose':
                 me.addRefersTo(node, {
                     role: 'TLCRole',
                     location: 'TLCLocation',
@@ -105,7 +106,8 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
                     quantity: 'TLCObject',
                     concept: 'TLCConcept',
                     entity: 'TLCConcept',
-                    def: 'TLCConcept'
+                    def: 'TLCConcept',
+                    docPurpose: 'TLCConcept'
                 }[tagName]);
                 break;
             case 'docNumber':

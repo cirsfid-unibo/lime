@@ -1,7 +1,7 @@
 {
 	"rootElements": ["coverPage", "preface", "preamble", "mainBody", "conclusions", "attachments", "components", "structureNotes", "commonReference"],
 	"commonElements": ["commonElement", "hierarchicalStructure",  "genericElement", "externalFragment", "commonsInline", "contentInline", "commonReference", "remark",  "foreign"],
-	
+
 	"elements": {
 		"hierarchicalStructure": {
 			"children": ["sublist", "indent", "division", "part", "proviso", "book", "rule", "tome", "blockList", "transitional", "subdivision", "fillIn", "alinea"]
@@ -38,7 +38,8 @@
                 "alinea",
                 "list",
                 "componentRef",
-                "term"
+                "term",
+                "docPurpose"
             ]
         },
         "preamble": {
@@ -53,7 +54,8 @@
                 "list",
                 "container",
                 "block",
-                "term"
+                "term",
+                "docPurpose"
             ]
         },
         "components": {
