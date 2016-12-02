@@ -119,11 +119,18 @@
 
 	<xsl:template match="   div|
     						span[@internalid]">
+        <xsl:variable name="classNoPattern">
+          <xsl:value-of select="translate(substring-after(./@class,' '),'_','')" />
+        </xsl:variable>
         <xsl:variable name="aknName">
-            <xsl:if test="substring-after(./@class,' ') != ''">
-                <xsl:value-of select="translate(substring-after(./@class,' '),'_','')" />
+            <xsl:if test="$classNoPattern != '' and substring-before($classNoPattern, ' ') = ''">
+                <xsl:value-of select="$classNoPattern" />
             </xsl:if>
-            <xsl:if test="substring-after(./@class,' ') = ''">
+            <!-- select the second class -->
+            <xsl:if test="$classNoPattern != '' and substring-before($classNoPattern, ' ') != ''">
+              <xsl:value-of select="substring-before($classNoPattern, ' ')" />
+            </xsl:if>
+            <xsl:if test="$classNoPattern = ''">
                 <xsl:value-of select="translate(@class,'_','')" />
             </xsl:if>
             <xsl:if test="./@class = ''">
@@ -131,21 +138,6 @@
             </xsl:if>
         </xsl:variable>
         <xsl:choose>
-        	<!-- Document root elements -->
-		    <xsl:when test="$aknName='bill' or
-		    				$aknName='act' or
-		    				$aknName='doc' or
-		    				$aknName='judgement' or
-		    				$aknName='amendmentList' or
-		    				$aknName='amendment' or
-		    				$aknName='debateReport' or
-		    				$aknName='officialGazette' or
-		    				$aknName='debate'">
-        	    <xsl:element name="{$aknName}">
-		        	<xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
-		       		<xsl:apply-templates />
-       			</xsl:element>
-        	</xsl:when>
         	<!-- All elements -->
 		    <xsl:when test="$aknName != ''">
         	    <xsl:element name="{$aknName}">
