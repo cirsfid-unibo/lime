@@ -171,10 +171,17 @@ Ext.define('LIME.controller.Editor', {
             DomUtils.moveChildrenNodes(body, wrapper);
             body.appendChild(wrapper);
         }
-
-        if ( !Ext.fly(wrapper).is('.'+docBaseCls+'.'+docType) ) {
-            wrapper.setAttribute('class', docBaseCls+' '+docType);
+        if (!(wrapper.classList.contains(docBaseCls) &&
+                wrapper.classList.contains(docType))) {
+            // IE uses only the first parameter
+            wrapper.classList.add(docBaseCls);
+            wrapper.classList.add(docType);
         }
+
+        if (!wrapper.dataset.nomagicline)
+            wrapper.dataset.nomagicline = 'nomagicline';
+        if (!wrapper.parentNode.dataset.nomagicline)
+            wrapper.parentNode.dataset.nomagicline = 'nomagicline';
     },
 
     showContextMenu: function(ed, e) {
