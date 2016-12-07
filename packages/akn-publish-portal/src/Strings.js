@@ -44,68 +44,34 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Simple document publisher
+ Ext.define('AknPublish.Strings', {
+    singleton : true,
 
-Ext.define('AknPublish.PublishController', {
-    extend: 'Ext.app.Controller',
-
-    refs: [
-        { ref: 'appViewport', selector: 'appViewport' }
-    ],
-
-    config: {
-        pluginName: "akn-publish-portal"
-    },
-
-    init: function () {
-        // Wait adding other buttons
-        setTimeout(this.addButtonToMenu.bind(this), 1000);
-    },
-
-    addButtonToMenu: function () {
-        this.application.fireEvent("addMenuItem", this, {
-            menu: "fileMenuButton"
-        }, {
-            icon: 'resources/images/icons/export-icon.png',
-            name: 'publishToPortal',
-            text: Locale.getString("publishToPortal", this.getPluginName()),
-            tooltip: Locale.getString("publishToPortal", this.getPluginName()),
-            handler: this.publishHandler.bind(this),
-            after: 'exportAs'
-        });
-    },
-
-    publishHandler: function () {
-        var me = this;
-
-        var path = DocProperties.getDocId();
-        var uri = me.getController('Editor').getDocumentUri();
-        if ( path && path.trim() ) {
-            me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
-                me.publishDoc(path, uri, xml);
-            });
-        } else {
-            Ext.Msg.alert(Locale.strings.error, "Cannot find document uri");
+    strings: {
+        "en": {
+            "publishToPortal": "Publish on portal",
+            "no": "No",
+            "yesPortal": "Yes from Portal",
+            "yesLIME": "Yes from LIME"
+        },
+        "it": {
+            "publishToPortal": "Pubblica sul portale",
+            "no": "No",
+            "yesPortal": "Sì dal Portale",
+            "yesLIME": "Sì da LIME"
+        },
+        "es": {
+            "publishToPortal": "Publish on portal"
+        },
+        "ro": {
+            "publishToPortal": "Publish on portal"
+        },
+        "ru": {
+            "publishToPortal": "Publish on portal"
         }
     },
 
-    publishDoc: function(path, uri, content) {
-        Server.publishDocument(path, content,
-                                    this.docPublished.bind(this, uri),
-                                    this.docPublishedError.bind(this, uri));
-    },
-
-    docPublished: function(uri) {
-        Ext.Msg.alert({
-            title : 'Document published',
-            msg :  'Document with URI <b>'+uri+'</b> was successfully published.'
-        });
-    },
-
-    docPublishedError: function(uri) {
-        Ext.Msg.alert({
-            title : Locale.strings.error,
-            msg :  'Cannot publish document with URI <b>'+uri+'</b>'
-        });
+    constructor: function() {
+        Locale.setPluginStrings('akn-publish-portal', this.strings);
     }
 });

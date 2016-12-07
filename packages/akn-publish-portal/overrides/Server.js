@@ -44,68 +44,34 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Simple document publisher
+Ext.define('AknPublish.Server', {
+    override: 'LIME.Server',
 
-Ext.define('AknPublish.PublishController', {
-    extend: 'Ext.app.Controller',
-
-    refs: [
-        { ref: 'appViewport', selector: 'appViewport' }
-    ],
-
-    config: {
-        pluginName: "akn-publish-portal"
-    },
-
-    init: function () {
-        // Wait adding other buttons
-        setTimeout(this.addButtonToMenu.bind(this), 1000);
-    },
-
-    addButtonToMenu: function () {
-        this.application.fireEvent("addMenuItem", this, {
-            menu: "fileMenuButton"
-        }, {
-            icon: 'resources/images/icons/export-icon.png',
-            name: 'publishToPortal',
-            text: Locale.getString("publishToPortal", this.getPluginName()),
-            tooltip: Locale.getString("publishToPortal", this.getPluginName()),
-            handler: this.publishHandler.bind(this),
-            after: 'exportAs'
+    publishDocument: function (path, content, success, failure) {
+        this.authRequest({
+            method: 'PUT',
+            rawData: content,
+            url: '{nodeServer}/documentsdb/Portal' + path,
+            success: function (response) {
+                console.info('Published', path);
+                success(response.responseText);
+            },
+            failure: function (error) {
+                console.warn('Publishing document failed:', error);
+                failure();
+            }
         });
     },
 
-    publishHandler: function () {
-        var me = this;
-
-        var path = DocProperties.getDocId();
-        var uri = me.getController('Editor').getDocumentUri();
-        if ( path && path.trim() ) {
-            me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
-                me.publishDoc(path, uri, xml);
-            });
-        } else {
-            Ext.Msg.alert(Locale.strings.error, "Cannot find document uri");
-        }
-    },
-
-    publishDoc: function(path, uri, content) {
-        Server.publishDocument(path, content,
-                                    this.docPublished.bind(this, uri),
-                                    this.docPublishedError.bind(this, uri));
-    },
-
-    docPublished: function(uri) {
-        Ext.Msg.alert({
-            title : 'Document published',
-            msg :  'Document with URI <b>'+uri+'</b> was successfully published.'
-        });
-    },
-
-    docPublishedError: function(uri) {
-        Ext.Msg.alert({
-            title : Locale.strings.error,
-            msg :  'Cannot publish document with URI <b>'+uri+'</b>'
+    deletePortalDocument: function(path, success, failure) {
+        this.authRequest({
+            method: 'DELETE',
+            url: '{nodeServer}/documentsdb/Portal' + path,
+            success: function (response) {
+                console.info('deleted', path);
+                success(response.responseText);
+            },
+            failure: failure
         });
     }
 });

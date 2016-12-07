@@ -44,68 +44,53 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Simple document publisher
+ // ViewController for delete document button
+ // it handles the click event and fires the delete event
+ // handles deleting from the portal
 
-Ext.define('AknPublish.PublishController', {
-    extend: 'Ext.app.Controller',
+Ext.define('AknPublish.DeleteDocumentButtonController', {
+    override: 'LIME.view.maintoolbar.DeleteDocumentButtonController',
 
-    refs: [
-        { ref: 'appViewport', selector: 'appViewport' }
-    ],
+    onDeleteClick: function() {
+        var uri = Ext.getStore('metadata').getMainDocument().getUri().manifestation();
 
-    config: {
-        pluginName: "akn-publish-portal"
+        var onDeleteFinish = function(err, response) {
+            if (err) {
+                err = response && response.statusText || err;
+                return Ext.Msg.alert(Locale.getString('error'), err);
+            }
+            var msgTpl = new Ext.Template(Locale.getString('deletedDocument'));
+            Ext.Msg.alert(Locale.getString('deleteDocument'),
+                                            msgTpl.apply({ uri: uri }));
+        };
+        var deleteFromLime = function() {
+            Ext.GlobalEvents.fireEvent('deleteDocument', onDeleteFinish);
+        };
+        var deleteFromPortal = function() {
+            Server.deletePortalDocument(DocProperties.getDocId(),
+                                                        onDeleteFinish.bind(this, false),
+                                                        onDeleteFinish.bind(this, true));
+        };
+        this.askConfirm(uri, deleteFromPortal, deleteFromLime);
     },
 
-    init: function () {
-        // Wait adding other buttons
-        setTimeout(this.addButtonToMenu.bind(this), 1000);
-    },
+    askConfirm: function(uri, fnPortal, fnLime) {
+        var confirmTpl = new Ext.Template(Locale.getString('deleteDocumentConfirm'));
 
-    addButtonToMenu: function () {
-        this.application.fireEvent("addMenuItem", this, {
-            menu: "fileMenuButton"
-        }, {
-            icon: 'resources/images/icons/export-icon.png',
-            name: 'publishToPortal',
-            text: Locale.getString("publishToPortal", this.getPluginName()),
-            tooltip: Locale.getString("publishToPortal", this.getPluginName()),
-            handler: this.publishHandler.bind(this),
-            after: 'exportAs'
-        });
-    },
-
-    publishHandler: function () {
-        var me = this;
-
-        var path = DocProperties.getDocId();
-        var uri = me.getController('Editor').getDocumentUri();
-        if ( path && path.trim() ) {
-            me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
-                me.publishDoc(path, uri, xml);
-            });
-        } else {
-            Ext.Msg.alert(Locale.strings.error, "Cannot find document uri");
-        }
-    },
-
-    publishDoc: function(path, uri, content) {
-        Server.publishDocument(path, content,
-                                    this.docPublished.bind(this, uri),
-                                    this.docPublishedError.bind(this, uri));
-    },
-
-    docPublished: function(uri) {
-        Ext.Msg.alert({
-            title : 'Document published',
-            msg :  'Document with URI <b>'+uri+'</b> was successfully published.'
-        });
-    },
-
-    docPublishedError: function(uri) {
-        Ext.Msg.alert({
-            title : Locale.strings.error,
-            msg :  'Cannot publish document with URI <b>'+uri+'</b>'
+        Ext.Msg.show({
+            title: Locale.getString('deleteDocument'),
+            msg: confirmTpl.apply({ uri: uri }),
+            buttons: Ext.Msg.YESNOCANCEL,
+            icon: Ext.Msg.QUESTION,
+            buttonText: {
+                yes: Locale.getString('yesPortal', 'akn-publish-portal'),
+                no: Locale.getString('yesLIME', 'akn-publish-portal'), // Sorry for 'no' meaning 'yes'
+                cancel: Locale.getString('no', 'akn-publish-portal')
+            },
+            fn: function(val) {
+                if (val === 'yes') return fnPortal();
+                else if (val === 'no') return fnLime();
+            }
         });
     }
 });
