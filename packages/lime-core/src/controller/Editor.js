@@ -1161,7 +1161,7 @@ Ext.define('LIME.controller.Editor', {
                 plugins : "code, table, link, image, searchreplace, paste, noneditable, magicline",
 
                 magicline_targetedItems: ['DIV','IMG','TABLE'],
-                magicline_triggerMargin: 30,
+                magicline_triggerMargin: 10,
                 magicline_insertedBlockTag: 'br', // Don't need a wrapper just add a br
 
                 noneditable_leave_contenteditable: true,
