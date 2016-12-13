@@ -48,6 +48,9 @@ Ext.define('AknMetadata.newMeta.ReferenceCombo', {
     extend: 'Ext.form.field.ComboBox',
     xtype: 'akn-metadata-tab-referencecombo',
     store: [],
+
+    requires: ['AknMain.RefersTo'],
+
     config: {
         filteredTypes: AknMain.metadata.Reference.validators.type[0].list
     },
@@ -68,17 +71,9 @@ Ext.define('AknMetadata.newMeta.ReferenceCombo', {
 
     statics: {
         customSave: function (prop, config, context) {
-            var r = context.newValues[prop];
+            var r = context.newValues[prop] || config.idPrefix + context.rowIdx;
             if (typeof r === 'object') return r;
-            var references = Ext.getStore('metadata').getMainDocument().references();
-            var eid = config.idPrefix + context.rowIdx;
-            var ref = references.findRecord('eid', eid) || references.add({
-                eid: eid,
-                type: config.defaultType,
-                href: ''
-            })[0];
-            ref.set('showAs', r);
-            return ref;
+            return AknMain.RefersTo.getRef(config.defaultType, r);
         }
     }
 });

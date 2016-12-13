@@ -50,7 +50,7 @@
 Ext.define('AknMetadata.sync.EditorSynchronizer', {
     extend: 'Ext.app.Controller',
 
-    requires: ['AknMain.TLCIri'],
+    requires: ['AknMain.RefersTo'],
 
     listen: {
         store: {
@@ -79,7 +79,6 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
         if (config.unmark) return;
         nodes.forEach(function (node) {
             var tagName = DomUtils.getNameByNode(node);
-            //TODO: move the mapping to a separate file
             switch (tagName) {
             case 'role':
             case 'location':
@@ -94,50 +93,13 @@ Ext.define('AknMetadata.sync.EditorSynchronizer', {
             case 'entity':
             case 'def':
             case 'docPurpose':
-                me.addRefersTo(node, {
-                    role: 'TLCRole',
-                    location: 'TLCLocation',
-                    person: 'TLCPerson',
-                    term: 'TLCTerm',
-                    organization: 'TLCOrganization',
-                    object: 'TLCObject',
-                    event: 'TLCEvent',
-                    process: 'TLCProcess',
-                    quantity: 'TLCObject',
-                    concept: 'TLCConcept',
-                    entity: 'TLCConcept',
-                    def: 'TLCConcept',
-                    docPurpose: 'TLCConcept'
-                }[tagName]);
-                break;
+                return AknMain.RefersTo.assignTo(node);
             case 'docNumber':
-                me.addDocNumberMeta(node);
-                break;
+                return me.addDocNumberMeta(node);
             case 'docType':
-                me.addDocTypeMeta(node);
-                break;
-            default:
-                // console.log(DomUtils.getNameByNode(node));
+                return me.addDocTypeMeta(node);
             }
         });
-    },
-
-    addRefersTo: function (node, type) {
-        var meta = Ext.getStore('metadata').getMainDocument(),
-            text = node.textContent.trim(),
-            showAs = text.substring(0, 40),
-            eid = showAs.toLowerCase().replace(/[^\w]/g, ''),
-            data = {
-                eid: eid,
-                type: type,
-                href: AknMain.TLCIri.create(type, eid, meta.get('country')).toString(),
-                showAs: showAs
-            };
-        if(eid) {
-            node.setAttribute('akn_refersto', '#' + eid);
-            meta.references().add(data);
-            Ext.GlobalEvents.fireEvent('forceMetadataWidgetRefresh');
-        }
     },
 
     addDocNumberMeta: function(node) {

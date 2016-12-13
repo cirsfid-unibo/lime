@@ -47,7 +47,7 @@
 Ext.define('AknMetadata.tagAttributes.Controller', {
     extend: 'Ext.app.Controller',
     requires: ['AknMain.Reference', 'AknMetadata.tagAttributes.RefPanel', 'AknMain.LangProp',
-                'AknMetadata.newMeta.ReferenceCombo', 'AknMain.TLCIri'],
+                'AknMetadata.newMeta.ReferenceCombo', 'AknMain.RefersTo'],
 
     tabGroupName: "tagAttributesManager",
     tagAttributesTab: null,
@@ -243,27 +243,13 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
 
         var beforeSave = function(panel) {
             var allSaved = items.every(function(item) {
-                    var cmb = panel.down('[itemId='+item.attr+']'),
-                        value = cmb.getValue() || '';
-                    if (Ext.isString(value) && value) {
-                        var rec = references.findRecord('eid', value) ||
-                                    references.findRecord('showAs', value);
-                        if(!rec) {
-                            var type = (item.filters && item.filters.length)
-                                            ? item.filters[0] : 'TLCReference';
-                            var eid = value.toLowerCase().replace(/[^\w]/g, '');
-                            rec = references.add({
-                                    eid: eid,
-                                    type: type,
-                                    href: AknMain.TLCIri.create(type, eid,
-                                                    DocProperties.documentInfo.docLocale).toString(),
-                                    showAs: value
-                                })[0];
-                        }
-                        value = rec;
-                    }
-                    return value && save(item.attr, value.get('eid'));
-                });
+                var value = panel.down('[itemId='+item.attr+']').getValue() || '';
+                if (value && Ext.isString(value)) {
+                    var type = (!Ext.isEmpty(item.filters)) ? item.filters[0] : 'TLCReference';
+                    value = AknMain.RefersTo.getRef(type, value);
+                }
+                return value && save(item.attr, value.get('eid'));
+            });
             if (allSaved)
                 me.closeContextPanel();
         };

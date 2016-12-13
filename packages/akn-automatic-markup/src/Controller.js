@@ -48,7 +48,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
     extend : 'Ext.app.Controller',
 
     requires: ['AknMain.Reference', 'AknMain.LangProp', 'AknMain.IdGenerator',
-                'AknMain.TLCIri'],
+                'AknMain.RefersTo'],
 
     config : {
         pluginName : 'akn-automatic-markup'
@@ -674,31 +674,14 @@ Ext.define('AknAutomaticMarkup.Controller', {
             }, me);
 
             if (nodes.length) {
-                me.addLocationMetadata(nodes);
                 me.requestMarkup(markButton, {
                     silent : true,
                     noEvent : true,
                     nodes : nodes
                 });
+                me.addRefersGeneric(nodes);
             }
         }
-    },
-
-    addLocationMetadata: function(nodes) {
-
-        var me = this,
-            attr = LangProp.attrPrefix+"refersTo";
-        Ext.each(nodes, function(node) {
-            var text = DomUtils.getTextOfNode(node);
-                id = text.replace(/\s/g, "").toLowerCase().trim();
-            node.setAttribute(attr, "#"+id);
-
-            me.addMetaReference({
-                eid: id,
-                type: "TLCLocation",
-                showAs: text
-            });
-        });
     },
 
     parseDocAuthorityElements: function(data, node, button) {
@@ -812,7 +795,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             }, me);
 
             Ext.defer(function() {
-                me.addRoleMetadata(roleNodes);
+                me.addRefersGeneric(roleNodes);
                 me.addPersonMetadata(personNodes);
             }, 100);
         }
@@ -833,73 +816,29 @@ Ext.define('AknAutomaticMarkup.Controller', {
         return wrapper;
     },
 
-    addMetaReference: function(data) {
-        var store = Ext.getStore('metadata').getMainDocument();
-        data.showAs = data.showAs ? data.showAs.trim() : data.showAs;
-        if ( !store.references().findRecord('eid', data.eid, 0, false, false, true) ) {
-            // Check if the document locale as tlc subclass is ok
-            // check the id, it has to be with dots
-            data.href = AknMain.TLCIri.create(data.type, data.eid,
-                            DocProperties.documentInfo.docLocale).toString();
-            store.references().add(data);
-        }
-    },
-
-    addRoleMetadata: function(nodes) {
-        var me = this,
-            attr = LangProp.attrPrefix+"refersTo";
+    addRefersGeneric: function(nodes) {
         Ext.each(nodes, function(node) {
-            var text = DomUtils.getTextOfNode(node);
-                id = text.replace(/\s/g, "").toLowerCase().trim();
-            node.setAttribute(attr, "#"+id);
-            me.addMetaReference({
-                eid: id,
-                type: "TLCRole",
-                showAs: text
-            });
-        });
-    },
-
-    addOrganizationMetadata: function(nodes) {
-        var me = this,
-            attr = LangProp.attrPrefix+"refersTo";
-        Ext.each(nodes, function(node) {
-            var text = DomUtils.getTextOfNode(node);
-                id = text.replace(/\s/g, "").toLowerCase().trim();
-            node.setAttribute(attr, "#"+id);
-
-            me.addMetaReference({
-                eid: id,
-                type: "TLCOrganization",
-                showAs: text
-            });
+            AknMain.RefersTo.assignTo(node);
         });
     },
 
     addPersonMetadata: function(nodes) {
-        var me = this,
-            attr = LangProp.attrPrefix+"refersTo";
+        var setAs = function(node) {
+            var signature = Ext.fly(node).parent('.signature'),
+                role = (signature) ? signature.down('.role', true) : null;
+
+            role = (role) ? role.getAttribute(LangProp.attrPrefix+'refersTo') : '';
+            if (role)
+                node.setAttribute(LangProp.attrPrefix+'as', role);
+        };
+
         Ext.each(nodes, function(node) {
-            var text = DomUtils.getTextOfNode(node);
-                signature = Ext.fly(node).parent(".signature"),
-                name = node.getAttribute('data-name'),
+            var name = node.getAttribute('data-name'),
                 surname = node.getAttribute('data-surname');
+                showAs = ( name && surname ) ? name + ' ' +  surname : '';
 
-            var id = ( name && surname ) ? name.replace(/\s/g, "").toLowerCase().trim()+'.'+
-                                           surname.replace(/\s/g, "").toLowerCase().trim() : "";
-
-            id = id || text.replace(/\s/g, "").toLowerCase().trim();
-
-            var role = (signature) ? signature.down(".role", true) : null;
-            var asAttribute = (role) ? role.getAttribute(attr) : "";
-            node.setAttribute(LangProp.attrPrefix+"as", asAttribute);
-            node.setAttribute(attr, "#"+id);
-
-            me.addMetaReference({
-                eid: id,
-                type: "TLCPerson",
-                showAs: text
-            });
+            setAs(node);
+            AknMain.RefersTo.assignTo(node, showAs);
         });
     },
 
@@ -974,7 +913,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             }
         }
         Ext.defer(function() {
-            me.addOrganizationMetadata(nodesToMark);
+            me.addRefersGeneric(nodesToMark);
         }, 100);
     },
 
