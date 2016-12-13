@@ -150,7 +150,7 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         '</tpl>' +
         '   </div>',
 
-        '</div>', 
+        '</div>',
         {
             uriAttr: function(attr, value, allowEmpty) {
                 attrVal = (value && (value.startsWith('/') || value.startsWith('#'))) ? value : '#'+value;
@@ -285,7 +285,10 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         data.version = AknMain.metadata.XmlSerializer.normalizeDate(data.version);
         data.pubblicationDate = AknMain.metadata.XmlSerializer.normalizeDate(data.pubblicationDate);
         data.today = AknMain.metadata.XmlSerializer.normalizeDate(new Date());
-        data.references = mapData(model.references());
+        data.references = mapData(model.references())
+                        .filter(function(ref) {
+                            return ref.type && ref.type.length > 0;
+                        });
         data.aliases = mapData(model.aliases()).filter(function(alias) {
             return alias.value;
         });

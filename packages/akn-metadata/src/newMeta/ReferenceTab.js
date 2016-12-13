@@ -94,8 +94,17 @@ Ext.define('AknMetadata.newMeta.ReferenceTab', {
                 },
                 editor: {
                     xtype: 'combo',
-                    store: ['original', 'TLCPerson', 'TLCOrganization', 'TLCConcept', 'TLCObject', 'TLCEvent', 'TLCLocation', 'TLCProcess', 'TLCRole', 'TLCTerm', 'TLCReference'],
-                    forceSelection: true
+                    store: AknMain.metadata.Reference.validators.type[0].list,
+                    forceSelection: true,
+                    listeners: {
+                        // set the default value
+                        afterrender: function(cmp) {
+                            setTimeout(function() {
+                                if (!cmp.getValue())
+                                    cmp.setValue(cmp.getStore().last());
+                            }, 10);
+                        }
+                    }
                 }
             }
         ],
