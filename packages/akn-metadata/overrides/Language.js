@@ -88,6 +88,7 @@
 
     removeInconsistentElements: function(node) {
         var doc = AknMain.xml.Document.newDocument(node);
+        this.removeNotDetachedReferences(doc);
         var query = '//*[@class="classification" or '+
                     '@class="lifecycle" or '+
                     '@class="workflow" or '+
@@ -99,7 +100,7 @@
                     '@class="temporalGroup" or '+
                     '@class="references"]'+
                     '[not(child::*)]';
-        
+
         // Iterate multiple times to remove elements which become empty
         // in result of previous iterations
         var depth = 2;
@@ -108,6 +109,24 @@
                 node.parentNode.removeChild(node);
             });
         }
+    },
+
+    // Remove all meta references that are not referenced in the document
+    removeNotDetachedReferences: function(doc) {
+        // It would be cool to do this with one query
+        var query = '//*[@class="references"]/*[@eId]';
+        var referingToTpl = new Ext.Template(
+            '//*[@akn_refersto = "#{0}" or @source = "#{0}"]'
+        );
+        doc.select(query).forEach(function(node) {
+            var referingNodes = doc.select(
+                                    referingToTpl.apply([node.getAttribute('eId')])
+                                );
+            // If referngNodes is empty this means that the reference is detached then remove it
+            if (referingNodes.length === 0) {
+                node.parentNode.removeChild(node);
+            }
+        });
     },
 
     // Replace meta href values from eId to internalId
