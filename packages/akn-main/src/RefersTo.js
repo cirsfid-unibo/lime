@@ -67,7 +67,7 @@ Ext.define('AknMain.RefersTo', {
 
     // Assign a reference to the node by setting akn_refersto attribute
     assignTo: function(node, showAs) {
-        showAs = showAs || node.textContent.trim().substring(0, 40);
+        showAs = showAs || node.textContent.trim();
         var tagName = DomUtils.getNameByNode(node),
             type = tagName in this.typeMap ? this.typeMap[tagName] : 'TLCConcept',
             ref = this.getRef(type, showAs);
