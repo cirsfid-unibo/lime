@@ -83,8 +83,8 @@ Ext.define('AknMain.RefersTo', {
             eid = this.generateEId(showAs);
 
         // Returns found or created reference
-        return references.findRecord('eid', eid) ||
-                references.findRecord('showAs', showAs) ||
+        return references.findRecord('eid', eid, 0, false, false, true) ||
+                references.findRecord('showAs', showAs, 0, false, false, true) ||
                 references.add({
                     eid: eid,
                     type: type,
