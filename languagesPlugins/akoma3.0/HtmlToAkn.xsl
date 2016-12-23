@@ -362,14 +362,11 @@
 		</xsl:element>
 	</xsl:template>
 
-	<xsl:template match="html:span[@class='posTmpSpan']">
-		<xsl:variable name="noteId" select="@noteref" />
-		<xsl:apply-templates  mode="replaceNote" select="//div[contains(@class,'authorialNote')][@notetmpid=$noteId]"/>
-	</xsl:template>
-
 	<xsl:template match="span[@class='posTmpSpan']">
 		<xsl:variable name="noteId" select="@noteref" />
-		<xsl:apply-templates  mode="replaceNote" select="//div[contains(@class,'authorialNote')][@notetmpid=$noteId]"/>
+    <xsl:if test="./ancestor::*[contains(@class, 'document')]">
+		    <xsl:apply-templates  mode="replaceNote" select="//div[contains(@class,'authorialNote')][@notetmpid=$noteId]"/>
+    </xsl:if>
 	</xsl:template>
 
     <!-- Wrap quotedText/quotedStructures with mod if it is missing -->

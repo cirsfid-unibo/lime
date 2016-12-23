@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -89,14 +89,14 @@ Ext.define('AknMain.notes.Controller', {
     },
 
     processNotes: function(editorBody) {
-        var athNotes = editorBody.querySelectorAll("*[class~='"+this.getAuthorialNoteClass()+"']"); 
+        var athNotes = editorBody.querySelectorAll("*[class~='"+this.getAuthorialNoteClass()+"']");
         Ext.each(athNotes, function(element, index) {
             this.processNote(element, index);
-        }, this);  
+        }, this);
     },
 
     processNote: function(node, index) {
-        var me = this, 
+        var me = this,
             noteTmpId = node.getAttribute(me.getNoteTmpId()),
             elId = DomUtils.getElementId(node),
             tmpRef = node.ownerDocument.querySelector("*["+me.getNoteRefAttribute()+"="+noteTmpId+"]");
@@ -104,7 +104,7 @@ Ext.define('AknMain.notes.Controller', {
 
         var marker = LangProp.getNodeLangAttr(node, "marker"),
             placement = LangProp.getNodeLangAttr(node, "placement");
-            
+
         marker.value = marker.value || index && index+1 || 'note';
         placement.value = placement.value || "bottom";
 
@@ -160,7 +160,7 @@ Ext.define('AknMain.notes.Controller', {
     },
 
     moveNoteToBottom: function(node, refNode) {
-        var me = this, 
+        var me = this,
             notesContainer = me.getNotesContainer(node.ownerDocument);
         if(!notesContainer.childNodes.length)
             return notesContainer.appendChild(node);
@@ -177,7 +177,7 @@ Ext.define('AknMain.notes.Controller', {
             if(refSibling && allRefs.indexOf(refSibling) > refIndex)
                 return notesContainer.insertBefore(node, sbNote);
         }
-        
+
         notesContainer.appendChild(node);
     },
 
@@ -203,7 +203,7 @@ Ext.define('AknMain.notes.Controller', {
             var linker = ref.querySelector('a');
             if(marker.value.trim() != linker.textContent.trim()) {
                 result.marker = true;
-                linker.replaceChild(node.ownerDocument.createTextNode(marker.value), linker.firstChild);  
+                linker.replaceChild(node.ownerDocument.createTextNode(marker.value), linker.firstChild);
             }
             result.placement = this.setNotePosition(node, ref);
         }
@@ -215,7 +215,7 @@ Ext.define('AknMain.notes.Controller', {
         if(config.unmark || !nodes) return;
         var me = this;
         Ext.each(nodes, function(node) {
-            if (DomUtils.getElementNameByNode(node) === 'authorialNote' && 
+            if (DomUtils.getElementNameByNode(node) === 'authorialNote' &&
                     !node.getAttribute(me.getNoteTmpId())) {
                 me.insertNoteTmpSpan(node);
                 me.processNote(node);
@@ -231,7 +231,11 @@ Ext.define('AknMain.notes.Controller', {
         }));
         node.setAttribute(this.getNoteTmpId(), noteTmpId);
         // Move the element after the parent to prevent split in parent
-        DomUtils.insertAfter(node, node.parentNode);
+        try {
+            DomUtils.insertAfter(node, node.parentNode);
+        } catch(e) {
+            console.error('Insert note', e);
+        }
     },
 
     // Removing the tmp element linked to the removed authorialNote
@@ -243,7 +247,7 @@ Ext.define('AknMain.notes.Controller', {
                 tmpRef.parentNode.removeChild(tmpRef);
         }, this);
     },
-    
+
     getNotesContainer: function(editorBody) {
         var notesContainer = editorBody.querySelector("."+this.getNotesContainerCls()),
             docNode = editorBody.querySelector("."+DocProperties.documentBaseClass);
@@ -254,12 +258,12 @@ Ext.define('AknMain.notes.Controller', {
             });
             docNode.appendChild(notesContainer);
         }
-        
+
         return notesContainer;
     },
 
     /*
-     * Is important to call this function before loading the document in the editor. 
+     * Is important to call this function before loading the document in the editor.
      * */
     preProcessNotes: function(dom) {
         this.noteIndex = 0;
