@@ -65,11 +65,7 @@ Ext.define('DefaultExport.Controller', {
                 click: this.exportTo.bind(this, 'xml')
             },
             'menu [name=exportHtmlButton]': {
-                click: function() {
-                    me.exportDocument(Server.getAjaxUrl(), {
-                        requestedService: Statics.services.htmlExport
-                    });
-                }
+                click: this.exportTo.bind(this, 'html')
             },
             'menu [name=exportPdfButton]': {
                 click: function() {
