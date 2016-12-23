@@ -68,9 +68,6 @@ Ext.define('LIME.controller.MainToolbar', {
         selector : 'languageSelectionBox',
         ref : 'LanguagesComboBox'
     },{
-        ref : 'downloadManager',
-        selector : 'downloadManager'
-    },{
         ref : 'documentUploader',
         selector : 'documentUploader'
     },{

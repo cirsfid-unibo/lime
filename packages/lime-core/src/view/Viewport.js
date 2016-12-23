@@ -59,7 +59,6 @@ Ext.define('LIME.view.Viewport', {
         'LIME.view.MainToolbar',
         'LIME.view.Main',
         'LIME.view.ContextMenu',
-        'LIME.view.DownloadManager',
         'LIME.view.ProgressWindow',
         'LIME.view.Login',
         'LIME.view.generic.SimplePagingToolbar'
@@ -108,8 +107,6 @@ Ext.define('LIME.view.Viewport', {
     }, {
         // Context menu related to the editor
         xtype : 'contextMenu'
-    }, {
-        xtype : 'downloadManager'
     }],
 
     setVisibleEditorToolbar: function(visible) {
