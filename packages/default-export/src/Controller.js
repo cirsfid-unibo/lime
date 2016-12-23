@@ -48,17 +48,11 @@
 Ext.define('DefaultExport.Controller', {
     extend : 'Ext.app.Controller',
 
-    refs : [{
-        ref : 'downloadManager',
-        selector : 'downloadManager'
-    }],
-
     config : {
         pluginName : "default-export"
     },
 
     init : function() {
-        var me = this;
         this.addExportItem();
         this.control({
             'menu [name=exportXmlButton]': {
@@ -68,18 +62,7 @@ Ext.define('DefaultExport.Controller', {
                 click: this.exportTo.bind(this, 'html')
             },
             'menu [name=exportPdfButton]': {
-                click: function() {
-                    var downloadManager = me.getDownloadManager(),
-                        editor = me.getController("Editor"),
-                        parameters = {
-                            requestedService: Statics.services.pdfExport,
-                            source: editor.getDocHtml()
-                        };
-                    downloadManager.fireEvent(downloadManager.eventActivate, Server.getAjaxUrl(), parameters);
-                    // TODO: this is the new way using the node.js akn to pdf
-                    // converter test the service and remove the above method
-                    // me.exportTo('pdf');
-                }
+                click: this.exportTo.bind(this, 'pdf')
             },
             'menu [name=exportEbookButton]': {
                 click: this.exportTo.bind(this, 'epub')
@@ -88,18 +71,18 @@ Ext.define('DefaultExport.Controller', {
     },
 
     addExportItem: function() {
-        var me = this;
-        menu = {
-            text: Locale.getString("exportDocument", me.getPluginName()),
-            icon: 'resources/images/icons/export-icon.png',
-            name: 'exportAs',
-            id: 'exportMenu',
-            hideOnClick: false,
-            menu: {
-                plain: true,
-                items: me.getMenuItems()
-            }
-        };
+        var me = this,
+            menu = {
+                text: Locale.getString("exportDocument", me.getPluginName()),
+                icon: 'resources/images/icons/export-icon.png',
+                name: 'exportAs',
+                id: 'exportMenu',
+                hideOnClick: false,
+                menu: {
+                    plain: true,
+                    items: me.getMenuItems()
+                }
+            };
         me.application.fireEvent("addMenuItem", me, {
             menu: "fileMenuButton"
         }, menu);
@@ -130,21 +113,6 @@ Ext.define('DefaultExport.Controller', {
             icon : 'resources/images/icons/file-epub.png',
             name : 'exportEbookButton'
         }];
-    },
-
-    /**
-     * This function exports the document using the download manager
-     * @param {String} url The url of download service
-     * @param {Object} params Params to pass to the download service
-     */
-    exportDocument: function(url, params) {
-        console.info('exportDocument', url, params);
-        var downloadManager = this.getDownloadManager();
-        // Set a callback function to translateContent
-        this.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
-            var parameters = Ext.Object.merge(params, {source: xml});
-            downloadManager.fireEvent(downloadManager.eventActivate, url, parameters);
-        }, {complete: true});
     },
 
     // First save the document
