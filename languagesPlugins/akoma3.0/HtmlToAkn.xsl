@@ -10,13 +10,13 @@
     <xsl:output method="xml" indent="yes" encoding="UTF-8" />
 
     <xsl:template match="/">
-    	<akomaNtoso>
-        	<xsl:apply-templates />
-		</akomaNtoso>
+        <akomaNtoso>
+          <xsl:apply-templates />
+        </akomaNtoso>
     </xsl:template>
 
     <xsl:template mode="aknPrefixAttributes" match="@*" >
-    	<xsl:variable name="attName"><xsl:value-of select="substring-after(name(.),'_')"/></xsl:variable>
+      <xsl:variable name="attName"><xsl:value-of select="substring-after(name(.),'_')"/></xsl:variable>
         <xsl:choose>
             <xsl:when test="substring-before(name(.),'_') = 'akn'">
                 <xsl:choose>
@@ -101,24 +101,24 @@
     </xsl:template>
 
     <xsl:template mode="notAknPrefixAttributes" match="@*" >
-    	<xsl:if test="not(substring-before(name(.),'_') = 'akn') and not(contains(name(.), 'internalid'))">
-        	<xsl:attribute name="{name(.)}"><xsl:value-of select="." /></xsl:attribute>
+      <xsl:if test="not(substring-before(name(.),'_') = 'akn') and not(contains(name(.), 'internalid'))">
+          <xsl:attribute name="{name(.)}"><xsl:value-of select="." /></xsl:attribute>
         </xsl:if>
     </xsl:template>
 
     <xsl:template mode="aknPrefixAttributesWithoutId" match="@*" >
-    	<xsl:variable name="attName"><xsl:value-of select="substring-after(name(.),'_')"/></xsl:variable>
-    	<xsl:if test="substring-before(name(.),'_') = 'akn' and $attName != 'id'">
-			<xsl:attribute name="{$attName}"><xsl:value-of select="." /></xsl:attribute>
+      <xsl:variable name="attName"><xsl:value-of select="substring-after(name(.),'_')"/></xsl:variable>
+      <xsl:if test="substring-before(name(.),'_') = 'akn' and $attName != 'id'">
+  <xsl:attribute name="{$attName}"><xsl:value-of select="." /></xsl:attribute>
         </xsl:if>
     </xsl:template>
 
     <xsl:template mode="allAttributes" match="@*" >
-		<xsl:attribute name="{name(.)}"><xsl:value-of select="." /></xsl:attribute>
+  <xsl:attribute name="{name(.)}"><xsl:value-of select="." /></xsl:attribute>
     </xsl:template>
 
-	<xsl:template match="   div|
-    						span[@internalid]">
+  <xsl:template match="   div|
+                span[@internalid]">
         <xsl:variable name="classNoPattern">
           <xsl:value-of select="translate(substring-after(./@class,' '),'_','')" />
         </xsl:variable>
@@ -134,20 +134,20 @@
                 <xsl:value-of select="translate(@class,'_','')" />
             </xsl:if>
             <xsl:if test="./@class = ''">
-            	<xsl:value-of select="name(.)" />
+              <xsl:value-of select="name(.)" />
             </xsl:if>
         </xsl:variable>
         <xsl:choose>
-        	<!-- All elements -->
-		    <xsl:when test="$aknName != ''">
-        	    <xsl:element name="{$aknName}">
-		        	<xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
-		       		<xsl:apply-templates />
-       			</xsl:element>
-        	</xsl:when>
-        	<xsl:otherwise>
-        	   <xsl:apply-templates />
-        	</xsl:otherwise>
+          <!-- All elements -->
+      <xsl:when test="$aknName != ''">
+              <xsl:element name="{$aknName}">
+            <xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
+             <xsl:apply-templates />
+             </xsl:element>
+          </xsl:when>
+          <xsl:otherwise>
+             <xsl:apply-templates />
+          </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
 
@@ -171,9 +171,9 @@
     </xsl:template>
 
     <xsl:template match="div[contains(@class,'preface')] |
-    					 div[contains(@class,'preamble')] |
-    					 div[contains(@class,'conclusions')]">
-		<xsl:variable name="aknName">
+               div[contains(@class,'preamble')] |
+               div[contains(@class,'conclusions')]">
+  <xsl:variable name="aknName">
             <xsl:if test="substring-after(./@class,' ') != ''">
                 <xsl:value-of select="translate(substring-after(./@class,' '),'_','')" />
             </xsl:if>
@@ -181,14 +181,14 @@
                 <xsl:value-of select="translate(@class,'_','')" />
             </xsl:if>
             <xsl:if test="./@class = ''">
-            	<xsl:value-of select="name(.)" />
+              <xsl:value-of select="name(.)" />
             </xsl:if>
         </xsl:variable>
-		<xsl:element name="{$aknName}">
-			<xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
-			<xsl:call-template name="manageImplicitP" />
-		</xsl:element>
-	</xsl:template>
+  <xsl:element name="{$aknName}">
+  <xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
+  <xsl:call-template name="manageImplicitP" />
+  </xsl:element>
+  </xsl:template>
 
     <xsl:template match="p[@internalid]">
         <xsl:variable name="aknName">
@@ -199,18 +199,18 @@
                 <xsl:value-of select="translate(@class,'_','')" />
             </xsl:if>
             <xsl:if test="./@class = ''">
-            	<xsl:value-of select="name(.)" />
+              <xsl:value-of select="name(.)" />
             </xsl:if>
         </xsl:variable>
-	    <xsl:element name="{$aknName}">
-        	<xsl:apply-templates select="@*" mode="aknPrefixAttributesWithoutId" />
-       		<xsl:apply-templates />
-		</xsl:element>
+      <xsl:element name="{$aknName}">
+          <xsl:apply-templates select="@*" mode="aknPrefixAttributesWithoutId" />
+           <xsl:apply-templates />
+  </xsl:element>
     </xsl:template>
 
-	<!-- Content element -->
-	<xsl:template match="div[contains(@class,'content')]">
-		<xsl:variable name="aknName">
+  <!-- Content element -->
+  <xsl:template match="div[contains(@class,'content')]">
+  <xsl:variable name="aknName">
             <xsl:if test="substring-after(./@class,' ') != ''">
                 <xsl:value-of select="translate(substring-after(./@class,' '),'_','')" />
             </xsl:if>
@@ -218,12 +218,12 @@
                 <xsl:value-of select="translate(@class,'_','')" />
             </xsl:if>
             <xsl:if test="./@class = ''">
-            	<xsl:value-of select="name(.)" />
+              <xsl:value-of select="name(.)" />
             </xsl:if>
         </xsl:variable>
-		<xsl:element name="{$aknName}">
+  <xsl:element name="{$aknName}">
             <xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
-        	<!-- Content element can not contains directly text so add a p element if it's needed -->
+          <!-- Content element can not contains directly text so add a p element if it's needed -->
             <!--  and (count(child::text()) > 0) -->
             <xsl:call-template name="manageImplicitP"/>
         </xsl:element>
@@ -296,8 +296,8 @@
         </xsl:for-each>
     </xsl:template>
 
-	<xsl:template match="span[contains(@class,'documentRef')]">
-		<xsl:variable name="aknName">
+  <xsl:template match="span[contains(@class,'documentRef')]">
+  <xsl:variable name="aknName">
             <xsl:if test="substring-after(./@class,' ') != ''">
                 <xsl:value-of select="translate(substring-after(./@class,' '),'_','')" />
             </xsl:if>
@@ -305,16 +305,16 @@
                 <xsl:value-of select="translate(@class,'_','')" />
             </xsl:if>
             <xsl:if test="./@class = ''">
-            	<xsl:value-of select="name(.)" />
+              <xsl:value-of select="name(.)" />
             </xsl:if>
         </xsl:variable>
-		<xsl:element name="{$aknName}">
-			<xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
-		</xsl:element>
-	</xsl:template>
+  <xsl:element name="{$aknName}">
+  <xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
+  </xsl:element>
+  </xsl:template>
 
-	<xsl:template match="*[contains(@class,'collectionBody')]">
-		<xsl:variable name="aknName">
+  <xsl:template match="*[contains(@class,'collectionBody')]">
+  <xsl:variable name="aknName">
             <xsl:if test="substring-after(./@class,' ') != ''">
                 <xsl:value-of select="translate(substring-after(./@class,' '),'_','')" />
             </xsl:if>
@@ -322,52 +322,52 @@
                 <xsl:value-of select="translate(@class,'_','')" />
             </xsl:if>
             <xsl:if test="./@class = ''">
-            	<xsl:value-of select="name(.)" />
+              <xsl:value-of select="name(.)" />
             </xsl:if>
         </xsl:variable>
-		<xsl:element name="{$aknName}">
-			<xsl:apply-templates select="@*" mode="aknPrefixAttributesWithoutId" />
-			<xsl:apply-templates />
-		</xsl:element>
-	</xsl:template>
+  <xsl:element name="{$aknName}">
+  <xsl:apply-templates select="@*" mode="aknPrefixAttributesWithoutId" />
+  <xsl:apply-templates />
+  </xsl:element>
+  </xsl:template>
 
-	<!-- Authorial note -->
-	<xsl:template match="div[contains(@class,'authorialNote')]">
-	</xsl:template>
+  <!-- Authorial note -->
+  <xsl:template match="div[contains(@class,'authorialNote')]">
+  </xsl:template>
 
-	<xsl:template match="div[contains(@class,'authorialNote')]" mode="replaceNote">
-		<xsl:variable name="aknName">
-			<xsl:if test="substring-after(./@class,' ') != ''">
-				<xsl:value-of select="translate(substring-after(./@class,' '),'_','')" />
-			</xsl:if>
-			<xsl:if test="substring-after(./@class,' ') = ''">
-				<xsl:value-of select="translate(@class,'_','')" />
-			</xsl:if>
-			<xsl:if test="./@class = ''">
-				<xsl:value-of select="name(.)" />
-			</xsl:if>
-		</xsl:variable>
-		<xsl:element name="{$aknName}">
-			<xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
-			<xsl:choose>
-				<xsl:when test="./div[contains(@class, 'block p')]">
-					<xsl:apply-templates />
-				</xsl:when>
-				<xsl:otherwise>
-	    			<p>
-						<xsl:apply-templates />
-					</p>
-	    		</xsl:otherwise>
-			</xsl:choose>
-		</xsl:element>
-	</xsl:template>
+  <xsl:template match="div[contains(@class,'authorialNote')]" mode="replaceNote">
+  <xsl:variable name="aknName">
+  <xsl:if test="substring-after(./@class,' ') != ''">
+  <xsl:value-of select="translate(substring-after(./@class,' '),'_','')" />
+  </xsl:if>
+  <xsl:if test="substring-after(./@class,' ') = ''">
+  <xsl:value-of select="translate(@class,'_','')" />
+  </xsl:if>
+  <xsl:if test="./@class = ''">
+  <xsl:value-of select="name(.)" />
+  </xsl:if>
+  </xsl:variable>
+  <xsl:element name="{$aknName}">
+  <xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
+  <xsl:choose>
+  <xsl:when test="./div[contains(@class, 'block p')]">
+  <xsl:apply-templates />
+  </xsl:when>
+  <xsl:otherwise>
+            <p>
+  <xsl:apply-templates />
+  </p>
+          </xsl:otherwise>
+  </xsl:choose>
+  </xsl:element>
+  </xsl:template>
 
-	<xsl:template match="span[@class='posTmpSpan']">
-		<xsl:variable name="noteId" select="@noteref" />
+  <xsl:template match="span[@class='posTmpSpan']">
+  <xsl:variable name="noteId" select="@noteref" />
     <xsl:if test="./ancestor::*[contains(@class, 'document')]">
-		    <xsl:apply-templates  mode="replaceNote" select="//div[contains(@class,'authorialNote')][@notetmpid=$noteId]"/>
+      <xsl:apply-templates  mode="replaceNote" select="//div[contains(@class,'authorialNote')][@notetmpid=$noteId]"/>
     </xsl:if>
-	</xsl:template>
+  </xsl:template>
 
     <!-- Wrap quotedText/quotedStructures with mod if it is missing -->
     <xsl:template match="span[contains(@class,'quotedText')][not(contains(../@class, 'mod'))]">
@@ -389,14 +389,14 @@
     </xsl:template>
 
 
-	<xsl:template match="*">
+  <xsl:template match="*">
         <xsl:element name="{name(.)}">
-        	<xsl:for-each select="@*">
-        		<xsl:if test="name(.) = 'class' or name(.) = 'id'">
-        			<xsl:attribute name="{name(.)}"><xsl:value-of select="." /></xsl:attribute>
-        		</xsl:if>
-		    </xsl:for-each>
-		    <xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
+          <xsl:for-each select="@*">
+            <xsl:if test="name(.) = 'class' or name(.) = 'id'">
+              <xsl:attribute name="{name(.)}"><xsl:value-of select="." /></xsl:attribute>
+            </xsl:if>
+      </xsl:for-each>
+      <xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
             <xsl:apply-templates />
         </xsl:element>
     </xsl:template>
@@ -411,18 +411,18 @@
         </xsl:if>
     </xsl:template>
 
-	<xsl:template match="img">
-		<xsl:element name="{name(.)}">
-			<xsl:apply-templates select="@*" mode="allAttributes" />
-			<xsl:apply-templates />
-		</xsl:element>
-	</xsl:template>
+  <xsl:template match="img">
+  <xsl:element name="{name(.)}">
+  <xsl:apply-templates select="@*" mode="allAttributes" />
+  <xsl:apply-templates />
+  </xsl:element>
+  </xsl:template>
 
     <xsl:template match="strong">
-		<xsl:element name="b">
-        	<xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
-    		<xsl:apply-templates />
-    	</xsl:element>
+  <xsl:element name="b">
+          <xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
+        <xsl:apply-templates />
+      </xsl:element>
     </xsl:template>
 
     <xsl:template match="tbody">
@@ -430,7 +430,7 @@
     </xsl:template>
 
     <xsl:template match="td">
-		<xsl:element name="td">
+  <xsl:element name="td">
             <xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
             <xsl:if test="@rowspan">
                 <xsl:attribute name="rowspan"><xsl:value-of select="@rowspan" /></xsl:attribute>
@@ -452,26 +452,26 @@
                     <xsl:apply-templates />
                 </xsl:otherwise>
             </xsl:choose>
-    	</xsl:element>
+      </xsl:element>
     </xsl:template>
 
     <xsl:template match="th">
-		<xsl:element name="th">
-		    <xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
-			<xsl:if test="@rowspan">
-        		<xsl:attribute name="rowspan"><xsl:value-of select="@rowspan" /></xsl:attribute>
-        	</xsl:if>
-			<xsl:if test="@colspan">
-        		<xsl:attribute name="colspan"><xsl:value-of select="@colspan" /></xsl:attribute>
-        	</xsl:if>
-			<xsl:if test="@style">
-        		<xsl:attribute name="style"><xsl:value-of select="@style" /></xsl:attribute>
-        	</xsl:if>
-		    <xsl:apply-templates />
-    	</xsl:element>
+  <xsl:element name="th">
+      <xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
+  <xsl:if test="@rowspan">
+            <xsl:attribute name="rowspan"><xsl:value-of select="@rowspan" /></xsl:attribute>
+          </xsl:if>
+  <xsl:if test="@colspan">
+            <xsl:attribute name="colspan"><xsl:value-of select="@colspan" /></xsl:attribute>
+          </xsl:if>
+  <xsl:if test="@style">
+            <xsl:attribute name="style"><xsl:value-of select="@style" /></xsl:attribute>
+          </xsl:if>
+      <xsl:apply-templates />
+      </xsl:element>
     </xsl:template>
 
-	<!-- Elements to ignore -->
+  <!-- Elements to ignore -->
     <xsl:template match="   div[contains(@class,'akoma_ntoso')] |
                             div[contains(@class, 'toMarkNode')] |
                             div[contains(@class, 'block p') and contains(../@class, 'hcontainer') and not(contains(../@class, 'item'))] |
@@ -483,7 +483,7 @@
 
     <!-- Called template -->
     <xsl:template match="div[contains(@class,'meta')]//div">
-    	<xsl:variable name="aknName">
+      <xsl:variable name="aknName">
             <xsl:choose>
                 <xsl:when test="substring-after(./@class,' ') != ''">
                     <xsl:value-of select="translate(substring-after(./@class,' '),'_','')" />
@@ -493,11 +493,11 @@
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
-	    <xsl:element name="{$aknName}">
-	    	<xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
-	    	<xsl:apply-templates select="@*[not(name() =  'class')]" mode="notAknPrefixAttributes" />
-			<xsl:apply-templates />
-		</xsl:element>
+      <xsl:element name="{$aknName}">
+        <xsl:apply-templates select="@*" mode="aknPrefixAttributes" />
+        <xsl:apply-templates select="@*[not(name() =  'class')]" mode="notAknPrefixAttributes" />
+  <xsl:apply-templates />
+  </xsl:element>
     </xsl:template>
 
     <xsl:template match="div[contains(@class,'meta')]//div[contains(@class,'FRBRWork') or
