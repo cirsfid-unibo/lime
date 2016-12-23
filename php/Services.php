@@ -73,7 +73,6 @@
     require('./utils.php');
     require('./Proxies/Services/Proxies_Services_Interface.php');
     require('./Proxies/Services/Proxies_Services_XSLTTransform.php');
-    require('./Proxies/Services/Proxies_Services_AknToHtml.php');
     require('./Proxies/Services/Proxies_Services_FileToHtml.php');
     require('./Proxies/Services/Proxies_Services_FileToTxt.php');
     require('./Proxies/Services/Proxies_Services_HtmlToPdf.php');

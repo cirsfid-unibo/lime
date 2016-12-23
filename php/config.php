@@ -56,12 +56,6 @@
     // the xslt that translates akomantoso to pdf
     define('AKN_TO_PDF', XSLT_BASE_DIR . 'AknToPdfGeneric.xsl');
 
-    // the xslt that translates akomantoso2 to xhtml
-    define('AKN2_TO_HTML', XSLT_BASE_DIR . 'Akn20ToXhtml.xsl');
-
-    // the xslt that translates akomantoso3 to xhtml
-    define('AKN3_TO_HTML', XSLT_BASE_DIR . 'Akn30ToXhtml.xsl');
-
     // the xslt that cleans an abiword converted document's html up
     define('CLEAN_CONVERTED_HTML', XSLT_BASE_DIR . 'CleanConvertedHtml.xsl');
 

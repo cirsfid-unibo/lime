@@ -82,11 +82,6 @@
 				//	header("Content-Type: text/xml");
 					$this->_service = new Proxies_Services_XSLTTransform($this->_params);
 					break;
-				case 'AKN_TO_HTML_DOWNLOAD':
-					header("Content-Type: text/html");
-					header('Content-disposition: attachment; filename="document.html"');
-					$this->_service = new Proxies_Services_AknToHtml($this->_params);
-					break;
 				case 'FILE_TO_HTML':
 					header("Content-Type: application/json"); // TODO if set to any other type the result is wrapped into a <pre> tag
 					$this->_service = new Proxies_Services_FileToHtml($this->_params);
@@ -98,11 +93,6 @@
 				case 'HTML_TO_PDF':
 					header("Content-Type: application/json");
 					$this->_service = new Proxies_Services_HtmlToPdf($this->_params);
-					break;
-				case 'HTML_TO_PDF_DOWNLOAD':
-					header("Content-Type: application/pdf");
-					header('Content-disposition: attachment; filename="document.pdf"');
-					$this->_service = new Proxies_Services_HtmlToPdf($this->_params, true);
 					break;
 				case 'XML_VALIDATION':
 					header("Content-Type: application/json");
