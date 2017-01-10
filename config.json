@@ -1,7 +1,9 @@
 {
     "languages": [{"name":"akoma3.0"}],
     "fieldsDefaults": {
-        "docLocale": "it"
+        "docLocale": "it",
+        "docType": "act",
+        "docLang": "ita"
     },
     "server": {
         "node": "http://sinatra.cirsfid.unibo.it/node/aknservices",

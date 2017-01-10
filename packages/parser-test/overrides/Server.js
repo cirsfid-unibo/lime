@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
+ * Copyright (c) 2015 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
  *
  * Authors:
@@ -44,24 +44,18 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('ParserTest.LoginManager', {
-    override: 'LIME.controller.LoginManager',
+Ext.define('ParserTest.Server', {
+    override: 'LIME.Server',
 
-    init : function() {
-        User.loadFromLocalStorage();
-        this.control({
-            'viewport': {
-                render: this.fakeLogin.bind(this)
-            }
-        });
+    saveDocument: function (path, content, success, failure) {
+        setTimeout(function () {
+            success()
+        }, 1);
     },
 
-    // Fake login (used for debug purposes when Exist is down)
-    fakeLogin: function () {
-        User.username = 'demo@prova.com';
-        User.password = 'demo';
-
-        this.getViewport().showEditor();
+    saveUser: function(user, success, failure) {
+        setTimeout(function () {
+            success()
+        }, 1);
     }
-
 });

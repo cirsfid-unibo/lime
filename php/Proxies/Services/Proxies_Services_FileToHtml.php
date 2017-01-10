@@ -68,9 +68,17 @@ class Proxies_Services_FileToHtml implements Proxies_Services_Interface
 	public function __construct($params)
 	{
 		$this->_delete = FALSE;
+
+        // Trick to add file passed by url to $_FILES
+        if (empty($_FILES)) {
+            addToFiles("file", $params['fileUrl']);
+        }
+
 		if (isset($_FILES['file'])
 	        && $_FILES['file']['error'] == UPLOAD_ERR_OK               //checks for errors
-		    && is_uploaded_file($_FILES['file']['tmp_name'])) { //checks that file is uploaded
+            // disable upload checking because file can be injected by addToFiles
+		    // && is_uploaded_file($_FILES['file']['tmp_name'])
+            ) { //checks that file is uploaded
 		  		$this->_filePath = $_FILES['file']['tmp_name'];
 				$this->_fileName = $_FILES['file']['name'];
 				$this->_fileSize = $_FILES['file']['size'];

@@ -87,6 +87,9 @@
     // the desired format of the response
     $params = $type=='GET'? $_GET : $_POST;
 
+    if (empty($params)) {
+        $params = $_GET;
+    }
     // get the service name
     $requestedService = $params['requestedService'];
 

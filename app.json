@@ -8,14 +8,8 @@
 
         "lime-core",
 
-        "default-import",
-        "default-export",
-        "default-autoimport-open",
-        "default-validation",
-
         "akn-main",
         "akn-metadata",
-        "akn-tab-xml-preview",
         "akn-automatic-markup",
 
         "parser-test"

@@ -143,8 +143,8 @@ Ext.define('LIME.controller.LoginManager', {
     fakeLogin: function () {
         User.username = 'demo@prova.com';
         User.password = 'demo';
-
-        this.getLogin().hide();
+        if (this.getLogin())
+            this.getLogin().hide();
         this.getViewport().showEditor();
     },
 

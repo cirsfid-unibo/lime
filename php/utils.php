@@ -2,40 +2,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -49,9 +49,9 @@ require_once('config.php');
 require_once('lib/Text_LanguageDetect/Text/LanguageDetect.php');
 require_once('lib/Encoding.php');
 use \ForceUTF8\Encoding;
- 
+
 function aknToHtml($input,$stylesheet=FALSE,$language=FALSE, $fullOutput=FALSE, $akn2xsl=FALSE, $akn3xsl=FALSE) {
-	
+
 	$AKN20NameSpace = "http://www.akomantoso.org/2.0";
 	$result; $xsl = new DOMDocument;
 	if (gettype($input) == "string") {
@@ -60,19 +60,19 @@ function aknToHtml($input,$stylesheet=FALSE,$language=FALSE, $fullOutput=FALSE, 
 	} else {
 		$doc = $input;
 	}
-	
+
 	$uriNamespace = $doc -> documentElement -> lookupnamespaceURI(NULL);
 
 	if ($uriNamespace == $AKN20NameSpace && $akn2xsl) {
 		$xsl -> load($akn2xsl);
 		$language = 'akoma2.0';
-		
+
 	} else {
 	    // load an Akomantoso v3.0
-		// or custom stylesheet		 
+		// or custom stylesheet
 	    if ($stylesheet) $xsl -> load($stylesheet);
 		else $xsl -> load($akn3xsl);
-		
+
 		$language = 'akoma3.0';
 		$xpath = new DOMXPath($doc);
 		foreach( $xpath->query('namespace::*', $doc -> documentElement) as $node ) {
@@ -87,25 +87,25 @@ function aknToHtml($input,$stylesheet=FALSE,$language=FALSE, $fullOutput=FALSE, 
 	        $uriNamespace
 		);
 	}
-	
+
 	$proc = new XSLTProcessor;
 	$proc -> importStyleSheet($xsl);
 
 	$htmlDoc = $proc -> transformToDoc($doc);
-	
+
 	if ($htmlDoc) {
 		if ($htmlDoc->documentElement) {
 			$htmlDoc -> documentElement -> setAttribute('markinglanguage', $language);
 			// Avoiding the xml declaration
-			$result = $htmlDoc -> saveXML($htmlDoc -> documentElement);	
+			$result = $htmlDoc -> saveXML($htmlDoc -> documentElement);
 		} else{
-			$result = $htmlDoc -> saveXML();	
+			$result = $htmlDoc -> saveXML();
 		}
 	}
 	if ($fullOutput) {
-		return array("xml" => $result, "markinglanguage" => $language);	
+		return array("xml" => $result, "markinglanguage" => $language);
 	}
-	
+
 	return $result;
 }
 
@@ -125,7 +125,7 @@ function XMLToJSON ($xml,$container=NULL) {
 }
 
 function cssFileToArray($path) {
-	$cssRules = array();	
+	$cssRules = array();
 	$cssContent = file_get_contents($path);
 	if($cssContent) {
 		$cssContent = preg_replace('/}(?!$)/', '}||', preg_replace('/\s+/', '', $cssContent));
@@ -181,13 +181,13 @@ function createAttributeSet($dom, $selector, $rules) {
 	}
 	return $attributeSet;
 }
-	
+
 function detectLanguage($text, $length = 2) {
     $l = new Text_LanguageDetect();
 
 	try {
 	    $l->setNameMode($length);
-	
+
 	    $result = $l->detect($text, 1);
 		$languages = array_keys($result);
 		if (!count($languages)) return NULL;
@@ -201,6 +201,30 @@ function detectLanguage($text, $length = 2) {
 
 function forceUTF8($str) {
 	return Encoding::toUTF8($str);
+}
+
+/**
+ * Add to $_FILES from external url
+ * sample usage: addToFiles('google_favicon', 'http://google.com/favicon.ico');
+ * @since 17.12.12 17:23
+ * @author mekegi
+ * @param string $key
+ * @param string $url sample http://some.tld/path/to/file.ext
+ */
+function addToFiles($key, $url)
+{
+    $tempName = tempnam('/tmp', 'php_files');
+    $originalName = basename(parse_url($url, PHP_URL_PATH));
+
+    $imgRawData = file_get_contents($url);
+    file_put_contents($tempName, $imgRawData);
+    $_FILES[$key] = array(
+        'name' => $originalName,
+        'type' => mime_content_type($tempName),
+        'tmp_name' => $tempName,
+        'error' => UPLOAD_ERR_OK,
+        'size' => strlen($imgRawData),
+    );
 }
 
 

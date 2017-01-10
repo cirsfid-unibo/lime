@@ -62,7 +62,7 @@ Ext.define('LIME.controller.MarkingMenu', {
 
     refs: [
         { ref: 'markingMenuContainer', selector: '[cls=markingMenuContainer]' },
-        { ref: 'mainTab',              selector: 'main' },
+        { ref: 'mainTab',              selector: '#mainEditor' },
         { ref: 'secondEditor',         selector: '#secondEditor mainEditor' },
         { ref: 'treeButtonsStructure', selector: '#treeStructure' },
         { ref: 'treeButtonsCommons',   selector: '#treeCommons' }
@@ -342,7 +342,16 @@ Ext.define('LIME.controller.MarkingMenu', {
             markingMenu = main.down('*[cls=markingMenuContainer]');
 
         if(!markingMenu) {
-            main.down('*[cls=editor]').add(main.markingMenu);
+            main.down('*[cls=editor]').add({
+                xtype: 'markingMenu',
+                cls: 'markingMenuContainer',
+                region: 'east',
+                width: '26%',
+                collapsible: true,
+                expandable: true,
+                resizable: true,
+                scrollable: 'y'
+            });
         }
         this.buildButtonsStructure(pluginData);
     },

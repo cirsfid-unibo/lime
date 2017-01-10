@@ -44,76 +44,15 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- * The main viewport of the application. It contains all the other views.
- */
-Ext.define('LIME.view.Viewport', {
-    extend : 'Ext.container.Viewport',
+Ext.define('ParserTest.Application', {
+    override: 'LIME.Application',
 
-    alias : 'widget.appViewport',
-
-    controller: 'viewport',
-
-    requires : [
-        'LIME.view.ViewportController',
-        'Ext.ux.TabCloseMenuImproved',
-        'Ext.ux.form.field.TinyMCE',
-        'Extra.ux.toggleslide.view.ToggleSlide',
-        'LIME.view.main.Editor',
-        'LIME.view.main.editor.Path',
-        'LIME.components.uri.Uri',
-        'LIME.view.main.ContextPanel',
-        'LIME.view.MarkingMenu'
+    requires: [
+        'ParserTest.ParserTest'
     ],
 
-    style : {
-        background : '#FFFFFF'
-    },
-
-    commonItems : [],
-
-    editorItems: [{
-        xtype: 'panel',
-        id: 'mainEditor',
-        expandable : true,
-        resizable : true,
-        margin : 2,
-        items: [{
-            // This is the main tab. It contains the TinyMCE editor on the center and
-            // the outliner and markingMenu panels on the sides.
-            cls: 'editor',
-            itemId: 'mainEditorTab',
-            padding: '3 0 0 0',
-            title: Locale.getString('mainEditor'),
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
-            items: [{
-                xtype: 'mainEditor',
-                margin: '0 3'
-            }, {
-                xtype: 'mainEditorPath'
-            },{
-                xtype: 'contextPanel'
-            }]
-        }]
-    }],
-
-    listeners: {
-        render: function() {
-            this.showEditor();
-        }
-    },
-
-    setVisibleEditorToolbar: function(visible) {},
-
-    // Show editor items
-    showEditor: function() {
-        this.removeAll(true);
-        this.add(Ext.Array.merge(this.editorItems, this.commonItems));
-    },
-
-    // Show login items
-    showLogin: function() {}
+    initControllers : function() {
+        this.controllers.push('ParserTest.ParserTest');
+        this.callParent();
+    }
 });

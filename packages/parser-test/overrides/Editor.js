@@ -47,5 +47,10 @@
 Ext.define('ParserTest.Editor', {
     override: 'LIME.controller.Editor',
 
-    restoreSession: function() {}
+    tinyInit: function() {
+        Ext.GlobalEvents.fireEvent('editorLoaded');
+    },
+    restoreSession: function() {},
+    setEditorHeader: function() {},
+    setPath: function() {}
 });

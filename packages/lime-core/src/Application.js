@@ -63,65 +63,40 @@ Ext.define('LIME.Application', {
         // Workaound for Ext Bug (Only present in dev mode)
         'LIME.components.outliner.OutlinerTreePanel',
 
-        'LIME.controller.CustomizationManager',
-        'LIME.controller.DocumentUploader',
-        'LIME.controller.LoginManager',
-        'LIME.controller.MainToolbar',
         'LIME.controller.Storage',
         'LIME.controller.Editor',
         'LIME.controller.MarkingMenu',
         'LIME.controller.Marker',
-        'LIME.controller.Outliner',
         'LIME.controller.Language',
-        'LIME.controller.ProgressWindow',
-        'LIME.controller.Notification',
-        'LIME.controller.ContextMenu',
-        'LIME.controller.ContextInfoManager',
         'LIME.controller.WidgetManager',
         'LIME.controller.UndoManager',
 
-        'LIME.store.Outliner',
         'LIME.store.Languages',
-        'LIME.store.OpenFile',
         'LIME.store.LanguagesPlugin',
         'LIME.store.Locales',
         'LIME.store.Nationalities',
         'LIME.store.DocumentTypes',
         'LIME.store.DocumentLanguages',
-        'LIME.store.MarkupLanguages',
-        'LIME.store.OpenedDocuments'
+        'LIME.store.MarkupLanguages'
     ],
 
     controllers: [
-        'CustomizationManager',
-        'DocumentUploader',
-        'LoginManager',
-        'MainToolbar',
         'Storage',
         'Editor',
         'MarkingMenu',
         'Marker',
-        'Outliner',
         'Language',
-        'ProgressWindow',
-        'Notification',
-        'ContextMenu',
-        'ContextInfoManager',
-        'UndoManager',
-        'WidgetManager'
+        'UndoManager'
     ],
 
     stores: [
-        'Outliner',
         'Languages',
-        'OpenFile',
         'LanguagesPlugin',
         'Locales',
         'Nationalities',
         'DocumentTypes',
         'DocumentLanguages',
-        'MarkupLanguages',
-        'OpenedDocuments'
+        'MarkupLanguages'
     ],
 
     launch : function() {

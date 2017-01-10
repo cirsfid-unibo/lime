@@ -172,6 +172,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
     onNodeChanged: function(nodes, config, callback) {
         var me = this;
+        console.log(callback);
         if(!config.unmark && nodes) {
             try {
                 me.parseElements(nodes, config, function() {
@@ -2790,6 +2791,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                         }, {
                             callback: function() {
                                 app.fireEvent(Statics.eventsNames.progressEnd);
+                                Ext.GlobalEvents.fireEvent('parsingFinished');
                             }
                         });
                     }, 100);
