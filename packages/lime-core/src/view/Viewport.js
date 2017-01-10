@@ -75,8 +75,10 @@ Ext.define('LIME.view.Viewport', {
     editorItems: [{
         xtype: 'panel',
         id: 'mainEditor',
-        expandable : true,
-        resizable : true,
+        layout: {
+            type: 'hbox',
+            align: 'stretch'
+        },
         margin : 2,
         items: [{
             // This is the main tab. It contains the TinyMCE editor on the center and
@@ -89,9 +91,10 @@ Ext.define('LIME.view.Viewport', {
                 type: 'vbox',
                 align: 'stretch'
             },
+            flex: 1,
             items: [{
                 xtype: 'mainEditor',
-                margin: '0 3'
+                height: 600
             }, {
                 xtype: 'mainEditorPath'
             },{

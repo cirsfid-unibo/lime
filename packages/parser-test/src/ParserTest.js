@@ -106,8 +106,8 @@ Ext.define('ParserTest.ParserTest', {
             saveAs(blob, 'document.xml');
         }
         this.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
-            //saveDataAs(xml);
-            document.write(xml);
+            saveDataAs(xml);
+            //document.write(xml);
         });
     }
 });

@@ -342,7 +342,7 @@ Ext.define('LIME.controller.MarkingMenu', {
             markingMenu = main.down('*[cls=markingMenuContainer]');
 
         if(!markingMenu) {
-            main.down('*[cls=editor]').add({
+            main.add({
                 xtype: 'markingMenu',
                 cls: 'markingMenuContainer',
                 region: 'east',
