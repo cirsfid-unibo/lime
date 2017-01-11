@@ -19,25 +19,14 @@
         {
             "bootstrap": true,
             "path": "bootstrap.css"
-        },
-        { "path": "lib/codemirror/codemirror.css" },
-        { "path": "resources/stylesheets/ext_custom.css" },
-        { "path": "resources/stylesheets/aknVisualizer.css" },
-        { "path": "resources/font-awesome/css/font-awesome.min.css" }
+        }
     ],
     "js": [
-        { "path":"${ext.dir}/build/ext-all-debug.js" },
+        { "path":"${ext.dir}/build/ext-all.js" },
         { "bundle": true, "path": "app.js" },
-        { "path": "lib/tinymce4/tinymce.min.js" },
-        { "path": "lib/filesaver/filesaver.min.js" },
-        { "path": "lib/codemirror/codemirror.min.js" },
         { "path": "lib/vkbeautify/vkbeautify.js" },
-        { "path": "lib/plupload/js/plupload.js" },
-        { "path": "lib/plupload/js/plupload.html4.js" },
-        { "path": "lib/plupload/js/plupload.html5.js" },
-        { "path": "lib/plupload/js/plupload.flash.js" },
-        { "path": "lib/plupload/js/plupload.silverlight.js" },
-        { "path": "lib/wgxpath/wgxpath.js" },
+        { "path": "lib/filesaver/filesaver.min.js" },
+        { "path": "lib/tinymce4/tinymce.min.js" },
         { "path": "lib/stringPolyfill/startswith.js" },
         { "path": "lib/stringPolyfill/endswith.js" }
     ],

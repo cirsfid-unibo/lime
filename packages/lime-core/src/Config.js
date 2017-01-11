@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -79,14 +79,14 @@ Ext.define('LIME.Config', {
                         me.loadPluginStructure();
                         me.isReady = true;
                     } else {
-                        Ext.log({level: "error"}, "config (config.json) decode error!");                        
+                        Ext.log({level: "error"}, "config (config.json) decode error!");
                     }
                 } catch(e) {
                     Ext.log({level: "error"}, e);
                     alert(Locale.strings.error);
                 }
             },
-            
+
             failure : function(response, opts) {
                 Ext.log({level: "error"}, response);
                 alert(Locale.strings.error);
@@ -104,7 +104,7 @@ Ext.define('LIME.Config', {
         Server.setNodeServer(data.node);
         Server.setPhpServer(data.php);
     },
-    
+
     loadPluginStructure : function(){
         Ext.each(this.languages, function(language) {
             var lang = language.name,
@@ -123,7 +123,7 @@ Ext.define('LIME.Config', {
                        Ext.log({level: "error"}, "Language ("+lang+") structure decode error! ");
                    }
                }
-            });     
+            });
         }, this);
     },
 
@@ -146,36 +146,36 @@ Ext.define('LIME.Config', {
 
             if(!Ext.isEmpty(urls)) {
                 // TODO: understand if filterUrls is essential
-                Server.filterUrls(urls, false, function(newUrls) {
-                    langConf.transformationUrls = {};
-                    if (urls.length != newUrls.length)
-                        console.error('Not found all transformation files!', urls);
-                    Ext.each(newUrls, function(obj) {
+                // Server.filterUrls(urls, false, function(newUrls) {
+                //     langConf.transformationUrls = {};
+                //     if (urls.length != newUrls.length)
+                //         console.error('Not found all transformation files!', urls);
+                    Ext.each(urls, function(obj) {
                         langConf.transformationUrls[obj.name] = obj.url;
                     });
-                }, false, me);
+                // }, false, me);
             }
         }
     },
-    
+
     getAppUrl: function() {
         return window.location.origin+window.location.pathname;
     },
-    
+
     getLanguageTransformationFiles: function(lang) {
         return this.getLanguageConfig(lang).transformationUrls;
     },
-    
+
     getLanguageTransformationFile: function(name, lang) {
         lang = lang || this.language || Config.languages[0].name;
         var files =  this.getLanguageTransformationFiles(lang);
         return (files && files[name]) ? files[name] : null;
     },
-    
+
     getPluginStructureUrl : function(lang){
-        return this.pluginBaseDir+'/'+lang+'/'+this.pluginStructureFile;  
+        return this.pluginBaseDir+'/'+lang+'/'+this.pluginStructureFile;
     },
-    
+
     getLanguageConfig: function(lang) {
         return this.pluginStructure[(lang) ? lang : this.language];
     },
@@ -189,30 +189,30 @@ Ext.define('LIME.Config', {
         Ext.getStore('DocumentTypes').loadData(this.getDocTypesByLang(language));
         return true;
     },
-    
+
     getLanguage: function() {
-        return this.language;   
+        return this.language;
     },
-    
+
     getLanguagePath: function(lang) {
         lang = lang || this.language;
         return this.pluginBaseDir + '/' + lang + '/';
     },
-    
+
     getLanguageSchemaPath: function() {
         return this.getLanguagePath()+'schema.xsd';
     },
-    
+
     getLocaleByDocType: function(lang, type) {
         var docTypes = this.getDocTypesByLang(lang);
         for(var i = 0; i<docTypes.length; i++) {
             if (docTypes[i].name == type) {
                 return docTypes[i].locales;
-            }    
+            }
         }
         return null;
     },
-    
+
     getDocTypesByLang: function(lang) {
         if (this.pluginStructure[lang]) {
             var arrDocsByLang = this.pluginStructure[lang].docTypes;
@@ -234,13 +234,13 @@ Ext.define('LIME.Config', {
         }
         return false;
     },
-    
+
     getDocTypesName: function() {
         return Ext.Array.map(this.getDocTypesByLang(this.getLanguage()), function(item) {
             return item.name;
         });
     },
-    
+
     getLocaleXslPath: function(lang, locale) {
         locale = locale || DocProperties.documentInfo.docLocale || this.fieldsDefaults['docLocale'];
         return this.getLanguagePath(lang)+'localeXsl/'+locale+'.xsl';

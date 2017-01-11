@@ -50,6 +50,49 @@ Ext.define('ParserTest.Editor', {
     tinyInit: function() {
         Ext.GlobalEvents.fireEvent('editorLoaded');
     },
+    getTinyMceConfig: function() {
+        var config = {
+                doctype : '<!DOCTYPE html>',
+                // theme : "modern",
+                schema: "html5",
+                element_format : "xhtml",
+                force_br_newlines : true,
+                force_p_newlines : false,
+                forced_root_block : '',
+                // Custom CSS
+                //content_css : 'resources/tiny_mce/css/content.css',
+
+                // the editor mode
+                mode : 'textareas',
+                body_class: 'lime ' + Locale.getLang(),
+
+                entity_encoding : 'raw',
+
+                // Sizes
+                width : '100%',
+                height : '100%',
+                resizable : false,
+                relative_urls: false,
+                nonbreaking_force_tab: true,
+                statusbar : false,
+                // the enabled plugins in the editor
+                plugins : "",
+
+                magicline_targetedItems: ['DIV','IMG','TABLE'],
+                magicline_triggerMargin: 10,
+                magicline_insertedBlockTag: 'br', // Don't need a wrapper just add a br
+
+                noneditable_leave_contenteditable: true,
+
+                valid_elements : "*[*]",
+
+                // the language of tinymce
+                language : Locale.getLang(),
+                toolbar: ""
+            };
+
+        return config;
+    },
     restoreSession: function() {},
     setEditorHeader: function() {},
     setPath: function() {}

@@ -107,7 +107,12 @@ Ext.define('ParserTest.ParserTest', {
         }
         this.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
             saveDataAs(xml);
-            //document.write(xml);
+            Ext.getCmp('mainEditor').insert(0, {
+                xtype: 'textareafield',
+                id: 'aknResult',
+                width: 400,
+                value: xml
+            });
         });
     }
 });

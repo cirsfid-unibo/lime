@@ -210,13 +210,14 @@ Ext.define('LIME.store.LanguagesPlugin', {
             }
         }
         me.reqUrls = reqUrls;
-        Server.filterUrls(styleUrls, false, me.setStyleAndRequestFiles.bind(me, callback), me.setStyleAndRequestFiles.bind(me, callback), me);
+        // Server.filterUrls(styleUrls, false, me.setStyleAndRequestFiles.bind(me, callback), me.setStyleAndRequestFiles.bind(me, callback), me);
+        me.setStyleAndRequestFiles(callback, []);
     },
 
     setStyleAndRequestFiles: function(callback, styleUrls) {
         this.styleUrls = styleUrls;
-        Server.filterUrls(this.reqUrls, true, 
-                this.requestSyncLoader.bind(this, callback), 
+        Server.filterUrls(this.reqUrls, true,
+                this.requestSyncLoader.bind(this, callback),
                 this.requestSyncLoader.bind(this, callback), this);
     },
 
