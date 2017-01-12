@@ -49,6 +49,8 @@ Ext.define('ParserTest.AknAutomaticMarkupController', {
 
     onDocumentLoaded : function(docConfig) {
         this.callParent(arguments);
+        console.timeEnd('loadDocument');
+        console.time('parsers');
         setTimeout(this.activateParsers.bind(this), 100);
     }
 });

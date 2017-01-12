@@ -20,5 +20,8 @@
   "requires": [],
   "devDependencies": {
     "zombie": "^5.0.5"
+  },
+  "dependencies": {
+    "async": "^2.1.4"
   }
 }

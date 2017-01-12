@@ -55,6 +55,7 @@ Ext.define('ParserTest.ParserTest', {
     },
 
     importFile: function() {
+        console.time('import');
         var me = this;
         var fileToParse = encodeURI(decodeURIComponent(Ext.urlDecode(window.location.search.substring(0)).fileToParse));
         var fileName = fileToParse.substring(fileToParse.lastIndexOf('/')+1);
@@ -73,6 +74,7 @@ Ext.define('ParserTest.ParserTest', {
             },
             success: function(res) {
                 var data = Ext.decode(res.responseText, true);
+                console.timeEnd('import');
                 if (data && data.success) {
                     me.loadDocument(data.html, data.markinglanguage, data.language, data.xml);
                 } else {
@@ -86,6 +88,7 @@ Ext.define('ParserTest.ParserTest', {
     },
 
     loadDocument: function(content, docMarkingLanguage, docLang, originalXml) {
+        console.time('loadDocument');
         content = DomUtils.normalizeBr(content);
         // Upload the editor's content
         Ext.GlobalEvents.fireEvent(Statics.eventsNames.loadDocument, {
@@ -100,11 +103,13 @@ Ext.define('ParserTest.ParserTest', {
 
     exportXml: function() {
         console.log('parserFinished');
+        console.timeEnd('parsers');
         // Create the Blob data and trigger the browser's saveAs dialog
         var saveDataAs = function(data) {
             var blob = new Blob([data], {type: 'text/xml;charset=utf-8'});
             saveAs(blob, 'document.xml');
         }
+        console.time('export');
         this.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
             saveDataAs(xml);
             Ext.getCmp('mainEditor').insert(0, {
@@ -113,6 +118,7 @@ Ext.define('ParserTest.ParserTest', {
                 width: 400,
                 value: xml
             });
+            console.timeEnd('export');
         });
     }
 });
