@@ -305,12 +305,18 @@ Ext.define('LIME.Interpreters', {
             tempWidget.xtype = (Statics.widgetTypePatterns[widget.type]) ? Statics.widgetTypePatterns[widget.type] : 'textfield';
             if(widget.type == "list") {
                 var store = Ext.create('Ext.data.Store', {
-                    fields: ["type"],
-                    data : widget.values.map(function(el) {return {"type": el};})
+                    fields: ['type', 'label'],
+                    data : Object.keys(widget.values)
+                            .map(function(value) {
+                                return {
+                                    type: value,
+                                    label: widget.values[value]
+                                };
+                            })
                 });
                 tempWidget.store = store;
                 tempWidget.queryMode = 'local';
-                tempWidget.displayField = 'type';
+                tempWidget.displayField = 'label';
                 tempWidget.valueField = 'type';
             }
             widget.label = Ext.String.capitalize(Locale.getString(widget.label.toLowerCase()));
@@ -322,9 +328,9 @@ Ext.define('LIME.Interpreters', {
             } else {
                 title = widget.label;
             }
-            if (widget.insert && widget.insert.attribute) {
-                tempWidget.name = namePrefix + widget.insert.attribute.name;
-                tempWidget.origName = widget.insert.attribute.name;
+            if (widget.attribute) {
+                tempWidget.name = namePrefix + widget.attribute;
+                tempWidget.origName = widget.attribute;
                 globalAttributes[tempWidget.origName] = {
                     tpl: "{"+tempWidget.origName+"}"
                 };

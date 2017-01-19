@@ -428,113 +428,77 @@
         "a": {
             "askFor": {
                 "href": {
-                    "label": "Href",
                     "type": "text",
-                    "insert": {
-                        "attribute": {
-                            "name": "href"
-                        }
-                    }
+                    "label": "Href",
+                    "attribute": "href"
                 }
             }
         },
         "authorialNote": {
             "askFor": {
                 "marker": {
-                    "label": "Marker",
                     "type": "text",
-                    "insert": {
-                        "attribute": {
-                            "name": "marker"
-                        }
-                    }
+                    "label": "Marker",
+                    "attribute": "marker"
                 },
                 "placement": {
-                    "label": "Placement",
                     "type": "list",
-                    "values": [
-                        "inline",
-                        "bottom"
-                    ],
-                    "insert": {
-                        "attribute": {
-                            "name": "placement"
-                        }
-                    }
+                    "label": "Placement",
+                    "values": {
+                        "inline": "Inline",
+                        "bottom": "Bottom"
+                    },
+                    "attribute": "placement"
                 }
             }
         },
         "componentRef": {
             "askFor": {
                 "src": {
-                    "label": "Source",
                     "type": "text",
-                    "insert": {
-                        "attribute": {
-                            "name": "src"
-                        }
-                    }
+                    "label": "Source",
+                    "attribute": "src"
                 },
                 "showAs": {
-                    "label": "Show as",
                     "type": "text",
-                    "insert": {
-                        "attribute": {
-                            "name": "showAs"
-                        }
-                    }
+                    "label": "Show as",
+                    "attribute": "showAs"
                 }
             }
         },
         "docCommittee": {
             "askFor": {
                 "value": {
-                    "label": "Value",
                     "type": "text",
-                    "insert": {
-                        "attribute": {
-                            "name": "value"
-                        }
-                    }
+                    "label": "Value",
+                    "attribute": "value"
                 }
             }
         },
         "session": {
             "askFor": {
                 "value": {
-                    "label": "Value",
                     "type": "text",
-                    "insert": {
-                        "attribute": {
-                            "name": "value"
-                        }
-                    }
+                    "label": "Value",
+                    "attribute": "value"
                 }
             }
         },
         "container": {
             "askFor": {
                 "value": {
-                    "label": "Name",
                     "type": "text",
-                    "insert": {
-                        "attribute": {
-                            "name": "name"
-                        }
-                    }
+                    "label": "Name",
+                    "attribute": "name"
                 }
             }
         },
         "block": {
             "askFor": {
                 "value": {
-                    "label": "Name",
                     "type": "text",
-                    "insert": {
-                        "attribute": {
-                            "name": "name"
-                        }
-                    }
+                    "label": "Name",
+                    "attribute": "name"
                 }
             }
         }
