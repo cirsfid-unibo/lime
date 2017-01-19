@@ -67,6 +67,7 @@ Ext.onReady(function() {
             dateFormat: 'd/m/Y'
         });
     }
+
 });
 
 Ext.define("Ext.locale.it.view.View", {
@@ -99,6 +100,11 @@ Ext.define("Ext.locale.it.form.field.Base", {
 Ext.define("Ext.locale.it.view.AbstractView", {
     override: "Ext.view.AbstractView",
     loadingText: "Caricamento..."
+});
+
+Ext.define("Ext.locale.it.Ext.LoadMask", {
+    override: "Ext.LoadMask",
+    msg: "Caricamento..."
 });
 
 Ext.define("Ext.locale.it.picker.Date", {
@@ -331,11 +337,10 @@ Ext.define("Ext.locale.it.window.MessageBox", {
         cancel: "Annulla",
         yes: "Si",
         no: "No"
-    }    
+    }
 });
 
 // This is needed until we can refactor all of the locales into individual files
-Ext.define("Ext.locale.it.Component", {	
+Ext.define("Ext.locale.it.Component", {
     override: "Ext.Component"
 });
-

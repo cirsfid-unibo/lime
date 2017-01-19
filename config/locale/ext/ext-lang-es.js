@@ -92,6 +92,11 @@ Ext.define("Ext.locale.es.view.AbstractView", {
     loadingText: "Cargando..."
 });
 
+Ext.define("Ext.locale.it.Ext.LoadMask", {
+    override: "Ext.LoadMask",
+    msg: "Cargando..."
+});
+
 Ext.define("Ext.locale.es.picker.Date", {
     override: "Ext.picker.Date",
     todayText: "Hoy",
@@ -149,9 +154,9 @@ Ext.define("Ext.locale.es.form.field.Number", {
     nanText: "{0} no es un número válido"
 });
 
-Ext.define("Ext.locale.es.form.field.File", { 
-    override: "Ext.form.field.File", 
-    buttonText: "Examinar..." 
+Ext.define("Ext.locale.es.form.field.File", {
+    override: "Ext.form.field.File",
+    buttonText: "Examinar..."
 });
 
 Ext.define("Ext.locale.es.form.field.Date", {
@@ -309,11 +314,10 @@ Ext.define("Ext.locale.es.window.MessageBox", {
         cancel: "Cancelar",
         yes: "Sí",
         no: "No"
-    }    
+    }
 });
 
 // This is needed until we can refactor all of the locales into individual files
-Ext.define("Ext.locale.es.Component", {	
+Ext.define("Ext.locale.es.Component", {
     override: "Ext.Component"
 });
-
