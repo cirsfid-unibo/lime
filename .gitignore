@@ -7,3 +7,4 @@
 /bootstrap.css
 /deploy.sh
 .sass-cache
+node_modules/
