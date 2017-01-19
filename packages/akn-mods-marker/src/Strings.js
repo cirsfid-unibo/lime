@@ -72,7 +72,8 @@
             "haveToSelectElement": "You have to select {name} element",
             "splitOnlySiblings": "You can split only sibling nodes",
             "causedRenumbering": "This modification has caused a renumbering?",
-            "propagationRenumbering": "Do you want to propagate the renumbering?"
+            "propagationRenumbering": "Do you want to propagate the renumbering?",
+            "selection": "Selection"
         },
         "it": {
             "insertion": "Inserimento",
@@ -98,7 +99,8 @@
             "haveToSelectElement": "Devi selezionere un elemento {name}",
             "splitOnlySiblings": "Puoi dividere solo elementi vicini",
             "causedRenumbering": "Questa modifica ha causato una rinumerazione?",
-            "propagationRenumbering": "Vuoi propagare la rinumerazione?"
+            "propagationRenumbering": "Vuoi propagare la rinumerazione?",
+            "selection": "Selezione"
         },
         "es": {
             "insertion": "Insertion",
@@ -124,7 +126,8 @@
             "haveToSelectElement": "Usted tiene que seleccionar el elemento {name}",
             "splitOnlySiblings": "Se puede dividir nodos único hermano",
             "causedRenumbering": "Esta modificación ha provocado una nueva numeración?",
-            "propagationRenumbering": "¿Quieres propagar la renumeración?"
+            "propagationRenumbering": "¿Quieres propagar la renumeración?",
+            "selection": "Selección"
         }
     },
 

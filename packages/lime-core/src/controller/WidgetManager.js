@@ -62,28 +62,28 @@ Ext.define('LIME.controller.WidgetManager', {
         selector: 'markedElementWidget',
         ref: 'markedElementWidget'
     }],
-    
-    tabGroupName: "widgetManager",
+
+    tabGroupName: 'widgetManager',
 
     listen: {
         global: {
             forceMetadataWidgetRefresh: 'refreshActiveWidgetData'
         }
     },
-    
+
     /*
      * Wrapper function for creating widgets
-     * 
+     *
      * @param {String} id The id of the widget
      * @param {Object} config The configuration of the widget, created by Interpreters.parseWidget
      * @return {markedElementWidget} Created widget
-     * */    
+     * */
     createWidget: function(id, config) {
-        var me = this, 
+        var me = this,
             newWidget = Ext.widget('markedElementWidget', {
                 items : config.list,
                 id : id,
-                width: "40%",
+                width: '40%',
                 title : config.title,
                 attributes : config.attributes,
                 bbar: [{
@@ -93,18 +93,18 @@ Ext.define('LIME.controller.WidgetManager', {
                     flex: 1,
                     baseCls: 'form-success-state',
                     cls: Ext.baseCSSPrefix + 'success-icon',
-                    html: 'Data have been saved'
+                    html: Locale.getString('dataSaved')
                 },'->', {
                     xtype: 'button',
-                    text: Locale.getString("saveDocumentButtonLabel"),
+                    text: Locale.getString('saveDocumentButtonLabel'),
                     handler: function() {
-                        me.saveWidgetData(this.up("markedElementWidget"), this);
+                        me.saveWidgetData(this.up('markedElementWidget'), this);
                         me.application.fireEvent(Statics.eventsNames.openCloseContextPanel,
                                     false, me.tabGroupName);
-                    }    
+                    }
                 }]
             });
-        return newWidget; 
+        return newWidget;
     },
 
 
@@ -115,7 +115,7 @@ Ext.define('LIME.controller.WidgetManager', {
         });
         widget.down("[itemId=successSaveLabel]").setVisible(true);
     },
-    
+
     /*
      * This function is called when a node is focused.
      * If the focused node has a widget, the widget is created and added to the tab.
@@ -124,14 +124,14 @@ Ext.define('LIME.controller.WidgetManager', {
      * */
     onNodeFocused: function(node) {
         var widgetConfig = DocProperties.getNodeWidget(node),
-            elId = DomUtils.getElementId(node), 
+            elId = DomUtils.getElementId(node),
             panelHeight, widget;
         if(widgetConfig && elId) {
             if(!this.tab.getChildByElement(elId)) {
                 this.tab.removeAll(true);
                 widget = this.createWidget(elId, widgetConfig);
                 this.setWidgetContent(widget);
-                this.tab.add(widget);    
+                this.tab.add(widget);
             } else {
                 widget = this.tab.down();
                 if (widget)
@@ -147,7 +147,7 @@ Ext.define('LIME.controller.WidgetManager', {
                                     false, this.tabGroupName);
         }
     },
-    
+
     /*
      * Wrapper function to create and add a tab to the context panel.
      * */
@@ -174,26 +174,26 @@ Ext.define('LIME.controller.WidgetManager', {
             this.setWidgetContent(widget, true);
         }
     },
-    
-    /*  
-     *  This function sets the content of a widget. 
+
+    /*
+     *  This function sets the content of a widget.
      *  It fills out all the fields of the widget with extracted data
-     *  from attributes of the associated html node. 
+     *  from attributes of the associated html node.
      *
      *  @param {markedElementWidget} widget
      * */
-    
+
     setWidgetContent: function(widget, refresh) {
         var me = this, markedElement = DocProperties.getMarkedElement(widget.id),
             fields = widget.query('textfield');
-            
+
         Ext.each(fields, function(field) {
             var value = markedElement.htmlElement.getAttribute(field.name);
             if (value) {
-                me.setWidgetFieldValue(widget, field, value);    
+                me.setWidgetFieldValue(widget, field, value);
             }
         });
-        
+
         if (widget.attributes) {
             Ext.Object.each(widget.attributes, function(attribute, obj) {
                 var value, values;
@@ -218,9 +218,9 @@ Ext.define('LIME.controller.WidgetManager', {
                                         values.push(internalSplit[1]);
                                     }
                                 }
-                                me.setWidgetFieldValue(widget, field, values[i]);    
+                                me.setWidgetFieldValue(widget, field, values[i]);
                             }
-                        }       
+                        }
                     }
                 }
             });
@@ -229,21 +229,21 @@ Ext.define('LIME.controller.WidgetManager', {
             me.setWidgetAttributes(widget);
         }
     },
-    
+
     /*
      * Utility function to get a field by original name
-     * 
+     *
      * @param {markedElementWidget} widget
      * @param {String} name
      * @return {Textfield} found field
      * */
     getWidgetFieldByOrigName: function(widget, name) {
-        return widget.query('textfield[origName='+name+']')[0];   
+        return widget.query('textfield[origName='+name+']')[0];
     },
-    
+
     /*
      * Utility function to set the value of a single widget field
-     * 
+     *
      * @param {markedElementWidget} widget
      * @param {Textfield} field
      * @param {String} value
@@ -257,16 +257,16 @@ Ext.define('LIME.controller.WidgetManager', {
             this.updateWidgetData(widget, field, value);
         }
     },
-    
-    
+
+
     /*
      * Utility function to set and store the attributes (values of all fields) of a widget
-     * 
+     *
      * @param {markedElementWidget} widget
      * */
     setWidgetAttributes: function(widget) {
         var attributes = widget.attributes,
-            result = []; 
+            result = [];
         if (attributes) {
             widget.ownData = widget.ownData || {};
             widget.templates = widget.templates || {};
@@ -275,24 +275,24 @@ Ext.define('LIME.controller.WidgetManager', {
                 result.push({name: obj.name, value: widget.templates[obj.name].apply(widget.ownData)});
             });
         }
-        
+
         if(result.length) {
             this.setElementAttributes(widget.id, result);
         }
     },
-    
+
     /*
      * Wrapper function to set attributes to a marked element
-     * 
+     *
      * @param {String} elementId
      * @param {Array} attributes A list of Objects {name:name, value:value}
      * */
-    
+
     setElementAttributes: function(elementId, attributes) {
         var me = this, node = DocProperties.getMarkedNode(elementId);
         if (!node || !attributes.length) return;
         var updated = attributes.reduce(function(updated, attribute) {
-            return updated || me.setElementAttribute(node, attribute.name, attribute.value);  
+            return updated || me.setElementAttribute(node, attribute.name, attribute.value);
         }, false);
         if(updated)
             Ext.GlobalEvents.fireEvent('nodeAttributesChanged', node);
@@ -304,12 +304,12 @@ Ext.define('LIME.controller.WidgetManager', {
         node.setAttribute(name, value);
         return true;
     },
-    
-    
+
+
     /*
      * This function is called when a field in the widget is changed
      * It cares about updating the attributes of the associated marked element.
-     * 
+     *
      * @param {markedElementWidget} widget
      * @param {Textfield} field
      * @param {String} value
@@ -329,10 +329,10 @@ Ext.define('LIME.controller.WidgetManager', {
             this.setWidgetAttributes(widget);
         }
     },
-    
+
     init : function() {
         var me = this;
-        
+
         me.addTab();
         me.application.on(Statics.eventsNames.editorDomNodeFocused, me.onNodeFocused, me);
         me.application.on(Statics.eventsNames.unfocusedNodes, function() {

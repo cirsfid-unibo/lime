@@ -48,7 +48,7 @@ Ext.define('AknMain.LangProp', {
     singleton : true,
     alternateClassName : 'LangProp',
 
-    name : 'Akoma ntoso',
+    name : 'Akoma Ntoso',
     elIdAttr: 'eId',
     attrPrefix: 'akn_',
     uriPrefix: '/akn',

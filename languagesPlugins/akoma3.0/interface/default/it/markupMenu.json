@@ -59,6 +59,10 @@
         "label": "Allegato",
         "shortLabel": "allegato"
     },
+    "attachments": {
+        "label": "Allegato",
+        "shortLabel": "allegato"
+    },
     "authorialNote": {
         "label": "Nota dell'autore",
         "shortLabel": "nota-autore"
@@ -627,6 +631,10 @@
         "label": "Sotto-titolo",
         "shortLabel": "sotto-titolo"
     },
+    "table": {
+        "label": "Tabella",
+        "shortLabel": "tabella"
+    },
     "tblock": {
         "label": "tblock",
         "shortLabel": "tblock"
@@ -666,6 +674,10 @@
     "wrap": {
         "label": "Coda",
         "shortLabel": "coda"
+    },
+    "wrapUp": {
+        "label": "Coda gerarchia",
+        "shortLabel": "codaGerarchia"
     },
     "writtenStatements": {
         "label": "Dichiarazione scritta",

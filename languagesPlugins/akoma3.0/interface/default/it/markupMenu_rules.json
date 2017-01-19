@@ -1,0 +1,56 @@
+{
+    "elements": {
+        "authorialNote": {
+            "askFor": {
+                "marker": {
+                    "label": "Marker"
+                },
+                "placement": {
+                    "label": "Posizione",
+                    "values": {
+                        "inline": "In linea",
+                        "bottom": "Piè di pagina"
+                    }
+                }
+            }
+        },
+        "componentRef": {
+            "askFor": {
+                "src": {
+                    "label": "Sorgente"
+                },
+                "showAs": {
+                    "label": "Visualizza come"
+                }
+            }
+        },
+        "docCommittee": {
+            "askFor": {
+                "value": {
+                    "label": "Valore"
+                }
+            }
+        },
+        "session": {
+            "askFor": {
+                "value": {
+                    "label": "Valore"
+                }
+            }
+        },
+        "container": {
+            "askFor": {
+                "value": {
+                    "label": "Nome"
+                }
+            }
+        },
+        "block": {
+            "askFor": {
+                "value": {
+                    "label": "Nome"
+                }
+            }
+        }
+    }
+}

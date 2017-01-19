@@ -72,7 +72,11 @@
             "structureParser": "Riconoscimento della struttura",
             "referenceParser": "Riconoscimento dei riferimenti",
             "markedAlready": "Documento marcato",
-            "documentAllMarked": "Ho già marcato quello che sono riuscito a riconoscere automaticamente"
+            "documentAllMarked": "Ho già marcato quello che sono riuscito a riconoscere automaticamente",
+            "parsersErrors": {
+                "LANG_MISSING_ERROR_TITLE": "Errore lingua",
+                "langMissingError": "La lingua del documento non è stata trovata"
+            }
         },
         "es": {
             "parseDocumentText": "Marcado Autimático",
@@ -83,7 +87,11 @@
             "structureParser": "Reconocimiento de la estructura",
             "referenceParser": "Reconocimiento de referencias",
             "markedAlready": "Document is marked",
-            "documentAllMarked": "I marked what I was able to recognize automatically"
+            "documentAllMarked": "I marked what I was able to recognize automatically",
+            "parsersErrors": {
+                "LANG_MISSING_ERROR_TITLE": "Error de idioma",
+                "langMissingError": "Falta el idioma del documento"
+            }
         },
         "ro": {
             "parseDocumentText": "Parser",

@@ -15,6 +15,7 @@
     .arguments { @include Label('argomenti') }
     .article { @include Label('articolo') }
     .attachments { @include Label('allegato') }
+    .attachment { @include Label('allegato') }
     .authorialNote { @include Label('nota-autore') }
     .background { @include Label('fatto') }
     .blockContainer { @include Label('contenitore-blocchi') }

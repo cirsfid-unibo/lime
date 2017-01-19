@@ -65,7 +65,7 @@ Ext.define('LIME.components.uri.Uri', {
                 '<tpl if="isUri">',
                     '<i class="fa fa-toggle-on"></i>Uri',
                 '<tpl else>',
-                    '<i class="fa fa-toggle-off"></i>Path',
+                    '<i class="fa fa-toggle-off"></i>'+Locale.getString('mainEditorPath'),
                 '</tpl>',
             '</a>',
         '</div>'
