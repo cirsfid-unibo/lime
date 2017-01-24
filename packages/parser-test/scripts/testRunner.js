@@ -16,16 +16,30 @@ var totalFiles = 0, doneFiles = 0;
 
 var totalTime = process.hrtime();
 glob(inputDir+'/**/*', function (er, files) {
-    totalFiles = files.length;
-    console.log(totalFiles+' files found.');
+    //files = files.slice(0, 10);
 
-    files = files.map(normalizeFileName);
+    files = files.map(normalizeFileName).filter(fileNotTransformed);
+    totalFiles = files.length;
+    console.log(totalFiles+' files to be tranformed found.');
     tranformFiles(files, function() {
         var totalTimeEnd = process.hrtime(totalTime);
         console.info('Transformed %d files in %ds', totalFiles, totalTimeEnd[0]);
     });
 
 });
+
+function fileNotTransformed(filePath) {
+    var filename = getFileName(filePath)+'.akn.xml';
+    var resultPath = path.join(__dirname, outputDir, filename);
+    return !fs.existsSync(resultPath);
+}
+
+function getFileName(url) {
+    var name = url.substring(url.lastIndexOf('/')+1);
+    // remove extension
+    return name.substring(0, name.lastIndexOf('.'));
+};
+
 
 function normalizeFileName(filePath) {
     var name = path.basename(filePath);
@@ -56,7 +70,7 @@ function transformFile(file, cb) {
             var tranformTimeEnd = process.hrtime(tranformTime);
             if (err) {
                 console.error('Error transform url:'+url, err);
-                return cb(true);
+                //return cb(true);
             }
             console.info('%d/%d (%ds) %s', ++doneFiles, totalFiles, tranformTimeEnd[0], stdout);
             if (stderr)
