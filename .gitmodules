@@ -1,0 +1,3 @@
+[submodule "php/parsers"]
+	path = php/parsers
+	url = git@github.com:cirsfid-unibo/akn-parsers-php.git
