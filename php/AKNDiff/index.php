@@ -48,6 +48,17 @@
 
  
 require_once('newAKNDiff09.php');
+require_once('RawXmlDiff.php');
 
-$diff = new newAKNDiff09();
+$format = (isset($_GET['format'])) ? $_GET['format'] : 'text';
+$doc_1 = (isset($_GET['from'])) ? $_GET['from'] : FALSE;
+$doc_2 = (isset($_GET['to'])) ? $_GET['to'] : FALSE;
+$edit = (isset($_GET['edit'])) ? TRUE : FALSE;
+
+if ($format === 'text') {
+    $diff = new newAKNDiff09($doc_1, $doc_2, $edit);
+} else {
+    $diff = new RawXmlDiff($doc_1, $doc_2);
+}
+
 $diff->render();

@@ -77,11 +77,8 @@ class AKNDiff {
 	protected $xml_new,$xml_old,$html_new,$html_old,$leftToRight;
 	protected $tableDOM,$tableRoot,$mods;
 
-	public function __construct() {
-		$doc_1 = (isset($_GET['from'])) ? $_GET['from'] : 'http://localhost/26318-Panes/4.uy_bill_2005-05-03.xml';
-		$doc_2 = (isset($_GET['to'])) ? $_GET['to'] : 'http://localhost/26318-Panes/3.uy_bill_2005-05-02-ejecutivo.xml';
-
-		$this->edit = (isset($_GET['edit'])) ? TRUE : FALSE;
+	public function __construct($doc_1, $doc_2, $edit) {
+		$this->edit = $edit;
 		
 		if ($doc_1 && $doc_2) {
 			$this->doc1Url = $doc_1;

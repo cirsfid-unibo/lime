@@ -51,98 +51,44 @@ require_once('lib/class.CodeDiff.php');
 require_once('../utils.php');
 require_once('../config.php');
 
-class DocumentDiff {
+class RawXmlDiff {
 	
 	const DIFFSTYLE = "https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js";
-	const CSS = "data/diff.css";
-	const XML = 'xml'; const TEXT = 'text';
+	const CSS = "data/diffText.css";
 	private $from,$to,$css,$format,$doc;
 	
-	public function __construct() {
-		$this->from = (isset($_GET['from'])) ? $_GET['from'] : FALSE;
-		$this->to = (isset($_GET['to'])) ? $_GET['to'] : FALSE;
-		$this->css = (isset($_GET['css'])) ? $_GET['css'] : self::CSS;
-		$this->format = (isset($_GET['format'])) ? $_GET['format'] : self::TEXT;
-		$this->expression = (isset($_GET['expression'])) ? $_GET['expression'] : FALSE;
+	public function __construct($from, $to) {
+		$this->from = $from;
+		$this->to = $to;
+		// create container document
+		$this->doc = new DOMDocument();
+		
+		if($this->from && $this->to) {
+			$result = $this->compare();
+		} else {
+			$result = '<p class="diffProblems"><em>From Document</em> does not match to <em>To Document</em>
+			           for this expression: <strong>' . $this->expression . '</strong></p>';
+		}
+		
+		$this->prepareDocument($result);
 	}
 	
-	private function checkExpression() {
-		
-		if($this->expression) {
-			
-			/////////////////////////////////////////////////////////////
-			
-			$fromDOM = new DOMDocument();
-			$fromDOM->load($this->from);
-			$uri = $fromDOM->documentElement->lookupnamespaceURI(NULL);
-			
-			$xpath = new DOMXPath($fromDOM);
-			$xpath->registerNamespace('doc', $uri);
-			$fromExp = $xpath->evaluate($this->expression);
-			
-			//////////////////////////////////////////////////////////////
-			
-			$toDOM = new DOMDocument();
-			$toDOM->load($this->to);
-			$uri = $toDOM->documentElement->lookupnamespaceURI(NULL);
-			
-			$xpath = new DOMXPath($toDOM);
-			$xpath->registerNamespace('doc', $uri);
-			$toExp = $xpath->evaluate($this->expression);
-			
-			//////////////////////////////////////////////////////////////
-		
-			$result = ($fromExp == $toExp) ? TRUE : FALSE;	
-			
-		} else $result = TRUE;
-		
-		return $result;
+	public function render() {
+		echo $this->renderXML();
 	}
-	
+
 	private function compareXML() {
 		$result = CodeDiff::compareFiles($this->from,$this->to);
 		$result = CodeDiff::toTable($result);
 		return $result;
 	}
 	
-	private function compareText() {
-		$fromDOM = new DOMDocument();
-		$fromDOM->load($this->from);
-		$this->from = aknToHtml($fromDOM,'data/AKNToXHTMLDiff.xsl');
-		
-		$toDOM = new DOMDocument();
-		$toDOM->load($this->to);
-		$this->to = aknToHtml($toDOM,'data/AKNToXHTMLDiff.xsl');
-		
-		$result = TextDiff::compare($this->from,$this->to);
-		$result = TextDiff::toTable($result,'','');
-		return $result;	
-	}
-	
 	private function compare() {
-		if($this->format == self::XML) {
-			$result = $this->compareXML();
-		} elseif ($this->format == self::TEXT) {
-			$result = $this->compareText();
-		}
-		return $result;
+		return $this->compareXML();;
 	}
 	
 	private function renderXML() {
 		return $this->doc->saveHTML();
-	}
-	
-	private function renderText() {
-		return htmlspecialchars_decode($this->doc->saveHTML());
-	}
-	
-	private function render() {
-		if($this->format == self::XML) {
-			$result = $this->renderXML();
-		} elseif ($this->format == self::TEXT) {
-			$result = $this->renderText();
-		}
-		echo $result;
 	}
 	
 	private function prepareDocument($result) {
@@ -160,35 +106,17 @@ class DocumentDiff {
 		$headNode->appendChild($metaNode);
 		$headNode->appendChild($scriptNode);
 		
-		if($this->css) {
+		if(self::CSS) {
 			$styleNode = $this->doc->createElement('link');
 			$styleNode->setAttribute('rel','stylesheet');
 			$styleNode->setAttribute('type','text/css');
-			$styleNode->setAttribute('href',$this->css);
+			$styleNode->setAttribute('href',self::CSS);
 			$headNode->appendChild($styleNode);
 		}
 		
 		$root = $this->doc->documentElement;
 		$root->insertBefore($headNode,$root->firstChild);
 	}
-	
-	public function run() {
-		// create container document
-		$this->doc = new DOMDocument();
-		
-		if($this->from && $this->to && $this->checkExpression()) {
-			$result = $this->compare();
-		} else {
-			$result = '<p class="diffProblems"><em>From Document</em> does not match to <em>To Document</em>
-			           for this expression: <strong>' . $this->expression . '</strong></p>';
-		}
-		
-		$this->prepareDocument($result);
-		$this->render();
-	}
 }
-
-$documentDiff = new DocumentDiff();
-$documentDiff->run();
 
 ?>
