@@ -1,3 +1,6 @@
 [submodule "php/parsers"]
 	path = php/parsers
 	url = git@github.com:cirsfid-unibo/akn-parsers-php.git
+[submodule "php/AKNDiff"]
+	path = php/AKNDiff
+	url = git@github.com:cirsfid-unibo/akn-diff-php.git
