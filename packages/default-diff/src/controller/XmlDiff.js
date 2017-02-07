@@ -66,7 +66,6 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
     ],
 
     config: {
-        diffXmlServiceUrl : "diff/index.php",
         diffServiceUrl : "AKNDiff/index.php",
         initDiffPage: "AKNDiff/data/empty.html"
     },
@@ -75,7 +74,7 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
     // or the generic XML diff, depending on which tab is active.
     getDiff: function(tab, selector) {
         var format = tab.down("*[cls=diffContainer]").getActiveTab().format || 'text',
-            baseUrl = (format=="xml") ? this.getDiffXmlServiceUrl() : this.getDiffServiceUrl(),
+            baseUrl = this.getDiffServiceUrl(),
             url = Server.getPhpServer() + baseUrl + '?' + Ext.urlEncode({
                 from: selector.firstDoc.url,
                 to: selector.secondDoc.url,
