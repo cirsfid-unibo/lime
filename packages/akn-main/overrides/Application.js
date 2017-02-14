@@ -51,12 +51,14 @@ Ext.define('AknMain.Application', {
         'AknMain.parsers.Num',
         'AknMain.metadata.Store',
         'AknMain.Reference',
-        'AknMain.notes.Controller'
+        'AknMain.notes.Controller',
+        'AknMain.attachments.AttachmentsHandler'
     ],
 
     init: function () {
         Ext.create('AknMain.metadata.Store');
         this.controllers.push('AknMain.notes.Controller');
+        this.controllers.push('AknMain.attachments.AttachmentsHandler');
         this.callParent(arguments);
     }
 });

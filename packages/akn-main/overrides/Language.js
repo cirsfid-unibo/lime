@@ -51,7 +51,8 @@ Ext.define('AknMain.Language', {
         'AknMain.notes.Controller',
         'AknMain.LangProp',
         'AknMain.IdGenerator',
-        'AknMain.utilities.String'
+        'AknMain.utilities.String',
+        'AknMain.attachments.AttachmentsHandler'
     ],
 
     config: {
@@ -196,6 +197,8 @@ Ext.define('AknMain.Language', {
                 node.setAttribute(nameAttr, type);
             }
         });
+        this.getController('AknMain.attachments.AttachmentsHandler')
+            .beforeTranslate(params.docDom);
         return params;
     },
 

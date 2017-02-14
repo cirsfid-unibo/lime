@@ -49,7 +49,7 @@ Ext.define('AknMain.IdGenerator', {
 
     noPrefixElements : ["collectionBody", "body", "mainBody", "documentRef", "componentRef", "authorialNote",
                         "ref", "person", "role", "location"],
-    noIdElements: ["preface", "preamble", "body", "mainBody", "collectionBody"],
+    noIdElements: ["preface", "preamble", "body", "mainBody", "collectionBody", "attachments"],
     noIdPatterns: ["block", "inline"],
     exceptIdElements: ["mod", "documentRef", "componentRef", "heading", "ins", "del", "quotedText",
                         "ref", "person", "role", "location"],
