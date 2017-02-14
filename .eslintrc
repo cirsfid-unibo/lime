@@ -1,0 +1,23 @@
+{
+  "env": {
+    "browser": true
+  },
+  "globals": {
+    "Ext": true,
+    "DomUtils": true,
+    "Locale": true,
+    "Utilities": true,
+    "Statics": true,
+    "DocProperties": true,
+    "Server": true,
+    "User": true,
+    "Interpreters": true
+  },
+  "rules": {
+    "no-bitwise": 2,
+    "no-extend-native": 2,
+    "block-scoped-var": 2,
+    "no-undef": 2,
+    "no-unused-vars": 2
+  }
+}
