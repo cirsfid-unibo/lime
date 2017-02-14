@@ -501,6 +501,15 @@
                     "attribute": "name"
                 }
             }
+        },
+        "attachment": {
+            "askFor": {
+                "value": {
+                    "type": "doctype",
+                    "label": "Type",
+                    "attribute": "type"
+                }
+            }
         }
     }
 }

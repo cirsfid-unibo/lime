@@ -127,6 +127,8 @@
                *[local-name()='collectionBody'] |
                *[local-name()='component'] |
              *[local-name()='arguments'] |
+             *[local-name()='attachments'] |
+             *[local-name()='attachment'] |
              *[local-name()='remedias'] |
              *[local-name()='motivation'] |
              *[local-name()='decision'] |
@@ -390,7 +392,6 @@
             *[local-name()='note'] |
             *[local-name()='proprietary'] |
             *[local-name()='presentation'] |
-            *[local-name()='attachments'] |
             *[local-name()='debateBody'] |
             *[local-name()='amendmentBody'] |
             *[local-name()='fragment'] |

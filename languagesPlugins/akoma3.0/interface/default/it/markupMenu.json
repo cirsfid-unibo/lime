@@ -56,10 +56,10 @@
         "shortLabel": "articolo"
     },
     "attachments": {
-        "label": "Allegato",
-        "shortLabel": "allegato"
+        "label": "Allegati",
+        "shortLabel": "allegati"
     },
-    "attachments": {
+    "attachment": {
         "label": "Allegato",
         "shortLabel": "allegato"
     },
