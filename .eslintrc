@@ -5,6 +5,7 @@
   "globals": {
     "Ext": true,
     "DomUtils": true,
+    "Config": true,
     "Locale": true,
     "Utilities": true,
     "Statics": true,
