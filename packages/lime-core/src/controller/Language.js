@@ -220,11 +220,19 @@ Ext.define('LIME.controller.Language', {
             meta = docMeta && docMeta.metaDom;
         }
 
+        var getMetaNode = function(node) {
+            var children = node.children;
+            for (var i = 0; i < children.length; i++) {
+                if (children[i].classList.contains('meta'))
+                    return children[i];
+            }
+        }
+
         if (meta && root) {
             var metaDom = Ext.clone(meta);
             metaDom.setAttribute("class", "meta");
 
-            var prevMeta = root.querySelector("*[class*=meta]");
+            var prevMeta = getMetaNode(root);
             if (!prevMeta)
                 root.insertBefore(metaDom, root.firstChild);
             else
