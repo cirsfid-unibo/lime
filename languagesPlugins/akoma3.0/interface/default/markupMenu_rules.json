@@ -504,10 +504,15 @@
         },
         "attachment": {
             "askFor": {
-                "value": {
+                "doctype": {
                     "type": "doctype",
                     "label": "Type",
                     "attribute": "type"
+                },
+                "docname": {
+                    "type": "text",
+                    "label": "Name",
+                    "attribute": "name"
                 }
             }
         }

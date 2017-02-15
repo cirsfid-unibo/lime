@@ -54,8 +54,11 @@
         },
         "attachment": {
             "askFor": {
-                "value": {
+                "doctype": {
                     "label": "Tipo"
+                },
+                "docname": {
+                    "label": "Nome"
                 }
             }
         }
