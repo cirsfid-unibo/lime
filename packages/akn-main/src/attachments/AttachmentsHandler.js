@@ -112,8 +112,6 @@ Ext.define('AknMain.attachments.AttachmentsHandler', {
 
     handleAttachment: function(node) {
         this.ensureAttachmentsParent(node);
-        this.ensureContentWrapper(node);
-        this.setAttachmentDocType(node);
         this.focusNode(node);
     },
 
@@ -143,6 +141,40 @@ Ext.define('AknMain.attachments.AttachmentsHandler', {
         return this.moveNodeToDocumentRoot(attachmentsNode);
     },
 
+
+    getContentWrapper: function(node) {
+        return node.getElementsByClassName(DocProperties.documentBaseClass)[0];
+    },
+
+    
+    beforeTranslate: function(docDom) {
+        Ext.Array.toArray(
+            docDom.getElementsByClassName('attachment')
+        ).forEach(function(attachmentNode, index) {
+            this.setAttachmentDocType(attachmentNode);
+            this.setAttachmentDocName(attachmentNode);
+            this.addAttachmentMetadata(attachmentNode, index);
+        }, this);
+    },
+
+    setAttachmentDocType: function(node) {
+        var wrapper = this.ensureContentWrapper(node);
+        var docType = node.getAttribute('akn_type') || 'doc';
+        if (!wrapper.classList.contains(docType)) {
+            wrapper.setAttribute('class', DocProperties.documentBaseClass+' '+docType);
+        }
+        // Remove the akn_type used temporary only here
+        node.removeAttribute('akn_type');
+    },
+
+    setAttachmentDocName: function(node) {
+        var wrapper = this.ensureContentWrapper(node);
+        var docName = node.getAttribute('akn_name') || wrapper.classList[1];
+        wrapper.setAttribute('akn_name', docName);
+        // Remove the akn_name used temporary only here
+        node.removeAttribute('akn_name');
+    },
+
     ensureContentWrapper: function(node) {
         var wrapper = this.getContentWrapper(node);
         if ( !wrapper ) {
@@ -153,34 +185,19 @@ Ext.define('AknMain.attachments.AttachmentsHandler', {
         return wrapper;
     },
 
-    getContentWrapper: function(node) {
-        return node.getElementsByClassName(DocProperties.documentBaseClass)[0];
-    },
-
-    setAttachmentDocType: function(node) {
-        var wrapper = this.ensureContentWrapper(node);
-        var docType = node.getAttribute('akn_type') || 'doc';
-        if (!wrapper.classList.contains(docType)) {
-            wrapper.setAttribute('class', DocProperties.documentBaseClass+' '+docType);
-        }
-    },
-
-    beforeTranslate: function(docDom) {
-        Ext.Array.toArray(
-            docDom.getElementsByClassName('attachment')
-        ).forEach(function(attachmentNode, index) {
-            // Remove the akn_type used temporary only in setAttachmentDocType
-            attachmentNode.removeAttribute('akn_type');
-            this.addAttachmentMetadata(attachmentNode, index);
-        }, this);
-    },
-
     addAttachmentMetadata: function(node, index) {
-        var docNode = this.getContentWrapper(node);
         var language = this.getController('Language');
+        var docNode = this.getContentWrapper(node);
         var metaNode = docNode.insertBefore(language.createBlankMeta(), docNode.firstChild);
-        //console.log(overwriteMetadata);
-        //language.overwriteMetadata(metaNode, Ext.getStore('metadata').getMainDocument());
-        console.log(docNode, metaNode);
+        language.overwriteMetadata(
+            metaNode,
+            this.createAttachmentMetadata('attachment'+(index+1))
+        );
+    },
+
+    createAttachmentMetadata: function(componentName) {
+        var metaStore = Ext.getStore('metadata').getMainDocument().clone();
+        metaStore.set('component', componentName);
+        return metaStore;
     }
 });
