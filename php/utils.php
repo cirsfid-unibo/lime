@@ -46,7 +46,6 @@
  */
 
 require_once('config.php');
-require_once('lib/Text_LanguageDetect/Text/LanguageDetect.php');
 require_once('lib/Encoding.php');
 use \ForceUTF8\Encoding;
  
@@ -180,23 +179,6 @@ function createAttributeSet($dom, $selector, $rules) {
 		$attributeSet->appendChild($attribute);
 	}
 	return $attributeSet;
-}
-	
-function detectLanguage($text, $length = 2) {
-    $l = new Text_LanguageDetect();
-
-	try {
-	    $l->setNameMode($length);
-	
-	    $result = $l->detect($text, 1);
-		$languages = array_keys($result);
-		if (!count($languages)) return NULL;
-		// Temporary solution in order to have the same romanian language code
-		$language = ($languages[0] == 'ron') ? 'rum' : $languages[0];
-	    return $language;
-	} catch (Text_LanguageDetect_Exception $e) {
-	    return NULL;
-	}
 }
 
 function forceUTF8($str) {
