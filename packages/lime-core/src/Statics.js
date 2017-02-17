@@ -135,7 +135,6 @@ Ext.define('LIME.Statics', {
      services: {
          htmlToPdf: 'HTML_TO_PDF',
          xsltTrasform: 'XSLT_TRANSFORM',
-         fileToHtml: 'FILE_TO_HTML',
          filterUrls: 'FILTER_URLS'
      }
 

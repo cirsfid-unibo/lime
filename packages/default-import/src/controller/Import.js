@@ -119,7 +119,7 @@ Ext.define('DefaultImport.controller.Import', {
                 title : Locale.getString("importDocument", me.getPluginName()),
                 uploadCallback : me.uploadFinished,
                 callbackScope: me,
-                uploadUrl : Server.getAjaxUrl(),
+                uploadUrl : Server.getNodeServer()+'/documentsdb/FileToHtml',
                 uploadParams : me.getUploadParams()
             });
         uploaderView.show();
@@ -127,13 +127,13 @@ Ext.define('DefaultImport.controller.Import', {
 
     getUploadParams: function() {
         return {
-            requestedService: Statics.services.fileToHtml,
             transformFile: this.getTransformationFile()
         }
     },
 
     getTransformationFile: function() {
-        return Config.getLanguageTransformationFile("languageToLIME");
+        return Config.getAppUrl() +
+                    Config.getLanguageTransformationFile("languageToLIME");
     },
 
     init : function() {
