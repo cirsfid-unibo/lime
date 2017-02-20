@@ -97,45 +97,24 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
     },
     
     validateXml : function(xml) {
-        var me = this, app = me.application, schema = Config.getLanguageSchemaPath(),
-            schemaReg = Config.getLanguageConfig().schemaRegex,
-            schemaSuffix = xml.match(schemaReg);
+        var app = this.application;
         app.fireEvent(Statics.eventsNames.progressStart, null, {
             value : 0.2,
             text : " "
         });
-        schemaSuffix = schemaSuffix && schemaSuffix[2];
-
-        if(!Ext.isEmpty(schemaSuffix)) {
-            schema = schema.replace(".xsd", "_"+schemaSuffix+".xsd");
-        }
-        Ext.Ajax.request({
-            url : Server.getAjaxUrl(),
-            method : 'POST',
-            // send the content of the editor
-            params : {
-                requestedService : "XML_VALIDATION",
-                source : xml,
-                schema : schema
-            },
-            // the scope of the ajax request
-            scope : this,
-            success : this.onValidationResult,
-            callback : function() {
-                app.fireEvent(Statics.eventsNames.progressEnd);
-            }
+        Server.validateXml(xml, this.onValidationResult.bind(this), function(error) {
+            Ext.Msg.alert(Locale.getString('error'), error);
+        }, function() {
+            app.fireEvent(Statics.eventsNames.progressEnd);
         });
     },
 
     onValidationResult: function(result) {
-        var jsonData = Ext.decode(result.responseText, true);
+        var jsonData = Ext.decode(result, true);
         if(!jsonData) {
             jsonData = {
                 decodeError : true
             };
-        } else {
-            // Zero based index to one based
-            jsonData.line = jsonData.line + 1;
         }
         this.createResultWindow(jsonData);
     },
@@ -146,20 +125,15 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
         this.aknIdMapping = aknIdMapping;
     },
 
-    createResultWindow: function(errorData) {
-        var errors = [].concat(errorData["fatal_error"])
-                        .concat(errorData["error"])
-                        .concat(errorData["warning"]).filter(function(el) {
-                            return el != undefined;
-                        });
-        this.errorData = errors;
+    createResultWindow: function(result) {
+        this.errorData = result.errors;
 
-        if ( this.errorData.length ) {
-            this.createErrorsResult();
-        } else if ( errorData.started ) {
+        if (result.success) {
             this.createSuccessResult();
+        } else if ( this.errorData.length ) {
+            this.createErrorsResult();
         } else {
-            Ext.Msg.alert(Locale.getString('error'), errorData.msg);
+            Ext.Msg.alert(Locale.getString('error'), '');
         }
     },
 
@@ -231,9 +205,9 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
             technicalMessage = moreInfoTpl.apply({
                 moreInfoHeader: this.getString("technicalInfo"),
                 moreInfo: moreInfoTextTpl.apply(Ext.merge(Ext.clone(item), {
-                    lineString: Ext.String.htmlEncode(item.lineString)
+                    lineString: Ext.String.htmlEncode(this.xmlRows[item.line])
                 }))
-            });
+            }),
             isAknPreview = this.getMainTabs().getActiveTab().xtype == "aknPreviewMainTab",
             mainMessage = isAknPreview ? technicalMessage : simpleMessage,
             secondaryMessage = isAknPreview ? simpleMessage : technicalMessage;
@@ -407,12 +381,12 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
 
     findElementName: function(errorData) {
         var elNameRegex = new RegExp("^Element '{[^}]+}(\\w+)':");
-        var name = errorData.message.match(elNameRegex);
+        var name = errorData.error.match(elNameRegex);
         return (name && name.length == 2) ? name[1] : null;
     },
 
     findEditorNode: function(name, errorData) {
-        var me = this, row = errorData.lineString || this.xmlRows[errorData.line],
+        var me = this, row = this.xmlRows[errorData.line],
             editorBody = this.getController('Editor').getBody(),
             editorNodes = editorBody.querySelectorAll('.'+name);
 
