@@ -46,7 +46,6 @@
  */
 
 require_once('config.php');
-require_once('lib/Encoding.php');
 use \ForceUTF8\Encoding;
  
 function aknToHtml($input,$stylesheet=FALSE,$language=FALSE, $fullOutput=FALSE, $akn2xsl=FALSE, $akn3xsl=FALSE) {
@@ -179,10 +178,6 @@ function createAttributeSet($dom, $selector, $rules) {
 		$attributeSet->appendChild($attribute);
 	}
 	return $attributeSet;
-}
-
-function forceUTF8($str) {
-	return Encoding::toUTF8($str);
 }
 
 
