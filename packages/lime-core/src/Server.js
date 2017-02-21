@@ -226,31 +226,37 @@ Ext.define('LIME.Server', {
         });
     },
 
-    // ====================
-    // ====== PHP =========
-    // ====================
-
-    // Transform XML in content with the given xslt path
     applyXslt: function (content, xslt, success, failure, extraConfig) {
-        this.request({
-            url: '{phpServer}Services.php',
-            method: 'POST',
-            params: Ext.merge({
-                requestedService: Statics.services.xsltTrasform,
-                transformFile: xslt,
-                input: content,
+        var params = Ext.merge({
+                source: content,
                 output: '',
-                includeFiles: ''
-            }, extraConfig),
+                includeFiles: []
+        }, extraConfig);
+
+        var urlMap = function(path) {
+            return path.startsWith('http') ? path : Config.getAppUrl() + path;
+        };
+        params.includeFiles = params.includeFiles.map(urlMap);
+        params.transformFiles = [].concat(xslt).map(urlMap);
+        this.request({
+            url: '{nodeServer}/xml/XsltTransform',
+            method: 'POST',
+            jsonData: params,
             success: function (response) {
                 success(response.responseText);
             },
-            failure: failure || function (error) {
-                Ext.log('XSLT conversion failed', xslt, error);
+            failure: function (response) {
+                Ext.log('XSLT conversion failed', xslt, response);
+                if (failure) {
+                    failure(response.statusText+': '+response.responseText);
+                }
             }
         });
     },
 
+    // ====================
+    // ====== PHP =========
+    // ====================
 
     // Given a list of urls, return the ones which exist.
     // Parameters:

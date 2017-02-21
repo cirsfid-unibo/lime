@@ -197,6 +197,10 @@ Ext.define('AknMain.Language', {
                 node.setAttribute(nameAttr, type);
             }
         });
+        // Removing data-old-text attribute it's useless for the output
+        Ext.each(dom.querySelectorAll('[data-old-text]'), function(node) {
+            node.removeAttribute('data-old-text');
+        });
         this.getController('AknMain.attachments.AttachmentsHandler')
             .beforeTranslate(params.docDom);
         return params;
@@ -205,11 +209,12 @@ Ext.define('AknMain.Language', {
     translateContent: function(html, success, failure) {
         var config = {
             output : 'akn',
-            includeFiles : Config.getLocaleXslPath()
+            includeFiles : [Config.getLocaleXslPath()]
         };
         var xslt = Config.getLanguageTransformationFile("LIMEtoLanguage");
+        var attributeNormalizer = Config.getLanguagePath()+'AknAttributesNormalizer.xsl';
         html = AknMain.utilities.String.removeDiacriticsFromAttrs(html)
-        Server.applyXslt(html, xslt, success, failure, config);
+        Server.applyXslt(html, [xslt,attributeNormalizer], success, failure, config);
     },
 
     getLanguagePrefix: function() {
