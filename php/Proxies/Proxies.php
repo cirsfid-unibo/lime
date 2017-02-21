@@ -82,10 +82,6 @@
 				//	header("Content-Type: text/xml");
 					$this->_service = new Proxies_Services_XSLTTransform($this->_params);
 					break;
-				case 'HTML_TO_PDF':
-					header("Content-Type: application/json");
-					$this->_service = new Proxies_Services_HtmlToPdf($this->_params);
-					break;
 				case 'FILTER_URLS':
 					header("Content-Type: application/json");
 					$this->_service = new Proxies_Services_FilterUrls($this->_params);

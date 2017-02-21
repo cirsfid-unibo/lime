@@ -56,17 +56,5 @@
     // the xslt that normalizes the attributes
     define('ATTRIBUTES_NORMALIZER', XSLT_BASE_DIR . 'AknAttributesNormalizer.xsl');
 
-    // relative path to temp directory
-    define('TMPSUBDIRLOCALPATH', '../../tmp/');
-
     // path to root of LIME
     define('LIMEROOT', realpath(dirname(__FILE__)."/../"));
-
-    // web relative path to temp directory
-    define('TMPSUBDIRWEBPATH', 'tmp/');
-
-    // the name of pdf files
-    define('PDFFILENAME', 'final.pdf');
-
-    // Enable/Disable logging for validation service
-    define('VALIDATION_LOG', FALSE);
