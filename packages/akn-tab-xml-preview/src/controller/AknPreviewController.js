@@ -66,9 +66,11 @@ Ext.define('AknTabXmlPreview.controller.AknPreviewController', {
             var me = this,
                 activeTab = this.getXml().up("main").getActiveTab();
             if (activeTab == this.getXml()) {
+                activeTab.setLoading(true);
                 me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
                     me.updateContent(xml);
-                }, this.getXml());    
+                    activeTab.setLoading(false);
+                });
             }
         }
     },
