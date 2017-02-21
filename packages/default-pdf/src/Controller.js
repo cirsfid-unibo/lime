@@ -65,62 +65,24 @@ Ext.define('DefaultPdf.Controller', {
         var me = this;
         this.control({
             'pdfPreviewMainTab' : {
-                activate : me.initPdf
+                activate : me.callPdfService
             }
         });
     },
     
-    initPdf: function() {
-        var me = this,
-            html = me.getController("Editor").getDocHtml();
-        
-        me.callPdfService(html);
-    },
-    
-    callPdfService: function(html) {
-        var me = this, pdfTab = me.getPdf(), viewport = me.getAppViewport();
+    callPdfService: function() {
+        var pdfTab = this.getPdf(),
+            viewport = this.getAppViewport();
 
-        // TODO: get this work on IE
-        // viewport.setLoading(true);
-        // var exportCtl = me.getController('DefaultExport.Controller');
-        // var extension = 'pdf';
-        // var mime = exportCtl.getMime(extension);
-        // console.log('calling export', mime);
-        // Server.aknExportTo(DocProperties.getDocId(), extension, mime, function (data) {
-        //     var blob = new Blob([data], {type: mime});
-        //     var url = window.URL.createObjectURL(blob);
-        //     pdfTab.setPdf(url);
-        //     viewport.setLoading(false);
-        // });
-
+        // TODO: get this work on IE or who cares about IE, it's a big bug not a browser.
         viewport.setLoading(true);
-        Ext.Ajax.request({
-            url : Server.getAjaxUrl(),
-            method : 'POST',
-            // send the content in html format
-            params : {
-                requestedService: Statics.services.htmlToPdf,
-                source: html
-            },
-            scope : me,
-            // if the translation was is performed
-            success : function(result, request) {
-                var jsonData = Ext.decode(result.responseText, true);
-                
-                if(!jsonData) {
-                    jsonData = {status: "Error", description: "Reading results error"};
-                }
-                //If there is an url set it in the panel otherwise show the error
-                if (jsonData.absolutePathPDF) {
-                    pdfTab.setPdf(jsonData.absolutePathPDF);
-                } else {
-                    Ext.MessageBox.alert(Ext.String.capitalize(jsonData.status), jsonData.description);
-                }
-                viewport.setLoading(false);
-            },
-            failure: function() {
-                viewport.setLoading(false);
-            }
+        var extension = 'pdf';
+        var mime = this.getController('DefaultExport.Controller').getMime(extension);
+        Server.aknExportTo(DocProperties.getDocId(), extension, mime, function (data) {
+            var blob = new Blob([data], {type: mime});
+            var url = window.URL.createObjectURL(blob);
+            pdfTab.setPdf(url);
+            viewport.setLoading(false);
         });
     }
 });
