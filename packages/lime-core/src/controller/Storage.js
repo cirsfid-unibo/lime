@@ -252,10 +252,14 @@ Ext.define('LIME.controller.Storage', {
         // Detect the right XSLT for HTMLToso conversion
         var lang = Utilities.detectMarkingLang(content);
         var xslt = Config.getLanguageTransformationFile("languageToLIME", lang);
+        var me = this;
         Server.applyXslt(content, xslt, function (content) {
             callback(content, lang);
         }, function (error) {
-            console.warn('Error translating file', filePath, xslt, error);
+            Ext.Msg.alert({
+                title: Locale.strings.error,
+                msg:  error
+            });
             me.application.fireEvent(Statics.eventsNames.progressEnd);
         });
     },
