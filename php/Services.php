@@ -70,9 +70,7 @@
 
     // requires the configuration file
     require('./config.php');
-    require('./utils.php');
     require('./Proxies/Services/Proxies_Services_Interface.php');
-    require('./Proxies/Services/Proxies_Services_XSLTTransform.php');
     require('./Proxies/Services/Proxies_Services_FilterUrls.php');
     require('./Proxies/Proxies.php');
 

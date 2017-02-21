@@ -78,10 +78,6 @@
 			// create the requested service instance
 			switch($this->_requestedService)
 			{
-				case 'XSLT_TRANSFORM':
-				//	header("Content-Type: text/xml");
-					$this->_service = new Proxies_Services_XSLTTransform($this->_params);
-					break;
 				case 'FILTER_URLS':
 					header("Content-Type: application/json");
 					$this->_service = new Proxies_Services_FilterUrls($this->_params);

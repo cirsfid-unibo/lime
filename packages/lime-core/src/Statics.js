@@ -133,7 +133,6 @@ Ext.define('LIME.Statics', {
      },
 
      services: {
-         xsltTrasform: 'XSLT_TRANSFORM',
          filterUrls: 'FILTER_URLS'
      }
 

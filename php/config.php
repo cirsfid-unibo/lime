@@ -49,11 +49,5 @@
      * This files contains all the configurations strings for the server side calls
      */
 
-    // the base directory of the xslt stylesheets
-    define('XSLT_BASE_DIR', dirname(__FILE__) . '/../resources/xslt/');
-
-    // the xslt that normalizes the attributes
-    define('ATTRIBUTES_NORMALIZER', XSLT_BASE_DIR . 'AknAttributesNormalizer.xsl');
-
     // path to root of LIME
     define('LIMEROOT', realpath(dirname(__FILE__)."/../"));
