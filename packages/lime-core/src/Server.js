@@ -161,9 +161,6 @@ Ext.define('LIME.Server', {
 
     // Convert PDF and Doc files to html
     fileToHtml: function (path, success, failure) {
-        var username = User.username,
-            password = User.password;
-
         this.authRequest({
             method: 'GET',
             url: '{nodeServer}/documentsdb/Documents' + path,
@@ -171,11 +168,8 @@ Ext.define('LIME.Server', {
                 Accept: 'text/html'
             },
             success: function (response) {
-                var xslt = 'resources/xslt/CleanConvertedHtml.xsl';
-                Server.applyXslt(DomUtils.convertNbsp(response.responseText), xslt, function(html, lang) {
-                    html = DomUtils.normalizeBr(DomUtils.riconvertNbsp(html));
-                    success(html, lang);
-                }, failure);
+                var html = DomUtils.normalizeBr(response.responseText);
+                success(html);
             },
             failure: failure
         });
