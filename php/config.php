@@ -53,20 +53,8 @@
     // the base directory of the xslt stylesheets
     define('XSLT_BASE_DIR', dirname(__FILE__) . '/../resources/xslt/');
 
-    // the xslt that translates akomantoso to pdf
-    define('AKN_TO_PDF', XSLT_BASE_DIR . 'AknToPdfGeneric.xsl');
-
-    // the xslt that cleans an abiword converted document's html up
-    define('CLEAN_CONVERTED_HTML', XSLT_BASE_DIR . 'CleanConvertedHtml.xsl');
-
     // the xslt that normalizes the attributes
     define('ATTRIBUTES_NORMALIZER', XSLT_BASE_DIR . 'AknAttributesNormalizer.xsl');
-
-    // absolute path to Fop utility
-    // this path is specified as an absolute path however FOP is included into the main project
-    // package
-    // DEPRECATED
-    define('FOP_COMMAND', realpath(dirname(__FILE__)."/lib/isafop/fop"));
 
     // relative path to temp directory
     define('TMPSUBDIRLOCALPATH', '../../tmp/');
@@ -76,12 +64,6 @@
 
     // web relative path to temp directory
     define('TMPSUBDIRWEBPATH', 'tmp/');
-
-    // the name of source xml files
-    define('SOURCEXMLFILENAME', 'source.xml');
-
-    // the name of fo xsl files
-    define('XSLFOFILENAME', 'intermediate.xml');
 
     // the name of pdf files
     define('PDFFILENAME', 'final.pdf');

@@ -75,7 +75,6 @@
     require('./Proxies/Services/Proxies_Services_XSLTTransform.php');
     require('./Proxies/Services/Proxies_Services_HtmlToPdf.php');
     require('./Proxies/Services/Proxies_Services_FilterUrls.php');
-    require('./Proxies/Services/Proxies_Services_AknToPdfFop.php');
     require('./Proxies/Proxies.php');
 
     // the method of the request

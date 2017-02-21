@@ -90,10 +90,6 @@
 					header("Content-Type: application/json");
 					$this->_service = new Proxies_Services_FilterUrls($this->_params);
 					break;
-				case 'AKN_TO_PDF_FOP':
-					header("Content-Type: application/json");
-					$this->_service = new Proxies_Services_AknToPdfFop($this->_params);
-					break;
 			}
 
 		}
