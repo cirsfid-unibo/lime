@@ -4,7 +4,6 @@
         "docLocale": "it"
     },
     "server": {
-        "node": "http://localhost:9006",
-        "php": "php/"
+        "node": "http://localhost:9006"
     }
 }

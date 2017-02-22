@@ -53,8 +53,7 @@ Ext.define('LIME.Server', {
     ],
 
     config: {
-        nodeServer : null,
-        phpServer: null
+        nodeServer : null
     },
 
     constructor: function() {
@@ -62,14 +61,13 @@ Ext.define('LIME.Server', {
     },
 
     // Like Ext.Ajax.request, but delayed until we've loaded server config.
-    // Replaces {nodeServer} and {phpServer} in config.url
+    // Replaces {nodeServer} in config.url
     request: function (config) {
         var me = this;
-        if (!me.getNodeServer() || !me.getPhpServer())
+        if (!me.getNodeServer())
             return console.error('Server is not configurated yet!');
 
         config.url = config.url.replace('{nodeServer}', me.getNodeServer());
-        config.url = config.url.replace('{phpServer}', me.getPhpServer());
         Ext.Ajax.request(config);
     },
 
@@ -80,6 +78,85 @@ Ext.define('LIME.Server', {
         config.headers.Authorization = 'Basic ' + auth;
         this.request(config);
     },
+
+    // Execute callback on the resource file found on path for the
+    // given package name.
+    // We must detect whether we're in a build environment or a dev one.
+    getResourceFile: function (file, packageName, success, failure) {
+        this.resources = this.resources || {};
+        this.resources[packageName] = this.resources[packageName] || {};
+        var cacheResources = this.resources[packageName];
+        if ( cacheResources[file] ) {
+            success(cacheResources[file].url, cacheResources[file].content);
+            return;
+        }
+
+        var possiblePaths = [];
+        
+        if (Ext.manifest['env'] === 'development') {
+            possiblePaths.push({
+                name: 'dev',
+                url: 'packages/' + packageName + '/resources/' + file // Dev mode
+            });
+        } else {
+            possiblePaths.push({
+                name: 'build',
+                url: 'resources/' + packageName + '/' + file // Build mode
+            });
+        }
+
+        this.filterUrls(possiblePaths, true, function(possiblePaths) {
+            if ( possiblePaths.length ) {
+                success(possiblePaths[0].url, possiblePaths[0].content);
+                this.resources[packageName][file] = {
+                    url: possiblePaths[0].url,
+                    content: possiblePaths[0].content
+                };
+            }
+        }, failure, this);
+    },
+
+    // Given a list of urls, return the ones which exist.
+    // Parameters:
+    // - reqUrls: list of relative urls
+    // - content: auto-read response ...
+    // Check (Server-side) which file exist and return them (If 'content' param is set to true)
+    // Example reqUrls: [{"name":"patterns","url":"config/Patterns.json"},
+    filterUrls: function (reqUrls, content, success, failure, scope) {
+        var me = this;
+        var newUrls = [];
+        var makeRequest = function(urlObj, cb) {
+            me.request({
+                url: urlObj.url,
+                success: function (result) {
+                    var content = result.responseText;
+                    if (content) {
+                        var json = Ext.decode(content, true);
+                        urlObj.content = json || content;
+                        newUrls.push(urlObj);
+                    }
+                },
+                callback: cb
+            });
+        };
+        var index = 0;
+        var finish = function(urls) {
+            if (Ext.isFunction (success) && urls.length) {
+                Ext.bind(success, scope)(urls);
+            } else if(Ext.isFunction (failure)) {
+                Ext.bind(failure, scope)(reqUrls);
+            }
+        }
+        var goNext = function() {
+            if (index < reqUrls.length) {
+                makeRequest(reqUrls[index++], goNext);
+            } else {
+                finish(newUrls);
+            }
+        }
+        goNext();
+    },
+
 
     // ====================
     // ====== NODE ========
@@ -252,99 +329,5 @@ Ext.define('LIME.Server', {
                 }
             }
         });
-    },
-
-    // ====================
-    // ====== PHP =========
-    // ====================
-
-    // Given a list of urls, return the ones which exist.
-    // Parameters:
-    // - reqUrls: list of relative urls
-    // - content: auto-read response ...
-    // Check (Server-side) which file exist and return them (If 'content' param is set to true)
-    // Example reqUrls: [{"name":"patterns","url":"config/Patterns.json"},
-    filterUrls: function (reqUrls, content, success, failure, scope) {
-        var params = {
-            requestedService: Statics.services.filterUrls,
-            urls: Ext.encode(reqUrls)
-        };
-        if(content) {
-            params = Ext.merge(params, {content: true});
-        }
-        this.request({
-            // the url of the web service
-            url: '{phpServer}Services.php',
-            method: 'POST',
-            params: params,
-            scope: this,
-            success: function (result, request) {
-                var newUrls  = Ext.decode(result.responseText, true);
-                if (Ext.isFunction (success) && newUrls) {
-                    Ext.bind(success, scope)(newUrls);
-                } else if(Ext.isFunction (failure)) {
-                    Ext.bind(failure, scope)(reqUrls);
-                }
-            },
-            failure: function () {
-                if (Ext.isFunction (failure)) {
-                    Ext.bind(failure, scope)(reqUrls);
-                }
-            }
-        });
-    },
-
-    // Execute callback on the resource file found on path for the
-    // given package name.
-    // We must detect whether we're in a build environment or a dev one.
-    getResourceFile: function (file, packageName, success, failure) {
-        this.resources = this.resources || {};
-        this.resources[packageName] = this.resources[packageName] || {};
-        var cacheResources = this.resources[packageName];
-        if ( cacheResources[file] ) {
-            success(cacheResources[file].url, cacheResources[file].content);
-            return;
-        }
-
-        var possiblePaths = [{
-            name: 'dev',
-            url: 'packages/' + packageName + '/resources/' + file // Dev mode
-        }, {
-            name: 'build',
-            url: 'resources/' + packageName + '/' + file // Build mode
-        }];
-
-        this.filterUrls(possiblePaths, true, function(possiblePaths) {
-            if ( possiblePaths.length ) {
-                success(possiblePaths[0].url, possiblePaths[0].content);
-                this.resources[packageName][file] = {
-                    url: possiblePaths[0].url,
-                    content: possiblePaths[0].content
-                };
-            }
-        }, failure, this);
-    },
-
-    /**
-     * Return a well formed url that contains the given arguments
-     * properly encoded (to be set into the url).
-     * @param {Array} params The parameters to be set into the url
-     * @returns {String} The final url
-     */
-    getAjaxUrl : function(params) {
-        // get the url for the requested service
-        var requestedServiceUrl = this.getPhpServer() + 'Services.php?';
-
-        // itereate through the params
-        for (param in params) {
-            // create the request url
-            requestedServiceUrl = requestedServiceUrl + param + '=' + encodeURI(params[param]) + '&';
-        }
-
-        // cut the last & character of the string
-        requestedServiceUrl = requestedServiceUrl.substring(0, requestedServiceUrl.length - 1);
-
-        // return the url
-        return requestedServiceUrl;
     }
 });

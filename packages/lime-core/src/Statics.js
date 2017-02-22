@@ -130,10 +130,5 @@ Ext.define('LIME.Statics', {
          enableDualEditorMode: "enableDualEditorMode",
          markingMenuLoaded: "markingMenuLoaded",
          getDocumentHtml: "getDocumentHtml"
-     },
-
-     services: {
-         filterUrls: 'FILTER_URLS'
      }
-
 });
