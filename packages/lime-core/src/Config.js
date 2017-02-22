@@ -59,7 +59,6 @@ Ext.define('LIME.Config', {
     pluginStructure : {},
     languages:[],
     fieldsDefaults: {},
-    isReady: false,
 
     constructor: function() {
         this.load();
@@ -67,31 +66,13 @@ Ext.define('LIME.Config', {
 
     load : function() {
         var me = this;
-        // Loading the language plugin configuration file
-        Ext.Ajax.request({
-            url : 'config.json',
-            success : function(response, opts) {
-                try {
-                    var jsonData = Ext.decode(response.responseText, true);
-                    if(jsonData) {
-                        me.setConfigs(jsonData);
-                        // Load the plugin structure
-                        me.loadPluginStructure();
-                        me.isReady = true;
-                    } else {
-                        Ext.log({level: "error"}, "config (config.json) decode error!");                        
-                    }
-                } catch(e) {
-                    Ext.log({level: "error"}, e);
-                    alert(Locale.strings.error);
-                }
-            },
-            
-            failure : function(response, opts) {
-                Ext.log({level: "error"}, response);
-                alert(Locale.strings.error);
-            }
-        });
+        if (Ext.manifest.limeConfig) {
+            me.setConfigs(Ext.manifest.limeConfig);
+            me.loadPluginStructure(Ext.manifest.limeConfig.language);
+        } else {
+            console.error('limeConfig is not in manifest');
+            alert('LIME configuration not found!');
+        }
     },
 
     setConfigs: function(data) {
@@ -102,29 +83,13 @@ Ext.define('LIME.Config', {
 
     setServerConfig: function(data) {
         Server.setNodeServer(data.node);
-        Server.setPhpServer(data.php);
     },
     
-    loadPluginStructure : function(){
-        Ext.each(this.languages, function(language) {
-            var lang = language.name,
-                requestUrl = this.getPluginStructureUrl(lang);
-            Ext.Ajax.request({
-               async : false,
-               url : requestUrl,
-               scope : this,
-               success : function(response) {
-                   var data = Ext.decode(response.responseText, true);
-                   if(data) {
-                       data.name = lang;
-                       this.pluginStructure[lang] = data;
-                       this.generateTransformationUrls(data);
-                   } else {
-                       Ext.log({level: "error"}, "Language ("+lang+") structure decode error! ");
-                   }
-               }
-            });     
-        }, this);
+    loadPluginStructure : function(language){
+        var structureUrl = this.getPluginStructureUrl(language.name);
+        this.pluginStructure[language.name] = language;
+        language[structureUrl].name = language.name;
+        this.generateTransformationUrls(language[structureUrl]);
     },
 
     // Add the trasformationUrls object to the language configuration
@@ -143,18 +108,6 @@ Ext.define('LIME.Config', {
                     langConf.transformationUrls[name] = url;
                 }
             });
-
-            if(!Ext.isEmpty(urls)) {
-                // TODO: understand if filterUrls is essential
-                Server.filterUrls(urls, false, function(newUrls) {
-                    langConf.transformationUrls = {};
-                    if (urls.length != newUrls.length)
-                        console.error('Not found all transformation files!', urls);
-                    Ext.each(newUrls, function(obj) {
-                        langConf.transformationUrls[obj.name] = obj.url;
-                    });
-                }, false, me);
-            }
         }
     },
     
@@ -172,11 +125,15 @@ Ext.define('LIME.Config', {
         return (files && files[name]) ? files[name] : null;
     },
     
+    getLanguageConfig: function(lang) {
+        return this.getLanguageBundle(lang)[this.getPluginStructureUrl(lang)];
+    },
+
     getPluginStructureUrl : function(lang){
         return this.pluginBaseDir+'/'+lang+'/'+this.pluginStructureFile;  
     },
-    
-    getLanguageConfig: function(lang) {
+
+    getLanguageBundle: function(lang) {
         return this.pluginStructure[(lang) ? lang : this.language];
     },
 
@@ -214,8 +171,8 @@ Ext.define('LIME.Config', {
     },
     
     getDocTypesByLang: function(lang) {
-        if (this.pluginStructure[lang]) {
-            var arrDocsByLang = this.pluginStructure[lang].docTypes;
+        if (this.getLanguageConfig(lang)) {
+            var arrDocsByLang = this.getLanguageConfig(lang).docTypes;
             var langi18n = Locale.getLang();
             if (arrDocsByLang != false) {
                 for (var i=0; i < arrDocsByLang.length; i++) {

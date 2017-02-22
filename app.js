@@ -63,7 +63,7 @@
     Ext.require(['LIME.Locale', 'LIME.Config', 'LIME.Utilities'], function() {
         // Waiting Locale and Config to complete the asynchrounus requests
         Utilities.events.delayUntil(function() {
-            return Locale.isReady && Config.isReady;
+            return Locale.isReady;
         }, startApp);
     });
 }());
