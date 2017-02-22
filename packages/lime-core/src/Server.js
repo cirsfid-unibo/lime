@@ -122,6 +122,7 @@ Ext.define('LIME.Server', {
     // - content: auto-read response ...
     // Check (Server-side) which file exist and return them (If 'content' param is set to true)
     // Example reqUrls: [{"name":"patterns","url":"config/Patterns.json"},
+    // TODO: using OPTIONS method when content is set to false
     filterUrls: function (reqUrls, content, success, failure, scope) {
         var me = this;
         var newUrls = [];
@@ -144,7 +145,7 @@ Ext.define('LIME.Server', {
             if (Ext.isFunction (success) && urls.length) {
                 Ext.bind(success, scope)(urls);
             } else if(Ext.isFunction (failure)) {
-                Ext.bind(failure, scope)(reqUrls);
+                Ext.bind(failure, scope)([]);
             }
         }
         var goNext = function() {
