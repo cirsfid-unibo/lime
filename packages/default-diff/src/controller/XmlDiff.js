@@ -75,7 +75,7 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
     getDiff: function(tab, selector) {
         var format = tab.down("*[cls=diffContainer]").getActiveTab().format || 'text',
             baseUrl = this.getDiffServiceUrl(),
-            url = Server.getPhpServer() + baseUrl + '?' + Ext.urlEncode({
+            url = 'php/' + baseUrl + '?' + Ext.urlEncode({
                 from: selector.firstDoc.url,
                 to: selector.secondDoc.url,
                 format: format,
@@ -212,7 +212,7 @@ Ext.define('DefaultDiff.controller.XmlDiff', {
                 },
 
                 docsDeselected: function (selector) {
-                    selector.up('diffTab').setIframeSource(Server.getPhpServer() + me.getInitDiffPage());
+                    selector.up('diffTab').setIframeSource('php/' + me.getInitDiffPage());
                 },
 
                 docsSelected: function (selector) {
