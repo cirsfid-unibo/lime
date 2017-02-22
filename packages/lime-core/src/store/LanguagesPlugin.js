@@ -109,7 +109,9 @@ Ext.define('LIME.store.LanguagesPlugin', {
 
     requestSyncLoader: function(callback, reqObjects) {
         var me = this, app = this.app;
+        var languageBundle = Config.getLanguageBundle();
         Ext.each(reqObjects, function(obj) {
+            obj.content = languageBundle[obj.url];
             me.dataObjects[obj.name] = Utilities.mergeJson(me.dataObjects[obj.name], obj.content, Utilities.beforeMerge);
         });
 
@@ -126,6 +128,7 @@ Ext.define('LIME.store.LanguagesPlugin', {
      * the directory structure. This function is event based and simulate
      * a series of synchronous requests (because order matters!).
      */
+    //TODO: rewrite this function!!
     loadPluginData : function(app, docType, docLocale, callback) {
         var me = this;
         /**
@@ -170,11 +173,15 @@ Ext.define('LIME.store.LanguagesPlugin', {
         };
 
         var styleUrls = [];
+        var languageBundle = Config.getLanguageBundle();
 
         for (var directory in directoriesListDefault) {
             var newDir = directoriesListDefault[directory];
             currentDirectoryDefault += '/' + newDir;
-            styleUrls.push({url: currentDirectoryDefault+"/"+me.styleFile});
+            var styleUrl = currentDirectoryDefault+"/"+me.styleFile;
+            if (languageBundle[styleUrl]) {
+                styleUrls.push({url: styleUrl});
+            }
             for (var files in pluginsFiles) {
                 for (var file in pluginsFiles[files]) {
                     var reqUrl = currentDirectoryDefault + '/' + pluginsFiles[files][file];
@@ -183,7 +190,9 @@ Ext.define('LIME.store.LanguagesPlugin', {
                         url : reqUrl,
                         level: 'defaults'
                     };
-                    reqUrls.push(reqObject);
+                    if (languageBundle[reqUrl]) {
+                        reqUrls.push(reqObject);
+                    }
                 }
             }
         }
@@ -196,7 +205,10 @@ Ext.define('LIME.store.LanguagesPlugin', {
                 newDir = docType;
             }
             currentDirectory += '/' + newDir;
-            styleUrls.push({url: currentDirectory+"/"+me.styleFile});
+            var styleUrl = currentDirectory+"/"+me.styleFile;
+            if (languageBundle[styleUrl]) {
+                styleUrls.push({url: styleUrl});
+            }
             for (var files in pluginsFiles) {
                 for (var file in pluginsFiles[files]) {
                     var reqUrl = currentDirectory + '/' + pluginsFiles[files][file];
@@ -205,19 +217,15 @@ Ext.define('LIME.store.LanguagesPlugin', {
                         url : reqUrl,
                         level: directory
                     };
-                    reqUrls.push(reqObject);
+                    if (languageBundle[reqUrl]) {
+                        reqUrls.push(reqObject);
+                    }
                 }
             }
         }
         me.reqUrls = reqUrls;
-        Server.filterUrls(styleUrls, false, me.setStyleAndRequestFiles.bind(me, callback), me.setStyleAndRequestFiles.bind(me, callback), me);
-    },
-
-    setStyleAndRequestFiles: function(callback, styleUrls) {
-        this.styleUrls = styleUrls;
-        Server.filterUrls(this.reqUrls, true, 
-                this.requestSyncLoader.bind(this, callback), 
-                this.requestSyncLoader.bind(this, callback), this);
+        me.styleUrls = styleUrls;
+        me.requestSyncLoader(callback, me.reqUrls);
     },
 
     // Get the new empty document template for the current configuration.
