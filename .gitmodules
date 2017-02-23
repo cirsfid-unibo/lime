@@ -4,3 +4,6 @@
 [submodule "php/AKNDiff"]
 	path = php/AKNDiff
 	url = git@github.com:cirsfid-unibo/akn-diff-php.git
+[submodule "languagesPlugins/akoma3.0"]
+	path = languagesPlugins/akoma3.0
+	url = git@github.com:cirsfid-unibo/lime-language-akn.git
