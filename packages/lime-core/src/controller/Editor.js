@@ -1141,15 +1141,10 @@ Ext.define('LIME.controller.Editor', {
                 force_br_newlines : true,
                 force_p_newlines : false,
                 forced_root_block : '',
-                // Custom CSS
-                content_css : 'resources/tiny_mce/css/content.css',
-
                 // the editor mode
                 mode : 'textareas',
                 body_class: 'lime ' + Locale.getLang(),
-
                 entity_encoding : 'raw',
-
                 // Sizes
                 width : '100%',
                 height : '100%',
