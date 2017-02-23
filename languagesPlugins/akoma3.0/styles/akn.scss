@@ -1,0 +1,292 @@
+
+// Todo: add language selector
+#tinymce.lime {
+    // ----------------
+    // -- Main Parts --
+    // ----------------
+    $mainHue: 0;
+    .preamble       { @include MainPart; @include Color($mainHue - 60); }
+    .preface,
+    .header         { @include MainPart; @include Color($mainHue - 30); }
+    .body,
+    .mainBody,
+    .judgmentBody,
+    .amendmentBody,
+    .collectionBody,
+    .fragmentBody,
+    .debateBody     { @include MainPart; @include Color($mainHue); }
+    .conclusions    { @include MainPart; @include Color($mainHue + 30); }
+
+
+    // ----------------
+    // -- Containers --
+    // ----------------
+    .administrationOfOath,
+    .amendmentContent,
+    .amendmentHeading,
+    .amendmentJustification,
+    .amendmentReference,
+    .answer,
+    .arguments,
+    .attachments,
+    .attachment,
+    .background,
+    .blockContainer,
+    .blockList,
+    .citation,
+    .component,
+    .components,
+    .coverPage,
+    .decision,
+    .embeddedStructure,
+    .foreign,
+    .formula,
+    .introduction,
+    .motivation,
+    .question,
+    .recital,
+    .speech,
+    .speechGroup,
+    .tblock,
+    .toc,
+    .wrap,
+    .content,
+    .remedies,
+    .address,
+    .alinea,
+    .article,
+    .book,
+    .chapter,
+    .citations,
+    .clause,
+    .debateSection,
+    .declarationOfVote,
+    .division,
+    .indent,
+    .item,
+    .list,
+    .ministerialStatements,
+    .nationalInterest,
+    .noticesOfMotion,
+    .oralStatements,
+    .papers,
+    .paragraph,
+    .part,
+    .personalStatements,
+    .petitions,
+    .pointOfOrder,
+    .proceduralMotions,
+    .proviso,
+    .questions,
+    .recitals,
+    .resolutions,
+    .rollCall,
+    .rule,
+    .section,
+    .subchapter,
+    .subclause,
+    .subdivision,
+    .sublist,
+    .subparagraph,
+    .subpart,
+    .subrule,
+    .subsection,
+    .subtitle,
+    .title,
+    .tome,
+    .transitional,
+    .mod,
+    .mmod,
+    .authorialNote,
+    .point,
+    .writtenStatements   {
+        // @include Color(120);
+        @include Container;
+    }
+
+    .intro {
+        @include Container;
+        font-style: italic;
+    }
+
+    .quotedStructure {
+        @include NoLabel;
+        margin: 5px 0;
+        padding: 15px;
+        box-shadow: 3px 3px 15px black;
+        background-color: #FFFCEF;
+        position: relative;
+        &:after {
+            content: '\f02e';
+            position: absolute;
+            top: -3px;
+            color: #478552;
+            right: 15px;
+            font: 2em 'FontAwesome';
+        }
+    }
+
+
+    // ------------
+    // -- Inline --
+    // ------------
+    .num {
+        @include NoLabel;
+        display: block;
+        font-size: 1.5em;
+    }
+    .heading {
+        @include NoLabel;
+        display: block;
+        // @include Inline(206, 'heading');
+        font-size: 1.2em;
+        max-width: 65%;
+        margin-bottom: 10px;
+        vertical-align: sub;
+        font-style: italic;
+    }
+    .docNumber         { @include Inline; @include Icon('\f02d'); }
+    .mref, .ref, .rref { @include Inline; @include Icon('\f0c1'); }
+
+    .affectedDocument,
+    .argument,
+    .change,
+    .concept,
+    .courtType,
+    .date,
+    .decoration,
+    .def,
+    .del,
+    .docAuthority,
+    .docCommittee,
+    .docDate,
+    .docIntroducer,
+    .docJurisdiction,
+    .docketNumber,
+    .docProponent,
+    .docPurpose,
+    .docStage,
+    .docStatus,
+    .docTitle,
+    .docType,
+    .documentRef,
+    .entity,
+    .event,
+    .embeddedText,
+    .fillIn,
+    .from,
+    .ins,
+    .judge,
+    .lawyer,
+    .legislature,
+    .listConclusion,
+    .listIntroduction,
+    .location,
+    .narrative,
+    .neutralCitation,
+    .object,
+    .omissis,
+    .opinion,
+    .organization,
+    .outcome,
+    .party,
+    .person,
+    .placeholder,
+    .process,
+    .quantity,
+    .relatedDocument,
+    .remark,
+    .rmod,
+    .role,
+    .scene,
+    .session,
+    .shortTitle,
+    .signature,
+    .subheading,
+    .term,
+    .time,
+    .vote,
+    .quotedText { @include Inline; }
+
+
+    .tocItem {
+        display: block;
+        margin: 5px 0;
+        color: #444;
+        &[akn_level="1"] {
+            margin-left: 10px;
+        }
+        &[akn_level="2"] {
+            margin-left: 20px;
+        }
+        &[akn_level="3"] {
+            margin-left: 30px;
+        }
+        &[akn_level="4"] {
+            margin-left: 40px;
+        }
+        &[akn_level="5"] {
+            margin-left: 50px;
+        }
+        &[akn_level="6"] {
+            margin-left: 60px;
+        }
+        &[akn_level="7"] {
+            margin-left: 70px;
+        }
+    }
+
+    // Popup
+    // Other
+    .p {
+        @include NoLabel;
+        margin: 0 4px;
+        padding: 0 4px;
+        border-left: 1px dotted #555;
+    }
+    .block {}
+    .longTitle {}
+    .other {}
+    .table {}
+    .wrapUp {}
+    .eol {}
+    .eop {}
+    .marker {}
+    .noteRef {}
+    .genericElement {}
+    .externalFragment {}
+    .commonsInline {}
+    .contentInline {}
+    .commonElement {}
+    .commonReference {}
+    .commonJudgement {}
+    .commonReport {}
+    .structureNotes {}
+    .hierarchicalStructure {}
+    .componentRef {}
+    .subFlow {}
+
+    // Set color for hcontainers depending on level
+    .hcontainer { @include Color(70);
+        .hcontainer, .container { @include Color(90);
+            .hcontainer, .container { @include Color(110);
+                .hcontainer, .container { @include Color(130);
+                    .hcontainer, .container { @include Color(150);
+                        .hcontainer, .container { @include Color(170);
+                            .hcontainer, .container { @include Color(190);
+                                .hcontainer, .container { @include Color(210);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Reset secondEditor styles
+#tinymce.lime.secondEditor {
+    .del,
+    .ins { @include ResetInline; }
+}
