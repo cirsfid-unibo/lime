@@ -1,0 +1,24 @@
+{
+  "name": "lime-scripts",
+  "version": "0.0.1",
+  "description": "A set of scripts for LIME configuration and installation",
+  "main": "''",
+  "dependencies": {
+    "fs-extra": "^2.0.0",
+    "walk": "^2.3.9"
+  },
+  "devDependencies": {
+    "babel-core": "^6.23.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-preset-es2016": "^6.22.0",
+    "babel-preset-es2017": "^6.22.0",
+    "babel-register": "^6.23.0",
+    "babel-runtime": "^6.23.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "CIRSFID",
+  "license": "MIT"
+}
