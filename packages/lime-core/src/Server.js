@@ -316,19 +316,49 @@ Ext.define('LIME.Server', {
         };
         params.includeFiles = params.includeFiles.map(urlMap);
         params.transformFiles = [].concat(xslt).map(urlMap);
-        this.request({
-            url: '{nodeServer}/xml/XsltTransform',
-            method: 'POST',
-            jsonData: params,
-            success: function (response) {
-                success(response.responseText);
-            },
-            failure: function (response) {
-                Ext.log('XSLT conversion failed', xslt, response);
-                if (failure) {
-                    failure(response.statusText+': '+response.responseText);
+        var me = this;
+        var doRequest = function() {
+            me.request({
+                url: '{nodeServer}/xml/XsltTransform',
+                method: 'POST',
+                jsonData: params,
+                success: function (response) {
+                    success(response.responseText);
+                },
+                failure: function (response) {
+                    Ext.log('XSLT conversion failed', xslt, response);
+                    if (failure) {
+                        failure(response.statusText+': '+response.responseText);
+                    }
                 }
-            }
-        });
+            });
+        }
+        var downloadFiles = function(urls, cb) {
+            urls = urls.map(function(url) {
+                return {name: url, url: url};
+            });
+            me.filterUrls(urls, true, function(urls) {
+                var contents = urls.map(function(urlData) {
+                    return urlData.content;
+                });
+                cb(contents);
+            }, function() {
+                cb([]);
+            });
+        }
+
+        // In developement send the content of xslt and not the url
+        if (Ext.manifest.env === 'development') {
+            downloadFiles(params.includeFiles, function(files) {
+                params.includeFiles = files;
+                downloadFiles(params.transformFiles, function(files) {
+                    params.transformFiles = files;
+                    doRequest();
+                });
+            });
+        } else {
+            doRequest();
+        }
+
     }
 });
