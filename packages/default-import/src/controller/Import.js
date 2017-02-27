@@ -109,7 +109,7 @@ Ext.define('DefaultImport.controller.Import', {
         });
     },
 
-    importDocument : function() {
+    importDocument : function(transformData) {
         // Create a window with a form where the user can select a file
         var me = this,
             uploaderView = Ext.widget('uploader', {
@@ -120,14 +120,14 @@ Ext.define('DefaultImport.controller.Import', {
                 uploadCallback : me.uploadFinished,
                 callbackScope: me,
                 uploadUrl : Server.getNodeServer()+'/documentsdb/FileToHtml',
-                uploadParams : me.getUploadParams()
+                uploadParams : me.getUploadParams(transformData)
             });
         uploaderView.show();
     },
 
-    getUploadParams: function() {
+    getUploadParams: function(transformData) {
         return {
-            transformFile: this.getTransformationFile()
+            transformFile: transformData || this.getTransformationFile()
         }
     },
 
@@ -142,7 +142,14 @@ Ext.define('DefaultImport.controller.Import', {
         this.control({
             'menu [name=importDocument]' : {
                 click : function() {
-                    me.importDocument();
+                    if (Ext.manifest.env === 'development') {
+                        var urls = [{url:me.getTransformationFile()}];
+                        Server.filterUrls(urls, true, function(urls) {
+                            me.importDocument(urls[0].content);
+                        });
+                    } else {
+                        me.importDocument();
+                    }
                 }
             }
         });
