@@ -178,10 +178,7 @@ Ext.define('LIME.store.LanguagesPlugin', {
         for (var directory in directoriesListDefault) {
             var newDir = directoriesListDefault[directory];
             currentDirectoryDefault += '/' + newDir;
-            var styleUrl = currentDirectoryDefault+"/"+me.styleFile;
-            if (languageBundle[styleUrl]) {
-                styleUrls.push({url: styleUrl});
-            }
+            this.addCssFile(styleUrls, currentDirectoryDefault);
             for (var files in pluginsFiles) {
                 for (var file in pluginsFiles[files]) {
                     var reqUrl = currentDirectoryDefault + '/' + pluginsFiles[files][file];
@@ -205,10 +202,7 @@ Ext.define('LIME.store.LanguagesPlugin', {
                 newDir = docType;
             }
             currentDirectory += '/' + newDir;
-            var styleUrl = currentDirectory+"/"+me.styleFile;
-            if (languageBundle[styleUrl]) {
-                styleUrls.push({url: styleUrl});
-            }
+            this.addCssFile(styleUrls, currentDirectory);
             for (var files in pluginsFiles) {
                 for (var file in pluginsFiles[files]) {
                     var reqUrl = currentDirectory + '/' + pluginsFiles[files][file];
@@ -226,6 +220,18 @@ Ext.define('LIME.store.LanguagesPlugin', {
         me.reqUrls = reqUrls;
         me.styleUrls = styleUrls;
         me.requestSyncLoader(callback, me.reqUrls);
+    },
+
+    addCssFile: function(styles, dir) {
+        var interfaceUrl = Config.getLanguagePath()+'interface/';
+        var styleUrl = Config.getLanguagePath()+'styles/css/'+
+                            'content_'+
+                            dir.substr(interfaceUrl.length).replace(/\//g, '_')+
+                            '.css';
+        var languageBundle = Config.getLanguageBundle();
+        if (languageBundle[styleUrl]) {
+            styles.push({url: styleUrl});
+        }
     },
 
     // Get the new empty document template for the current configuration.
