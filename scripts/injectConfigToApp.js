@@ -50,7 +50,10 @@ function  compileLanguagePlugin(languageDir, cb) {
     const walker = walk.walk(languageDir, { followLinks: false });
 
     walker.on('file', function(root, fileStat, next) {
-        let filePath = path.resolve(root, fileStat.name);
+        const filePath = path.resolve(root, fileStat.name);
+        const relativePath = path.relative(languageDir, root);
+        // Ignore 'scripts' folder
+        if (relativePath.split(path.sep)[0] === 'scripts') return next();
         if (filterJsonName(fileStat.name)) {
             if (fileStat.name === 'structure.json') {
                 languageBundle.name = path.basename(root);

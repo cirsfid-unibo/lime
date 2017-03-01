@@ -69,6 +69,9 @@ function compileLanguagePlugin(languageDir, cb) {
 
     walker.on('file', function (root, fileStat, next) {
         var filePath = _path2.default.resolve(root, fileStat.name);
+        var relativePath = _path2.default.relative(languageDir, root);
+        // Ignore 'scripts' folder
+        if (relativePath.split(_path2.default.sep)[0] === 'scripts') return next();
         if (filterJsonName(fileStat.name)) {
             if (fileStat.name === 'structure.json') {
                 languageBundle.name = _path2.default.basename(root);
