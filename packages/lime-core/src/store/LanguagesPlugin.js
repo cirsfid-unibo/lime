@@ -107,122 +107,134 @@ Ext.define('LIME.store.LanguagesPlugin', {
 
     dataObjects : {},
 
-    requestSyncLoader: function(callback, reqObjects) {
-        var me = this, app = this.app;
-        var languageBundle = Config.getLanguageBundle();
-        Ext.each(reqObjects, function(obj) {
-            obj.content = languageBundle[obj.url];
-            me.dataObjects[obj.name] = Utilities.mergeJson(me.dataObjects[obj.name], obj.content, Utilities.beforeMerge);
-        });
+    // Generetes and loads the list of JSON and css files in order to use the
+    // passed configuration in the editor
+    loadPluginData: function(docType, docLocale) {
+        //  If the last loaded configuration is the same of the passed configuration
+        //  all files is already loaded
+        if (this.isSameConfiguration(docType, docLocale)) {
+            return {
+                data: this.dataObjects,
+                styles: this.lastConfiguration.styles
+            }
+        }
+        this.saveConfiguration(docType, docLocale);
 
-        me.lastConfiguration.loaded = true;
-        app.fireEvent(Statics.eventsNames.progressUpdate, Locale.strings.progressBar.configurationFiles);
-        callback(me.dataObjects, me.styleUrls.map(function(el) {return el.url;}));
+        this.dataObjects = {};
+        var reqUrls = [];
+        // Get the default global files
+        reqUrls = reqUrls.concat(this.getDefaultFiles());
+
+        // Get the default language files
+        var defaultDirList = Ext.clone(this.languagePluginDefault);
+        defaultDirList.languageRoot = defaultDirList.languageRoot.apply({
+                                            lang: Config.getLanguage()
+                                        });
+
+        var pluginsRoot = this.baseDirectories['plugins'];
+        reqUrls = reqUrls.concat(this.getJSONFiles(pluginsRoot, defaultDirList, 'defaults'));
+
+        var styleUrls = [];
+        styleUrls = styleUrls.concat(this.getCssFiles(pluginsRoot, defaultDirList, 'defaults'));
+
+        // Get the docType language files
+        var langRoot = pluginsRoot + '/' +
+                        this.languagePlugin.languageRoot.apply({ 
+                            lang: Config.getLanguage()
+                        });
+        reqUrls = reqUrls.concat(this.getJSONFiles(langRoot, this.languagePlugin.subDirs));
+        styleUrls = styleUrls.concat(this.getCssFiles(langRoot, this.languagePlugin.subDirs));
+
+        // Merge all configuration files based on file name
+        this.dataObjects = this.mergeFiles(reqUrls);
+        this.lastConfiguration.loaded = true;
+        this.lastConfiguration.styles = styleUrls;
+
+        return {
+            data: this.dataObjects,
+            styles: styleUrls
+        }
     },
 
-    /**
-     * This function merges all the different languagePlugins files
-     * and stores a complete configuration in this store. Several
-     * AJAX requests have to be made in order to get all the interested
-     * files and for each of them the url has to be changed according to
-     * the directory structure. This function is event based and simulate
-     * a series of synchronous requests (because order matters!).
-     */
-    //TODO: rewrite this function!!
-    loadPluginData : function(app, docType, docLocale, callback) {
-        var me = this;
-        /**
-         * If the last loaded configuration is the same of the passed configuration
-         * all files is already loaded
-         */
-        if (this.lastConfiguration.markingLanguage == Config.getLanguage()
-            && this.lastConfiguration.loaded && this.lastConfiguration.docType == docType
-            && this.lastConfiguration.docLocale == docLocale) {
-            return callback(this.dataObjects);
-        }
+    isSameConfiguration: function(docType, docLocale) {
+        return
+            (
+                this.lastConfiguration.markingLanguage === Config.getLanguage() &&
+                this.lastConfiguration.loaded === true &&
+                this.lastConfiguration.docType === docType &&
+                this.lastConfiguration.docLocale === docLocale
+            );
+    },
 
-        /* For each directory retrieve all the needed json files starting from the languageRoot */
-        var languagesPlugins = this;
-        var directoriesList = this.languagePlugin.subDirs;
-        var directoriesListDefault = Ext.clone(this.languagePluginDefault);
-        directoriesListDefault.languageRoot = directoriesListDefault.languageRoot.apply({lang: Config.getLanguage()});
-        var currentDirectory = this.baseDirectories['plugins']+'/'+this.languagePlugin.languageRoot.apply({lang: Config.getLanguage()});
-        var currentDirectoryDefault = this.baseDirectories['plugins'];
-        /* Build a list of urls to make the requests to */
-        var reqUrls = [];
-        var globalFiles = this.requiredFiles['global'];
-        var pluginsFiles = this.requiredFiles['plugins'];
-        var globalDir = this.baseDirectories['global'];
-        for (var file in globalFiles) {
-            var reqUrl = globalDir + '/' + globalFiles[file];
-            var reqObject = {
-                name : file,
-                url : reqUrl,
-                level: 'global'
-            };
-            reqUrls.push(reqObject);
-        }
-        this.app = app;
-        this.dataObjects = {};
-        app.fireEvent(Statics.eventsNames.progressUpdate, Locale.strings.progressBar.configurationFiles);
+    saveConfiguration: function(docType, docLocale) {
         this.lastConfiguration = {
             docType : docType,
             docLocale : docLocale,
             loaded : false,
             markingLanguage: Config.getLanguage()
         };
-
-        var styleUrls = [];
-        var languageBundle = Config.getLanguageBundle();
-
-        for (var directory in directoriesListDefault) {
-            var newDir = directoriesListDefault[directory];
-            currentDirectoryDefault += '/' + newDir;
-            this.addCssFile(styleUrls, currentDirectoryDefault);
-            for (var files in pluginsFiles) {
-                for (var file in pluginsFiles[files]) {
-                    var reqUrl = currentDirectoryDefault + '/' + pluginsFiles[files][file];
-                    var reqObject = {
-                        name : file,
-                        url : reqUrl,
-                        level: 'defaults'
-                    };
-                    if (languageBundle[reqUrl]) {
-                        reqUrls.push(reqObject);
-                    }
-                }
-            }
-        }
-
-        for (var directory in directoriesList) {
-            var newDir = directoriesList[directory];
-            if (directory == "locale") {
-                newDir = docLocale;
-            } else if (directory == "docType") {
-                newDir = docType;
-            }
-            currentDirectory += '/' + newDir;
-            this.addCssFile(styleUrls, currentDirectory);
-            for (var files in pluginsFiles) {
-                for (var file in pluginsFiles[files]) {
-                    var reqUrl = currentDirectory + '/' + pluginsFiles[files][file];
-                    var reqObject = {
-                        name : file,
-                        url : reqUrl,
-                        level: directory
-                    };
-                    if (languageBundle[reqUrl]) {
-                        reqUrls.push(reqObject);
-                    }
-                }
-            }
-        }
-        me.reqUrls = reqUrls;
-        me.styleUrls = styleUrls;
-        me.requestSyncLoader(callback, me.reqUrls);
     },
 
-    addCssFile: function(styles, dir) {
+    getDefaultFiles: function() {
+        var me = this;
+        return this.getFiles(
+                this.baseDirectories['global'],
+                this.requiredFiles['global'],
+                'global',
+                function(dir, name, file) {
+                    return me.getRequiredFile(name, file, dir);
+                });
+    },
+
+    getJSONFiles: function(root, dirList, type) {
+        return this.getFiles(root, dirList, type, this.getPluginFiles.bind(this));
+    },
+
+    getFiles: function(root, dirList, type, fn) {
+        var files = [];
+        Object.keys(dirList).forEach(function(dirName) {
+            var dir = dirName;
+            if (dirName === 'locale')
+                dir = this.lastConfiguration.docLocale;
+            else if (dirName === 'docType')
+                dir = this.lastConfiguration.docType;
+
+            root += '/'+ (dirList[dir] || dir);
+            type = type || dirName;
+            files = files.concat(fn(root, type, dir));
+        }, this);
+        return files;
+    },
+
+    getPluginFiles: function(root, type) {
+        var urls = [];
+        var pluginsFiles = this.requiredFiles['plugins'];
+        for (var files in pluginsFiles) {
+            for (var file in pluginsFiles[files]) {
+                var reqUrl = root + '/' + pluginsFiles[files][file];
+                urls = urls.concat(this.getRequiredFile(type, file, reqUrl));
+            }
+        }
+        return urls;
+    },
+
+    getRequiredFile: function(type, file, url) {
+        var languageBundle = Config.getLanguageBundle();
+        if (languageBundle[url]) {
+            return {
+                name : file,
+                url : url,
+                level: type
+            };
+        }
+        return [];
+    },
+
+    getCssFiles: function(root, dirList, type) {
+        return this.getFiles(root, dirList, type, this.getCssFile.bind(this));
+    },
+
+    getCssFile: function(dir) {
         var interfaceUrl = Config.getLanguagePath()+'interface/';
         var styleUrl = Config.getLanguagePath()+'styles/css/'+
                             'content_'+
@@ -230,8 +242,23 @@ Ext.define('LIME.store.LanguagesPlugin', {
                             '.css';
         var languageBundle = Config.getLanguageBundle();
         if (languageBundle[styleUrl]) {
-            styles.push({url: styleUrl});
+            return styleUrl;
         }
+        return [];
+    },
+
+    mergeFiles: function(reqObjects) {
+        var languageBundle = Config.getLanguageBundle();
+        var data = {};
+        reqObjects.forEach(function(obj) {
+            obj.content = languageBundle[obj.url];
+            data[obj.name] = Utilities.mergeJson(
+                                data[obj.name],
+                                obj.content,
+                                Utilities.beforeMerge
+                            );
+        }, this);
+        return data;
     },
 
     // Get the new empty document template for the current configuration.

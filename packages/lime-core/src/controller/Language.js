@@ -104,16 +104,20 @@ Ext.define('LIME.controller.Language', {
     },
 
     loadLanguageConf: function(config, callback) {
-        var me = this,
-            docType = Ext.isString(config.alternateDocType) ? config.alternateDocType : config.docType;
+        var docType = Ext.isString(config.alternateDocType) ? config.alternateDocType : config.docType;
 
-        var langLoaded = function(data, styleUrls) {
-            me.application.fireEvent(Statics.eventsNames.languageLoaded, data);
-            callback(config, styleUrls);
-        }
-
-        me.getStore('LanguagesPlugin')
-            .loadPluginData(me.application, docType, config.docLocale, langLoaded);
+        this.application.fireEvent(
+            Statics.eventsNames.progressUpdate,
+            Locale.strings.progressBar.configurationFiles
+        );
+        var pluginData = this.getStore('LanguagesPlugin').loadPluginData(docType, config.docLocale);
+        
+        this.application.fireEvent(
+            Statics.eventsNames.progressUpdate,
+            Locale.strings.progressBar.configurationFiles
+        );
+        this.application.fireEvent(Statics.eventsNames.languageLoaded, pluginData.data);
+        callback(config, pluginData.styles);
     },
 
     performLoad: function(config, styleUrls) {
