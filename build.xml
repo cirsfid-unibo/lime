@@ -45,18 +45,34 @@
         <delete dir="${build.dir}/php" />
         <delete dir="${build.dir}/resources" />
         <delete dir="${build.dir}/config" />
+        <property name="buildRunning" value="true"/>
     </target>
 
     <target name="-before-refresh">
         <x-echo message="Building and injection of LIME config into app.json"/>
+        <x-echo message="${build.environment}"/>
         <exec executable="node">
             <arg value="scripts/injectConfigToApp.node.js"/>
         </exec>
     </target>
 
-    <target name="-after-refresh">
+    <target name="test.if.is.build">
+        <condition property="is.build">
+            <istrue value="${buildRunning}"/>
+        </condition>
+    </target>
+
+    <target name="-after-refresh"
+        unless="${is.build}"
+        depends="test.if.is.build">
         <x-echo message="Restoring original app.json"/>
         <move file="app.back.json" tofile="app.json"/>
     </target>
 
+    <target name="-after-build" 
+        if="${is.build}"
+        depends="test.if.is.build">
+        <x-echo message="Restoring original app.json"/>
+        <move file="app.back.json" tofile="app.json"/>
+    </target>
 </project>
