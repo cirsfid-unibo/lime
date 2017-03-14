@@ -38,6 +38,13 @@
             <target name="-before-build"/>
             <target name="-after-build"/>
     -->
+
+    <target name="-before-init">
+        <tstamp>
+            <format property="build.datetime" pattern="yyyy-MM-dd HH:mm:ss"/>
+        </tstamp>
+    </target>
+
     <target name="-before-build">
         <x-echo message="Removing old resources from build"/>
         <delete dir="${build.dir}/languagesPlugins" />
