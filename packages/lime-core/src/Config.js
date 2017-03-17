@@ -130,6 +130,7 @@ Ext.define('LIME.Config', {
     },
 
     getPluginStructureUrl : function(lang){
+        lang = lang || this.language;
         return this.pluginBaseDir+'/'+lang+'/'+this.pluginStructureFile;  
     },
 
