@@ -44,21 +44,21 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('DefaultNir.Application', {
+Ext.define('NirTranspiler.Application', {
     override: 'LIME.Application',
 
     requires: [
-        'DefaultNir.Strings',
-        'DefaultNir.NirUtils',
-        'DefaultNir.controller.NirPreview',
-        'DefaultNir.controller.AliasUrnSync',
-        'DefaultNir.view.NirPreviewMainTab'
+        'NirTranspiler.Strings',
+        'NirTranspiler.NirUtils',
+        'NirTranspiler.controller.NirPreview',
+        'NirTranspiler.controller.AliasUrnSync',
+        'NirTranspiler.view.NirPreviewMainTab'
     ],
 
     initControllers : function() {
-        Locale.setPluginStrings('nir-transpiler', DefaultNir.Strings.strings);
-        this.controllers.push('DefaultNir.controller.NirPreview');
-        this.controllers.push('DefaultNir.controller.AliasUrnSync');
+        Locale.setPluginStrings('nir-transpiler', NirTranspiler.Strings.strings);
+        this.controllers.push('NirTranspiler.controller.NirPreview');
+        this.controllers.push('NirTranspiler.controller.AliasUrnSync');
         
         this.callParent();
     }

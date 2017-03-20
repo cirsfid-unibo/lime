@@ -44,7 +44,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('DefaultNir.controller.Import', {
+Ext.define('NirTranspiler.controller.Import', {
     override: 'DefaultImport.controller.Import',
 
     uploadFinished: function(content, request) {

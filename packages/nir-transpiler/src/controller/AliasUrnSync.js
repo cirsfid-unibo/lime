@@ -45,7 +45,7 @@
  */
 
 // Plugin to generate urn alias from AKN URI
-Ext.define('DefaultNir.controller.AliasUrnSync', {
+Ext.define('NirTranspiler.controller.AliasUrnSync', {
     extend : 'Ext.app.Controller',
 
     listen: {

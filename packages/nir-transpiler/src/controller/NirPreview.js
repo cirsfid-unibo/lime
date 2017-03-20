@@ -46,10 +46,10 @@
 
 // Plugin to display and export a NIR conversion
 // of the AkomaNtoso document.
-Ext.define('DefaultNir.controller.NirPreview', {
+Ext.define('NirTranspiler.controller.NirPreview', {
     extend : 'Ext.app.Controller',
 
-    views: ["DefaultNir.view.NirPreviewMainTab"],
+    views: ["NirTranspiler.view.NirPreviewMainTab"],
 
     refs : [{
         selector : 'appViewport',

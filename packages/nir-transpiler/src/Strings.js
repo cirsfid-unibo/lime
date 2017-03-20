@@ -44,7 +44,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
- Ext.define('DefaultNir.Strings', {
+ Ext.define('NirTranspiler.Strings', {
     singleton : true,
     
     strings: {

@@ -44,7 +44,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
- Ext.define('DefaultNir.controller.Export', {
+ Ext.define('NirTranspiler.controller.Export', {
     override: 'DefaultExport.Controller',
 
     // Add NIR item to export menu.
@@ -62,7 +62,7 @@
     // Download NIR file using saveAs.
     onExportNIR: function () {
         var me = this,
-            nirCnt = me.getController('DefaultNir.controller.NirPreview');
+            nirCnt = me.getController('NirTranspiler.controller.NirPreview');
 
         nirCnt.translateToNir(function (nirXml) {
             var blob = new Blob([nirXml], {type: "text/xml;charset=utf-8"});

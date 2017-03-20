@@ -44,7 +44,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('DefaultNir.NirUtils', {
+Ext.define('NirTranspiler.NirUtils', {
     singleton : true,
     alternateClassName : 'NirUtils',
     

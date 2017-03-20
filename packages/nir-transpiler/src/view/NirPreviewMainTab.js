@@ -48,7 +48,7 @@
  * Pdf viewer tab, this tab uses two plugins one for converting content
  * to pdf and the other to show the pdf in the tab
  */
-Ext.define('DefaultNir.view.NirPreviewMainTab', {
+Ext.define('NirTranspiler.view.NirPreviewMainTab', {
     extend : 'Ext.panel.Panel',
     
     requires: ['Ext.ux.form.field.CodeMirror'],

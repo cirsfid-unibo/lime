@@ -45,7 +45,7 @@
  */
 
 
-Ext.define('DefaultNir.Server', {
+Ext.define('NirTranspiler.Server', {
     override: 'LIME.Server',
 
     translateNir: function (nirXml, success, failure) {
