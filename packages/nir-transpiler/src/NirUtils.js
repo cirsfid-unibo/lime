@@ -44,22 +44,43 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('DefaultNir.Application', {
-    override: 'LIME.Application',
+Ext.define('DefaultNir.NirUtils', {
+    singleton : true,
+    alternateClassName : 'NirUtils',
+    
+    nirToHtml: function(nirXml, callback, failure) {
+        var me = this;
+        Server.translateNir(nirXml, function (aknXml) {
+            me.aknToHtml(aknXml, callback, failure);
+        }, failure);
+    },
 
-    requires: [
-        'DefaultNir.Strings',
-        'DefaultNir.NirUtils',
-        'DefaultNir.controller.NirPreview',
-        'DefaultNir.controller.AliasUrnSync',
-        'DefaultNir.view.NirPreviewMainTab'
-    ],
+    aknToHtml: function(content, callback, failure) {
+        var akn2html = Config.getLanguageTransformationFile("languageToLIME", 'akoma3.0');
+        Server.applyXslt(content, akn2html, function (html) {
+            Ext.callback(callback, null, [html, content]);
+        }, failure);
+    },
 
-    initControllers : function() {
-        Locale.setPluginStrings('default-nir', DefaultNir.Strings.strings);
-        this.controllers.push('DefaultNir.controller.NirPreview');
-        this.controllers.push('DefaultNir.controller.AliasUrnSync');
-        
-        this.callParent();
+    isNirContent: function(content) {
+        var nirTag = content.match(/<NIR[^>]*>/);
+        var nirNamespace = content.match(/<NIR[^>]+xmlns="http:\/\/www.normeinrete.it\/nir\//);
+        return nirNamespace !== null || nirTag !== null ;
+    },
+
+    confirmAknTranslation: function (cb, ncb) {
+        Ext.Msg.show({
+            title: Locale.getString('confirmAknTranslationTitle', 'nir-transpiler'), 
+            msg: Locale.getString('confirmAknTranslationQuestion', 'nir-transpiler'),
+            buttons: Ext.Msg.YESNOCANCEL,
+            closable: false,
+            fn: function(btn) {
+                if (btn == 'yes'){
+                    cb();
+                } else {
+                    ncb();
+                }
+            }
+        });
     }
 });

@@ -97,7 +97,7 @@ Ext.define('DefaultNir.controller.NirPreview', {
         console.log(1)
         me.application.fireEvent(Statics.eventsNames.translateRequest, function (aknXml) {
         console.log(2)
-            Server.getResourceFile('AknToNir.xsl', 'default-nir', function (xsltPath) {
+            Server.getResourceFile('AknToNir.xsl', 'nir-transpiler', function (xsltPath) {
         console.log(3)
                 // AkomaNtoso to NIR
                 aknXml = me.forceLatestVersion(aknXml);
