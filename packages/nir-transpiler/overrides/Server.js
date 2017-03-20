@@ -65,5 +65,24 @@ Ext.define('NirTranspiler.Server', {
                 console.warn(response);
             }
         });
+    },
+
+    translateAkn: function (aknXml, success, failure) {
+        this.request({
+            method: 'POST',
+            url: '{nodeServer}/xml/akn2nir',
+            rawData: JSON.stringify({ content:aknXml }),
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+            success: function (response) {
+                success(response.responseText);
+            },
+            failure: function (response) {
+                failure();
+                console.warn('Error translating AKN to NIR');
+                console.warn(response);
+            }
+        });
     }
 });

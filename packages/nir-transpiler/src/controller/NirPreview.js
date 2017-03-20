@@ -80,33 +80,27 @@ Ext.define('NirTranspiler.controller.NirPreview', {
         if (!xml) return;
         var activeTab = xml.up("main").getActiveTab();
         if (activeTab != xml) return;
-
+        activeTab.setLoading(true);
         me.translateToNir(function (nirXml) {
-        console.log(5)
+            activeTab.setLoading(false);
             if (me.getXml()) {
                 me.getXml().down('codemirror').setValue(nirXml);
             }
+        }, function() {
+            activeTab.setLoading(false);
+            Ext.Msg.alert('Nir conversion failed');
         });
     },
 
     // Call cb with the NIR conversion of the current document.
-    translateToNir: function (cb) {
+    translateToNir: function (cb, failureCb) {
         var me = this;
-
         // HTMLToso to AkomaNtoso
-        console.log(1)
         me.application.fireEvent(Statics.eventsNames.translateRequest, function (aknXml) {
-        console.log(2)
-            Server.getResourceFile('AknToNir.xsl', 'nir-transpiler', function (xsltPath) {
-        console.log(3)
-                // AkomaNtoso to NIR
-                aknXml = me.forceLatestVersion(aknXml);
-                Server.applyXslt(aknXml, xsltPath, cb, function () {
-        console.log(4)
-                    Ext.Msg.alert('Nir conversion failed');
-                });
-            });
-        }, me.getXml());
+            // AkomaNtoso to NIR
+            aknXml = me.forceLatestVersion(aknXml);
+            Server.translateAkn(aknXml, cb, failureCb);
+        });
     },
 
     // Force latest version of AkomaNtoso.
