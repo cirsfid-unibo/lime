@@ -1898,7 +1898,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
         var normalizeRefValue = function(str) {
             str = str || '';
-            return str.toLowerCase().replace(/[^\w]/g, '');
+            return str.toLowerCase().replace(/[^\w]/g, '.');
         }
 
         var numDataToId = function(data) {
@@ -1919,6 +1919,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             ref.id = numDataToId(refData.num) || normalizeRefValue(refData.fragment);
             ref.uri.country = DocProperties.documentInfo.docLocale;
             ref.uri.type = 'act';
+            ref.uri.subtype = normalizeRefValue(refData.type);
             ref.uri.name = normalizeRefValue(refData.docnum);
             ref.uri.date = refData.date || todayDate;
             ref.uri.language = DocProperties.documentInfo.docLang;
