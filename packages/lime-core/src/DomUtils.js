@@ -71,12 +71,6 @@ Ext.define('LIME.DomUtils', {
      * This is the name of the attribute that is used as internal id
      */
     elementIdAttribute : "internalId",
-    /**
-     * @property {String} langElementIdAttribute
-     * This is the name of the identificator attribute
-     */
-    langElementIdAttribute : "id",
-
     toMarkNodeClass: "toMarkNode",
     /**
      * @property {String} elementIdSeparator

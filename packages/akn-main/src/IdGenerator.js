@@ -143,7 +143,7 @@ Ext.define('AknMain.IdGenerator', {
 
     getMarkingIdParentPart: function(elName, markedParent, documentContext) {
         var markingId = '',
-            attributeName = LangProp.attrPrefix + DomUtils.langElementIdAttribute,
+            attributeName = LangProp.attrPrefix + LangProp.elIdAttr,
             parentName = (markedParent) ? DomUtils.getNameByNode(markedParent) : false,
             cmpParent = (documentContext) ? documentContext.parent('.component', true) : false,
             cmpPrefix = (cmpParent) ? cmpParent.getAttribute(attributeName)+this.prefixSeparator : "";
