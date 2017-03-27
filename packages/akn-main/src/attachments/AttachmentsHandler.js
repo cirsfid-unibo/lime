@@ -151,10 +151,24 @@ Ext.define('AknMain.attachments.AttachmentsHandler', {
         Ext.Array.toArray(
             docDom.getElementsByClassName('attachment')
         ).forEach(function(attachmentNode, index) {
+            this.addIdPrefix(attachmentNode);
             this.setAttachmentDocType(attachmentNode);
             this.setAttachmentDocName(attachmentNode);
             this.addAttachmentMetadata(attachmentNode, index);
         }, this);
+    },
+
+    // Add eId prefix to all eId attributes in order to avoid double eId
+    addIdPrefix: function(node) {
+        var idAttr = LangProp.attrPrefix+'eId';
+        var prefix = node.getAttribute(idAttr);
+        if (!prefix) return;
+        prefix+=AknMain.IdGenerator.prefixSeparator;
+        Ext.Array.toArray(node.querySelectorAll('*['+idAttr+']'))
+        .forEach(function(node) {
+            console.log(node);
+            node.setAttribute(idAttr, prefix+node.getAttribute(idAttr));
+        });
     },
 
     setAttachmentDocType: function(node) {
