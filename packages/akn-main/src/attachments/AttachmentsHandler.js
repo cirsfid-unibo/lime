@@ -166,7 +166,6 @@ Ext.define('AknMain.attachments.AttachmentsHandler', {
         prefix+=AknMain.IdGenerator.prefixSeparator;
         Ext.Array.toArray(node.querySelectorAll('*['+idAttr+']'))
         .forEach(function(node) {
-            console.log(node);
             node.setAttribute(idAttr, prefix+node.getAttribute(idAttr));
         });
     },

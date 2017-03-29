@@ -116,6 +116,15 @@ Ext.define('AknMain.notes.Controller', {
             };
         }
 
+        var backLink;
+        if (!node.querySelector('.backLinker')) {
+            backLink = this.insertMarkerBackLink(node, marker.value);
+            backLink.setAttribute(me.getRefToAttribute(), elId);
+            backLink.onclick = function() {
+                me.noteBackLinkClickHandler(tmpRef);
+            };
+        }
+
         tmpRef.setAttribute(me.getRefToAttribute(), elId);
         node.setAttribute(marker.name, marker.value);
         node.setAttribute(placement.name, placement.value);
@@ -133,6 +142,17 @@ Ext.define('AknMain.notes.Controller', {
         var note = DocProperties.getMarkedElement(node.getAttribute(this.getRefToAttribute()));
         if (note && note.htmlElement)
             this.focusNote(note.htmlElement);
+    },
+
+    insertMarkerBackLink: function(node, marker) {
+        var backLinkTemplate = new Ext.Template('<span style="position:absolute; top:0px; left: 60px;" class="backLinker"><sup><a href="#">{markerNumber}</a></sup></span>');
+        return Ext.DomHelper.insertHtml('afterBegin', node, backLinkTemplate.apply({
+            'markerNumber': marker
+        })).querySelector('a');
+    },
+
+    noteBackLinkClickHandler: function(node) {
+        this.focusNote(node);
     },
 
     focusNote: function(node) {
@@ -201,9 +221,11 @@ Ext.define('AknMain.notes.Controller', {
 
         if(ref && marker && marker.value) {
             var linker = ref.querySelector('a');
+            var backLinker = node.querySelector('.backLinker a');
             if(marker.value.trim() != linker.textContent.trim()) {
                 result.marker = true;
                 linker.replaceChild(node.ownerDocument.createTextNode(marker.value), linker.firstChild);
+                backLinker.replaceChild(node.ownerDocument.createTextNode(marker.value), backLinker.firstChild);
             }
             result.placement = this.setNotePosition(node, ref);
         }
