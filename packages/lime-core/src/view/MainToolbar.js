@@ -73,7 +73,8 @@ Ext.define('LIME.view.MainToolbar', {
        },
        margin : '0 10',
        width: 27,
-       height: 27
+       height: 27,
+       title: 'LIME build DateTime '+Ext.manifest.buildDatetime
     }, {
         xtype : 'fileMenuButton'
     },{
