@@ -98,7 +98,8 @@
                     '@class="mappings" or '+
                     '@class="temporalData" or '+
                     '@class="temporalGroup" or '+
-                    '@class="references"]'+
+                    '@class="references" or '+
+                    '@class="componentInfo"]'+
                     '[not(child::*)]';
 
         // Iterate multiple times to remove elements which become empty

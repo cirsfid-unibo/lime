@@ -150,7 +150,22 @@ Ext.define('AknMain.metadata.Alias', {
     ],
 
     validators: {
-        type: { type: 'inclusion', list: ['work', 'expression', 'manifestation', 'item'] }
+        level: { type: 'inclusion', list: ['work', 'expression', 'manifestation', 'item'] }
+    }
+});
+
+Ext.define('AknMain.metadata.ComponentData', {
+    extend: 'AknMain.metadata.Base',
+    fields: [
+        { name: 'documentId', reference: 'Document' },
+        { name: 'name', type: 'string' },
+        { name: 'href', type: 'string' },
+        { name: 'showAs', type: 'string' },
+        { name: 'level', type: 'string' }
+    ],
+
+    validators: {
+        level: { type: 'inclusion', list: ['work', 'expression', 'manifestation', 'item'] }
     }
 });
 

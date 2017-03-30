@@ -65,6 +65,11 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         '</tpl></tpl>' +
         '           <div class="FRBRdate" date="{date}" name=""/>',
         '           <div class="FRBRauthor" href="#{workAuthor}" as="#{workAuthorRole}"/>',
+        '           <div class="componentInfo">',
+        '<tpl for="componentsData"><tpl if="level==\'work\'">' +
+        '           <div class="componentData" href="{href}" name="{name}" showAs="{showAs}"/>',
+        '</tpl></tpl>' +
+        '           </div>',
         '           <div class="FRBRcountry" value="{country}"/>',
         '       </div>',
         '       <div class="FRBRExpression">',
@@ -74,6 +79,11 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         '           <div class="FRBRalias" value="{value}" name="{name}"/>',
         '</tpl></tpl>' +
         '           <div class="FRBRauthor" href="#{expressionAuthor}" as="#{expressionAuthorRole}"/>',
+        '           <div class="componentInfo">',
+        '<tpl for="componentsData"><tpl if="level==\'expression\'">' +
+        '           <div class="componentData" href="{href}" name="{name}" showAs="{showAs}"/>',
+        '</tpl></tpl>' +
+        '           </div>',
         '          <div class="FRBRdate" date="{version}" name=""/>',
         '          <div class="FRBRlanguage" language="{language}"/>',
         '       </div>',
@@ -84,6 +94,11 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         '           <div class="FRBRalias" value="{value}" name="{name}"/>',
         '</tpl></tpl>' +
         '           <div class="FRBRauthor" href="#{manifestationAuthor}" as="#{manifestationAuthorRole}"/>',
+        '           <div class="componentInfo">',
+        '<tpl for="componentsData"><tpl if="level==\'manifestation\'">' +
+        '           <div class="componentData" href="{href}" name="{name}" showAs="{showAs}"/>',
+        '</tpl></tpl>' +
+        '           </div>',
         '           <div class="FRBRdate" date="{today}" name=""/>',
         '       </div>',
         '   </div>',
@@ -280,6 +295,18 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
             return data;
         }
 
+        function mapComponents(store, uri) {
+            var res = [];
+            if (!store.count()) return res;
+
+            // Initialize with default main component
+            res.push({ name: uri.component, href: uri.work, level: 'work' });
+            res.push({ name: uri.component, href: uri.expression, level: 'expression' });
+            res.push({ name: uri.component, href: uri.manifestation, level: 'manifestation' });
+
+            return res.concat(mapData(store));
+        }
+
         var data = model.getData();
         data.date = AknMain.metadata.XmlSerializer.normalizeDate(data.date);
         data.version = AknMain.metadata.XmlSerializer.normalizeDate(data.version);
@@ -309,9 +336,11 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
             expression: uri.expression(),
             expressionUri: uri.expression(true),
             manifestation: uri.manifestation(),
-            manifestationUri: uri.manifestation(true)
+            manifestationUri: uri.manifestation(true),
+            component: uri.component
         };
 
+        data.componentsData = mapComponents(model.componentDatas(), data.uri);
         return this.applyTemplate(data);
     },
 

@@ -201,9 +201,11 @@ Ext.define('AknMain.attachments.AttachmentsHandler', {
         var language = this.getController('Language');
         var docNode = this.getContentWrapper(node);
         var metaNode = docNode.insertBefore(language.createBlankMeta(), docNode.firstChild);
+        var metaStore = this.createAttachmentMetadata(component);
+        this.addComponentData(metaStore.getUri());
         language.overwriteMetadata(
             metaNode,
-            this.createAttachmentMetadata(component)
+            metaStore
         );
     },
 
@@ -211,5 +213,19 @@ Ext.define('AknMain.attachments.AttachmentsHandler', {
         var metaStore = Ext.getStore('metadata').getMainDocument().clone();
         metaStore.set('component', componentName);
         return metaStore;
+    },
+
+    // Adds componentData to the main metedata store
+    addComponentData: function(uri) {
+        var metaStore = Ext.getStore('metadata').getMainDocument();
+        metaStore.componentDatas().add({
+            name: uri.component, level: 'work', href: uri.work()
+        });
+        metaStore.componentDatas().add({
+            name: uri.component, level: 'expression', href: uri.expression()
+        });
+        metaStore.componentDatas().add({
+            name: uri.component, level: 'manifestation', href: uri.manifestation()
+        });
     }
 });
