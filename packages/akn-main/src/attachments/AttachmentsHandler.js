@@ -151,18 +151,17 @@ Ext.define('AknMain.attachments.AttachmentsHandler', {
         Ext.Array.toArray(
             docDom.getElementsByClassName('attachment')
         ).forEach(function(attachmentNode, index) {
-            this.addIdPrefix(attachmentNode);
+            var component = 'annex_'+(index+1);
+            this.addIdPrefix(attachmentNode, component);
             this.setAttachmentDocType(attachmentNode);
             this.setAttachmentDocName(attachmentNode);
-            this.addAttachmentMetadata(attachmentNode, index);
+            this.addAttachmentMetadata(attachmentNode, component);
         }, this);
     },
 
     // Add eId prefix to all eId attributes in order to avoid double eId
-    addIdPrefix: function(node) {
+    addIdPrefix: function(node, prefix) {
         var idAttr = LangProp.attrPrefix+'eId';
-        var prefix = node.getAttribute(idAttr);
-        if (!prefix) return;
         prefix+=AknMain.IdGenerator.prefixSeparator;
         Ext.Array.toArray(node.querySelectorAll('*['+idAttr+']'))
         .forEach(function(node) {
@@ -198,13 +197,13 @@ Ext.define('AknMain.attachments.AttachmentsHandler', {
         return wrapper;
     },
 
-    addAttachmentMetadata: function(node, index) {
+    addAttachmentMetadata: function(node, component) {
         var language = this.getController('Language');
         var docNode = this.getContentWrapper(node);
         var metaNode = docNode.insertBefore(language.createBlankMeta(), docNode.firstChild);
         language.overwriteMetadata(
             metaNode,
-            this.createAttachmentMetadata('attachment'+(index+1))
+            this.createAttachmentMetadata(component)
         );
     },
 
