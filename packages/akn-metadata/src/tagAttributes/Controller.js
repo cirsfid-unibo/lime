@@ -120,6 +120,9 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
     getAttributePanel: function(node) {
         var tag = DomUtils.getNameByNode(node);
         switch(tag) {
+            case 'num':
+            case 'heading':
+                return;
             case 'ref':
                 return this.createRefPanel(node);
             case 'role':
