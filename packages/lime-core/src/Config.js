@@ -201,6 +201,7 @@ Ext.define('LIME.Config', {
     
     getLocaleXslPath: function(lang, locale) {
         locale = locale || DocProperties.documentInfo.docLocale || this.fieldsDefaults['docLocale'];
-        return this.getLanguagePath(lang)+'localeXsl/'+locale+'.xsl';
+        var path = this.getLanguagePath(lang)+'localeXsl/'+locale+'.xsl';
+        return this.getLanguageBundle(lang)[path] ? path : null;
     }
 });

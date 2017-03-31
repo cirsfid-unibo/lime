@@ -209,8 +209,12 @@ Ext.define('AknMain.Language', {
     translateContent: function(html, success, failure) {
         var config = {
             output : 'akn',
-            includeFiles : [Config.getLocaleXslPath()]
+            includeFiles : []
         };
+        var localeXslPath = Config.getLocaleXslPath();
+        if (localeXslPath) {
+            config.includeFiles.push(localeXslPath);
+        }
         var xslt = Config.getLanguageTransformationFile("LIMEtoLanguage");
         var attributeNormalizer = Config.getLanguagePath()+'AknAttributesNormalizer.xsl';
         html = AknMain.utilities.String.removeDiacriticsFromAttrs(html)
