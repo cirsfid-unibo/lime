@@ -271,6 +271,5 @@ Ext.define('AknMain.attachments.AttachmentsHandler', {
                 showAs: showAs
             });
         }
-        console.log(references);
     }
 });
