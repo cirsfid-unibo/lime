@@ -55,7 +55,6 @@
 
     appendMetadata: function() {
         var metaNode = this.callParent(arguments);
-
         // if the meta are related to the main document
         if (metaNode && metaNode.parentNode && metaNode.parentNode.hasAttribute(DocProperties.docIdAttribute))
             this.overwriteMetadata(metaNode, Ext.getStore('metadata').getMainDocument());
@@ -65,7 +64,6 @@
         if (!store) return;
         var metaStr = AknMain.metadata.HtmlSerializer.serialize(store),
             doc = AknMain.xml.Document.parse(metaStr);
-
         var lastInsertedNode = undefined;
         doc.select('//*[@class="meta"]/*').forEach(function(node) {
             node = metaNode.ownerDocument.adoptNode(node);
@@ -115,7 +113,7 @@
     // Remove all meta references that are not referenced in the document
     removeNotDetachedReferences: function(doc) {
         // It would be cool to do this with one query
-        var query = '//*[@class="references"]/*[@eId]';
+        var query = '//*[@class="references"]/*[@eId and @class != "hasAttachment" and @class != "attachmentOf"]';
         var referingToTpl = new Ext.Template(
             '//*[@akn_refersto = "#{0}" or @source = "#{0}"]'
         );

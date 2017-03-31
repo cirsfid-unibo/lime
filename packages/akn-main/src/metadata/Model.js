@@ -182,6 +182,8 @@ Ext.define('AknMain.metadata.Reference', {
     validators: {
         type: { type: 'inclusion', list: [
             'original',
+            'hasAttachment',
+            'attachmentOf',
             'TLCPerson',
             'TLCOrganization',
             'TLCConcept',

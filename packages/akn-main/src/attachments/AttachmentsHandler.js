@@ -147,15 +147,27 @@ Ext.define('AknMain.attachments.AttachmentsHandler', {
     },
 
     
-    beforeTranslate: function(docDom) {
+    handleAttachmentsMetadata: function(docDom) {
         Ext.Array.toArray(
             docDom.getElementsByClassName('attachment')
         ).forEach(function(attachmentNode, index) {
-            var component = 'annex_'+(index+1);
-            this.addIdPrefix(attachmentNode, component);
+            var component = this.getComponentName(index);
             this.setAttachmentDocType(attachmentNode);
             this.setAttachmentDocName(attachmentNode);
             this.addAttachmentMetadata(attachmentNode, component);
+        }, this);
+    },
+
+    getComponentName: function(index) {
+        return 'annex_'+(index+1);
+    },
+
+    fixAttachmentsId: function(docDom) {
+        Ext.Array.toArray(
+            docDom.getElementsByClassName('attachment')
+        ).forEach(function(attachmentNode, index) {
+            var component = this.getComponentName(index);
+            this.addIdPrefix(attachmentNode, component);
         }, this);
     },
 
@@ -203,6 +215,7 @@ Ext.define('AknMain.attachments.AttachmentsHandler', {
         var metaNode = docNode.insertBefore(language.createBlankMeta(), docNode.firstChild);
         var metaStore = this.createAttachmentMetadata(component);
         this.addComponentData(metaStore.getUri());
+        this.addReferences(metaStore);
         language.overwriteMetadata(
             metaNode,
             metaStore
@@ -218,14 +231,46 @@ Ext.define('AknMain.attachments.AttachmentsHandler', {
     // Adds componentData to the main metedata store
     addComponentData: function(uri) {
         var metaStore = Ext.getStore('metadata').getMainDocument();
-        metaStore.componentDatas().add({
-            name: uri.component, level: 'work', href: uri.work()
+        var workUri = uri.work();
+        var componentDatas = metaStore.componentDatas();
+
+        if (componentDatas.findRecord('href', workUri, 0, false, false, true))
+            return;
+
+        componentDatas.add({
+            name: uri.component, level: 'work', href: workUri
         });
-        metaStore.componentDatas().add({
+        componentDatas.add({
             name: uri.component, level: 'expression', href: uri.expression()
         });
-        metaStore.componentDatas().add({
+        componentDatas.add({
             name: uri.component, level: 'manifestation', href: uri.manifestation()
         });
+    },
+
+    addReferences: function(attachmentStore) {
+        var metaStore = Ext.getStore('metadata').getMainDocument();
+        var mainUri = metaStore.getUri();
+        var annexUri = attachmentStore.getUri();
+        this.addMetaRef(metaStore, 'hasAttachment', annexUri.component, annexUri.work());
+        this.addMetaRef(attachmentStore, 'attachmentOf', mainUri.component, mainUri.work());
+    },
+
+    addMetaRef: function (meta, type, showAs, href) {
+        var references = meta.references(),
+            eid = showAs;
+
+        var existingRefIndex = references.findBy(function(rec) {
+            return rec.get('type') === type &&  rec.get('href') === href;
+        });
+        if (existingRefIndex < 0) {
+            references.add({
+                eid: eid,
+                type: type,
+                href: href,
+                showAs: showAs
+            });
+        }
+        console.log(references);
     }
 });

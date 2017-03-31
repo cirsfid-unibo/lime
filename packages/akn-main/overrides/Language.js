@@ -201,6 +201,8 @@ Ext.define('AknMain.Language', {
         Ext.each(dom.querySelectorAll('[data-old-text]'), function(node) {
             node.removeAttribute('data-old-text');
         });
+        this.getController('AknMain.attachments.AttachmentsHandler')
+            .handleAttachmentsMetadata(dom);
         return params;
     },
 
@@ -254,7 +256,7 @@ Ext.define('AknMain.Language', {
         Ext.each(wrappingEls, me.setNodeId.bind(me, root));
 
         me.getController('AknMain.attachments.AttachmentsHandler')
-            .beforeTranslate(root);
+            .fixAttachmentsId(root);
     },
 
     setNodeId: function(root, node, enforce) {
