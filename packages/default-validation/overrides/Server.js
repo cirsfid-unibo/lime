@@ -52,7 +52,7 @@ Ext.define('DefaultValidation.Server', {
         this.request({
             method: 'POST',
             url: '{nodeServer}/xml/Validate',
-            params : {
+            jsonData : {
                 source : xmlstring
             },
             success: function (response) {
