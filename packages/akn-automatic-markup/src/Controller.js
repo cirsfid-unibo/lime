@@ -527,7 +527,16 @@ Ext.define('AknAutomaticMarkup.Controller', {
         }).filter(function(group) {
             return group.length;
         }).map(function(group) {
-            return me.wrapItemText(me.wrapListOfNodes(group));
+            return me.wrapListOfNodes(group);
+        });
+
+        if (this.isIntroElement(nodesToMark[0])) {
+            this.markIntroElement(nodesToMark[0], button);
+            nodesToMark.splice(0, 1);
+        }
+
+        nodesToMark = nodesToMark.map(function(node) {
+            return me.wrapItemText(node);
         });
 
         if ( nodesToMark.length ) {
@@ -539,6 +548,27 @@ Ext.define('AknAutomaticMarkup.Controller', {
         }
 
         Ext.callback(callback);
+    },
+
+    isIntroElement: function(node) {
+        return node.textContent.trim().match(/:$/) !== null;
+    },
+
+    markIntroElement: function(node, parentButton) {
+        var markButton = DocProperties.getChildConfigByName(parentButton, 'intro') ||
+                        DocProperties.getChildConfigByName(parentButton, 'listIntroduction')
+                        DocProperties.getFirstButtonByName('intro');
+        var introNode = this.requestMarkup(markButton, {
+            silent : true,
+            noEvent : true,
+            nodes : [node]
+        })[0];
+
+        // Remove eventual temp parent
+        if (introNode.parentNode.classList.contains(DomUtils.tempParsingClass)) {
+            DomUtils.unwrapNode(introNode.parentNode);
+        }
+        return introNode;
     },
 
     isHeadingElement: function(node) {
