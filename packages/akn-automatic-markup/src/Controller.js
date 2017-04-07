@@ -69,63 +69,63 @@ Ext.define('AknAutomaticMarkup.Controller', {
      */
     parsersConfig : {
         'date' : {
-            'url' : 'parsers/date/index.php',
+            'url' : 'date/index.php',
             'method' : 'POST'
         },
         'docNum' : {
-            'url' : 'parsers/docNum/index.php',
+            'url' : 'docNum/index.php',
             'method' : 'POST'
         },
         'list' : {
-            'url' : 'parsers/list/index.php',
+            'url' : 'list/index.php',
             'method' : 'POST'
         },
         'docDate' : {
-            'url' : 'parsers/date/index.php',
+            'url' : 'date/index.php',
             'method' : 'POST'
         },
         'body' : {
-            'url' : 'parsers/body/index.php',
+            'url' : 'body/index.php',
             'method' : 'POST'
         },
         'structure' : {
-            'url' : 'parsers/structure/index.php',
+            'url' : 'structure/index.php',
             'method' : 'POST'
         },
         'reference' : {
-            'url' : 'parsers/reference/index.php',
+            'url' : 'reference/index.php',
             'method' : 'POST'
         },
         'quote' : {
-            'url' : 'parsers/quote/index.php',
+            'url' : 'quote/index.php',
             'method' : 'POST'
         },
         'docType': {
-            'url' : 'parsers/doctype/index.php',
+            'url' : 'doctype/index.php',
             'method' : 'POST'
         },
         'authority': {
-            'url' : 'parsers/authority/index.php',
+            'url' : 'authority/index.php',
             'method' : 'POST'
         },
         'location': {
-            'url' : 'parsers/location/index.php',
+            'url' : 'location/index.php',
             'method' : 'POST'
         },
         'enactingFormula': {
-            'url' : 'parsers/enactingFormula/index.php',
+            'url' : 'enactingFormula/index.php',
             'method' : 'POST'
         },
         'note': {
-            'url' : 'parsers/note/index.php',
+            'url' : 'note/index.php',
             'method' : 'POST'
         },
         'organization': {
-            'url' : 'parsers/organization/index.php',
+            'url' : 'organization/index.php',
             'method' : 'POST'
         },
         'attachment': {
-            'url' : 'parsers/attachment/index.php',
+            'url' : 'attachment/index.php',
             'method' : 'POST'
         }
     },
@@ -306,6 +306,9 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 case 'blockList':
                 case 'list':
                     me.parseInsideList(node, button, callback);
+                    break;
+                case 'paragraph':
+                    me.parseInsideParagraph(node, button, callback);
                     break;
                 default:
                     Ext.callback(callback);
@@ -580,6 +583,48 @@ Ext.define('AknAutomaticMarkup.Controller', {
             return (match) ? match.length : false;
         }
         return heading;
+    },
+
+    parseInsideParagraph: function(node, button, callback) {
+        var me = this, contentToParse = Ext.fly(node).getHtml();
+        me.callParser("body", contentToParse, function(result) {
+            var jsonData = Ext.decode(result.responseText, true);
+            if (jsonData && jsonData.response && jsonData.response.paragraph) {
+                var num = jsonData.response.paragraph.map(function(obj) {
+                    return {value: obj.numparagraph, start: obj.start };
+                })[0];
+                try {
+                    me.markNum(num, node, button);
+                } catch(e) {
+                   Ext.log({level: "error"}, e);
+                }
+            }
+            Ext.callback(callback);
+        }, callback);
+    },
+
+    markNum: function(data, node, parentButton) {
+        var numButton = DocProperties.getChildConfigByName(parentButton, 'num') ||
+                        DocProperties.getFirstButtonByName('num');
+
+        var wrapText = function(text, root) {
+            var range = DomUtils.findText(text, root)[0];
+            if ( !range ) return;
+
+            var span = range.startContainer.ownerDocument.createElement("span");
+            span.setAttribute("class", DomUtils.tempParsingClass);
+            try {
+                range.surroundContents(span);
+            } catch(e) {
+                Ext.log({level: "error"}, e);
+            }
+            return span;
+        };
+
+        var numNode = wrapText(data.value, node);
+        if (numNode) {
+            this.requestMarkup(numButton, { nodes : [numNode] });
+        }
     },
 
     /**
@@ -2930,7 +2975,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             sendString = sendString.replace(/<br[^>]*>/g, "\n\n");
             Ext.Ajax.request({
                 // the url of the web service
-                url : 'php/'+config.url,
+                url : 'php/parsers/'+config.url,
                 timeout : me.parserAjaxTimeOut,
                 // set the method
                 method : config.method,
