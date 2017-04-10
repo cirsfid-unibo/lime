@@ -1260,5 +1260,11 @@ Ext.define('LIME.controller.Editor', {
         var me = this;
         me.removeVisualSelectionObjects();
         me.lastSelectionRange = null;
+    },
+
+    onMetadataChanged: function() {
+        this.changed = true;
+        this.showDocumentIdentifier();
+        this.autoSaveContent();
     }
 });
