@@ -1074,7 +1074,7 @@ Ext.define('LIME.DomUtils', {
     },
 
     insertAfter: function(node, target) {
-        if(target.nextElementSibling) {
+        if(target.nextSibling) {
             target.parentNode.insertBefore(node, target.nextSibling);
         } else {
             target.parentNode.appendChild(node);
