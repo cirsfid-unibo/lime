@@ -59,78 +59,6 @@ Ext.define('AknAutomaticMarkup.Controller', {
     }],
 
     /**
-     * @property {Number} parserAjaxTimeOut
-     */
-    parserAjaxTimeOut : 40000,
-
-    /**
-     * @property {Object} parsersConfig
-     * avaible parsers configuration
-     */
-    parsersConfig : {
-        'date' : {
-            'url' : 'date/index.php',
-            'method' : 'POST'
-        },
-        'docNum' : {
-            'url' : 'docNum/index.php',
-            'method' : 'POST'
-        },
-        'list' : {
-            'url' : 'list/index.php',
-            'method' : 'POST'
-        },
-        'docDate' : {
-            'url' : 'date/index.php',
-            'method' : 'POST'
-        },
-        'body' : {
-            'url' : 'body/index.php',
-            'method' : 'POST'
-        },
-        'structure' : {
-            'url' : 'structure/index.php',
-            'method' : 'POST'
-        },
-        'reference' : {
-            'url' : 'reference/index.php',
-            'method' : 'POST'
-        },
-        'quote' : {
-            'url' : 'quote/index.php',
-            'method' : 'POST'
-        },
-        'docType': {
-            'url' : 'doctype/index.php',
-            'method' : 'POST'
-        },
-        'authority': {
-            'url' : 'authority/index.php',
-            'method' : 'POST'
-        },
-        'location': {
-            'url' : 'location/index.php',
-            'method' : 'POST'
-        },
-        'enactingFormula': {
-            'url' : 'enactingFormula/index.php',
-            'method' : 'POST'
-        },
-        'note': {
-            'url' : 'note/index.php',
-            'method' : 'POST'
-        },
-        'organization': {
-            'url' : 'organization/index.php',
-            'method' : 'POST'
-        },
-        'attachment': {
-            'url' : 'attachment/index.php',
-            'method' : 'POST'
-        }
-    },
-
-    /**
      * @property {String[]} docNumImpossibleParents
      */
     docNumImpossibleParents : ["h1", "h2", "a"],
@@ -325,7 +253,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             if (noDocType) {
                 Ext.callback(callback);
             } else {
-                me.callParser("docType", contentToParse, function(result) {
+                Server.callParser("doctype", contentToParse, function(result) {
                     var jsonData = Ext.decode(result.responseText, true);
                     if (jsonData) {
                         me.parseDocTypes([jsonData.response[0]], node);
@@ -336,7 +264,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
         };
 
         var callAutority = function() {
-            me.callParser("authority", contentToParse, function(result) {
+            Server.callParser("authority", contentToParse, function(result) {
                 var jsonData = Ext.decode(result.responseText, true);
                 if (jsonData) {
                     me.parseDocAuthorityElements(jsonData, node, button);
@@ -345,7 +273,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             }, callDocType);
         };
 
-        me.callParser("enactingFormula", contentToParse, function(result) {
+        Server.callParser("enactingFormula", contentToParse, function(result) {
             var jsonData = Ext.decode(result.responseText, true);
             if (jsonData) {
                 me.parseEnactingFormula(jsonData, node, button);
@@ -357,7 +285,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
     parseInsideDate: function(node, button, callback) {
         var me = this, widgetConfig = DocProperties.getNodeWidget(node),
             contentToParse = Ext.fly(node).getHtml();
-        me.callParser("date", Ext.util.Format.stripTags(contentToParse), function(result) {
+        Server.callParser("date", Ext.util.Format.stripTags(contentToParse), function(result) {
             var jsonData = Ext.decode(result.responseText, true);
             if (jsonData.response.dates) {
                 var dateObj = Ext.Object.getValues(jsonData.response.dates)[0];
@@ -403,7 +331,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
         var me = this, contentToParse = Ext.fly(node).getHtml();
 
         var callDocType = function() {
-            me.callParser("docType", contentToParse, function(result) {
+            Server.callParser("doctype", contentToParse, function(result) {
                 var jsonData = Ext.decode(result.responseText, true);
                 if (jsonData) {
                     me.parseDocTypes([jsonData.response[0]], node);
@@ -422,7 +350,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
         };
 
         var callDate = function() {
-            me.callParser("docDate", contentToParse, function(result) {
+            Server.callParser("date", contentToParse, function(result) {
                 var jsonData = Ext.decode(result.responseText, true);
                 if (jsonData) {
                     me.parseDocDate(jsonData, node, button);
@@ -431,7 +359,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             }, callTitle);
         };
 
-        me.callParser("docNum", contentToParse, function(result) {
+        Server.callParser("docNum", contentToParse, function(result) {
             var jsonData = Ext.decode(result.responseText, true);
             if (jsonData) {
                 me.parseDocNum(jsonData, node, button);
@@ -460,7 +388,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
         };
 
         var callDate = function() {
-            me.callParser("docDate", contentToParse, function(result) {
+            Server.callParser("date", contentToParse, function(result) {
                 var jsonData = Ext.decode(result.responseText, true);
                 if (jsonData) {
                     me.parseDocDate(jsonData, node, button);
@@ -470,7 +398,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
         };
 
         var callOrganization = function() {
-            me.callParser("organization", contentToParse, function(result) {
+            Server.callParser("organization", contentToParse, function(result) {
                 var jsonData = Ext.decode(result.responseText, true);
                 if (jsonData) {
                     me.parseOrganization(jsonData, node, button);
@@ -481,7 +409,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
         };
 
         var callAutority = function() {
-            me.callParser("authority", contentToParse, function(result) {
+            Server.callParser("authority", contentToParse, function(result) {
                 var jsonData = Ext.decode(result.responseText, true);
                 if (jsonData) {
                     me.parseAuthorityElements(jsonData, node, button);
@@ -490,7 +418,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             }, callDate);
         };
 
-        me.callParser("location", contentToParse, function(result) {
+        Server.callParser("location", contentToParse, function(result) {
             var jsonData = Ext.decode(result.responseText, true);
             if (jsonData) {
                 me.parseLocation(jsonData, node, button);
@@ -501,7 +429,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
     parseInsideBody: function(node, button, callback) {
         var me = this, contentToParse = Ext.fly(node).getHtml();
-        me.callParser("body", contentToParse, function(result) {
+        Server.callParser("body", contentToParse, function(result) {
             var jsonData = Ext.decode(result.responseText, true);
             if (jsonData) {
                 try {
@@ -587,7 +515,9 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
     parseInsideParagraph: function(node, button, callback) {
         var me = this, contentToParse = Ext.fly(node).getHtml();
-        me.callParser("body", contentToParse, function(result) {
+        if (node.querySelector('.num')) return callback();
+        
+        Server.callParser("body", contentToParse, function(result) {
             var jsonData = Ext.decode(result.responseText, true);
             if (jsonData && jsonData.response && jsonData.response.paragraph) {
                 var num = jsonData.response.paragraph.map(function(obj) {
@@ -600,7 +530,9 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 }
             }
             Ext.callback(callback);
-        }, callback);
+        }, callback, {
+            context: 5 // 5 is the index of paragraph
+        });
     },
 
     markNum: function(data, node, parentButton) {
@@ -2115,7 +2047,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
         text = text || me.htmlToText(editor.getContent());
 
-        me.callParser("attachment", text, function(result) {
+        Server.callParser("attachment", text, function(result) {
             var jsonData = Ext.decode(result.responseText, true);
             if (jsonData) {
                 me.parseAttachments(jsonData.response);
@@ -2492,7 +2424,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 callCallback();
                 return;
             }
-            me.callParser("body", quote.innerHTML, function(result) {
+            Server.callParser("body", quote.innerHTML, function(result) {
                 var jsonData = Ext.decode(result.responseText, true),
                     nodeToParse = quote, elName = DomUtils.getElementNameByNode(quote);
 
@@ -2817,7 +2749,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             app = me.application, buttonName;
         content = content || editor.getContent();
         app.fireEvent(Statics.eventsNames.progressUpdate, Locale.getString("referenceParser", me.getPluginName()));
-        me.callParser("reference", content, function(result) {
+        Server.callParser("reference", content, function(result) {
             var jsonData = Ext.decode(result.responseText, true);
             if (jsonData) {
                 me.parseReference(jsonData.response, callback);
@@ -2886,7 +2818,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                     });
                 };
 
-                me.callParser("quote", content, function(result) {
+                Server.callParser("quote", content, function(result) {
                     var jsonData = Ext.decode(result.responseText, true);
                     if (jsonData && jsonData.success !== false) {
                         var data = filterData(jsonData.response).slice(0, 50);
@@ -2922,7 +2854,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                         callReferenceParser();
                     });
                 };
-                me.callParser("structure", editor.getContent(), function(result) {
+                Server.callParser("structure", editor.getContent(), function(result) {
                     var jsonData = Ext.decode(result.responseText, true);
                     if (jsonData) {
                         me.parseStructure(jsonData.response, goToNext);
@@ -2937,7 +2869,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             };
 
             var callNoteParser = function() {
-                me.callParser("note", editor.getContent(), function(result) {
+                Server.callParser("note", editor.getContent(), function(result) {
                     var jsonData = Ext.decode(result.responseText, true);
                     if (jsonData) {
                         me.parseNotes(jsonData.response);
@@ -2956,50 +2888,6 @@ Ext.define('AknAutomaticMarkup.Controller', {
         return marker.autoWrap(button, config);
     },
 
-    /**
-     * This function call server side parser with different callbacks
-     * @param {String} name
-     * @param {String} sendString
-     * @param {Function} success
-     * @param {Function} failure
-     * @param {Function} callback Call anyway
-     */
-    callParser : function(name, sendString, success, failure, callback) {
-        var me = this, contentLang = DocProperties.getLang(), config = me.parsersConfig[name];
-
-        if (!contentLang) {
-            return;
-        }
-
-        if (config) {
-            sendString = sendString.replace(/<br[^>]*>/g, "\n\n");
-            Ext.Ajax.request({
-                // the url of the web service
-                url : 'php/parsers/'+config.url,
-                timeout : me.parserAjaxTimeOut,
-                // set the method
-                method : config.method,
-                params : {
-                    s : sendString,
-                    f : 'json',
-                    l : contentLang,
-                    doctype : DocProperties.getDocType()
-                },
-                success : function(result) {
-                    result.responseText = result.responseText.replace(/\\n\\n/g, "<br />");
-                    success(result);
-                },
-                failure : failure,
-                callback : callback
-            });
-        } else if (failure) {
-            failure();
-            if (callback) {
-                callback();
-            }
-        }
-    },
-
     beforeContextMenuShow: function(menu, node) {
         var me = this;
         var getContentToParse = function() {
@@ -3015,7 +2903,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                     Locale.getString("parsing", me.getPluginName()),
                     {value: 0.2, text: ' '});
 
-            me.callParser("body", contentToParse, function(result) {
+            Server.callParser("body", contentToParse, function(result) {
                 var jsonData = Ext.decode(result.responseText, true);
                 if (jsonData && !Ext.isEmpty(jsonData.response)) {
                     try {
