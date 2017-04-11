@@ -516,17 +516,25 @@ Ext.define('AknAutomaticMarkup.Controller', {
     parseInsideParagraph: function(node, button, callback) {
         var me = this, contentToParse = Ext.fly(node).getHtml();
         if (node.querySelector('.num')) return callback();
-        
+
         Server.callParser("body", contentToParse, function(result) {
             var jsonData = Ext.decode(result.responseText, true);
             if (jsonData && jsonData.response && jsonData.response.paragraph) {
-                var num = jsonData.response.paragraph.map(function(obj) {
+                var nums = jsonData.response.paragraph.map(function(obj) {
                     return {value: obj.numparagraph, start: obj.start };
-                })[0];
+                });
                 try {
-                    me.markNum(num, node, button);
+                    if (nums.length === 1)
+                        me.markNum(node, button, nums[0]);
+                    else
+                        me.markParagraphs(nums, node, button);
+
+                    me.application.fireEvent('nodeChangedExternally', [node.parentNode], {
+                        change : true,
+                        silent: true
+                    });
                 } catch(e) {
-                   Ext.log({level: "error"}, e);
+                    Ext.log({level: "error"}, e);
                 }
             }
             Ext.callback(callback);
@@ -535,7 +543,18 @@ Ext.define('AknAutomaticMarkup.Controller', {
         });
     },
 
-    markNum: function(data, node, parentButton) {
+    markParagraphs: function(nums, node, button) {
+        var numNodes = nums.map(this.markNum.bind(this, node, button));
+        // Ignore the first node, it's already has its container iterate backwards
+        numNodes.slice(1).reverse().forEach(function(numNode) {
+            var paragraphNode = this.wrapPartNode(numNode, node);
+            this.wrapPartNodeSibling(paragraphNode);
+            DomUtils.insertAfter(paragraphNode, node);
+            this.requestMarkup(button, { nodes : [paragraphNode] });
+        }, this);
+    },
+
+    markNum: function(node, parentButton, data) {
         var numButton = DocProperties.getChildConfigByName(parentButton, 'num') ||
                         DocProperties.getFirstButtonByName('num');
 
@@ -555,7 +574,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
         var numNode = wrapText(data.value, node);
         if (numNode) {
-            this.requestMarkup(numButton, { nodes : [numNode] });
+            return this.requestMarkup(numButton, { nodes : [numNode] })[0];
         }
     },
 
@@ -2885,6 +2904,8 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
     requestMarkup: function(button, config) {
         var marker = this.getController("Marker");
+        config.silent = config.silent || true;
+        config.noEvent = config.noEvent || true;
         return marker.autoWrap(button, config);
     },
 
