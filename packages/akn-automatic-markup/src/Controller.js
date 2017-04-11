@@ -139,11 +139,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
         textGroups.forEach(function(group) {
             var wrapper = me.wrapListOfNodes(group);
             if (!wrapper) return;
-            me.requestMarkup(pButton, {
-                silent : true,
-                noEvent : true,
-                nodes : [wrapper]
-            });
+            me.requestMarkup(pButton, wrapper);
         });
     },
 
@@ -319,11 +315,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             me.wrapPartNodeSibling(wrapper, function(el) {
                 return isFinishTitle(el.previousSibling.textContent);
             });
-            me.requestMarkup(markButton, {
-                silent : true,
-                noEvent : true,
-                nodes : [wrapper]
-            });
+            me.requestMarkup(markButton, wrapper);
         }
     },
 
@@ -471,11 +463,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
         });
 
         if ( nodesToMark.length ) {
-            me.requestMarkup(markButton, {
-                silent : true,
-                noEvent : true,
-                nodes : nodesToMark
-            });
+            me.requestMarkup(markButton, nodesToMark);
         }
 
         Ext.callback(callback);
@@ -489,11 +477,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
         var markButton = DocProperties.getChildConfigByName(parentButton, 'intro') ||
                         DocProperties.getChildConfigByName(parentButton, 'listIntroduction')
                         DocProperties.getFirstButtonByName('intro');
-        var introNode = this.requestMarkup(markButton, {
-            silent : true,
-            noEvent : true,
-            nodes : [node]
-        })[0];
+        var introNode = this.requestMarkup(markButton, node)[0];
 
         // Remove eventual temp parent
         if (introNode.parentNode.classList.contains(DomUtils.tempParsingClass)) {
@@ -550,7 +534,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             var paragraphNode = this.wrapPartNode(numNode, node);
             this.wrapPartNodeSibling(paragraphNode);
             DomUtils.insertAfter(paragraphNode, node);
-            this.requestMarkup(button, { nodes : [paragraphNode] });
+            this.requestMarkup(button, paragraphNode);
         }, this);
     },
 
@@ -574,7 +558,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
         var numNode = wrapText(data.value, node);
         if (numNode) {
-            return this.requestMarkup(numButton, { nodes : [numNode] })[0];
+            return this.requestMarkup(numButton, numNode)[0];
         }
     },
 
@@ -666,11 +650,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 }
             }, me);
 
-            me.requestMarkup(markButton, {
-                silent : true,
-                noEvent : true,
-                nodes : nodes
-            });
+            me.requestMarkup(markButton, nodes);
             Ext.each(nodes, function(item) {
                 if ( DomUtils.nodeHasClass(item.parentNode, 'block') ) {
                     item.parentNode.parentNode.appendChild(item);
@@ -700,11 +680,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             }, me);
 
             if (nodes.length) {
-                me.requestMarkup(markButton, {
-                    silent : true,
-                    noEvent : true,
-                    nodes : nodes
-                });
+                me.requestMarkup(markButton, nodes);
                 me.addRefersGeneric(nodes);
             }
         }
@@ -725,11 +701,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
         }, me);
 
         if (nodesToMark.length) {
-            me.requestMarkup(markButton, {
-                silent : true,
-                noEvent : true,
-                nodes : nodesToMark
-            });
+            me.requestMarkup(markButton, nodesToMark);
         }
     },
 
@@ -770,11 +742,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 var wrapper = findAndWrap(item.authority, node, roleButton);
                 if(wrapper && !Ext.fly(wrapper).parent('.organization')) {
                     roleNodes.push(wrapper);
-                    me.requestMarkup(roleButton, {
-                        silent : true,
-                        noEvent : true,
-                        nodes : [wrapper]
-                    });
+                    me.requestMarkup(roleButton, wrapper);
                 } else if ( wrapper ) {
                     wrapper.removeAttribute('class');
                 }
@@ -792,11 +760,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                         wrapper.setAttribute('data-surname', item.surname);
                     }
                     personNodes.push(wrapper);
-                    me.requestMarkup(personButton, {
-                        silent : true,
-                        noEvent : true,
-                        nodes : [wrapper]
-                    });
+                    me.requestMarkup(personButton, wrapper);
                 } else if ( wrapper ) {
                     wrapper.removeAttribute('class');
                 }
@@ -809,11 +773,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             Ext.each(signatures, function(item) {
                 var wrapper = findAndWrap(item.value, node, sigButton);
                 if (wrapper) {
-                    me.requestMarkup(sigButton, {
-                        silent : true,
-                        noEvent : true,
-                        nodes : [wrapper]
-                    });
+                    me.requestMarkup(sigButton, wrapper);
                     markRole(item, wrapper);
                     markPerson(item, wrapper);
                     markedElements.push([item, wrapper]);
@@ -931,11 +891,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             });
 
             if ( nodesToMark.length ) {
-                me.requestMarkup(markButton, {
-                    silent : true,
-                    noEvent : true,
-                    nodes : nodesToMark
-                });
+                me.requestMarkup(markButton, nodesToMark);
             }
         }
         Ext.defer(function() {
@@ -1136,11 +1092,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
         }, this);
 
         if( nodesToMark.length && !noMarking) {
-            me.requestMarkup(config.markButton, Ext.merge({
-                silent : true,
-                noEvent : true,
-                nodes : nodesToMark
-            }, config.marker));
+            me.requestMarkup(config.markButton, nodesToMark, config.marker);
         }
         return nodesToMark;
     },
@@ -1258,30 +1210,12 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 wrapBlocks.push(wrapNode);
             }
 
-            me.requestMarkup(blockButton, {
-                silent : true,
-                noEvent : true,
-                nodes : wrapBlocks
-            });
-
-            me.requestMarkup(introButton, {
-                silent : true,
-                noEvent : true,
-                nodes : listIntroductions
-            });
-
-            me.requestMarkup(itemButton, {
-                silent : true,
-                noEvent : true,
-                nodes : items
-            });
+            me.requestMarkup(blockButton, wrapBlocks);
+            me.requestMarkup(introButton, listIntroductions);
+            me.requestMarkup(itemButton, items);
 
             if ( nums.length ) {
-                me.requestMarkup(numButton, {
-                    silent : true,
-                    noEvent : true,
-                    nodes : nums
-                });
+                me.requestMarkup(numButton, nums);
             }
         }
     },
@@ -1295,11 +1229,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
         if ( newWrapper ) {
             me.wrapPartNodeSibling(newWrapper);
-            me.requestMarkup(button, {
-                silent : true,
-                noEvent : true,
-                nodes : [newWrapper]
-            });
+            me.requestMarkup(button, newWrapper);
         }
         return node;
     },
@@ -1361,29 +1291,10 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 nums.push(numNode);
             });
 
-            me.requestMarkup(blockButton, {
-                silent : true,
-                noEvent : true,
-                nodes : wrapNode
-            });
-
-            me.requestMarkup(introButton, {
-                silent : true,
-                noEvent : true,
-                nodes : listIntroductions
-            });
-
-            me.requestMarkup(itemButton, {
-                silent : true,
-                noEvent : true,
-                nodes : items
-            });
-
-            me.requestMarkup(numButton, {
-                silent : true,
-                noEvent : true,
-                nodes : nums
-            });
+            me.requestMarkup(blockButton, wrapNode);
+            me.requestMarkup(introButton, listIntroductions);
+            me.requestMarkup(itemButton, items);
+            me.requestMarkup(numButton, nums);
 
         });
 
@@ -1496,25 +1407,13 @@ Ext.define('AknAutomaticMarkup.Controller', {
         }
 
         if (numsToMark.length > 0) {
-            me.requestMarkup(numButton, {
-                silent : true,
-                noEvent : true,
-                nodes : numsToMark
-            });
+            me.requestMarkup(numButton, numsToMark);
         }
         if (headingsToMark.length > 0) {
-            me.requestMarkup(headingButton, {
-                silent : true,
-                noEvent : true,
-                nodes : headingsToMark
-            });
+            me.requestMarkup(headingButton, headingsToMark);
         }
         if (nodesToMark.length > 0) {
-            me.requestMarkup(markButton, {
-                silent : true,
-                noEvent : true,
-                nodes : nodesToMark
-            });
+            me.requestMarkup(markButton, nodesToMark);
             me.onNodeChanged(nodesToMark, {});
         }
 
@@ -1592,17 +1491,8 @@ Ext.define('AknAutomaticMarkup.Controller', {
             wrapBlocks.push(wrapNode);
         }
 
-        me.requestMarkup(wrapButton, {
-            silent : true,
-            noEvent : true,
-            nodes : wrapBlocks
-        });
-
-        me.requestMarkup(introButton, {
-            silent : true,
-            noEvent : true,
-            nodes : listIntroductions
-        });
+        me.requestMarkup(wrapButton, wrapBlocks);
+        me.requestMarkup(introButton, listIntroductions);
     },
 
     parseBodyParts : function(data, node, button) {
@@ -1725,11 +1615,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             }, me);
 
             if ( structureToMark.length ) {
-                me.requestMarkup(markButtonStructure, {
-                    nodes : structureToMark,
-                    silent : true,
-                    noEvent : true
-                });
+                me.requestMarkup(markButtonStructure, structureToMark);
             }
         }
     },
@@ -1823,10 +1709,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
                     if (prevPartNode) {
                         markButton = DocProperties.getFirstButtonByName(name);
-                        var nodes = me.requestMarkup(markButton, {
-                            nodes : [prevPartNode],
-                            noEvent: true
-                        });
+                        var nodes = me.requestMarkup(markButton, prevPartNode);
                         me.onNodeChanged(nodes, {}, callCallback);
                     } else {
                         callCallback();
@@ -1852,10 +1735,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
                 docNode.appendChild(wrapNode);
 
-                var nodes = me.requestMarkup(markButton, {
-                    nodes : [wrapNode],
-                    noEvent: true
-                });
+                var nodes = me.requestMarkup(markButton, wrapNode);
 
                 me.onNodeChanged(nodes, {}, callback);
             } else {
@@ -1915,7 +1795,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 }
             } else {
                 if ( nodesToMark.length ) {
-                    me.requestMarkup(button, {silent:true, noEvent : true, nodes:nodesToMark, attributes: attrs});
+                    me.requestMarkup(button, nodesToMark, {attributes: attrs});
                 }
                 console.log("Ref marked", body.querySelectorAll('[class~=ref]').length);
                 Ext.callback(callback);
@@ -2027,7 +1907,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                     obj.num.reverse();
 
                 if (isMref(obj) && mrefBtn) {
-                    me.requestMarkup(mrefBtn, {silent:true, noEvent : true, nodes:nodes});
+                    me.requestMarkup(mrefBtn, nodes);
                     nodes.forEach(wrapMrefRefs.bind(me, obj));
                 } else {
                     addNodesToMark(nodes, getRefHref(obj));
@@ -2118,16 +1998,8 @@ Ext.define('AknAutomaticMarkup.Controller', {
         });
 
         if ( attachmentsNode ) {
-            me.requestMarkup(attachmentsButton, {
-                silent : true,
-                noEvent : true,
-                nodes : [attachmentsNode]
-            });
-            me.requestMarkup(attachmentButton, {
-                silent : true,
-                noEvent : true,
-                nodes : attachNodes
-            });
+            me.requestMarkup(attachmentsButton, attachmentsNode);
+            me.requestMarkup(attachmentButton, attachNodes);
         }
     },
 
@@ -2225,23 +2097,9 @@ Ext.define('AknAutomaticMarkup.Controller', {
                     note.parentNode.insertBefore(tmpElement, note);
                 });
 
-                me.requestMarkup(DocProperties.getFirstButtonByName('p'), {
-                    silent : true,
-                    noEvent : true,
-                    nodes : [p]
-                });
-
-                me.requestMarkup(DocProperties.getFirstButtonByName('container'), {
-                    silent : true,
-                    noEvent : true,
-                    nodes : [notesContainer]
-                });
-
-                me.requestMarkup(markButton, {
-                    silent : true,
-                    noEvent : true,
-                    nodes : nodesToMark
-                });
+                me.requestMarkup(DocProperties.getFirstButtonByName('p'), p);
+                me.requestMarkup(DocProperties.getFirstButtonByName('container'), notesContainer);
+                me.requestMarkup(markButton, nodesToMark);
             }
         }
     },
@@ -2457,8 +2315,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                             quote.parentNode.insertBefore(nodeToParse, quote);
                             DomUtils.moveChildrenNodes(quote, nodeToParse);
                             quote.parentNode.removeChild(quote);
-                            me.requestMarkup(markStructureButton, {
-                                nodes : [nodeToParse],
+                            me.requestMarkup(markStructureButton, nodeToParse, {
                                 noEvent: true,
                                 onFinish: function(nodes) {
                                     try {
@@ -2536,11 +2393,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 var parentButton = DomUtils.getButtonByElement(DomUtils.getFirstMarkedAncestor(node)),
                     headingButton = DocProperties.getChildConfigByName(parentButton, name) ||
                                     DocProperties.getFirstButtonByName(name);
-                me.requestMarkup(headingButton, {
-                    silent : true,
-                    noEvent : true,
-                    nodes : [node]
-                });
+                me.requestMarkup(headingButton, node);
             });
         }
 
@@ -2654,11 +2507,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
         if(nodesToMark.length) {
             var parButton = DocProperties.getFirstButtonByName('paragraph');
-            me.requestMarkup(parButton, {
-                silent : true,
-                noEvent : true,
-                nodes : nodesToMark
-            });
+            me.requestMarkup(parButton, nodesToMark);
         }
         me.addHcontainerHeading(node);
     },
@@ -2747,16 +2596,8 @@ Ext.define('AknAutomaticMarkup.Controller', {
         });
 
 
-        me.requestMarkup(DocProperties.getFirstButtonByName("p", "common"), {
-            silent : true,
-            noEvent : true,
-            nodes : pToMark
-        });
-        me.requestMarkup(DocProperties.getFirstButtonByName("paragraph"), {
-            silent : true,
-            noEvent : true,
-            nodes : paragraphToMark
-        });
+        me.requestMarkup(DocProperties.getFirstButtonByName("p", "common"), pToMark);
+        me.requestMarkup(DocProperties.getFirstButtonByName("paragraph"), paragraphToMark);
 
         Ext.each(node.querySelectorAll('.'+DomUtils.tempParsingClass), function(tmp) {
             DomUtils.unwrapNode(tmp);
@@ -2902,10 +2743,12 @@ Ext.define('AknAutomaticMarkup.Controller', {
         }, 5, me);
     },
 
-    requestMarkup: function(button, config) {
-        var marker = this.getController("Marker");
-        config.silent = config.silent || true;
-        config.noEvent = config.noEvent || true;
+    requestMarkup: function(button, nodes, config) {
+        var marker = this.getController('Marker');
+        config = config || {};
+        config.silent = (config.silent === undefined) ? true : config.silent;
+        config.noEvent = (config.noEvent === undefined) ? true : config.noEvent;
+        config.nodes = (Ext.isArray(nodes)) ? nodes : [nodes];
         return marker.autoWrap(button, config);
     },
 
