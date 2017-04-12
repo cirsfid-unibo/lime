@@ -147,12 +147,23 @@ Ext.define('LIME.controller.Editor', {
     },
 
     onChangeAttribute: function() {
-        this.changed = true;
+        this.setChanged(true);
+    },
+
+    setChanged: function(state) {
+        this.changed = state;
+        if (this.saveButton) {
+            this.saveButton.disabled(!state);
+        }
+    },
+
+    isChanged: function() {
+        return this.changed;
     },
 
     onChangeContent: function(ed) {
         this.ensureContentWrapper(ed);
-        this.changed = true;
+        this.setChanged(true);
     },
 
     /*
@@ -201,6 +212,7 @@ Ext.define('LIME.controller.Editor', {
         tinyConfig = Ext.merge(tinyConfig, {
             // Events and callbacks
             mysetup: function(editor) {
+                me.addSaveButton(editor);
                 me.addUndoButtons(editor);
 
                 editor.on('init', function(e) {
@@ -272,6 +284,17 @@ Ext.define('LIME.controller.Editor', {
 
         /* Set the editor custom configuration */
         Ext.apply(tinyView, {tinymceConfig: tinyConfig});
+    },
+
+    addSaveButton: function (editor) {
+        var me = this;
+        editor.addButton('lime-save', {
+            tooltip: 'Save',
+            onPostRender: function () {
+                me.saveButton = this;
+            },
+            onclick: this.autoSaveContent.bind(this)
+        });
     },
 
     setOnlyEditorTabMode: function(enable) {
@@ -616,8 +639,7 @@ Ext.define('LIME.controller.Editor', {
             extNode.highlight("FFFF00", {duration: 800 });
         }
         if (actions.change) {
-            /* Warn of the change */
-            me.changed = true;
+            me.setChanged(true);
             me.application.fireEvent("editorDomChange", node, "partial", config);
         }
         if (actions.click) {
@@ -949,8 +971,8 @@ Ext.define('LIME.controller.Editor', {
     autoSaveContent: function() {
         /* Check if there has been a change */ /* TODO: pensare a una soluzione più intelligente */
         // TODO: show document saved icon or message
-        if (this.getAutosaveEnabled() && this.changed) {
-            this.changed = false;
+        if (this.getAutosaveEnabled() && this.isChanged()) {
+            this.setChanged(false);
             Ext.GlobalEvents.fireEvent('saveDocument');
         }
     },
@@ -1165,7 +1187,7 @@ Ext.define('LIME.controller.Editor', {
 
                 // the language of tinymce
                 language : Locale.getLang(),
-                toolbar: "lime-undo lime-redo | bold italic strikethrough | superscript subscript | alignleft aligncenter alignright | table | searchreplace | link image"
+                toolbar: "lime-save | lime-undo lime-redo | bold italic strikethrough | superscript subscript | alignleft aligncenter alignright | table | searchreplace | link image"
             };
 
         return config;
@@ -1263,7 +1285,7 @@ Ext.define('LIME.controller.Editor', {
     },
 
     onMetadataChanged: function() {
-        this.changed = true;
+        this.setChanged(true);
         this.showDocumentIdentifier();
         this.autoSaveContent();
     }
