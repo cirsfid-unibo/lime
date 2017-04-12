@@ -38,7 +38,7 @@
     "js": [
         { "path":"${ext.dir}/build/ext-all-debug.js" },
         { "bundle": true, "path": "app.js" },
-        { "path": "lib/tinymce4/tinymce.min.js" },
+        { "path": "lib/tinymce/tinymce.min.js" },
         { "path": "lib/filesaver/filesaver.min.js" },
         { "path": "lib/codemirror/codemirror.min.js" },
         { "path": "lib/vkbeautify/vkbeautify.js" },

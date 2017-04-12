@@ -1153,7 +1153,7 @@ Ext.define('LIME.controller.Editor', {
                 nonbreaking_force_tab: true,
                 statusbar : false,
                 // the enabled plugins in the editor
-                plugins : "code, table, link, image, searchreplace, paste, noneditable, magicline",
+                plugins : "image, link, magicline, noneditable, paste, searchreplace, table",
 
                 magicline_targetedItems: ['DIV','IMG','TABLE'],
                 magicline_triggerMargin: 10,
@@ -1165,7 +1165,7 @@ Ext.define('LIME.controller.Editor', {
 
                 // the language of tinymce
                 language : Locale.getLang(),
-                toolbar: "lime-undo lime-redo | bold italic strikethrough | superscript subscript | bullist numlist outdent indent | alignleft aligncenter alignright | table | searchreplace | link image"
+                toolbar: "lime-undo lime-redo | bold italic strikethrough | superscript subscript | alignleft aligncenter alignright | table | searchreplace | link image"
             };
 
         return config;
