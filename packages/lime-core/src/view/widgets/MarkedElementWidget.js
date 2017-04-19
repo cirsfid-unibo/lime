@@ -51,7 +51,6 @@ Ext.define('LIME.view.widgets.MarkedElementWidget', {
     alias: 'widget.markedElementWidget',
 
     collapsible : true,
-    frame : true,
     width: '40%',
     fieldDefaults : {
         msgTarget : 'side',
