@@ -63,12 +63,34 @@ Ext.define('AknAutomaticMarkup.Controller', {
      */
     docNumImpossibleParents : ["h1", "h2", "a"],
 
+    paragraphAutomaticMarkup: true,
+
     init : function() {
         var me = this;
         //Listening progress events
         me.application.on(Statics.eventsNames.afterLoad, me.onDocumentLoaded, me);
         me.application.on(Statics.eventsNames.nodeChangedExternally, me.onNodeChanged, me);
         me.application.fireEvent(Statics.eventsNames.registerContextMenuBeforeShow, Ext.bind(me.beforeContextMenuShow, me));
+
+        this.control({
+            '*[itemId=automaticMarkupOptions]': {
+                click: function(cmp) {
+                    Ext.widget('menu', {
+                        items: [{
+                            xtype: 'menucheckitem',
+                            itemId: 'enableParagraphParsing',
+                            checked: me.paragraphAutomaticMarkup,
+                            text: 'Paragraph automatic markup' //TODO: translate
+                        }]
+                    }).showBy(cmp);
+                }
+            },
+            '*[itemId=enableParagraphParsing]': {
+                checkchange: function(cmp, checked) {
+                    me.paragraphAutomaticMarkup = checked;
+                }
+            }
+        });
     },
 
     onDocumentLoaded : function(docConfig) {
@@ -232,8 +254,10 @@ Ext.define('AknAutomaticMarkup.Controller', {
                     me.parseInsideList(node, button, callback);
                     break;
                 case 'paragraph':
-                    me.parseInsideParagraph(node, button, callback);
-                    break;
+                    if (me.paragraphAutomaticMarkup) {
+                        me.parseInsideParagraph(node, button, callback);
+                        break;
+                    }
                 default:
                     Ext.callback(callback);
             }
