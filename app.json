@@ -32,7 +32,6 @@
         },
         { "path": "lib/codemirror/codemirror.css" },
         { "path": "resources/stylesheets/ext_custom.css" },
-        { "path": "resources/stylesheets/aknVisualizer.css" },
         { "path": "resources/font-awesome/css/font-awesome.min.css" }
     ],
     "js": [
