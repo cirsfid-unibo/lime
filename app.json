@@ -31,7 +31,6 @@
             "path": "bootstrap.css"
         },
         { "path": "lib/codemirror/codemirror.css" },
-        { "path": "resources/stylesheets/ext_custom.css" },
         { "path": "resources/font-awesome/css/font-awesome.min.css" }
     ],
     "js": [
