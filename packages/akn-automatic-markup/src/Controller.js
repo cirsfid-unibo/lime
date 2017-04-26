@@ -139,11 +139,12 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
     addChildWrapper: function(nodes, config) {
         var me = this;
+        var requireP = [
+                    'preface', 'preamble', 'formula',
+                    'conclusions', 'container', 'intro'
+                    ];
         Ext.each(nodes, function(node) {
-            var name = DomUtils.getNameByNode(node);
-            if( name == 'preface' || name == 'preamble' ||
-                name == 'formula' || name == 'conclusions' ||
-                name == 'container' ) {
+            if( requireP.indexOf(DomUtils.getNameByNode(node)) >= 0 ) {
                 me.addPTextWrappers(node);
             }
         });
@@ -501,12 +502,13 @@ Ext.define('AknAutomaticMarkup.Controller', {
         var markButton = DocProperties.getChildConfigByName(parentButton, 'intro') ||
                         DocProperties.getChildConfigByName(parentButton, 'listIntroduction')
                         DocProperties.getFirstButtonByName('intro');
-        var introNode = this.requestMarkup(markButton, node)[0];
+        var introNode = this.requestMarkup(markButton, node, { noEvent: false })[0];
 
         // Remove eventual temp parent
         if (introNode.parentNode.classList.contains(DomUtils.tempParsingClass)) {
             DomUtils.unwrapNode(introNode.parentNode);
         }
+
         return introNode;
     },
 
