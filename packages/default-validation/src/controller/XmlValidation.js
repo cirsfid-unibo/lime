@@ -205,7 +205,7 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
             technicalMessage = moreInfoTpl.apply({
                 moreInfoHeader: this.getString("technicalInfo"),
                 moreInfo: moreInfoTextTpl.apply(Ext.merge(Ext.clone(item), {
-                    lineString: Ext.String.htmlEncode(this.xmlRows[item.line])
+                    lineString: Ext.String.htmlEncode(this.xmlRows[item.line-1])
                 }))
             }),
             isAknPreview = this.getMainTabs().getActiveTab().xtype == "aknPreviewMainTab",
