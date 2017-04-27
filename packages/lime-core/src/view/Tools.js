@@ -48,17 +48,17 @@
  * This menu is a container for all the buttons we will use to mark.
  * Each button is a TreeButton (our "panelish" implementation of a tree made of buttons)
  */
-Ext.define('LIME.view.MarkingMenu', {
+Ext.define('LIME.view.Tools', {
     extend: 'Ext.tab.Panel',
-    alias: 'widget.markingMenu',
+    alias: 'widget.tools',
 
-    requires: [
-        'LIME.components.markingTreePanel.MarkingTreePanel'
-    ],
+    title: Locale.getString('tools'),
 
-    title: Locale.getString('documentMarkup'),
-
+    collapsible: true,
+    expandable: true,
+    resizable: true,
     scrollable: 'y',
+
     layout: 'fit',
 
     listeners: {
@@ -68,11 +68,7 @@ Ext.define('LIME.view.MarkingMenu', {
     },
 
     items: [{
-        xtype: 'markingTreePanel',
-        title: Locale.getString('documentStructure'),
-        id: 'markingTreeRootButtons'
-    }],
-
-    shown: []
+        xtype: 'markingMenu'
+    }]
 });
 

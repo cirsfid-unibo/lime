@@ -62,10 +62,10 @@ Ext.define('LIME.controller.MarkingMenu', {
 
     refs: [
         { ref: 'markingMenuContainer', selector: '[cls=markingMenuContainer]' },
+        { ref: 'markingMenu', selector: 'markingMenu' },
         { ref: 'mainTab',              selector: 'main' },
         { ref: 'secondEditor',         selector: '#secondEditor mainEditor' },
-        { ref: 'treeButtonsStructure', selector: '#treeStructure' },
-        { ref: 'treeButtonsCommons',   selector: '#treeCommons' }
+        { ref: 'treeButtons', selector: '#markingTreeRootButtons' }
     ],
 
     /**
@@ -75,7 +75,29 @@ Ext.define('LIME.controller.MarkingMenu', {
      */
     buttonsReferences: {},
     expandState: {},
-    styleId: 'limeTreeButtonsStyle',
+
+    init: function() {
+        // save a reference to the controller
+        var me = this, app = me.application;
+
+        // Set the event listeners
+        app.on(Statics.eventsNames.editorDomNodeFocused, function(node, config) {
+            if ( !config || !config.noExpandButtons ) {
+                try {
+                    this.expandButtons(node);
+                } catch(e) {
+                    Ext.log({level: "error"}, 'MarkingMenu expandButtons: '+e);
+                }
+            }
+        }, this);
+        app.on(Statics.eventsNames.languageLoaded, this.buildButtonsStructure, this);
+        app.on(Statics.eventsNames.disableEditing, this.disableMarkingMenu, this);
+        app.on(Statics.eventsNames.enableEditing, this.enableMarkingMenu, this);
+        app.on(Statics.eventsNames.addMarkingGroup, this.addMarkingGroup, this);
+        app.on(Statics.eventsNames.addMarkingButton, this.addMarkingButton, this);
+        app.on(Statics.eventsNames.setCustomMarkingHandler, this.setCustomMarkingHandler, this);
+        app.on(Statics.eventsNames.unfocusedNodes, this.expandButtons, this);
+    },
 
     getMarkingMenu: function() {
         var container = this.getMarkingMenuContainer();
@@ -89,50 +111,29 @@ Ext.define('LIME.controller.MarkingMenu', {
     /**
      * Build the root of the marking buttons
      * based on a static configuration file
-     * loaded at runtime by {@link LIME.store.LanguagesPlugin}
      */
     buildButtonsStructure: function(pluginData) {
-        var me = this, // Save the scope,
-            rootElements = pluginData.markupMenuRules.rootElements,
-            commonElements = pluginData.markupMenuRules.commonElements,
-            head = document.querySelector("head"),
-            styleNode = head.querySelector('#'+me.styleId );
-
-        if ( styleNode ) {
-            head.removeChild(styleNode);
-        }
-
         this.buttonsReferences = {};
         this.configReferences = {};
         DocProperties.clearElementConfig();
+        this.setTreePanelData(pluginData);
+        this.application.fireEvent(Statics.eventsNames.markingMenuLoaded);
+    },
 
-        var treeStructure = {
-            text: 'Document structure',
+    setTreePanelData: function(config) {
+        var me = this;
+        var rootElements = config.markupMenuRules.rootElements;
+        var treeData = {
             expanded: true,
-            id: 'structure',
+            id: 'rootButtons',
             children: []
         };
-
-        var treeCommon = {
-            text: 'Common elements',
-            expanded: true,
-            id: 'commons',
-            children: []
-        };
-
-
         // Create and append each child
         Ext.each(rootElements, function(button) {
-            treeStructure.children.push(me.buildConfigData(button, false, false, false, "structure"));
-        }, this);
-        Ext.each(commonElements, function(button) {
-            treeCommon.children.push(me.buildConfigData(button, false, false, false, "common"));
+            treeData.children.push(me.buildConfigData(button, false, false, false, 'rootButtons'));
         }, this);
 
-        me.getTreeButtonsStructure().getStore().setRootNode(treeStructure);
-        me.getTreeButtonsCommons().getStore().setRootNode(treeCommon);
-
-        this.application.fireEvent(Statics.eventsNames.markingMenuLoaded);
+        me.getTreeButtons().getStore().setRootNode(treeData);
     },
 
     /**
@@ -335,18 +336,6 @@ Ext.define('LIME.controller.MarkingMenu', {
         return buttons;
     },
 
-    // Create the MarkingMenu inside the Main tab
-    // TODO: this shound be inside the view.
-    addMarkingMenu: function(pluginData) {
-        var main = this.getMainTab(),
-            markingMenu = main.down('*[cls=markingMenuContainer]');
-
-        if(!markingMenu) {
-            main.down('*[cls=editor]').add(main.markingMenu);
-        }
-        this.buildButtonsStructure(pluginData);
-    },
-
     updateTreeView: function(tree, fn) {
         var view = tree.getView();
         view.getStore().loadRecords(fn(tree.getRootNode()));
@@ -410,11 +399,11 @@ Ext.define('LIME.controller.MarkingMenu', {
                 } else {
                     pathToExpand = relatedButton.getPath();
                 }*/
-                // Expand only buttons in the structure tree
+                // Expand only buttons in the markingTreeRootButtons tree
                 for (var i = nodesPath.length-1; i >= 0; i--) {
                     var btn = me.getTreeButton(nodesPath[i]),
                         tree = btn.getOwnerTree();
-                    if (btn && tree.id == 'treeStructure') {
+                    if (btn && tree.id == 'markingTreeRootButtons') {
                         treePanel = tree;
                         pathToExpand = btn.getPath();
                         break;
@@ -443,8 +432,10 @@ Ext.define('LIME.controller.MarkingMenu', {
     },
 
     getTreeButton: function(id) {
-        return this.getTreeButtonsStructure().getStore().getNodeById(id) ||
-               this.getTreeButtonsCommons().getStore().getNodeById(id);
+        return this.getMarkingMenu().query('markingTreePanel')
+            .map(function(treePanel) {
+                return treePanel.getStore().getNodeById(id);
+            })[0];
     },
 
     /**
@@ -581,72 +572,5 @@ Ext.define('LIME.controller.MarkingMenu', {
                 Ext.fly(uiNode).setDisplayed('table-row');
             }
         }, null, [tree, view]);
-    },
-
-    //  --------------- Event Handlers -------------------
-
-    // Initialization of the controller
-    init: function() {
-        // save a reference to the controller
-        var me = this, app = me.application;
-
-        // Set the event listeners
-        app.on(Statics.eventsNames.editorDomNodeFocused, function(node, config) {
-            if ( !config || !config.noExpandButtons ) {
-                try {
-                    this.expandButtons(node);
-                } catch(e) {
-                    Ext.log({level: "error"}, 'MarkingMenu expandButtons: '+e);
-                }
-            }
-        }, this);
-        app.on(Statics.eventsNames.languageLoaded, this.addMarkingMenu, this);
-        app.on(Statics.eventsNames.disableEditing, this.disableMarkingMenu, this);
-        app.on(Statics.eventsNames.enableEditing, this.enableMarkingMenu, this);
-        app.on(Statics.eventsNames.addMarkingGroup, this.addMarkingGroup, this);
-        app.on(Statics.eventsNames.addMarkingButton, this.addMarkingButton, this);
-        app.on(Statics.eventsNames.setCustomMarkingHandler, this.setCustomMarkingHandler, this);
-        app.on(Statics.eventsNames.unfocusedNodes, function() {
-            this.expandButtons();
-        }, this);
-
-        this.control({
-            '#treeStructure, #treeCommons': {
-                // Warn that a marking button has been clicked and say which one
-                itemclick: function(view, treeNode) {
-                    var id = treeNode.getData().id;
-                    var config = DocProperties.getElementConfig(id), aliasButton;
-                    var afterMarking = (Ext.isFunction(config.afterMarking)) ?
-                                       Ext.bind(config.afterMarking, config.handlerScope): undefined;
-
-                    Ext.callback(config.beforeMarking, config.handlerScope, [config]);
-
-                    if(me.getController("Editor").getMain().getActiveTab().cls != "editor") {
-                        return;
-                    }
-
-                    if (Ext.isFunction(config.customHandler)) {
-                        if(config.markAsButton) {
-                            aliasButton = DocProperties.getFirstButtonByName(config.markAsButton);
-                            this.application.fireEvent('markingMenuClicked', aliasButton, {
-                                callback: Ext.bind(config.customHandler, config.handlerScope, [config], true)
-                            });
-                        } else {
-                            Ext.callback(config.customHandler, config.handlerScope, [config]);
-                        }
-                    } else if (config.pattern) {
-                        this.application.fireEvent('markingMenuClicked', config, {
-                            callback: afterMarking
-                        });
-                    } else {
-                        if( treeNode.isExpanded() ) {
-                            treeNode.collapse();
-                        } else {
-                            treeNode.expand();
-                        }
-                    }
-                }
-            }
-        });
     }
 });

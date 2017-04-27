@@ -55,27 +55,13 @@ Ext.define('LIME.view.Main', {
         'LIME.view.main.editor.Path',
         'LIME.components.uri.Uri',
         'LIME.view.DocumentLangSelector',
-        'LIME.view.MarkingMenu',
+        'LIME.view.Tools',
         'LIME.view.Outliner',
         'LIME.view.main.ContextPanel'
     ],
 
     // set the alias
     alias: 'widget.main',
-
-    // This is istantiated by the MarkingMenu controller on language loaded.
-    // TODO: This should really be contained inside this component items and
-    // just reload its data on language load.
-    markingMenu: {
-        xtype: 'markingMenu',
-        cls: 'markingMenuContainer',
-        region: 'east',
-        width: '26%',
-        collapsible: true,
-        expandable: true,
-        resizable: true,
-        scrollable: 'y'
-    },
 
     initComponent: function() {
         this.items = [{
@@ -88,14 +74,7 @@ Ext.define('LIME.view.Main', {
             title: Locale.getString('mainEditor'),
             items: [{
                 region: 'center',
-                // xtype: 'panel',
-                // layout: 'fit',
-                // items: [{
-                    xtype: 'mainEditor',
-                // }],
-                // bbar: [{
-                //     xtype: 'mainEditorPath'
-                // }]
+                xtype: 'mainEditor',
                 margin: '0 3'
             }, {
                 region: 'south',
@@ -110,6 +89,11 @@ Ext.define('LIME.view.Main', {
                 resizable: true,
                 width: '17%',
                 scrollable: true
+            }, {
+                xtype: 'tools',
+                cls: 'markingMenuContainer',
+                region: 'east',
+                width: '26%'
             }]
         }];
         this.plugins = {

@@ -93,7 +93,7 @@ Ext.define('LIME.Strings', {
             "saveDocumentButtonTooltip": "Save the document",
             "saveAsMenuLabel": "Save as...",
             "saveAsMenuTooltip": "Save with a different name/path",
-            "eastToolbarTitle": "Document markup",
+            "documentMarkup": "Document markup",
             "elementsAccordionTitle": "Elements",
             "metadataAccordionTitle": "Metadata",
             "westToolbarTitle": "Outline",
@@ -181,7 +181,8 @@ Ext.define('LIME.Strings', {
             "deleteDocumentTooltip": "Delete currently opened document",
             "deleteDocumentConfirm": "Are you sure you want to delete the document <b>{uri}</b>?",
             "deletedDocument": "Document <b>{uri}</b> was deleted successfully.",
-            "dataSaved": "Data have been saved"
+            "dataSaved": "Data have been saved",
+            "tools": "Tools"
         },
         "it": {
             "error": "Errore",
@@ -228,7 +229,7 @@ Ext.define('LIME.Strings', {
             "saveDocumentButtonTooltip": "Salva il documento",
             "saveAsMenuLabel": "Salva come...",
             "saveAsMenuTooltip": "Salva con un nome/path differente",
-            "eastToolbarTitle": "Markup documento",
+            "documentMarkup": "Markup documento",
             "elementsAccordionTitle": "Elementi",
             "metadataAccordionTitle": "Metadata",
             "saveFileWindowMainTitle": "Salva documento",
@@ -323,7 +324,8 @@ Ext.define('LIME.Strings', {
             "deleteDocumentTooltip": "Elimina il documento aperto nell'editor",
             "deleteDocumentConfirm": "Sei sicuro di voler eliminare il documento <b>{uri}</b>?",
             "deletedDocument": "Il documento <b>{uri}</b> è stato eliminato.",
-            "dataSaved": "I dati sono stati salvati"
+            "dataSaved": "I dati sono stati salvati",
+            "tools": "Strumenti"
         },
         "es": {
             "error": "Error",
@@ -370,7 +372,7 @@ Ext.define('LIME.Strings', {
             "saveDocumentButtonTooltip": "Guardar documento",
             "saveAsMenuLabel": "Guardar como...",
             "saveAsMenuTooltip": "Guardar con un nombre / ruta diferente",
-            "eastToolbarTitle": "Markup documento",
+            "documentMarkup": "Markup documento",
             "elementsAccordionTitle": "Elementos",
             "metadataAccordionTitle": "Metadatos",
             "saveFileWindowMainTitle": "Guardar documento",
@@ -457,7 +459,8 @@ Ext.define('LIME.Strings', {
             "deleteDocumentTooltip": "Eliminar el documento abierto actualmente",
             "deleteDocumentConfirm": "¿Está seguro de que desea eliminar el documento <b>{uri}</b>?",
             "deletedDocument": "El documento <b>{uri}</b> fue eliminado correctamente.",
-            "dataSaved": "Los datos se han guardado"
+            "dataSaved": "Los datos se han guardado",
+            "tools": "Instrumentos"
         },
         "ro": {
             "error": "Eroare",
@@ -500,7 +503,7 @@ Ext.define('LIME.Strings', {
             "saveDocumentButtonTooltip": "Salvează documentul",
             "saveAsMenuLabel": "Salvare ca...",
             "saveAsMenuTooltip": "Salvează cu un nume diferit",
-            "eastToolbarTitle": "Marcarea documentului",
+            "documentMarkup": "Marcarea documentului",
             "elementsAccordionTitle": "Elementele",
             "metadataAccordionTitle": "Metadatele",
             "saveFileWindowMainTitle": "Salvarea documentului",
@@ -582,7 +585,8 @@ Ext.define('LIME.Strings', {
             "closeAllTabsText": "Închide toate filele",
             "unmark": "Unmark",
             "unmarkElement": "Unmark this element",
-            "unmarkElementChildren": "Unmark this element and its children"
+            "unmarkElementChildren": "Unmark this element and its children",
+            "tools": "Instrumente"
         },
         "ru": {
             "error": "Ошибка",
@@ -625,7 +629,7 @@ Ext.define('LIME.Strings', {
             "saveDocumentButtonTooltip": "Сохранить документ",
             "saveAsMenuLabel": "Сохранить как...",
             "saveAsMenuTooltip": "Сохранить под другим именем",
-            "eastToolbarTitle": "Разметка документа",
+            "documentMarkup": "Разметка документа",
             "elementsAccordionTitle": "Элементы",
             "metadataAccordionTitle": "Метадата",
             "saveFileWindowMainTitle": "Сохранить документ",
@@ -708,7 +712,8 @@ Ext.define('LIME.Strings', {
             "closeAllTabsText": "Закрыть все вкладки",
             "unmark": "Unmark",
             "unmarkElement": "Unmark this element",
-            "unmarkElementChildren": "Unmark this element and its children"
+            "unmarkElementChildren": "Unmark this element and its children",
+            "tools": "Инструменты"
         }
     }
 });
