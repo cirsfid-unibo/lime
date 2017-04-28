@@ -66,14 +66,7 @@
             "moreInfoTpl" : "{error} - {lineString} at ({line}:{column}) - {code}",
             "tipsToResolveError": "Tips to fix this error (try one of the followings)",
             "unexpectedElement": "is not expected in {parentName}",
-            "unexpectedQuoted": "needs to be inside of a modification element",
-            "addActiveModification": "Add a modification around the element",
-            "unmarkQuoted": "Unmark the '{name}' if it is not quoting a part of an document but is a simple quote",
-            "elementOnly": "can not directly contain plain text",
-            "elementNotMarked": "is not fully or partially marked",
-            "markInsideElement": "mark missing elements inside this element",
-            "runAutomaticMarkup": "try to run the 'Automatic Markup'",
-            "removeText": "delete the plain text from this element"
+            "elementOnly": "can not directly contain plain text"
         },
         "es": {
             "validateXml": "Validar XML",
@@ -93,14 +86,7 @@
             "moreInfoTpl": "{error} - {lineString} en ({line}:{column}) - {code}",
             "tipsToResolveError": "Sugerencias para corregir este error (pruebe una de las siguientes)",
             "unexpectedElement": "no es posible incluirlo en {parentName}",
-            "unexpectedQuoted": "Es necesario incluirlo dentro de un elemento del tipo Modificación",
-            "addActiveModification": "Incluya el elemento dentro de una marca de modificación",
-            "unmarkQuoted": "Desmarque el '{name}' si no es una comilla incluida en el propio documento ",
-            "elementOnly": "no puede contener texto plano directamente",
-            "elementNotMarked": "no está total o parcialmente marcado",
-            "markInsideElement": "marque los elementos faltantes dentro de este elemento",
-            "runAutomaticMarkup": "intente ejecutar el 'Marcado automático'",
-            "removeText": "borre el texto plano dentro de este elemento"
+            "elementOnly": "no puede contener texto plano directamente"
         },
         "it": {
             "validateXml": "Validazione XML",
@@ -120,14 +106,7 @@
             "moreInfoTpl" : "{error} - {lineString} a ({line}:{column}) - {code}",
             "tipsToResolveError": "Suggerimenti per correggere questo errore (prova uno dei seguenti)",
             "unexpectedElement": "non è previsto in {parentName}",
-            "unexpectedQuoted": "deve essere all'interno di un elemento di modifica",
-            "addActiveModification": "Aggiungere una modifica attorno all'elemento",
-            "unmarkQuoted": "Smarca '{name}' se non cita una parte di un documento, ma è una semplice citazione",
-            "elementOnly": "non può contenere direttamente testo",
-            "elementNotMarked": "non è completamente o parzialmente marcato",
-            "markInsideElement": "marca gli elementi mancanti all'interno di questo elemento",
-            "runAutomaticMarkup": "prova a lanciare 'Markup automatico'",
-            "removeText": "eliminare il testo da questo elemento"
+            "elementOnly": "non può contenere direttamente testo"
         }
     }
 });

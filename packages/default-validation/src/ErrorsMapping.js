@@ -44,51 +44,25 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
- Ext.define('DefaultValidation.ErrorsMapping', {
+// Mapping of error codes in user friendly errors
+// In order to add "specificErrors" you have to override this class
+
+Ext.define('DefaultValidation.ErrorsMapping', {
     singleton : true,
 
     mapping: {
         "1843": {
             "genericError": "elementOnly",
-            "specificErrors": [
-                {
-                    "elements": [
-                        "bill",
-                        "act",
-                        "doc"
-                    ],
-                    "error": "elementNotMarked",
-                    "tips": [
-                        "markInsideElement",
-                        "runAutomaticMarkup"
-                    ]
-                },{
-                    "elements": [
-                        "body"
-                    ],
-                    "error": "elementNotMarked",
-                    "tips": [
-                        "markInsideElement",
-                        "removeText"
-                    ]
-                }
-            ]
+            "specificErrors": []
         },
         "1871": {
             "genericError": "unexpectedElement",
-            "specificErrors": [
-                {
-                    "elements": [
-                        "quotedText",
-                        "quotedStructure"
-                    ],
-                    "error": "unexpectedQuoted",
-                    "tips": [
-                        "addActiveModification",
-                        "unmarkQuoted"
-                    ]
-                }
-            ]
+            "specificErrors": []
         }
+    },
+
+    // Overide this function in order to customize mapping
+    getMapping: function() {
+        return this.mapping;
     }
 });

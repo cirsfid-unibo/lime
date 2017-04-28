@@ -55,9 +55,8 @@ Ext.define('DefaultValidation.Application', {
     ],
 
     initControllers : function() {
-        Locale.setPluginStrings('default-validation', DefaultValidation.Strings.strings);
+        Locale.setPluginStrings('default-validation', DefaultValidation.Strings);
         this.controllers.push('DefaultValidation.controller.XmlValidation');
-        
         this.callParent();
     }
 });

@@ -428,7 +428,7 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
         var me = this;
         //Listening progress events
         this.application.on(Statics.eventsNames.afterLoad, this.onDocumentLoaded, this);
-        this.errorsMapping = DefaultValidation.ErrorsMapping.mapping;
+        this.errorsMapping = DefaultValidation.ErrorsMapping.getMapping();
         this.control({
             'uxNotification [cls*=validationResult]': {
                 cardChanged: function(card, btn) {
