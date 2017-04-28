@@ -47,6 +47,8 @@
 Ext.define('DefaultValidation.controller.XmlValidation', {
     extend : 'Ext.app.Controller',
 
+    requires: ['DefaultValidation.ErrorsMapping'],
+
     views: [
         "LIME.view.Main",
         "DefaultValidation.view.ValidationResultWindow"
@@ -70,8 +72,7 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
     }],
 
     config : {
-        pluginName : "default-validation",
-        errorsMappingFile: "errorsMapping.json"
+        pluginName : "default-validation"
     },
 
     onDocumentLoaded : function(docConfig) {
@@ -253,7 +254,6 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
             editorNode = (name) ? this.findEditorNode(name, config) : false,
             errorListTpl = new Ext.Template("<h4>{caption}</h4><ul>{errors}</ul>");
 
-            //DocProperties.getFirstButtonByName('quotedText').shortLabel
         if ( this.errorsMapping && this.errorsMapping[config.code] ) {
             var errorConfig = this.errorsMapping[config.code],
                 parent = ( editorNode ) ? DomUtils.getFirstMarkedAncestor(editorNode.parentNode) : false,
@@ -424,20 +424,11 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
         }
     },
 
-    downloadErrorsMapping: function() {
-        var me = this; 
-        Server.getResourceFile('errorsMapping.json', this.getPluginName(), function (path, data) {
-            me.errorsMapping = data;
-        });
-    },
-    
     init : function() {
         var me = this;
         //Listening progress events
         this.application.on(Statics.eventsNames.afterLoad, this.onDocumentLoaded, this);
-        
-        me.downloadErrorsMapping();
-
+        this.errorsMapping = DefaultValidation.ErrorsMapping.mapping;
         this.control({
             'uxNotification [cls*=validationResult]': {
                 cardChanged: function(card, btn) {
