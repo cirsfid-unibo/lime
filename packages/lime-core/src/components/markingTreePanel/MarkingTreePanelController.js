@@ -64,11 +64,6 @@ Ext.define('LIME.components.markingTreePanel.MarkingTreePanelController', {
 
         Ext.callback(config.beforeMarking, config.handlerScope, [config]);
 
-        // TODO: find a better solution
-        //if(this.getController('Editor').getMain().getActiveTab().cls !== 'editor') {
-        //    return;
-        //}
-
         if (Ext.isFunction(config.customHandler)) {
             if(config.markAsButton) {
                 var aliasButton = DocProperties.getFirstButtonByName(config.markAsButton);

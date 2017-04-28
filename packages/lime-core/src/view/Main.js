@@ -55,6 +55,7 @@ Ext.define('LIME.view.Main', {
         'LIME.view.main.editor.Path',
         'LIME.components.uri.Uri',
         'LIME.view.DocumentLangSelector',
+        'LIME.view.NationalitySelector',
         'LIME.view.Tools',
         'LIME.view.Outliner',
         'LIME.view.main.ContextPanel'
@@ -63,45 +64,43 @@ Ext.define('LIME.view.Main', {
     // set the alias
     alias: 'widget.main',
 
-    initComponent: function() {
-        this.items = [{
-            // This is the main tab. It contains the TinyMCE editor on the center and
-            // the outliner and markingMenu panels on the sides.
-            cls: 'editor',
-            itemId: 'mainEditorTab',
-            layout: 'border',
-            padding: '3 0 0 0',
-            title: Locale.getString('mainEditor'),
-            items: [{
-                region: 'center',
-                xtype: 'mainEditor',
-                margin: '0 3'
-            }, {
-                region: 'south',
-                xtype: 'mainEditorPath'
-            },{
-                xtype: 'contextPanel',
-                region: 'south'
-            }, {
-                xtype: 'outliner',
-                region: 'west',
-                expandable: true,
-                resizable: true,
-                width: '17%',
-                scrollable: true
-            }, {
-                xtype: 'tools',
-                cls: 'markingMenuContainer',
-                region: 'east',
-                width: '26%'
-            }]
-        }];
-        this.plugins = {
-            ptype: 'tabclosemenuimproved',
-            closeTabText: Locale.getString('closeTabText'),
-            closeOthersTabsText: Locale.getString('closeOthersTabsText'),
-            closeAllTabsText: Locale.getString('closeAllTabsText')
-        };
-        this.callParent(arguments);
+    items: [{
+        // This is the main tab. It contains the TinyMCE editor on the center and
+        // the outliner and markingMenu panels on the sides.
+        cls: 'editor',
+        itemId: 'mainEditorTab',
+        layout: 'border',
+        padding: '3 0 0 0',
+        title: Locale.getString('mainEditor'),
+        items: [{
+            region: 'center',
+            xtype: 'mainEditor',
+            margin: '0 3'
+        }, {
+            region: 'south',
+            xtype: 'mainEditorPath'
+        },{
+            xtype: 'contextPanel',
+            region: 'south'
+        }, {
+            xtype: 'outliner',
+            region: 'west',
+            expandable: true,
+            resizable: true,
+            width: '17%',
+            scrollable: true
+        }, {
+            xtype: 'tools',
+            cls: 'markingMenuContainer',
+            region: 'east',
+            width: '26%'
+        }]
+    }],
+
+    plugins: {
+        ptype: 'tabclosemenuimproved',
+        closeTabText: Locale.getString('closeTabText'),
+        closeOthersTabsText: Locale.getString('closeOthersTabsText'),
+        closeAllTabsText: Locale.getString('closeAllTabsText')
     }
 });
