@@ -93,19 +93,8 @@ Ext.define('LIME.controller.MarkingMenu', {
         app.on(Statics.eventsNames.languageLoaded, this.buildButtonsStructure, this);
         app.on(Statics.eventsNames.disableEditing, this.disableMarkingMenu, this);
         app.on(Statics.eventsNames.enableEditing, this.enableMarkingMenu, this);
-        app.on(Statics.eventsNames.addMarkingGroup, this.addMarkingGroup, this);
         app.on(Statics.eventsNames.addMarkingButton, this.addMarkingButton, this);
-        app.on(Statics.eventsNames.setCustomMarkingHandler, this.setCustomMarkingHandler, this);
         app.on(Statics.eventsNames.unfocusedNodes, this.expandButtons, this);
-    },
-
-    getMarkingMenu: function() {
-        var container = this.getMarkingMenuContainer();
-        if (container.is("markingMenu")) {
-            return container;
-        } else {
-            return container.down("markingMenu");
-        }
     },
 
     /**
@@ -150,13 +139,6 @@ Ext.define('LIME.controller.MarkingMenu', {
             Ext.log({level: "error"}, e);
             throw "Error: There is some error in the configuration of the plugin, the button with name " + name + " couldn't be initialized";
         }
-
-        // TODO: remove all style from marking menu
-        // if (buttonConfig.pattern) {
-        //     style = buttonConfig.pattern.buttonStyle;
-        // } else {
-        //     style = buttonConfig.markupConfig.buttonStyle;
-        // }
 
         // Create the actual button
         newButton = Ext.widget('treeButton', {
@@ -203,12 +185,6 @@ Ext.define('LIME.controller.MarkingMenu', {
             throw "Error: There is some error in the configuration of the plugin, the button with name " + name + " couldn't be initialized";
         }
 
-        // if (config.pattern) {
-        //     style = config.pattern.buttonStyle;
-        // } else {
-        //     style = config.markupConfig.buttonStyle;
-        // }
-
         newConfig = Ext.merge(config, {
             type: type,
             style: style,
@@ -224,13 +200,6 @@ Ext.define('LIME.controller.MarkingMenu', {
         Ext.each(newConfig.rules.children, function(child) {
             newConfig.children.push(me.buildConfigData(child, buttons, rules, scope, type));
         });
-
-        // TODO: remove all style from marking menu tree
-        // if ( Ext.Object.isEmpty(me.configReferences[name]) ) {
-        //     if(style) {
-        //         DomUtils.addStyle('.x-tree-custom *[class~="'+ name + '"] .x-tree-node-text ', style, document, me.styleId);
-        //     }
-        // }
 
         DocProperties.setElementConfig(configId, newConfig);
         me.configReferences[name][configId] = newConfig;
@@ -271,10 +240,6 @@ Ext.define('LIME.controller.MarkingMenu', {
             count++;
         }
         return name + count;
-    },
-
-    getButtonsByName: function(name) {
-        return this.buttonsReferences[name];
     },
 
     /**
@@ -325,17 +290,6 @@ Ext.define('LIME.controller.MarkingMenu', {
         return config;
     },
 
-    /* Return the list of all buttons */
-    getAllButtons: function() {
-        var refs = this.buttonsReferences;
-            buttons = [];
-        for (var k in refs)
-            if (refs.hasOwnProperty(k))
-                if(refs[k].hasOwnProperty(k + '0'))
-                    buttons.push(refs[k][k + '0']);
-        return buttons;
-    },
-
     updateTreeView: function(tree, fn) {
         var view = tree.getView();
         view.getStore().loadRecords(fn(tree.getRootNode()));
@@ -351,16 +305,6 @@ Ext.define('LIME.controller.MarkingMenu', {
             });
             return tree.rootVisible ? [root]: root.childNodes;
         });
-    },
-
-    getFirstTreeButtonByNameAndType: function(name, type) {
-        var buttonData = Ext.Object.getValues(this.configReferences[name]).filter(function(data) {
-                        return data.type == type;
-                      })[0];
-        if (buttonData) {
-            return this.getTreeButton(buttonData.id);
-        }
-        return null;
     },
 
     /**
@@ -391,14 +335,6 @@ Ext.define('LIME.controller.MarkingMenu', {
             if ( buttonPath[0] == nodesPath[0] ) {
                 pathToExpand = relatedButton.getPath();
             } else {
-                /*var name = DomUtils.getElementNameByNode(node);
-                var commonButton = me.getFirstTreeButtonByNameAndType(name, "common");
-                if ( commonButton ) {
-                    treePanel = commonButton.getOwnerTree();
-                    pathToExpand = commonButton.getPath();
-                } else {
-                    pathToExpand = relatedButton.getPath();
-                }*/
                 // Expand only buttons in the markingTreeRootButtons tree
                 for (var i = nodesPath.length-1; i >= 0; i--) {
                     var btn = me.getTreeButton(nodesPath[i]),
@@ -438,15 +374,6 @@ Ext.define('LIME.controller.MarkingMenu', {
             })[0];
     },
 
-    /**
-     * Collapse all the buttons.
-     */
-    collapseButtons: function() {
-        var markingMenu = this.getMarkingMenu();
-        // To collapse all buttons we call the expandButtons method with no marked node
-        markingMenu.hideAll();
-    },
-
     disableMarkingMenu: function() {
         var cmp = this.getMarkingMenu();
         if(cmp) {
@@ -461,22 +388,6 @@ Ext.define('LIME.controller.MarkingMenu', {
         if(cmp) {
             Ext.each(cmp.items.items, function(item) {
                item.enable();
-            });
-        }
-    },
-
-    //TODO: finish this function
-    addMarkingGroup: function(config) {
-        var me = this, markingMenu = me.getMarkingMenu(),
-            newTab;
-        if(!markingMenu.down("*[name="+config.name+"]")) {
-            newTab = markingMenu.add({
-                xtype: 'panel',
-                title: config.title,
-                border: false,
-                scrollable: true,
-                name: config.name,
-                cls: 'buttonsContainer '+config.name
             });
         }
     },
@@ -507,24 +418,6 @@ Ext.define('LIME.controller.MarkingMenu', {
                 }
             } else {
                 group.appendChild(configButton);
-            }
-        }
-    },
-
-    setCustomMarkingHandler: function(config) {
-        var  me = this, button = DocProperties.getFirstButtonByName(config.button);
-        if(button) {
-            button.handlerScope = config.scope;
-            switch(config.handlerType) {
-                case "before":
-                    button.beforeMarking = config.handler;
-                    break;
-                case "after":
-                    button.afterMarking = config.handler;
-                    break;
-                case "replace":
-                    button.customHandler = config.handler;
-                    break;
             }
         }
     },
