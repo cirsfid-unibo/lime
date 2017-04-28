@@ -289,7 +289,7 @@ Ext.define('AknModsMarker.Controller', {
             },
             config = {
                 name : 'activeModifications',
-                group: "structure",
+                group: "rootButtons",
                 //after: "commonReference",
                 buttons: markerButtons,
                 rules: rules,
@@ -373,7 +373,7 @@ Ext.define('AknModsMarker.Controller', {
             },
             config = {
                 name : 'passiveModifications',
-                group: "structure",
+                group: "rootButtons",
                 //after: "activeModifications",
                 buttons: markerButtons,
                 rules: rules,
