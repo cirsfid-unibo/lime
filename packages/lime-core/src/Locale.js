@@ -64,6 +64,8 @@ Ext.define('LIME.Locale', {
     },
     
     setPluginStrings: function(name, strings) {
+        if (strings.isInstance && Ext.isFunction(strings.getStrings))
+            strings = strings.getStrings();
         this.pStrings[name] = strings;
     },
     
