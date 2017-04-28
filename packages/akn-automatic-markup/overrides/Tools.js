@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 - Copyright holders CIRSFID and Department of
+ * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
  *
  * Authors:
@@ -44,36 +44,21 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+Ext.define('AknAutomaticMarkup.Tools', {
+    override: 'LIME.view.Tools',
 
-Ext.define('AknCollection.Main', {
-    override: 'LIME.view.Main',
+    collapsible: false,
 
-    constructor: function () {
-        var pluginName = "akn-collection",
-            oldXtype = this.markingMenu.xtype;
-        this.markingMenu.xtype = 'tabpanel';
-        this.markingMenu.title = Locale.getString("tools", pluginName);
-        this.markingMenu.items = [{
-            xtype: oldXtype
+    tools: [{
+            type: 'gear',
+            itemId: 'automaticMarkupOptions'
         }, {
-            xtype: 'panel',
-            title: Locale.getString("documentCollectionTabTitle", pluginName),
-            cls: 'docCollectionTab',
-            scrollable: 'y',
-            items: [{
-                xtype: 'treepanel',
-                border: 0,
-                title: Locale.getString("structureTreeTitle", pluginName),
-                rootVisible: false,
-                store: 'OpenedDocuments',
-                tools : [{
-                    type : 'gear',
-                    cls: 'modifyDocColl',
-                    tooltip: Locale.getString("structureTreeModify", pluginName)
-                }]
-            }]
-        }];
-
-        this.callParent(arguments);
-    }
+            //trick to positionate the collapse button on the right
+            type: 'right',
+            handler: function() {
+                this.up('panel').collapse();
+            }
+        }
+    ]
 });
+
