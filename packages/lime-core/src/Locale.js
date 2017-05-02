@@ -98,7 +98,7 @@ Ext.define('LIME.Locale', {
         // TODO: replace all occorences of Locale.string with Locale.getString
         this.strings = LIME.Strings.strings[this.getLang()] ||
                         Ext.Object.getValues(LIME.Strings.strings)[0];
-        var extLangUrl = 'config/locale/ext/ext-lang-'+this.getLang()+'.js';
+        var extLangUrl = 'config/extLocale/ext-lang-'+this.getLang()+'.js';
         Ext.Loader.loadScript({url : extLangUrl, scope: this, onLoad: function() {
             this.isReady = true;
         }});
