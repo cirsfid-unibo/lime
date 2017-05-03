@@ -1,0 +1,31 @@
+{
+    "name": "language-akn3",
+    "type": "code",
+    "creator": "anonymous",
+    "summary": "Short summary",
+    "detailedDescription": "Long description of package",
+    "version": "1.0.0",
+    "compatVersion": "1.0.0",
+    "format": "1",
+    "slicer": {
+        "js": [
+            {
+                "path": "${package.dir}/sass/example/custom.js",
+                "isWidgetManifest": true
+            }
+        ]
+    },
+    "output": "${package.dir}/build",
+    "local": true,
+    "requires": [
+        "akn-main",
+        "akn-metadata",
+        "akn-collection",
+        "akn-validation",
+        "akn-mods-marker",
+        "akn-tab-xml-preview",
+        "akn-tab-visualizer",
+        "akn-automatic-markup",
+        "akn-toc-generator"
+    ]
+}

@@ -14,15 +14,7 @@
         "default-diff",
         "default-pdf",
 
-        "akn-main",
-        "akn-metadata",
-        "akn-collection",
-        "akn-tab-xml-preview",
-        "akn-tab-visualizer",
-        "akn-automatic-markup",
-        "akn-toc-generator",
-        "akn-mods-marker",
-        "akn-validation"
+        "language-akn3"
     ],
     "framework": "ext",
     "css": [
