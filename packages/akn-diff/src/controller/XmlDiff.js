@@ -146,17 +146,11 @@ Ext.define('AknDiff.controller.XmlDiff', {
                     me.markingMenuMenuLoad = function() {
                         var markingMenuController = me.getController('MarkingMenu'),
                             markingMenu = markingMenuController.getMarkingMenu(),
-                            structure = markingMenuController.getTreeButtonsStructure();
-                        //TODO: check if adding buttons is stil useful
-                        //me.getController('ModsMarkerController').addModificationButtons();
-                        /*Ext.defer(function() {
-                            structure.disable();
-                        }, 100);
-                        var commons = markingMenuController.getTreeButtonsCommons();
-                        markingMenu.setActiveTab(commons);*/
-                        markingMenu.setActiveTab(structure);
+                            treeButtons = markingMenuController.getTreeButtons();
+
+                        markingMenu.setActiveTab(treeButtons);
                         Ext.defer(function() {
-                            markingMenuController.filterTreeByFn(structure, function( node ) {
+                            markingMenuController.filterTreeByFn(treeButtons, function( node ) {
                                 var path = node.getPath();
                                 if (path.match(/passiveModifications\d+\/action\d+/)) {
                                     return true;
@@ -172,12 +166,8 @@ Ext.define('AknDiff.controller.XmlDiff', {
                 stopCallback: function () {
                     var markingMenuController = me.getController('MarkingMenu');
                     me.getController('Editor').setEditorReadonly(false);
-                    var structure = markingMenuController.getTreeButtonsStructure();
-                    /*Ext.defer(function() {
-                        structure.enable();
-                    }, 100);
-                    var commons = markingMenuController.getTreeButtonsCommons();*/
-                    markingMenuController.clearTreeFilter(structure);
+                    var treeButtons = markingMenuController.getTreeButtons();
+                    markingMenuController.clearTreeFilter(treeButtons);
                     me.getController('Editor').defaultActions = {};
                     DocProperties.documentState = '';
                 }

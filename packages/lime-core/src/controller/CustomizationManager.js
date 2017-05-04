@@ -110,12 +110,27 @@ Ext.define('LIME.controller.CustomizationManager', {
     },
 
     createSecondEditor: function() {
-        var secondEditor = Ext.widget("main", {
+        var secondEditor = Ext.widget('main', {
             id: 'secondEditor',
             resizable : true,
             region : 'west',
             width: '48%',
-            margin : 2
+            margin : 2,
+            items:[{
+                title: Locale.getString('mainEditor'),
+                cls: 'editor',
+                itemId: 'mainEditorTab',
+                layout: 'border',
+                padding: '3 0 0 0',
+                items: [{
+                    region: 'center',
+                    xtype: 'mainEditor',
+                    margin: '0 3'
+                }, {
+                    region: 'south',
+                    xtype: 'mainEditorPath'
+                }]
+            }]
         });
 
         this.getAppViewport().add(secondEditor);
@@ -148,7 +163,7 @@ Ext.define('LIME.controller.CustomizationManager', {
         remove(me.finishEditBtn);
         remove(me.cancelButton);
         remove(me.syncButton);
-        me.getController('DefaultDiff.controller.DualEditorSynchronizer').disable();
+        me.getController('AknDiff.controller.DualEditorSynchronizer').disable();
 
         if(diff) {
             diff.tab.show();
@@ -202,11 +217,11 @@ Ext.define('LIME.controller.CustomizationManager', {
                         if (this.syncEnabled) {
                             this.syncEnabled = false;
                             this.setText('Enable Synchronization');
-                            me.getController('DefaultDiff.controller.DualEditorSynchronizer').disable();
+                            me.getController('AknDiff.controller.DualEditorSynchronizer').disable();
                         } else {
                             this.syncEnabled = true;
                             this.setText('Disable Synchronization');
-                            me.getController('DefaultDiff.controller.DualEditorSynchronizer').enable();
+                            me.getController('AknDiff.controller.DualEditorSynchronizer').enable();
                         }
                     }
                 }
