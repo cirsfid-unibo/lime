@@ -44,25 +44,25 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('DefaultDiff.Application', {
+Ext.define('AknDiff.Application', {
     override: 'LIME.Application',
 
     requires: [
-        'DefaultDiff.Strings',
-        'DefaultDiff.controller.DoubleDocSelector',
-        'DefaultDiff.controller.DualEditorSynchronizer',
-        'DefaultDiff.controller.XmlDiff',
-        'DefaultDiff.view.AmendingDiffMainTab',
-        'DefaultDiff.view.ConsolidatingDiffMainTab',
-        'DefaultDiff.view.DiffTab',
-        'DefaultDiff.view.DoubleDocSelector'
+        'AknDiff.Strings',
+        'AknDiff.controller.DoubleDocSelector',
+        'AknDiff.controller.DualEditorSynchronizer',
+        'AknDiff.controller.XmlDiff',
+        'AknDiff.view.AmendingDiffMainTab',
+        'AknDiff.view.ConsolidatingDiffMainTab',
+        'AknDiff.view.DiffTab',
+        'AknDiff.view.DoubleDocSelector'
     ],
 
     initControllers : function() {
-        Locale.setPluginStrings('default-diff', DefaultDiff.Strings.strings);
-        this.controllers.push('DefaultDiff.controller.DoubleDocSelector');
-        this.controllers.push('DefaultDiff.controller.DualEditorSynchronizer');
-        this.controllers.push('DefaultDiff.controller.XmlDiff');
+        Locale.setPluginStrings('akn-diff', AknDiff.Strings.strings);
+        this.controllers.push('AknDiff.controller.DoubleDocSelector');
+        this.controllers.push('AknDiff.controller.DualEditorSynchronizer');
+        this.controllers.push('AknDiff.controller.XmlDiff');
 
         this.callParent();
     }

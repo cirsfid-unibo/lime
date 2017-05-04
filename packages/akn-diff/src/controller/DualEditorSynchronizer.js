@@ -49,7 +49,7 @@
 // Editor must be in dualEditorMode.
 // this.getController('DualEditorSynchronizer').activate()
 // this.getController('DualEditorSynchronizer').disable()
-Ext.define('DefaultDiff.controller.DualEditorSynchronizer', {
+Ext.define('AknDiff.controller.DualEditorSynchronizer', {
     extend : 'Ext.app.Controller',
 
 

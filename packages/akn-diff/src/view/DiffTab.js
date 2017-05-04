@@ -44,7 +44,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('DefaultDiff.view.DiffTab', {
+Ext.define('AknDiff.view.DiffTab', {
     extend : 'Ext.panel.Panel',
     alias : 'widget.diffTab',
     requires : ['Ext.ux.IframePlugin'],
@@ -54,7 +54,7 @@ Ext.define('DefaultDiff.view.DiffTab', {
     notEditMode : true,
 
     config : {
-        pluginName : "default-diff"
+        pluginName : "akn-diff"
     },
 
     width : '100%',

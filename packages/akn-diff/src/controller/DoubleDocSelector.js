@@ -44,11 +44,11 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('DefaultDiff.controller.DoubleDocSelector', {
+Ext.define('AknDiff.controller.DoubleDocSelector', {
     extend: 'Ext.app.Controller',
     
     views: [
-      "DefaultDiff.view.DoubleDocSelector"
+      "AknDiff.view.DoubleDocSelector"
     ],
 
     init: function() {
@@ -88,7 +88,7 @@ Ext.define('DefaultDiff.controller.DoubleDocSelector', {
             notAllowedPathRender: function(el, record) {
                 Ext.tip.QuickTipManager.register({
                     target: el.getAttribute('id'),
-                    text: Locale.getString("forbiddenElement", 'default-diff')
+                    text: Locale.getString('forbiddenElement', 'akn-diff')
                 });
             },
             callback: function(doc) {

@@ -44,10 +44,10 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('DefaultDiff.view.AmendingDiffMainTab', {
-    extend : 'DefaultDiff.view.DiffTab',
+Ext.define('AknDiff.view.AmendingDiffMainTab', {
+    extend : 'AknDiff.view.DiffTab',
     alias : 'widget.amendingDiffMainTab',
-    config : { pluginName : "default-diff" },
+    config : { pluginName : "akn-diff" },
 
     initComponent : function() {
         var me = this;

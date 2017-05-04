@@ -44,7 +44,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
- Ext.define('DefaultDiff.Strings', {
+ Ext.define('AknDiff.Strings', {
     singleton : true,
     
     strings: {

@@ -26,6 +26,7 @@
         "akn-tab-xml-preview",
         "akn-tab-visualizer",
         "akn-automatic-markup",
-        "akn-toc-generator"
+        "akn-toc-generator",
+        "akn-diff"
     ]
 }

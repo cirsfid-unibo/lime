@@ -45,11 +45,11 @@
  */
 
 // Widget for selecting two docs (For Diff like stuff)
-Ext.define('DefaultDiff.view.DoubleDocSelector', {
+Ext.define('AknDiff.view.DoubleDocSelector', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.doubleDocSelector',
 
-    config : { pluginName : 'default-diff' },
+    config : { pluginName : 'akn-diff' },
 
     // Properties id (string), url (string), new (boolean)
     firstDoc : {},

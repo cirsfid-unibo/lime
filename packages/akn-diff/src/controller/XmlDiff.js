@@ -44,12 +44,12 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('DefaultDiff.controller.XmlDiff', {
+Ext.define('AknDiff.controller.XmlDiff', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'DefaultDiff.view.AmendingDiffMainTab',
-        'DefaultDiff.view.ConsolidatingDiffMainTab'
+        'AknDiff.view.AmendingDiffMainTab',
+        'AknDiff.view.ConsolidatingDiffMainTab'
     ],
 
     refs: [
