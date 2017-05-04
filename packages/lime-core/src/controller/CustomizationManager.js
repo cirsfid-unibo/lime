@@ -162,8 +162,6 @@ Ext.define('LIME.controller.CustomizationManager', {
         }
         remove(me.finishEditBtn);
         remove(me.cancelButton);
-        remove(me.syncButton);
-        me.getController('AknDiff.controller.DualEditorSynchronizer').disable();
 
         if(diff) {
             diff.tab.show();
@@ -205,25 +203,6 @@ Ext.define('LIME.controller.CustomizationManager', {
                 text : "Cancel",
                 listeners : {
                     click : Ext.bind(me.restoreSingleEditor, me, [cmp, xmlDiff])
-                }
-            });
-            me.syncButton = toolbar.insert(7, {
-                margin : "0 10 0 20",
-                text : "Enable Synchronization",
-                enableToggle: true,
-                syncEnabled : false,
-                listeners : {
-                    click : function () {
-                        if (this.syncEnabled) {
-                            this.syncEnabled = false;
-                            this.setText('Enable Synchronization');
-                            me.getController('AknDiff.controller.DualEditorSynchronizer').disable();
-                        } else {
-                            this.syncEnabled = true;
-                            this.setText('Disable Synchronization');
-                            me.getController('AknDiff.controller.DualEditorSynchronizer').enable();
-                        }
-                    }
                 }
             });
         }
