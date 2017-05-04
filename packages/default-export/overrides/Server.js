@@ -48,7 +48,7 @@
 Ext.define('DefaultExport.Server', {
     override: 'LIME.Server',
 
-    aknExportTo: function(path, extension, accept, success, failure) {
+    exportTo: function(path, extension, accept, success, failure) {
         var username = User.username,
             password = User.password;
 

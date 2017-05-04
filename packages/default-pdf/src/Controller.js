@@ -78,7 +78,7 @@ Ext.define('DefaultPdf.Controller', {
         viewport.setLoading(true);
         var extension = 'pdf';
         var mime = this.getController('DefaultExport.Controller').getMime(extension);
-        Server.aknExportTo(DocProperties.getDocId(), extension, mime, function (data) {
+        Server.exportTo(DocProperties.getDocId(), extension, mime, function (data) {
             var blob = new Blob([data], {type: mime});
             var url = window.URL.createObjectURL(blob);
             pdfTab.setPdf(url);

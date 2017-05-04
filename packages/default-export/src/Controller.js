@@ -132,7 +132,7 @@ Ext.define('DefaultExport.Controller', {
             if (extension === 'xml')
                 return Server.getDocument(path, onExportSuccess, onExportFailure);
 
-            Server.aknExportTo(path, extension, mime, onExportSuccess, onExportFailure);
+            Server.exportTo(path, extension, mime, onExportSuccess, onExportFailure);
         };
 
         Ext.GlobalEvents.fireEvent('setAppLoading', true);
