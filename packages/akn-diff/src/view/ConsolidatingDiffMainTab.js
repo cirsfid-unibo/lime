@@ -47,12 +47,10 @@
 Ext.define('AknDiff.view.ConsolidatingDiffMainTab', {
     extend : 'AknDiff.view.DiffTab',
     alias : 'widget.consolidatingDiffMainTab',
-    config : { pluginName : "akn-diff" },
 
     initComponent : function() {
-        var me = this;
-        me.editButtonLabel = Locale.getString("consolidatingEditButtonTitle", me.getPluginName());
-        me.title = Locale.getString("consolidatingTabTitle", me.getPluginName());
-        me.callParent(arguments);
+        this.title = AknDiff.Strings.get('consolidatingTabTitle');
+        this.editButtonLabel = AknDiff.Strings.get('consolidatingEditButtonTitle');
+        this.callParent(arguments);
     }
 });

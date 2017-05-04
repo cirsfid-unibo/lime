@@ -53,10 +53,6 @@ Ext.define('AknDiff.view.DiffTab', {
 
     notEditMode : true,
 
-    config : {
-        pluginName : "akn-diff"
-    },
-
     width : '100%',
     padding : 0,
     margin : 0,
@@ -113,14 +109,14 @@ Ext.define('AknDiff.view.DiffTab', {
                 }]
             },
             items : [{
-                title : Locale.getString("textTabTitle", me.getPluginName()),
+                title : AknDiff.Strings.get('textTabTitle'),
                 format : 'text',
                 plugins : [{
                     ptype : 'iframe',
                     pluginId : 'iframe'
                 }]
             }, {
-                title : Locale.getString("xmlTabTitle", me.getPluginName()),
+                title : AknDiff.Strings.get('xmlTabTitle'),
                 format : 'xml',
                 plugins : [{
                     ptype : 'iframe',

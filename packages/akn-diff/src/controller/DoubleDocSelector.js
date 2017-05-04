@@ -88,7 +88,7 @@ Ext.define('AknDiff.controller.DoubleDocSelector', {
             notAllowedPathRender: function(el, record) {
                 Ext.tip.QuickTipManager.register({
                     target: el.getAttribute('id'),
-                    text: Locale.getString('forbiddenElement', 'akn-diff')
+                    text: AknDiff.Strings.get('forbiddenElement')
                 });
             },
             callback: function(doc) {

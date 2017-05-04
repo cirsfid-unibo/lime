@@ -59,7 +59,7 @@ Ext.define('AknDiff.Application', {
     ],
 
     initControllers : function() {
-        Locale.setPluginStrings('akn-diff', AknDiff.Strings.strings);
+        Locale.addPackageStrings(AknDiff.Strings);
         this.controllers.push('AknDiff.controller.DoubleDocSelector');
         this.controllers.push('AknDiff.controller.DualEditorSynchronizer');
         this.controllers.push('AknDiff.controller.XmlDiff');

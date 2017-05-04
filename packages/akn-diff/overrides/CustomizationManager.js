@@ -63,7 +63,7 @@
         if (!toolbar.down('[itemId=syncButton]')) {
             me.syncButton = toolbar.insert(7, {
                 margin : '0 10 0 20',
-                text : 'Enable Synchronization',
+                text : AknDiff.Strings.get('enableSync'),
                 itemId: 'syncButton',
                 enableToggle: true,
                 syncEnabled : false,
@@ -71,11 +71,11 @@
                     click : function () {
                         if (this.syncEnabled) {
                             this.syncEnabled = false;
-                            this.setText('Enable Synchronization');
+                            this.setText(AknDiff.Strings.get('enableSync'));
                             dualSync.disable();
                         } else {
                             this.syncEnabled = true;
-                            this.setText('Disable Synchronization');
+                            this.setText(AknDiff.Strings.get('disableSync'));
                             dualSync.enable();
                         }
                     }

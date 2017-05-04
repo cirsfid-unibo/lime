@@ -46,7 +46,11 @@
 
  Ext.define('AknDiff.Strings', {
     singleton : true,
-    
+
+    get: function(name) {
+        return Locale.getString(name, Ext.getClassName(this));
+    },
+
     strings: {
         "en": {
             "consolidatingTabTitle": "Differences Viewer (Consolidation)",
@@ -63,7 +67,9 @@
             "changeDocument": "Change document",
             "selectDocument" : "Select document",
             "resetDocument": "Reset",
-            "forbiddenElement": "This document was already selected"
+            "forbiddenElement": "This document was already selected",
+            "enableSync": "Enable synchronization",
+            "disableSync": "Disable synchronization"
         },
         "it": {
             "consolidatingTabTitle": "Confronta documenti (Consolidamento)",
@@ -80,7 +86,9 @@
             "changeDocument": "Cambia documento",
             "selectDocument" : "Seleziona documento",
             "resetDocument": "Reset",
-            "forbiddenElement": "Questo documento è stato già selezionato"
+            "forbiddenElement": "Questo documento è stato già selezionato",
+            "enableSync": "Abilitare la sincronizzazione",
+            "disableSync": "Disabilitare la sincronizzazione"
         }
     }
 });

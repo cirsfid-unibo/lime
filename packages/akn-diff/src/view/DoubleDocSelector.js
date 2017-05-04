@@ -49,8 +49,6 @@ Ext.define('AknDiff.view.DoubleDocSelector', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.doubleDocSelector',
 
-    config : { pluginName : 'akn-diff' },
-
     // Properties id (string), url (string), new (boolean)
     firstDoc : {},
     secondDoc : {},
@@ -61,8 +59,8 @@ Ext.define('AknDiff.view.DoubleDocSelector', {
     onSelectedDocsChanged: function () {
         var firstButton = this.down('fieldset:first *[cls=selectButton]'),
             secondButton = this.down('fieldset:last *[cls=selectButton]'),
-            changeMsg = Locale.getString('changeDocument', this.getPluginName()),
-            selectMsg = Locale.getString('selectDocument', this.getPluginName());
+            changeMsg = AknDiff.Strings.get('changeDocument'),
+            selectMsg = AknDiff.Strings.get('selectDocument');
 
         firstButton.setTooltip(this.firstDoc.id ? changeMsg : selectMsg);
         secondButton.setTooltip(this.secondDoc.id ? changeMsg : selectMsg);
@@ -121,7 +119,7 @@ Ext.define('AknDiff.view.DoubleDocSelector', {
                 layout: 'hbox',
                 items: [{
                     xtype: 'textfield',
-                    emptyText: Locale.getString('firstDocumentLabel', this.getPluginName()),
+                    emptyText: AknDiff.Strings.get('firstDocumentLabel'),
                     readOnly: true,
                     flex: 1
                 }, {
@@ -137,7 +135,7 @@ Ext.define('AknDiff.view.DoubleDocSelector', {
             xtype: 'button',
             cls: 'resetButton',
             glyph:'xf0e2@FontAwesome',
-            tooltip: Locale.getString('resetDocument', this.getPluginName()),
+            tooltip: AknDiff.Strings.get('resetDocument'),
             handler: function () {
                 this.up('doubleDocSelector').clearSelectedDocuments();
             }
@@ -160,7 +158,7 @@ Ext.define('AknDiff.view.DoubleDocSelector', {
                 layout: 'hbox',
                 items: [{
                     xtype: 'textfield',
-                    emptyText: Locale.getString('secondDocumentLabel', this.getPluginName()),
+                    emptyText: AknDiff.Strings.get('secondDocumentLabel'),
                     readOnly: true,
                     flex: 1
                 }, {

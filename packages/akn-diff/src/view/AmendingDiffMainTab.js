@@ -47,12 +47,10 @@
 Ext.define('AknDiff.view.AmendingDiffMainTab', {
     extend : 'AknDiff.view.DiffTab',
     alias : 'widget.amendingDiffMainTab',
-    config : { pluginName : "akn-diff" },
 
     initComponent : function() {
-        var me = this;
-        me.editButtonLabel = Locale.getString("amendingEditButtonTitle", me.getPluginName());
-        me.title = Locale.getString("amendingTabTitle", me.getPluginName());
-        me.callParent(arguments);
+        this.title = AknDiff.Strings.get('amendingTabTitle');
+        this.editButtonLabel = AknDiff.Strings.get('amendingEditButtonTitle');
+        this.callParent(arguments);
     }
 });

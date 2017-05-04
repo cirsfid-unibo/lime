@@ -68,6 +68,13 @@ Ext.define('LIME.Locale', {
             strings = strings.getStrings();
         this.pStrings[name] = strings;
     },
+
+    addPackageStrings: function(stringsClass) {
+        var strings = Ext.isFunction(stringsClass.getStrings) ?
+                                    stringsClass.getStrings() :
+                                    stringsClass.strings;
+        this.pStrings[Ext.getClassName(stringsClass)] = strings;
+    },
     
     getString: function(name, scope) {
         if (scope && this.pStrings[scope])
