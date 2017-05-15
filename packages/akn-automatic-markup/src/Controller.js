@@ -1161,7 +1161,6 @@ Ext.define('AknAutomaticMarkup.Controller', {
             blockButton = DocProperties.getChildConfigByName(button,'blockList') || DocProperties.getFirstButtonByName('blockList'),
             itemButton = DocProperties.getChildConfigByName(blockButton, partName),
             numButton = DocProperties.getChildConfigByName(itemButton, "num"),
-            introButton = DocProperties.getChildConfigByName(blockButton, 'listIntroduction'),
             config = {
                 marker: {},
                 markButton: itemButton
@@ -1188,7 +1187,6 @@ Ext.define('AknAutomaticMarkup.Controller', {
         }, this);
         if (items.length ) {
             var wrapBlocks = [];
-            var listIntroductions = [];
             var itemsToInsert = Ext.Array.clone(items);
 
             while( itemsToInsert.length ) {
@@ -1200,26 +1198,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 itemsToInsert[0].parentNode.insertBefore(wrapNode, itemsToInsert[0]);
 
                 // List introduction
-                var prevText = DomUtils.getPreviousTextNode(wrapNode, true);
-                if ( prevText && DomUtils.getTextOfNode(prevText).trim().match(/:$/) ) {
-                    var listWrapper = Ext.DomHelper.createDom({
-                        tag : 'span'
-                    });
-                    // Include saved quote
-                    var posList = DomUtils.getPreviousSiblingWithAttr(prevText, 'poslist');
-                    if( posList ) {
-                        var prevPrev = DomUtils.getPreviousTextNode(posList, true);
-                        if ( prevPrev ) {
-                            listWrapper.appendChild(prevPrev);
-                        }
-                        listWrapper.appendChild(posList);
-                    }
-                    listWrapper.appendChild(prevText);
-                    wrapNode.appendChild(listWrapper);
-                    listIntroductions.push(listWrapper);
-                }
-
-
+                me.addListIndroduction(wrapNode, blockButton);
                 me.wrapPartNodeSibling(wrapNode, function(node) {
                     if ( itemsToInsert.length != Ext.Array.remove(itemsToInsert, node).length) {
                         return false;
@@ -1237,7 +1216,6 @@ Ext.define('AknAutomaticMarkup.Controller', {
             }
 
             me.requestMarkup(blockButton, wrapBlocks);
-            me.requestMarkup(introButton, listIntroductions);
             me.requestMarkup(itemButton, items);
 
             if ( nums.length ) {
@@ -1358,9 +1336,23 @@ Ext.define('AknAutomaticMarkup.Controller', {
                         DocProperties.getFirstButtonByName("num"),
             headingButton = DocProperties.getChildConfigByName(markButton,"heading");
 
+        var containedInTmp = function(node, limitNode) {
+            while(node && node !== limitNode) {
+                if (node.nodeType === Node.ELEMENT_NODE &&
+                    node.classList.contains(DomUtils.tempParsingClass)) {
+                    return true;
+                }
+                node = node.parentNode;
+            }
+            return false;
+        };
 
         // Choose just one occurrence trying to exclude those that are in references
         var chooseTextObj = function(textNodesObjs, numVal) {
+            // Remove text nodes contained in temp parsing elements
+            textNodesObjs = textNodesObjs.filter(function(nodes) {
+                return !containedInTmp(nodes[0].node);
+            });
             if (textNodesObjs.length == 1) return textNodesObjs[0];
             var finishCharactersReg = /[;.:]$/;
             for (var i = 0; i < textNodesObjs.length; i++) {
@@ -1380,8 +1372,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
         Ext.each(parts, function(element) {
             if(!element.value.trim()) return;
             var numVal = (element.num && element.num.value) || element.value;
-            var headingVal = (element.heading && element.heading.value),
-                parent, partNode;
+            var headingVal = (element.heading && element.heading.value);
             var textNodesObj = [];
 
             if ( partName == "paragraph" || partName == "item" ) {
@@ -1399,9 +1390,9 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
             if ( !textNodesObj.length ) return;
             var textNodeObj = chooseTextObj(textNodesObj, numVal);
+            if (!textNodeObj) return;
             var firstNode = textNodeObj[0].node;
-            if ( Ext.fly(firstNode) && Ext.fly(firstNode).parent("." + DomUtils.tempParsingClass, true) )  return;
-            partNode = (firstNode.parentNode == node) ? firstNode: firstNode.parentNode;
+            var partNode = (firstNode.parentNode == node) ? firstNode: firstNode.parentNode;
             var newWrapper = me.wrapPartNode(partNode, node);
             element.wrapper = newWrapper;
             nodesToMark.push(newWrapper);
@@ -1463,33 +1454,10 @@ Ext.define('AknAutomaticMarkup.Controller', {
         if (!nodes.length) return;
         var me = this,
             wrapButton = DocProperties.getChildConfigByName(button,'blockList')
-                        || DocProperties.getFirstButtonByName('blockList'),
-            introButton = DocProperties.getChildConfigByName(wrapButton, 'listIntroduction');
+                        || DocProperties.getFirstButtonByName('blockList');
 
         var wrapBlocks = [];
-        var listIntroductions = [];
         var itemsToInsert = Ext.Array.clone(nodes);
-        var addListIndroduction = function(wrapNode) {
-            var prevText = DomUtils.getPreviousTextNode(wrapNode, true);
-            if ( prevText && DomUtils.getTextOfNode(prevText).trim().match(/:$/) ) {
-                var listWrapper = Ext.DomHelper.createDom({
-                    tag : 'span'
-                });
-                // Include saved quote
-                var posList = DomUtils.getPreviousSiblingWithAttr(prevText, 'poslist');
-                if( posList ) {
-                    var prevPrev = DomUtils.getPreviousTextNode(posList, true);
-                    if ( prevPrev ) {
-                        listWrapper.appendChild(prevPrev);
-                    }
-                    listWrapper.appendChild(posList);
-                }
-                listWrapper.appendChild(prevText);
-                wrapNode.appendChild(listWrapper);
-                listIntroductions.push(listWrapper);
-            }
-        };
-
         while( itemsToInsert.length ) {
             var wrapNode = Ext.DomHelper.createDom({
                 tag : 'div',
@@ -1499,8 +1467,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             itemsToInsert[0].parentNode.insertBefore(wrapNode, itemsToInsert[0]);
 
             // List introduction
-            addListIndroduction(wrapNode);
-
+            me.addListIndroduction(wrapNode, wrapButton);
             me.wrapPartNodeSibling(wrapNode, function(node) {
                 if ( itemsToInsert.length != Ext.Array.remove(itemsToInsert, node).length) {
                     return false;
@@ -1518,7 +1485,28 @@ Ext.define('AknAutomaticMarkup.Controller', {
         }
 
         me.requestMarkup(wrapButton, wrapBlocks);
-        me.requestMarkup(introButton, listIntroductions);
+    },
+
+    addListIndroduction: function(wrapNode, wrapButton) {
+        var introButton = DocProperties.getChildConfigByName(wrapButton, 'listIntroduction');
+        var prevText = DomUtils.getPreviousTextNode(wrapNode, true);
+        if ( prevText && DomUtils.getTextOfNode(prevText).trim().match(/:$/) ) {
+            var listWrapper = Ext.DomHelper.createDom({
+                tag : 'span'
+            });
+            // Include saved quote
+            var posList = DomUtils.getPreviousSiblingWithAttr(prevText, 'poslist');
+            if( posList ) {
+                var prevPrev = DomUtils.getPreviousTextNode(posList, true);
+                if ( prevPrev ) {
+                    listWrapper.appendChild(prevPrev);
+                }
+                listWrapper.appendChild(posList);
+            }
+            listWrapper.appendChild(prevText);
+            wrapNode.appendChild(listWrapper);
+            this.requestMarkup(introButton, listWrapper);
+        }
     },
 
     parseBodyParts : function(data, node, button) {
@@ -2459,6 +2447,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             }
         });
         Ext.each(node.querySelectorAll('br+br'), function(brNode) {
+            if (DomUtils.getFirstMarkedAncestor(brNode) !== node) return;
             var prevTextNode = DomUtils.getPreviousTextNode(brNode, true);
             if ( prevTextNode && prevTextNode.textContent.trim().match(/\.$/) ) {
                 var wrapper = Ext.DomHelper.createDom({
@@ -2554,42 +2543,42 @@ Ext.define('AknAutomaticMarkup.Controller', {
         var pToMark = [], paragraphToMark = [];
         Ext.each(hcontainers, function(hcontainer) {
             var textGroups = me.getTextChildrenGroups(hcontainer);
-            if ( textGroups.length ) {
-                Ext.each(textGroups, function(group) {
-                    var breakingEls = group.filter(function(el) {
-                        return ((el.nodeType == DomUtils.nodeType.TEXT && Ext.isEmpty(el.data.trim()) ) );
-                    });
-                    var headingElements = group.filter(function(el) {
-                        return (DomUtils.nodeHasClass(el, 'num') ||
-                                DomUtils.nodeHasClass(el,'heading') ||
-                                DomUtils.nodeHasClass(el, 'subheading') );
-                    });
-                    if ( !headingElements.length && breakingEls.length != group.length ) {
-                        var wrapper = me.wrapListOfNodes(group);
+            if (!textGroups.length) return;
+            Ext.each(textGroups, function(group) {
+                var breakingEls = group.filter(function(el) {
+                    return (DomUtils.getNodeNameLower(el) == 'br' ||
+                            (el.nodeType == DomUtils.nodeType.TEXT && Ext.isEmpty(el.data.trim()) ));
+                });
+                var headingElements = group.filter(function(el) {
+                    return (DomUtils.nodeHasClass(el, 'num') ||
+                            DomUtils.nodeHasClass(el, 'heading') ||
+                            DomUtils.nodeHasClass(el, 'subheading') );
+                });
+                if ( !headingElements.length && breakingEls.length != group.length ) {
+                    var wrapper = me.wrapListOfNodes(group);
 
-                        if ( DomUtils.nodeHasTagName(wrapper.previousSibling, 'div')
-                                 && DomUtils.nodeHasClass(wrapper.previousSibling, DomUtils.tempParsingClass) ) {
-                            DomUtils.moveChildrenNodes(wrapper, wrapper.previousSibling, true);
-                            wrapper.parentNode.removeChild(wrapper);
-                            return;
+                    if ( DomUtils.nodeHasTagName(wrapper.previousSibling, 'div')
+                                && DomUtils.nodeHasClass(wrapper.previousSibling, DomUtils.tempParsingClass) ) {
+                        DomUtils.moveChildrenNodes(wrapper, wrapper.previousSibling, true);
+                        wrapper.parentNode.removeChild(wrapper);
+                        return;
+                    }
+
+                    var childHcontainer = Ext.Array.toArray(wrapper.parentNode.querySelectorAll('.hcontainer')).filter(function(chEl) {
+                        if ( chEl.parentNode == wrapper.parentNode ) {
+                            return true;
                         }
-
-                        var childHcontainer = Ext.Array.toArray(wrapper.parentNode.querySelectorAll('.hcontainer')).filter(function(chEl) {
-                            if ( chEl.parentNode == wrapper.parentNode ) {
-                                return true;
-                            }
-                        });
-                        if ( childHcontainer.length ) {
-                            paragraphToMark.push(wrapper);
-                        } else {
-                            pToMark.push(wrapper);
-                            if ( DomUtils.nodeHasClass(wrapper.nextSibling, 'quotedStructure') ) {
-                                wrapper.appendChild(wrapper.nextSibling);
-                            }
+                    });
+                    if ( childHcontainer.length ) {
+                        paragraphToMark.push(wrapper);
+                    } else {
+                        pToMark.push(wrapper);
+                        if ( DomUtils.nodeHasClass(wrapper.nextSibling, 'quotedStructure') ) {
+                            wrapper.appendChild(wrapper.nextSibling);
                         }
                     }
-                });
-            }
+                }
+            });
         });
 
         Ext.each(node.querySelectorAll('.container, .block'), function(node) {
