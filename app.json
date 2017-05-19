@@ -1,5 +1,6 @@
 {
     "name": "LIME",
+    "version": "2.1.0",
     "requires": [
         "ext-theme-lime",
 
