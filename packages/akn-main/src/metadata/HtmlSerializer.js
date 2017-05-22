@@ -228,7 +228,7 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
             store.each(function (d, index) {
                 var data = d.getData();
                 // Update the eid in order to ensure uniqueness
-                data.eid = data.eid.split('_').slice(0,1).concat(index).join('_');
+                data.eid = data.eid.split('_').slice(0,1).concat(index+1).join('_');
                 data.sourceDestinations = mapData(d.sourceDestinations());
                 data.textualChanges = mapData(d.textualChanges());
 
