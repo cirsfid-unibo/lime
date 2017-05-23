@@ -97,11 +97,15 @@ Ext.define('AknMetadata.newMeta.MetadataManagerController', {
                 text : Locale.getString('title', 'akn-metadata'),
                 listeners : {
                     click : function (btn) {
-                        me.application.fireEvent(Statics.eventsNames.openCloseContextPanel, btn.pressed, 'akn-metadata');
+                        me.toggleMetadataEditor(btn.pressed);
                     }
                 }
             });
         }
+    },
+
+    toggleMetadataEditor: function(open) {
+        this.application.fireEvent(Statics.eventsNames.openCloseContextPanel, open, 'akn-metadata', 300);
     },
 
     toggleMetadataButton: function(state) {

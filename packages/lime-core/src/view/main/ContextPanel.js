@@ -54,7 +54,7 @@ Ext.define('LIME.view.main.ContextPanel', {
     resizable : true,
     hidden : true,
     height : 280,
-    maxHeight : 300,
+    maxHeight : 400,
     frame : true,
     scrollable: true,
     header : false,
