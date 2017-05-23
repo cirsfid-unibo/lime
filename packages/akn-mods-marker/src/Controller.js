@@ -100,6 +100,7 @@ Ext.define('AknModsMarker.Controller', {
         me.application.on(Statics.eventsNames.editorDomNodeFocused, me.editorNodeFocused, me);
         me.application.on(Statics.eventsNames.unmarkedNodes, me.nodesUnmarked, me);
         me.application.on(Statics.eventsNames.afterLoad, me.onDocumentLoaded, me);
+        me.application.on(Statics.eventsNames.nodeChangedExternally, me.onNodeChanged, me);
         me.application.fireEvent(Statics.eventsNames.registerContextMenuBeforeShow, Ext.bind(me.beforeContextMenuShow, me));
         
         me.initPosMenu();
@@ -162,6 +163,14 @@ Ext.define('AknModsMarker.Controller', {
             this.showModInfo(node);
 
         Ext.callback(this.editorClickHandlerCustom, this, [node, this.getController("Editor").getEditor()]);
+    },
+
+    onNodeChanged: function(nodes, config) {
+        if(config.unmark || nodes.length == 0) return;
+        var name = DomUtils.getNameByNode(nodes[0]);
+        if (name === 'quotedStructure') {
+            this.ensureModNode(nodes[0], true);
+        }
     },
 
     showModInfo: function(node) {
@@ -628,7 +637,7 @@ Ext.define('AknModsMarker.Controller', {
         // Get the outmost hcontainer parent
         var nodeWithRefs = AknMain.xml.Document.newDocument(node)
                             .select("(./ancestor::*[contains(@class, 'hcontainer')])[1]")[0]
-                            || node.ownerDocumen;
+                            || node.ownerDocument;
         var references = Ext.Array.toArray(nodeWithRefs.querySelectorAll('.ref')).filter(function(refNode) {
             // Keep only the references that precedes the mod node
             return node.compareDocumentPosition(refNode) & Node.DOCUMENT_POSITION_PRECEDING;
