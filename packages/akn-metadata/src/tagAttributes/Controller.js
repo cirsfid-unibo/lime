@@ -122,6 +122,8 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
         switch(tag) {
             case 'num':
             case 'heading':
+            case 'mod':
+            case 'mmod':
                 return;
             case 'ref':
                 return this.createRefPanel(node);
