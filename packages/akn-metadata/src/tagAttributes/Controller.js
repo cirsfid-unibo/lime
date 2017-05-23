@@ -108,7 +108,6 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
     showNodeAttributes: function(node) {
         var panel = this.getAttributePanel(node);
         if (!panel) return;
-
         this.tagAttributesTab = this.tagAttributesTab || this.addTab();
         this.tagAttributesTab.removeAll(true);
         this.tagAttributesTab.add(panel);
@@ -202,6 +201,7 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
             ref.internal = (data.type == "external") ? false : true;
             ref.id = data.fragment;
             ref.uri.country = data.nationality;
+            ref.uri.author = data.author;
             ref.uri.type = data.docType;
             ref.uri.subtype = normalizeSubtype(data.subtype);
             ref.uri.name = data.number;

@@ -50,6 +50,7 @@ Ext.define('AknMetadata.tagAttributes.RefPanel', {
     alias: 'widget.refPanel',
 
     ref: null,
+    contextHeight: 320,
     title: Locale.getString('referenceWidgetTitle', 'akn-metadata'),
     items: [{
         xtype: 'combo',
@@ -71,6 +72,10 @@ Ext.define('AknMetadata.tagAttributes.RefPanel', {
         xtype: 'textfield',
         name: 'subtype',
         emptyText: Locale.getString('docSubType', 'akn-metadata')
+    }, {
+        xtype: 'textfield',
+        emptyText: Locale.getString('author', 'akn-metadata'),
+        name: 'author'
     }, {
         xtype: 'datefield',
         name: 'date',
@@ -112,6 +117,7 @@ Ext.define('AknMetadata.tagAttributes.RefPanel', {
             type: (this.ref.internal) ? 'internal' : 'external',
             nationality: this.ref.uri.country,
             docType: this.ref.uri.type,
+            author: this.ref.uri.author,
             subtype: this.ref.uri.subtype,
             date: this.ref.uri.date,
             number: this.ref.uri.name,
