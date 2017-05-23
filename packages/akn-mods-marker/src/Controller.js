@@ -249,13 +249,8 @@ Ext.define('AknModsMarker.Controller', {
         this.getModifications().remove(mod);
     },
 
-    onDocumentLoaded : function(docConfig) {
+    onDocumentLoaded : function() {
         this.addModificationButtons();
-        try {
-            this.detectExistingMods();
-        } catch(e) {
-            console.error('detectExistingMods ',e);
-        }
     },
 
     addModificationButtons: function() {
@@ -482,8 +477,8 @@ Ext.define('AknModsMarker.Controller', {
         }
     },
 
+    // This function is called by overriden ImportController
     detectExistingMods: function() {
-        //TODO ensure that this is called after import metadata
         var me = this, editorBody = me.getController("Editor").getBody();
 
         var getNodeByModRec = function(rec) {
