@@ -283,7 +283,7 @@ Ext.define('AknModsMarker.Controller', {
                         children: ["quotedStructure", "quotedText"]
                     },
                     action: {
-                        children: ["insertionCustom", "repealCustom", "substitutionCustom", "splitCustom", "joinCustom", "renumberingCustom"]
+                        children: ["mmod", "insertionCustom", "repealCustom", "substitutionCustom", "splitCustom", "joinCustom", "renumberingCustom"]
                     }
                 }
             },
