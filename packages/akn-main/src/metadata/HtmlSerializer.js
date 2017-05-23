@@ -217,10 +217,19 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
     },
 
     serialize: function (model) {
+        var me = this;
         function mapData(store) {
             var res = [];
             store.each(function (d) { res.push(d.getData()); });
             return res;
+        }
+
+        function mapSourceDest(store) {
+            return mapData(store)
+                    .map(function(sourceDest) {
+                        sourceDest.href = me.normalizeHref(sourceDest.href);
+                        return sourceDest;
+                    });
         }
 
         function mapModifications(store) {
@@ -229,7 +238,7 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
                 var data = d.getData();
                 // Update the eid in order to ensure uniqueness
                 data.eid = data.eid.split('_').slice(0,1).concat(index+1).join('_');
-                data.sourceDestinations = mapData(d.sourceDestinations());
+                data.sourceDestinations = mapSourceDest(d.sourceDestinations());
                 data.textualChanges = mapData(d.textualChanges());
 
                 var existSource = data.sourceDestinations.some(function(data) {
@@ -273,7 +282,7 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
 
         function mapTemporalGroups(store) {
             var res = [];
-            store.each(function (d, index) {
+            store.each(function (d, i) {
                 var data = d.getData();
                 data.eid = data.eid || 'tmpGrp'+i;
                 data.timeIntervals = mapData(d.timeIntervals()).map(function (tData) {

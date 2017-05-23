@@ -214,9 +214,15 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
                 console.error(e);
             }
             if (href.length > 1) {
+                var oldValue = node.getAttribute(attribute);
                 node.setAttribute(attribute, href);
                 refPanel.down("#successSaveLabel").setVisible(true);
                 me.closeContextPanel();
+                if (href !== oldValue) {
+                    var attrs = {};
+                    attrs[attribute] = {value: href, oldValue: oldValue};
+                    Ext.GlobalEvents.fireEvent('nodeAttributesChanged', node, attrs);
+                }
             }
         };
 

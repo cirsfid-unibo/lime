@@ -60,8 +60,7 @@ Ext.define('AknModsMarker.Controller', {
     }],
 
     requires: [
-        'AknMain.LangProp',
-        'AknMain.metadata.HtmlSerializer'
+        'AknMain.LangProp'
     ],
 
     config: {
@@ -76,23 +75,9 @@ Ext.define('AknModsMarker.Controller', {
 
     listen: {
         global:  {
-            secondDocumentLoaded: 'onSecondDocumentLoaded'
+            secondDocumentLoaded: 'onSecondDocumentLoaded',
+            nodeAttributesChanged: 'nodeChangedAttributes'
         }
-    },
-
-    onSecondDocumentLoaded: function(config) {
-        var importMeta = this.getController('AknMetadata.sync.ImportController'),
-            metaNodes = importMeta.getMetadataNodes(config);
-
-        var expUri = '';
-        if (metaNodes.length) {
-            var doc = AknMain.xml.Document.newDocument(metaNodes[0], 'akn');
-            expUri = doc.getValue('.//akn:FRBRExpression/akn:FRBRuri/@value');
-        }
-
-        this.secondDocumentConfig = {
-            expUri: expUri
-        };
     },
 
     init : function() {
@@ -152,6 +137,50 @@ Ext.define('AknModsMarker.Controller', {
                 }
             }
         });
+    },
+
+    onSecondDocumentLoaded: function(config) {
+        var importMeta = this.getController('AknMetadata.sync.ImportController'),
+            metaNodes = importMeta.getMetadataNodes(config);
+
+        var expUri = '';
+        if (metaNodes.length) {
+            var doc = AknMain.xml.Document.newDocument(metaNodes[0], 'akn');
+            expUri = doc.getValue('.//akn:FRBRExpression/akn:FRBRuri/@value');
+        }
+
+        this.secondDocumentConfig = {
+            expUri: expUri
+        };
+    },
+
+    nodeChangedAttributes: function(node, attrs) {
+        var hrefAttr = LangProp.attrPrefix+'href';
+        if (DomUtils.getNameByNode(node) === 'ref' && attrs[hrefAttr]) {
+            return this.onRefAttrChange(node, attrs[hrefAttr].value, attrs[hrefAttr].oldValue);
+        }
+    },
+
+    // Updates mod's destination on ref's href change
+    onRefAttrChange: function(node, href, oldHref) {
+        var refId = node.getAttribute(DomUtils.elementIdAttribute);
+        var destination = this.findActiveDestination(refId, oldHref);
+        if (destination) {
+            this.bindActiveModRef(destination.getModification(), node);
+        }
+    },
+
+    findActiveDestination: function(refId, href) {
+        var destinations = [];
+        this.getTextualMods('active').forEach(function(mod) {
+            destinations = destinations.concat(mod.getSourceDestinations('destination'));
+        });
+
+        destinations = destinations.filter(function(dest) {
+            return dest.get('href') === href &&
+                    dest.get('refInternalId') === refId;
+        });
+        return destinations[0];
     },
 
     editorNodeFocused: function(node) {
@@ -600,11 +629,7 @@ Ext.define('AknModsMarker.Controller', {
         };
 
         var onSelectRefItem = function(item) {
-            var dest = mod.textMod.getSourceDestinations('destination')[0];
-            if (dest)
-                dest.set('href', 
-                    AknMain.metadata.HtmlSerializer.normalizeHref(item.ref.node.getAttribute(LangProp.attrPrefix+'href')));
-
+            me.bindActiveModRef(mod.textMod, item.ref.node);
             me.application.fireEvent('nodeFocusedExternally', node, {
                 select : false,
                 scroll : true
@@ -945,9 +970,7 @@ Ext.define('AknModsMarker.Controller', {
         var ref = Array.prototype.slice.call(node.querySelectorAll('*[class~=ref]')).filter(function(el) {
             return (node == DomUtils.getFirstMarkedAncestor(el.parentNode));
         })[0];
-        var value = (ref) ? ref.getAttribute(LangProp.attrPrefix+"href") : '';
-
-        return (value && value.startsWith('#')) ? value.substring(1) : value;
+        return ref;
     },
 
     addActiveMeta: function(node, type, meta) {
@@ -965,10 +988,10 @@ Ext.define('AknModsMarker.Controller', {
             type: 'source',
             href: node.getAttribute(DomUtils.elementIdAttribute)
         });
-        mod.sourceDestinations().add({
-            type: 'destination',
-            href: this.findModRef(node)
-        });
+
+        var ref = this.findModRef(node);
+        if (ref)
+            this.bindActiveModRef(mod, ref);
 
         if (meta['new'])
             mod.textualChanges().add({ type: 'new', href: meta['new']});
@@ -979,6 +1002,19 @@ Ext.define('AknModsMarker.Controller', {
         return mod;
     },
 
+    bindActiveModRef: function(mod, refNode) {
+        var destination = {};
+        var destinations = mod.getSourceDestinations('destination');
+        if (destinations.length > 0) {
+            destination = destinations[0];
+        } else {
+            destination = mod.sourceDestinations().add({
+                type: 'destination'
+            })[0];
+        }
+        destination.set('href', refNode.getAttribute(LangProp.attrPrefix+'href'));
+        destination.set('refInternalId', refNode.getAttribute(DomUtils.elementIdAttribute));
+    },
 
     activeSubstitutionHandler: function(button, markedElements, originalButton) {
         if(!markedElements.length) return;
