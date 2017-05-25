@@ -64,7 +64,6 @@ Ext.define('AknModsMarker.Controller', {
     ],
 
     config: {
-        pluginName: "akn-mods-marker",
         renumberingAttr: "renumbering",
         joinAttr: "joined",
         splitAttr: "splitted",
@@ -216,7 +215,7 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     showOldText: function(node, oldText) {
-        this.openedForm = this.createAndShowFloatingForm(node, Locale.getString("oldText", this.getPluginName()), oldText.trim(), true);
+        this.openedForm = this.createAndShowFloatingForm(node, AknModsMarker.Strings.get('oldText'), oldText.trim(), true);
     },
 
     nodesUnmarked: function(nodesIds) {
@@ -262,49 +261,49 @@ Ext.define('AknModsMarker.Controller', {
         var me = this, app = me.application;
             markerButtons = {
                 activeModifications: {
-                    label: Locale.getString("activeModifications", me.getPluginName())
+                    label: AknModsMarker.Strings.get('activeModifications')
                 },
                 insertionCustom: {
-                    label: Locale.getString("insertion", me.getPluginName()),
+                    label: AknModsMarker.Strings.get('insertion'),
                     handler: me.activeInsertionHandler,
                     markAsButton: "mod",
                     modType: "insertion"
                 },
                 repealCustom: {
-                    label: Locale.getString("repeal", me.getPluginName()),
+                    label: AknModsMarker.Strings.get('repeal'),
                     handler: me.activeDelHandler,
                     markAsButton: "mod",
                     modType: "repeal"
                 },
                 substitutionCustom: {
-                    label: Locale.getString("substitution", me.getPluginName()),
+                    label: AknModsMarker.Strings.get('substitution'),
                     handler: me.activeSubstitutionHandler,
                     markAsButton: "mod",
                     modType: "substitution"
                 },
                 splitCustom: {
-                    label: Locale.getString("split", me.getPluginName()),
+                    label: AknModsMarker.Strings.get('split'),
                     handler: me.activeSplitHandler,
                     markAsButton: "mod",
                     modType: "split"
                 },
                 joinCustom: {
-                    label: Locale.getString("join", me.getPluginName()),
+                    label: AknModsMarker.Strings.get('join'),
                     handler: me.activeJoinHandler,
                     markAsButton: "mod",
                     modType: "join"
                 },
                 renumberingCustom: {
-                    label: Locale.getString("renumbering", me.getPluginName()),
+                    label: AknModsMarker.Strings.get('renumbering'),
                     handler: me.activeRenumberingHandler,
                     markAsButton: "mod",
                     modType: "renumbering"
                 },
                 destintionText: {
-                    label: Locale.getString("destinationText", me.getPluginName())
+                    label: AknModsMarker.Strings.get('destinationText')
                 },
                 action: {
-                    label: Locale.getString("action", me.getPluginName())
+                    label: AknModsMarker.Strings.get('action')
                 }
             },
             rules = {
@@ -336,26 +335,26 @@ Ext.define('AknModsMarker.Controller', {
          var me = this, app = me.application;
             markerButtons = {
                 passiveModifications: {
-                    label: Locale.getString("passiveModifications", me.getPluginName())
+                    label: AknModsMarker.Strings.get('passiveModifications')
                 },
                 insertionCustom: {
-                    label: Locale.getString("insertion", me.getPluginName()),
+                    label: AknModsMarker.Strings.get('insertion'),
                     handler: me.beforeInsertionHandler
                 },
                 repealCustom: {
-                    label: Locale.getString("repeal", me.getPluginName()),
+                    label: AknModsMarker.Strings.get('repeal'),
                     handler: me.beforeDelHandler
                 },
                 substitutionCustom: {
-                    label: Locale.getString("substitution", me.getPluginName()),
+                    label: AknModsMarker.Strings.get('substitution'),
                     handler: me.beforeSubstitutionHandler,
                     elementStyle: "background-color: #fcf8e3;border-color: #faebcc;",
                     // labelStyle: "border-color: #faebcc;",
-                    // shortLabel: Locale.getString("substitution", me.getPluginName()),
+                    // shortLabel: AknModsMarker.Strings.get('substitution'),
                     modType: "substitution"
                 },
                 splitCustom: {
-                    label: Locale.getString("split", me.getPluginName()),
+                    label: AknModsMarker.Strings.get('split'),
                     handler: function(button) {
                         if ( DocProperties.documentState == 'diffEditingScenarioB' ) {
                             me.splitHandlerConsolidation(button);
@@ -365,7 +364,7 @@ Ext.define('AknModsMarker.Controller', {
                     }
                 },
                 joinCustom: {
-                    label: Locale.getString("join", me.getPluginName()),
+                    label: AknModsMarker.Strings.get('join'),
                     handler: function(button) {
                         if ( DocProperties.documentState == 'diffEditingScenarioB' ) {
                             me.joinHandlerConsolidation(button);
@@ -375,7 +374,7 @@ Ext.define('AknModsMarker.Controller', {
                     }
                 },
                 renumberingCustom: {
-                    label: Locale.getString("renumbering", me.getPluginName()),
+                    label: AknModsMarker.Strings.get('renumbering'),
                     handler: function (button) {
                         if ( DocProperties.documentState == 'diffEditingScenarioB' ) {
                             me.renumberingHandlerConsolidation(button);
@@ -385,10 +384,10 @@ Ext.define('AknModsMarker.Controller', {
                     }
                 },
                 destintionText: {
-                    label: Locale.getString("destinationText", me.getPluginName())
+                    label: AknModsMarker.Strings.get('destinationText')
                 },
                 action: {
-                    label: Locale.getString("action", me.getPluginName())
+                    label: AknModsMarker.Strings.get('action')
                 }
             },
             rules = {
@@ -435,7 +434,7 @@ Ext.define('AknModsMarker.Controller', {
         };
 
         Ext.each(this.posMenu.items, function(item) {
-            item.text = Locale.getString(item.type, me.getPluginName());
+            item.text = AknModsMarker.Strings.get(item.type);
             item.checkHandler = modPosChecked;
             item.group = "modPos";
             item.checked = false;
@@ -477,22 +476,31 @@ Ext.define('AknModsMarker.Controller', {
         }
     },
 
-    // This function is called by overriden ImportController
+    // This function is called by overridden ImportController
     detectExistingMods: function() {
-        var me = this, editorBody = me.getController("Editor").getBody();
+        var me = this,
+            editorBody = me.getController("Editor").getBody();
 
         var getNodeByModRec = function(rec) {
-            return editorBody.querySelector("*[" + LangProp.attrPrefix + "eid='"+rec.get('href')+"']") ||
-                    editorBody.querySelector("*[" + DomUtils.elementIdAttribute + "='"+rec.get('href')+"']");
+            var href = rec.get('href');
+            if (!href) return;
+            return editorBody.querySelector("*[" + LangProp.attrPrefix + "eid='"+href+"']") ||
+                    editorBody.querySelector("*[" + DomUtils.elementIdAttribute + "='"+href+"']");
+        };
+
+        var bindNode = function(rec) {
+            var referencedNode = getNodeByModRec(rec);
+            if (!referencedNode) return;
+            // Set the source href to internetId because the eId can change,
+            // at the translation this process will be reverted
+            rec.set('href', referencedNode.getAttribute(DomUtils.elementIdAttribute));
+            return referencedNode;
         };
 
         var setModAttrs = function(mod, rec) {
-            var href = rec.get('href'),
-                modNode = getNodeByModRec(rec);
-            if (!href || !modNode) return;
+            var modNode = bindNode(rec);
+            if (!modNode) return;
             var id = modNode.getAttribute(DomUtils.elementIdAttribute);
-            // Set the source href to internetId because the eId can change at the translation this should be reverted
-            rec.set('href', id);
             me.modsMap[id] = mod;
             me.setModDataAttributes(modNode, mod.get('modType'));
             return modNode;
@@ -500,12 +508,12 @@ Ext.define('AknModsMarker.Controller', {
 
         me.getTextualMods('active').forEach(function(mod) {
             mod.getSourceDestinations('source').forEach(setModAttrs.bind(me, mod));
+            mod.getTextualChanges().forEach(bindNode);
         });
 
         me.getTextualMods('passive').forEach(function(mod) {
             //TODO: check if destination href for substitution needs id update
             var modEls = mod.getSourceDestinations('destination')
-                            .concat(mod.getTextualChanges('new'));
 
             var oldText = mod.getOldText();
             modEls.forEach(function(rec) {
@@ -553,6 +561,10 @@ Ext.define('AknModsMarker.Controller', {
             case 'quotedText':
                 me.addQuotedContextMenuItem(node, menu, elementName);
                 break;
+            case 'ins':
+            case 'del':
+                me.addInsDelContextMenuItem(node, menu);
+                break;
         }
     },
 
@@ -580,25 +592,25 @@ Ext.define('AknModsMarker.Controller', {
             modType = mod && mod.textMod.get('modType');
 
         menu.add(['-', {
-            text : Locale.getString("modType", me.getPluginName()),
+            text : AknModsMarker.Strings.get('modType'),
             name: "modType",
             menu : {
                 items : [{
-                    text : Locale.getString("insertion", me.getPluginName()),
+                    text : AknModsMarker.Strings.get('insertion'),
                     modType: 'insertion',
                     group : 'modType',
                     refNode: node,
                     checked: (modType == "insertion") ? true : false,
                     checkHandler : Ext.bind(me.onModTypeSelected, me)
                 }, {
-                    text : Locale.getString("repeal", me.getPluginName()),
+                    text : AknModsMarker.Strings.get('repeal'),
                     modType: 'repeal',
                     group : 'modType',
                     refNode: node,
                     checked: (modType == "repeal") ? true : false,
                     checkHandler : Ext.bind(me.onModTypeSelected, me)
                 }, {
-                    text : Locale.getString("substitution", me.getPluginName()),
+                    text : AknModsMarker.Strings.get('substitution'),
                     modType: 'substitution',
                     group : 'modType',
                     refNode: node,
@@ -645,7 +657,7 @@ Ext.define('AknModsMarker.Controller', {
         });
 
         menu.add(['-', {
-            text : Locale.getString('externalRef', me.getPluginName()),
+            text : AknModsMarker.Strings.get('externalRef'),
             name: itemName,
             menu : {
                 items : items
@@ -685,10 +697,8 @@ Ext.define('AknModsMarker.Controller', {
             return posMenu;
         };
         me.addModContextMenuItem(node, menu);
-        var markedParent = DomUtils.getFirstMarkedAncestor(node.parentNode);
-        if (!markedParent || DomUtils.getElementNameByNode(markedParent) != 'mod' ) {
-            me.addExternalContextMenuItems(menu, node, name, markedParent);
-            return;
+        if (!me.isNodeInsideMod(node)) {
+            return me.addExternalContextMenuItems(menu, node, name);
         }
         me.addPosMenuItems(menu, node, name, markedParent);
         var textMod = me.getModFromNode(markedParent);
@@ -697,10 +707,10 @@ Ext.define('AknModsMarker.Controller', {
         // TODO: check modElement
         var modType = textMod.modElement.get('type');
 
-        if(!menu.down("*[name=modType]")) {
+        if(!menu.down("*[name=quotedType]")) {
             menu.add(['-', {
-                text : Locale.getString('quotedType', me.getPluginName()),
-                name: "modType",
+                text : AknModsMarker.Strings.get('type'),
+                name: "quotedType",
                 menu : {
                     name: "types",
                     textMod: textMod.textMod,
@@ -735,6 +745,63 @@ Ext.define('AknModsMarker.Controller', {
                 }
             }]);
         }
+    },
+
+    isNodeInsideMod: function(node) {
+        var markedParent = DomUtils.getFirstMarkedAncestor(node.parentNode);
+        return markedParent && DomUtils.getElementNameByNode(markedParent) === 'mod';
+    },
+
+    addInsDelContextMenuItem: function(node, menu) {
+        var me = this;
+        if (!me.isNodeInsideMod(node)) return;
+        var textMod = me.getModFromNode(me.ensureModNode(node), 'active');
+        if (!textMod) return;
+        var mod = textMod.textMod;
+        var elId = node.getAttribute(DomUtils.elementIdAttribute);
+
+        var onTypeSelected = function(cmp, checked) {
+            var textChange;
+            if (checked) {
+                textChange = mod.getTextualChanges(cmp.type)[0] ||
+                             mod.textualChanges().add({ type: cmp.type })[0];
+                textChange.set('href', elId);
+            } else {
+                textChange = me.findTextChange(mod, cmp.type, elId);
+                mod.textualChanges().remove(textChange);
+            }
+        };
+
+        var isChecked = function(type) {
+            return me.findTextChange(mod, type, elId) !== undefined;
+        };
+
+        var createMenuItem = function(type) {
+            return {
+                text: AknModsMarker.Strings.get(type),
+                type: type,
+                checked: isChecked(type),
+                group: 'insDelType',
+                checkHandler: onTypeSelected
+            };
+        };
+
+        menu.add(['-', {
+            text: AknModsMarker.Strings.get('type'),
+            menu: {
+                items: [
+                    createMenuItem('old'),
+                    createMenuItem('new')
+                ]
+            }
+        }]);
+    },
+
+    findTextChange: function(mod, type, href) {
+        return mod.getTextualChanges(type)
+                .filter(function(textChange) {
+                    return textChange.get('href') === href;
+                })[0];
     },
 
     getModFromNode: function(node, amendmentType) {
@@ -785,7 +852,7 @@ Ext.define('AknModsMarker.Controller', {
         }
     },
 
-    addExternalContextMenuItems: function(menu, node, elementName, markedParent) {
+    addExternalContextMenuItems: function(menu, node, elementName) {
         var me = this;
         if(Ext.Array.contains(me.getExternalConnectedElements(), elementName)) {
             if(!menu.down("*[name=connectExternal]")) {
@@ -793,7 +860,7 @@ Ext.define('AknModsMarker.Controller', {
                     items = [];
                 Ext.each(mods, function(mod) {
                     items.push({
-                        text : Locale.getString(mod.type, me.getPluginName()),
+                        text : AknModsMarker.Strings.get(mod.type),
                         modType: mod.type,
                         group : 'connectExternal',
                         refMod: mod,
@@ -1217,7 +1284,7 @@ Ext.define('AknModsMarker.Controller', {
             if ( markButton.name != oldNodeButton.name ) {
                 winCmp.selectedNode = null;
                 setSelectedNode(null);
-                return Ext.Msg.alert(Locale.strings.error, new Ext.Template(Locale.getString("haveToSelectElement", me.getPluginName())).apply({
+                return Ext.Msg.alert(Locale.strings.error, new Ext.Template(AknModsMarker.Strings.get('haveToSelectElement')).apply({
                     name : markButton.name
                 }));
             }
@@ -1263,8 +1330,8 @@ Ext.define('AknModsMarker.Controller', {
 
     askForRenumberingPropagation: function(callback) {
         Ext.Msg.confirm(
-            Locale.getString("renumbering", this.getPluginName()),
-            Locale.getString("propagationRenumbering", this.getPluginName()),
+            AknModsMarker.Strings.get('renumbering'),
+            AknModsMarker.Strings.get('propagationRenumbering'),
             function(res) {
                 if (res === 'yes' && callback) callback();
             }
@@ -1378,7 +1445,7 @@ Ext.define('AknModsMarker.Controller', {
                 grid.editor = ed;
 
                 if ( markButton.name != toSplitButton.name ) {
-                    Ext.Msg.alert(Locale.strings.error, new Ext.Template(Locale.getString("haveToSelectElement", me.getPluginName())).apply({
+                    Ext.Msg.alert(Locale.strings.error, new Ext.Template(AknModsMarker.Strings.get('haveToSelectElement')).apply({
                         name : toSplitButton.name
                     }));
                     return;
@@ -1389,7 +1456,7 @@ Ext.define('AknModsMarker.Controller', {
                 } else {
                     var firstNode = body.querySelector('['+DomUtils.elementIdAttribute+'='+grid.store.getAt(0).get('id')+']');
                     if ( firstNode && DomUtils.getSiblingsFromNode(firstNode).indexOf(node) == -1 ) {
-                        Ext.Msg.alert(Locale.strings.error, Locale.getString("splitOnlySiblings", me.getPluginName()));
+                        Ext.Msg.alert(Locale.strings.error, AknModsMarker.Strings.get('splitOnlySiblings'));
                         return;
                     }
                 }
@@ -1449,7 +1516,7 @@ Ext.define('AknModsMarker.Controller', {
     setSplitNodesStyle: function(nodes) {
         var button = DomUtils.getButtonByElement(nodes[0]);
         this.setElementStyles(nodes, button, button, {
-            shortLabel: button.shortLabel+" "+Locale.getString("splitted", this.getPluginName()),
+            shortLabel: button.shortLabel+" "+AknModsMarker.Strings.get('splitted'),
             modType: this.getSplitAttr(),
             elementStyle: "",
             labelStyle: "background-color: #75d6ff; border: 1px solid #44b4d5;"
@@ -1481,7 +1548,7 @@ Ext.define('AknModsMarker.Controller', {
 
             if(button) {
                 me.setElementStyles([node, newElement], button, button, {
-                    shortLabel: button.shortLabel+" "+Locale.getString("splitted", me.getPluginName()),
+                    shortLabel: button.shortLabel+" "+AknModsMarker.Strings.get('splitted'),
                     modType: me.getSplitAttr(),
                     elementStyle: "",
                     labelStyle: "background-color: #75d6ff; border: 1px solid #44b4d5;"
@@ -1564,7 +1631,7 @@ Ext.define('AknModsMarker.Controller', {
                     iternode = iternode.nextElementSibling;
                 }
                 me.setElementStyles([startNode], button, button, {
-                    shortLabel: button.shortLabel+" "+Locale.getString("joined", me.getPluginName()),
+                    shortLabel: button.shortLabel+" "+AknModsMarker.Strings.get('joined'),
                     modType: me.getJoinAttr(),
                     elementStyle: "",
                     labelStyle: "background-color: #75d6ff; border: 1px solid #44b4d5;"
@@ -1602,13 +1669,13 @@ Ext.define('AknModsMarker.Controller', {
                     var firstNode = body.querySelector('['+DomUtils.elementIdAttribute+'='+grid.store.getAt(0).get('id')+']');
                     var toJoinButton = DocProperties.getFirstButtonByName(DomUtils.getNameByNode(firstNode));
                     if ( markButton.name != toJoinButton.name ) {
-                        Ext.Msg.alert(Locale.strings.error, new Ext.Template(Locale.getString("haveToSelectElement", me.getPluginName())).apply({
+                        Ext.Msg.alert(Locale.strings.error, new Ext.Template(AknModsMarker.Strings.get('haveToSelectElement')).apply({
                             name : toJoinButton.name
                         }));
                         return;
                     }
                     if ( firstNode && DomUtils.getSiblingsFromNode(firstNode).indexOf(node) == -1 ) {
-                        Ext.Msg.alert(Locale.strings.error, Locale.getString("splitOnlySiblings", me.getPluginName()));
+                        Ext.Msg.alert(Locale.strings.error, AknModsMarker.Strings.get('splitOnlySiblings'));
                         return;
                     }
                 }
@@ -1695,7 +1762,7 @@ Ext.define('AknModsMarker.Controller', {
                     var grid = winCmp.down('grid');
 
                     if ( markButton.name != toJoinButton.name ) {
-                        Ext.Msg.alert(Locale.strings.error, new Ext.Template(Locale.getString("haveToSelectElement", me.getPluginName())).apply({
+                        Ext.Msg.alert(Locale.strings.error, new Ext.Template(AknModsMarker.Strings.get('haveToSelectElement')).apply({
                             name : markButton.name
                         }));
                         return;
@@ -1706,7 +1773,7 @@ Ext.define('AknModsMarker.Controller', {
                     } else {
                         var firstNode = body.querySelector('['+DomUtils.elementIdAttribute+'='+grid.store.getAt(0).get('id')+']');
                         if ( firstNode && DomUtils.getSiblingsFromNode(firstNode).indexOf(node) == -1 ) {
-                            Ext.Msg.alert(Locale.strings.error, Locale.getString("splitOnlySiblings", me.getPluginName()));
+                            Ext.Msg.alert(Locale.strings.error, AknModsMarker.Strings.get('splitOnlySiblings'));
                             return;
                         }
                     }
@@ -1766,7 +1833,6 @@ Ext.define('AknModsMarker.Controller', {
                 var markButton = DocProperties.getFirstButtonByName(DomUtils.getNameByNode(node));
                 var editor = me.getController('Editor');
                 var tpl = new Ext.Template("<h4>You've selected the element <b>{name}</b> ({num}) which contains the following text:</h4>{text}");
-
                 editor.unFocusNodes(false, ed.getBody());
                 editor.setFocusStyle(node);
 
@@ -1862,7 +1928,7 @@ Ext.define('AknModsMarker.Controller', {
                 focusedNode.setAttribute(LangProp.attrPrefix+"status", "removed");
                 DomUtils.removeChildren(focusedNode);
                 me.setElementStyles([focusedNode], button, button, {
-                    shortLabel: button.shortLabel+" "+Locale.getString("deleted", me.getPluginName()),
+                    shortLabel: button.shortLabel+" "+AknModsMarker.Strings.get('deleted'),
                     modType: 'deleted',
                     elementStyle: "",
                     labelStyle: "background-color: #75d6ff; border: 1px solid #44b4d5;"
@@ -1935,7 +2001,7 @@ Ext.define('AknModsMarker.Controller', {
             setMetadata();
             me.askForRenumbering(modEl, textualMod);
         } else if ( markedElements.length ) {
-            me.createAndShowFloatingForm(markedElements[0], Locale.getString("oldText", me.getPluginName()), false, false, function(cmp, text) {
+            me.createAndShowFloatingForm(markedElements[0], AknModsMarker.Strings.get('oldText'), false, false, function(cmp, text) {
                 setMetadata(text);
                 cmp.close();
             }, function(cmp) {
@@ -2022,7 +2088,7 @@ Ext.define('AknModsMarker.Controller', {
                     me.setMaskEditors(false, false);
 
                     me.setElementStyles([focusedNode], button, button, {
-                        shortLabel: button.shortLabel+" "+Locale.getString("replaced", me.getPluginName()),
+                        shortLabel: button.shortLabel+" "+AknModsMarker.Strings.get('replaced'),
                         modType: 'replaced',
                         elementStyle: "",
                         labelStyle: "background-color: #75d6ff; border: 1px solid #44b4d5;"
@@ -2045,7 +2111,7 @@ Ext.define('AknModsMarker.Controller', {
                 form.renumberedNode.setAttribute(me.getRenumberingAttr(), oldText);
                 var button = DomUtils.getButtonByElement(form.renumberedNode);
                 me.setElementStyles([form.renumberedNode], button, button, {
-                    shortLabel: button.shortLabel+" "+Locale.getString("renumbered", me.getPluginName()),
+                    shortLabel: button.shortLabel+" "+AknModsMarker.Strings.get('renumbered'),
                     modType: me.getRenumberingAttr(),
                     elementStyle: "",
                     labelStyle: "background-color: #75d6ff; border: 1px solid #44b4d5;"
@@ -2111,7 +2177,7 @@ Ext.define('AknModsMarker.Controller', {
 
             if ( markButtonNameSecond && panel && panel.isVisible() ) {
                 if ( markButtonNameSecond != markButtonName ) {
-                     Ext.Msg.alert(Locale.strings.error, new Ext.Template(Locale.getString("haveToSelectElement", me.getPluginName())).apply({
+                     Ext.Msg.alert(Locale.strings.error, new Ext.Template(AknModsMarker.Strings.get('haveToSelectElement')).apply({
                         name : markButtonName
                      }));
                      return;
@@ -2173,7 +2239,7 @@ Ext.define('AknModsMarker.Controller', {
     createSubstitutionConsolidationUpdate: function(node, update) {
         var me = this, 
             oldText = (update) ? node.getAttribute('data-old-text') : '';
-        me.createAndShowFloatingForm(node, Locale.getString("oldText", me.getPluginName()), oldText, false, function(cmp, text) {
+        me.createAndShowFloatingForm(node, AknModsMarker.Strings.get('oldText'), oldText, false, function(cmp, text) {
             me.updateSubsMetadata(node, text);
             cmp.close();
         }, function(cmp) {
@@ -2233,7 +2299,7 @@ Ext.define('AknModsMarker.Controller', {
             });
         } else {
             oldText = oldText || '';
-            me.openedForm = me.createAndShowFloatingForm(node, Locale.getString("oldText", me.getPluginName()), oldText.trim(), true);
+            me.openedForm = me.createAndShowFloatingForm(node, AknModsMarker.Strings.get('oldText'), oldText.trim(), true);
         }
         Ext.defer(function() {
             editor.getEditor().focus();
@@ -2309,8 +2375,8 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     askForRenumbering: function(callback) {
-        Ext.Msg.confirm(Locale.getString("renumbering", this.getPluginName()),
-            Locale.getString("causedRenumbering", this.getPluginName()),
+        Ext.Msg.confirm(AknModsMarker.Strings.get('renumbering'),
+            AknModsMarker.Strings.get('causedRenumbering'),
             function(res) {
                 if (res === 'yes' && callback)
                     callback();

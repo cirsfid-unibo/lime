@@ -47,6 +47,14 @@
  Ext.define('AknModsMarker.Strings', {
     singleton : true,
 
+    constructor: function() {
+        Locale.addPackageStrings(this);
+    },
+
+    get: function(name) {
+        return Locale.getString(name, Ext.getClassName(this));
+    },
+
     strings: {
         "en": {
             "insertion": "Insertion",
@@ -67,7 +75,7 @@
             "replaced": "replaced",
             "modType": "Modification type",
             "externalRef": "Set external ref",
-            "quotedType": "Type",
+            "type": "Type",
             "oldText": "The old text",
             "haveToSelectElement": "You have to select {name} element",
             "splitOnlySiblings": "You can split only sibling nodes",
@@ -94,7 +102,7 @@
             "replaced": "sostituito",
             "modType": "Tipo modifica",
             "externalRef": "Aggiungi riferimento",
-            "quotedType": "Tipo",
+            "type": "Tipo",
             "oldText": "Testo precedente",
             "haveToSelectElement": "Devi selezionere un elemento {name}",
             "splitOnlySiblings": "Puoi dividere solo elementi vicini",
@@ -121,7 +129,7 @@
             "replaced": "reemplazado",
             "modType": "Tipo de modificación",
             "externalRef": "Set external ref",
-            "quotedType": "Type",
+            "type": "Type",
             "oldText": "El texto anterior",
             "haveToSelectElement": "Usted tiene que seleccionar el elemento {name}",
             "splitOnlySiblings": "Se puede dividir nodos único hermano",
@@ -129,9 +137,5 @@
             "propagationRenumbering": "¿Quieres propagar la renumeración?",
             "selection": "Selección"
         }
-    },
-
-    constructor: function() {
-        Locale.setPluginStrings('akn-mods-marker', this.strings);
     }
 });
