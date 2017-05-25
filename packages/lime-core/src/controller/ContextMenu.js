@@ -86,11 +86,11 @@ Ext.define('LIME.controller.ContextMenu', {
         var me = this, menu = this.getContextMenu(),
             editor = me.getController("Editor"),
             selectedNode = editor.getFocusedNode();
+        if (!selectedNode) return;
         menu.removeAll();
         Ext.each(me.getMenuItems(), function(item) {
             menu.add(item);
         });
-        
         Ext.each(me.beforeShowFns, function(beforeShowFn) {
             try {
                 beforeShowFn(menu, selectedNode);    
@@ -112,8 +112,7 @@ Ext.define('LIME.controller.ContextMenu', {
     },
 
     init : function() {
-        var me = this, editor = me.getController("Editor"),
-            markerController = me.getController('Marker');
+        var me = this, editor = me.getController("Editor");
         //Listening progress events
         me.application.on(Statics.eventsNames.showContextMenu, me.showContextMenu, me);
         me.application.on(Statics.eventsNames.registerContextMenuBeforeShow, me.registerContextMenuBeforeShow, me);

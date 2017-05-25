@@ -349,7 +349,6 @@ Ext.define('LIME.controller.Outliner', {
                 },
 
                 itemcontextmenu : function(view, rec, item, index, e, eOpts) {
-                    var coordinates = [];
                     // Prevent the default context menu to show
                     e.preventDefault();
                     //Fire an itemclick event to select the htmlNode in the editor
