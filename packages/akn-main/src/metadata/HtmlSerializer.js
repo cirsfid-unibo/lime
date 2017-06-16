@@ -181,9 +181,9 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
     ),
 
     modificationTpl: new Ext.XTemplate(
-        '<div class="{type}" eId="{eid}" type="{modType}" >',
+        '<div class="{type}" eId="{eid}" type="{modType}" {[this.optAttr("incomplete", values.incomplete)]} {[this.optAttr("exclusion", values.exclusion)]} >',
         '<tpl for="sourceDestinations">' +
-        '        <div class="{type}" {[this.uriAttr("href", values.href, true)]} {[this.uriAttr("pos", values.pos)]}/>',
+        '        <div class="{type}" {[this.uriAttr("href", values.href, true)]} {[this.uriAttr("pos", values.pos)]} {[this.optAttr("incomplete", values.incomplete)]} {[this.optAttr("exclusion", values.exclusion)]} />',
         '</tpl>' +
         '<tpl if="previous">'+
         '        <div class="previous" {[this.uriAttr("href", values.previous, true)]}/>',

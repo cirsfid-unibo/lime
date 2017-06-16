@@ -256,7 +256,9 @@ Ext.define('AknMain.metadata.Modification', {
         { name: 'application', type: 'string' },
         { name: 'duration', type: 'string' },
         { name: 'condition', type: 'string' },
-        { name: 'conditionFrozen', type: 'string' }
+        { name: 'conditionFrozen', type: 'string' },
+        { name: 'exclusion', type: 'boolean' },
+        { name: 'incomplete', type: 'boolean' }
     ],
 
     validators: {
@@ -314,8 +316,8 @@ Ext.define('AknMain.metadata.SourceDestination', {
         { name: 'type', type: 'string' },
         { name: 'href', type: 'string' },
         { name: 'pos', type: 'string' },
-        { name: 'exclusion', type: 'string' },
-        { name: 'incomplete', type: 'string' },
+        { name: 'exclusion', type: 'boolean' },
+        { name: 'incomplete', type: 'boolean' },
         { name: 'upTo', type: 'string' }
     ],
 

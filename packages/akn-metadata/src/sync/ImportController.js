@@ -244,9 +244,10 @@ Ext.define('AknMetadata.sync.ImportController', {
                     period: node.getAttribute('period'),
                     status: node.getAttribute('status'),
                     refers: node.getAttribute('refersTo'),
+                    exclusion: node.getAttribute('exclusion'),
+                    incomplete: node.getAttribute('incomplete'),
                     previous: AknMain.metadata.HtmlSerializer.normalizeHref(akn.getValue('./akn:previous/@href', node))
                 };
-
                 data.period = data.period ? data.period.substring(1) : '';
                 data.refers = data.refers ? data.refers.substring(1) : '';
 
