@@ -85,6 +85,7 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
         // Elements not requiring attributes immediately
         var noAttrEls = [
             'num',
+            'mod',
             'heading',
             'subheading',
             'docType',
@@ -121,7 +122,6 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
         switch(tag) {
             case 'num':
             case 'heading':
-            case 'mod':
             case 'mmod':
             case 'ins':
             case 'del':
