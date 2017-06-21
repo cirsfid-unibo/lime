@@ -198,6 +198,21 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
             return str.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
         };
 
+        // This is a hack for internal ref validation
+        // we cannot use allowBlank because fragment is allowed blank
+        // in external ref but not allowed in internal
+        var isValidInternalRef = function(ref, refPanel) {
+            var valid = (ref.internal && ref.id) ? true : false;
+            var invalidField = refPanel.getField('fragment');
+            if (!valid) {
+                invalidField.toggleInvalidCls(true);
+                setTimeout(function() {
+                    invalidField.toggleInvalidCls(false);
+                }, 1000);
+            }
+            return valid;
+        };
+
         var saveRef = function(refPanel) {
             var data = refPanel.getValues(false, false, false, true);
             var ref = AknMain.Reference.empty();
@@ -211,10 +226,16 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
             ref.uri.date = (data.date) ? Ext.Date.format(data.date, 'Y-m-d') : "";
             ref.uri.language = DocProperties.documentInfo.docLang;
             var href = "";
+            if (!refPanel.isValid() || !isValidInternalRef(ref, refPanel)) {
+                return;
+            }
             try {
                 href = ref.ref();
+                // this is for causing the error if href is not parsable
+                AknMain.Reference.parse(href)
             } catch(e) {
                 console.error(e);
+                return;
             }
             if (href.length > 1) {
                 var oldValue = node.getAttribute(attribute);
@@ -229,7 +250,6 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
             }
         };
 
-        console.log('create ref panel', href);
         return Ext.widget('refPanel', {
             ref: ref,
             onSave: saveRef

@@ -57,11 +57,12 @@ Ext.define('AknMetadata.tagAttributes.RefPanel', {
         emptyText: Locale.getString('type', 'akn-metadata'),
         name: 'type',
         displayField: 'name',
+        allowBlank: false,
         valueField: 'type',
         queryMode: 'local',
         store: Ext.create('Ext.data.Store', {
             fields: ['name', 'type'],
-            data: [{name: Locale.getString('internal', 'akn-metadata'), type: 'internal'}, 
+            data: [{name: Locale.getString('internal', 'akn-metadata'), type: 'internal'},
                     {name: Locale.getString('external', 'akn-metadata'), type: 'external'}]
         })
     }, {
@@ -79,6 +80,7 @@ Ext.define('AknMetadata.tagAttributes.RefPanel', {
     }, {
         xtype: 'datefield',
         name: 'date',
+        allowBlank: false,
         emptyText: Locale.getString('date', 'akn-metadata')
     }, {
         xtype: 'textfield',
@@ -92,9 +94,9 @@ Ext.define('AknMetadata.tagAttributes.RefPanel', {
 
     listeners: {
         afterrender: function () {
-            if (!this.ref) return;
             this.down('[name=type]').on('change', this.onTypeChange, this);
-            this.getForm().setValues(this.refToFormValues());
+            if (this.ref)
+                this.getForm().setValues(this.refToFormValues());
         }
     },
 
@@ -123,5 +125,9 @@ Ext.define('AknMetadata.tagAttributes.RefPanel', {
             number: this.ref.uri.name,
             fragment: this.ref.id
         }
+    },
+
+    getField: function(name) {
+        return this.down('[name='+name+']');
     }
 });
