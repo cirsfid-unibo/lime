@@ -122,11 +122,11 @@ Ext.define('LIME.controller.WidgetManager', {
      * In the end it opens the context panel if there is a widget or closes it otherwise.
      * @param {HTMLElement} node The focused node
      * */
-    onNodeFocused: function(node) {
+    onNodeFocused: function(node, actions) {
         var widgetConfig = DocProperties.getNodeWidget(node),
             elId = DomUtils.getElementId(node),
             panelHeight, widget;
-        if(widgetConfig && elId) {
+        if(widgetConfig && elId && !actions.rightClick) {
             if(!this.tab.getChildByElement(elId)) {
                 this.tab.removeAll(true);
                 widget = this.createWidget(elId, widgetConfig);

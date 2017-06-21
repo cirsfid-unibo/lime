@@ -80,6 +80,7 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
     // e.g. marking the <num>
     // Anyway the user can open it buy clicking on the node.
     haveToShowNodeAttributes: function(node, actions) {
+        if (actions.rightClick) return false;
         if (!actions.manualMarking) return true;
         var tag = DomUtils.getNameByNode(node);
         // Elements not requiring attributes immediately

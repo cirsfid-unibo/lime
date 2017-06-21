@@ -115,7 +115,6 @@ Ext.define('LIME.controller.Editor', {
         this.application.on(Statics.eventsNames.disableEditing, this.disableEditor, this);
         this.application.on(Statics.eventsNames.enableEditing, this.enableEditor, this);
 
-        var markerController = this.getController('Marker');
         this.control({
             // Handle the viewable events on the editor (click, contextmenu etc.)
             '#mainEditor mainEditor' : {
@@ -1225,7 +1224,7 @@ Ext.define('LIME.controller.Editor', {
            }
            // Expand the selected node's related buttons
            this.lastFocused = selectedNode;
-           me.focusNode(selectedNode, {click: true});
+           me.focusNode(selectedNode, {click: true, rightClick: e.button === 2});
         } else {
             me.unFocusNodes(true);
         }
