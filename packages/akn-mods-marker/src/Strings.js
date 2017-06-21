@@ -81,7 +81,8 @@
             "splitOnlySiblings": "You can split only sibling nodes",
             "causedRenumbering": "This modification has caused a renumbering?",
             "propagationRenumbering": "Do you want to propagate the renumbering?",
-            "selection": "Selection"
+            "selection": "Selection",
+            "redlineInline": "Redline inline"
         },
         "it": {
             "insertion": "Inserimento",

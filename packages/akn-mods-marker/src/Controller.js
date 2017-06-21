@@ -48,7 +48,7 @@ Ext.define('AknModsMarker.Controller', {
     extend : 'Ext.app.Controller',
 
     views : ['AknModsMarker.ModsMarkerWindow',
-            'AknModsMarker.SplitNodesSelectorWindow', 
+            'AknModsMarker.SplitNodesSelectorWindow',
             'AknModsMarker.RepealSelectorWindow'],
 
     refs : [{
@@ -86,7 +86,7 @@ Ext.define('AknModsMarker.Controller', {
         me.application.on(Statics.eventsNames.afterLoad, me.onDocumentLoaded, me);
         me.application.on(Statics.eventsNames.nodeChangedExternally, me.onNodeChanged, me);
         me.application.fireEvent(Statics.eventsNames.registerContextMenuBeforeShow, Ext.bind(me.beforeContextMenuShow, me));
-        
+
         me.initPosMenu();
 
         this.control({
@@ -304,12 +304,18 @@ Ext.define('AknModsMarker.Controller', {
                 },
                 action: {
                     label: AknModsMarker.Strings.get('action')
+                },
+                redlineInline: {
+                    label: AknModsMarker.Strings.get('redlineInline')
                 }
             },
             rules = {
                 elements: {
                     activeModifications: {
-                        children: ["commonReference", "destintionText", "action"]
+                        children: ["commonReference", "destintionText", "action", "redlineInline", "embeddedStructure"]
+                    },
+                    redlineInline: {
+                        children: ["ins", "del"]
                     },
                     destintionText: {
                         children: ["quotedStructure", "quotedText"]
@@ -528,7 +534,7 @@ Ext.define('AknModsMarker.Controller', {
         var mods = [];
 
         this.getModifications().each(function(mod) {
-            if ((mod.get('type') == 'textualMod') && 
+            if ((mod.get('type') == 'textualMod') &&
                 (!amendmentType || mod.get('amendmentType') == amendmentType ) )
                 mods.push(mod);
         });
@@ -1041,7 +1047,7 @@ Ext.define('AknModsMarker.Controller', {
             amendmentType: 'active',
             type: 'textualMod',
             modType: type,
-            eid: this.getTextualModId() 
+            eid: this.getTextualModId()
         };
         var mod = this.getModifications().add(data)[0];
         this.modsMap[node.getAttribute(DomUtils.elementIdAttribute)] = mod;
@@ -1166,7 +1172,7 @@ Ext.define('AknModsMarker.Controller', {
         } else {
             var focusedNode = editor.getFocusedNode();
             if ( !focusedNode ) return;
-            
+
             var button = DomUtils.getButtonByElement(focusedNode);
             me.insertionHandler(button, [focusedNode]);
             // For now ask renumbering only in consolidation mode
@@ -1272,7 +1278,7 @@ Ext.define('AknModsMarker.Controller', {
             } else {
                 winCmp.selectedNode = null;
             }
-            
+
             winCmp.down('[itemId=selectedMsg]').setHtml(msg);
         };
 
@@ -1569,7 +1575,7 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     setSplitMetadataB: function(node1, node2) {
-        var prevId = LangProp.getNodeLangAttr(node1, "eId").value || 
+        var prevId = LangProp.getNodeLangAttr(node1, "eId").value ||
                         node1.getAttribute(DomUtils.elementIdAttribute);
 
         var meta = {
@@ -1585,7 +1591,7 @@ Ext.define('AknModsMarker.Controller', {
 
     setSplitMetadata: function(prevNode, prevMeta, nodes) {
         // TODO: use prevMeta for prevId
-        var prevId = LangProp.getNodeLangAttr(prevNode, "eId").value 
+        var prevId = LangProp.getNodeLangAttr(prevNode, "eId").value
                     || prevNode.getAttribute(DomUtils.elementIdAttribute);
 
         var sourceDestinations = nodes.map(function(node) {
@@ -2237,7 +2243,7 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     createSubstitutionConsolidationUpdate: function(node, update) {
-        var me = this, 
+        var me = this,
             oldText = (update) ? node.getAttribute('data-old-text') : '';
         me.createAndShowFloatingForm(node, AknModsMarker.Strings.get('oldText'), oldText, false, function(cmp, text) {
             me.updateSubsMetadata(node, text);
