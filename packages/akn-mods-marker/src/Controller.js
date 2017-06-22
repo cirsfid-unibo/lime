@@ -562,10 +562,12 @@ Ext.define('AknModsMarker.Controller', {
                 break;
             case 'mod':
                 me.addModContextMenuItem(node, menu);
+                me.addModifiersContextMenuItem(node, menu);
                 break;
             case 'quotedStructure':
             case 'quotedText':
                 me.addQuotedContextMenuItem(node, menu, elementName);
+                me.addModifiersContextMenuItem(node, menu);
                 break;
             case 'ins':
             case 'del':
@@ -687,6 +689,58 @@ Ext.define('AknModsMarker.Controller', {
         }).reverse();
         return references;
     },
+
+    addModifiersContextMenuItem: function(node, menu) {
+        if(menu.down("*[name=modifiers]")) return;
+        var mod = this.getModFromNode(this.ensureModNode(node), 'active');
+        mod = mod && mod.textMod;
+        if (!mod) return;
+
+        var onModifierChecked = function(type, cmp, checked) {
+            mod.set(type, checked);
+        }
+
+        var onRedlineChecked = function(type, cmp, checked) {
+            if (checked) {
+                var ref = AknMain.RefersTo.getRef('TLCConcept', type);
+                mod.set('refers', ref.get('eid'));
+            } else {
+                mod.set('refers', '');
+            }
+        }
+
+        var createModifierItem = function(type) {
+            return {
+                text : AknModsMarker.Strings.get(type),
+                checked: mod.get(type),
+                checkHandler : onModifierChecked.bind(this, type)
+            };
+        }
+
+        var createRedlineItem = function(type) {
+            return {
+                text : AknModsMarker.Strings.get(type),
+                checked: mod.get('refers') === type.toLowerCase(),
+                group: 'redline',
+                checkHandler : onRedlineChecked.bind(this, type)
+            };
+        }
+
+        menu.add([{
+            text : AknModsMarker.Strings.get('setModifiers'),
+            name: 'modifiers',
+            defaultType: 'checkboxfield',
+            menu : {
+                items : [
+                    createModifierItem('incomplete'),
+                    createModifierItem('exclusion'),
+                    createRedlineItem('redline'),
+                    createRedlineItem('redlineMultiple')
+                ]
+            }
+        }]);
+    },
+
     //TODO: test the working all this function
     addQuotedContextMenuItem: function(node, menu, name) {
         var me = this;
@@ -706,6 +760,7 @@ Ext.define('AknModsMarker.Controller', {
         if (!me.isNodeInsideMod(node)) {
             return me.addExternalContextMenuItems(menu, node, name);
         }
+        var markedParent = DomUtils.getFirstMarkedAncestor(node.parentNode);
         me.addPosMenuItems(menu, node, name, markedParent);
         var textMod = me.getModFromNode(markedParent);
         if (!textMod) return;

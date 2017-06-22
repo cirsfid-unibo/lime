@@ -82,7 +82,12 @@
             "causedRenumbering": "This modification has caused a renumbering?",
             "propagationRenumbering": "Do you want to propagate the renumbering?",
             "selection": "Selection",
-            "redlineInline": "Redline inline"
+            "redlineInline": "Redline inline",
+            "setModifiers": "Set modifiers",
+            "incomplete": "Incomplete",
+            "exclusion": "Exclusion",
+            "redline": "Redline",
+            "redlineMultiple": "Redline multiple"
         },
         "it": {
             "insertion": "Inserimento",
