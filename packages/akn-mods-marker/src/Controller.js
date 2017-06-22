@@ -175,11 +175,15 @@ Ext.define('AknModsMarker.Controller', {
             destinations = destinations.concat(mod.getSourceDestinations('destination'));
         });
 
-        destinations = destinations.filter(function(dest) {
-            return dest.get('href') === href &&
-                    dest.get('refInternalId') === refId;
-        });
-        return destinations[0];
+        return this.findDestination(destinations, refId, href);
+    },
+
+    findDestination: function(dests, refId, href) {
+        href = AknMain.metadata.HtmlSerializer.normalizeHref(href);
+        return dests.filter(function(dest) {
+            var sameHref = dest.get('href') === href;
+            return (dest.get('href') === href && dest.get('refInternalId') === refId);
+        })[0];
     },
 
     editorNodeFocused: function(node) {
@@ -491,7 +495,9 @@ Ext.define('AknModsMarker.Controller', {
             var href = rec.get('href');
             if (!href) return;
             return editorBody.querySelector("*[" + LangProp.attrPrefix + "eid='"+href+"']") ||
-                    editorBody.querySelector("*[" + DomUtils.elementIdAttribute + "='"+href+"']");
+                    editorBody.querySelector("*[" + DomUtils.elementIdAttribute + "='"+href+"']") ||
+                    editorBody.querySelector("*[" + LangProp.attrPrefix + "href='"+href+"']") ||
+                    editorBody.querySelector("*[" + LangProp.attrPrefix + "href='#"+href+"']");
         };
 
         var bindNode = function(rec) {
@@ -499,7 +505,16 @@ Ext.define('AknModsMarker.Controller', {
             if (!referencedNode) return;
             // Set the source href to internetId because the eId can change,
             // at the translation this process will be reverted
-            rec.set('href', referencedNode.getAttribute(DomUtils.elementIdAttribute));
+            var refId = referencedNode.getAttribute(DomUtils.elementIdAttribute);
+            if (rec.get('type') === 'destination') {
+                rec.set('href', AknMain.metadata.HtmlSerializer.normalizeHref(
+                                    referencedNode.getAttribute(LangProp.attrPrefix+'href')
+                                )
+                    );
+                rec.set('refInternalId', refId);
+            } else {
+                rec.set('href', refId);
+            }
             return referencedNode;
         };
 
@@ -514,6 +529,7 @@ Ext.define('AknModsMarker.Controller', {
 
         me.getTextualMods('active').forEach(function(mod) {
             mod.getSourceDestinations('source').forEach(setModAttrs.bind(me, mod));
+            mod.getSourceDestinations('destination').forEach(setModAttrs.bind(me, mod));
             mod.getTextualChanges().forEach(bindNode);
         });
 
@@ -643,8 +659,19 @@ Ext.define('AknModsMarker.Controller', {
             });
         };
 
-        var onSelectRefItem = function(item) {
-            me.bindActiveModRef(mod.textMod, item.ref.node);
+        var destinations = mod.textMod.getSourceDestinations('destination');
+        var findDestinationByRef = function(node) {
+            var refId = node.getAttribute(DomUtils.elementIdAttribute);
+            var href = node.getAttribute(LangProp.attrPrefix+'href');
+            return me.findDestination(destinations, refId, href);
+        }
+        var onSelectRefItem = function(item, checked) {
+            var dest = findDestinationByRef(item.ref.node);
+            if (checked && !dest) {
+                me.bindActiveModRef(mod.textMod, item.ref.node, true);
+            } else if (!checked && dest) {
+                mod.textMod.sourceDestinations().remove(dest);
+            }
             me.application.fireEvent('nodeFocusedExternally', node, {
                 select : false,
                 scroll : true
@@ -653,10 +680,9 @@ Ext.define('AknModsMarker.Controller', {
 
         var items = me.getModExternalReferences(node).map(function(ref) {
             return {
-                text : ref.text,
-                group : itemName,
+                text : Ext.String.ellipsis(ref.text, 50),
                 ref: ref,
-                checked: false,
+                checked: findDestinationByRef(ref.node) !== undefined,
                 checkHandler : onSelectRefItem,
                 listeners: {
                     focus: onFocusRefItem
@@ -667,6 +693,7 @@ Ext.define('AknModsMarker.Controller', {
         menu.add(['-', {
             text : AknModsMarker.Strings.get('externalRef'),
             name: itemName,
+            defaultType: 'checkboxfield',
             menu : {
                 items : items
             }
@@ -1125,10 +1152,10 @@ Ext.define('AknModsMarker.Controller', {
         return mod;
     },
 
-    bindActiveModRef: function(mod, refNode) {
+    bindActiveModRef: function(mod, refNode, allowMultiple) {
         var destination = {};
         var destinations = mod.getSourceDestinations('destination');
-        if (destinations.length > 0) {
+        if (destinations.length > 0 && !allowMultiple) {
             destination = destinations[0];
         } else {
             destination = mod.sourceDestinations().add({
