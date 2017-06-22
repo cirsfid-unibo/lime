@@ -115,7 +115,7 @@
         // It would be cool to do this with one query
         var query = '//*[@class="references"]/*[@eId and @class != "hasAttachment" and @class != "attachmentOf"]';
         var referingToTpl = new Ext.Template(
-            '//*[@akn_refersto = "#{0}" or @source = "#{0}"]'
+            '//*[@refersTo = "#{0}" or @akn_refersto = "#{0}" or @source = "#{0}"]'
         );
         doc.select(query).forEach(function(node) {
             var referingNodes = doc.select(
