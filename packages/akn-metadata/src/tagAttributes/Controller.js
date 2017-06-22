@@ -202,7 +202,7 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
         // we cannot use allowBlank because fragment is allowed blank
         // in external ref but not allowed in internal
         var isValidInternalRef = function(ref, refPanel) {
-            var valid = (ref.internal && ref.id) ? true : false;
+            var valid = (!ref.internal || ref.id) ? true : false;
             var invalidField = refPanel.getField('fragment');
             if (!valid) {
                 invalidField.toggleInvalidCls(true);
