@@ -80,6 +80,7 @@ Ext.define('LIME.controller.MarkingMenu', {
         // save a reference to the controller
         var me = this, app = me.application;
 
+
         // Set the event listeners
         app.on(Statics.eventsNames.editorDomNodeFocused, function(node, config) {
             if ( !config || !config.noExpandButtons ) {
@@ -95,8 +96,35 @@ Ext.define('LIME.controller.MarkingMenu', {
         app.on(Statics.eventsNames.enableEditing, this.enableMarkingMenu, this);
         app.on(Statics.eventsNames.addMarkingButton, this.addMarkingButton, this);
         app.on(Statics.eventsNames.unfocusedNodes, this.expandButtons, this);
+
+        // Add mark menu item, calling directly because the event is not catched
+        // if fired in this init
+        this.getController('ContextMenu').registerContextMenuBeforeShow(me.addMarkContextMenu.bind(me));
     },
 
+    addMarkContextMenu: function(menu, node) {
+        var me = this;
+        var selectedContent = me.getController('Editor').getSelectionContent();
+        if (!node || selectedContent.length === 0) return;
+        var button = DocProperties.getFirstButtonByName(DomUtils.getNameByNode(node));
+        if (!button || Ext.isEmpty(button.children)) return;
+
+        var makeMarkItem = function(button) {
+            return {
+                text: button.text,
+                handler: function() {
+                    LIME.app.fireEvent('markingMenuClicked', DocProperties.getElementConfig(button.id));
+                }
+            }
+        }
+
+        menu.add({
+            text: Locale.getString('Mark'), //TODO: localize
+            menu: {
+                items: button.children.map(makeMarkItem)
+            }
+        });
+    },
     /**
      * Build the root of the marking buttons
      * based on a static configuration file
