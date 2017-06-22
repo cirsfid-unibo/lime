@@ -665,10 +665,33 @@ Ext.define('AknModsMarker.Controller', {
             var href = node.getAttribute(LangProp.attrPrefix+'href');
             return me.findDestination(destinations, refId, href);
         }
+
+        var createHrefCustomizer = function(text, onAccept) {
+            var onClose = function(cmp) {
+                cmp.close();
+            };
+            me.createAndShowFloatingForm(node, 'Destination href', text, false,
+                function(cmp, newText) {
+                    onAccept(newText);
+                    onClose(cmp);
+                }, onClose
+            ).center();
+        }
+
         var onSelectRefItem = function(item, checked) {
-            var dest = findDestinationByRef(item.ref.node);
+            var refNode = item.ref.node;
+            var dest = findDestinationByRef(refNode);
             if (checked && !dest) {
-                me.bindActiveModRef(mod.textMod, item.ref.node, true);
+                var href = refNode.getAttribute(LangProp.attrPrefix+'href');
+                createHrefCustomizer(href, function(newHref) {
+                    var ref = refNode;
+                    if (newHref != href) {
+                        // Create a clone and update the href attribute
+                        ref = ref.cloneNode(true);
+                        ref.setAttribute(LangProp.attrPrefix+'href', newHref);
+                    }
+                    me.bindActiveModRef(mod.textMod, ref, true);
+                });
             } else if (!checked && dest) {
                 mod.textMod.sourceDestinations().remove(dest);
             }
