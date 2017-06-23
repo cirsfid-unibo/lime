@@ -218,6 +218,7 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
             var ref = AknMain.Reference.empty();
             ref.internal = (data.type == "external") ? false : true;
             ref.id = data.fragment;
+            ref.uri.component = 'main';
             ref.uri.country = data.nationality;
             ref.uri.author = data.author;
             ref.uri.type = data.docType;
