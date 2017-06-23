@@ -74,7 +74,6 @@
             "deleted": "deleted",
             "replaced": "replaced",
             "modType": "Modification type",
-            "externalRef": "Set external ref",
             "type": "Type",
             "oldText": "The old text",
             "haveToSelectElement": "You have to select {name} element",
@@ -87,7 +86,8 @@
             "incomplete": "Incomplete",
             "exclusion": "Exclusion",
             "redline": "Redline",
-            "redlineMultiple": "Redline multiple"
+            "redlineMultiple": "Redline multiple",
+            "setRefs": "Set refs"
         },
         "it": {
             "insertion": "Inserimento",
@@ -107,7 +107,6 @@
             "deleted": "rimosso",
             "replaced": "sostituito",
             "modType": "Tipo modifica",
-            "externalRef": "Aggiungi riferimento",
             "type": "Tipo",
             "oldText": "Testo precedente",
             "haveToSelectElement": "Devi selezionere un elemento {name}",
@@ -134,7 +133,6 @@
             "deleted": "eliminado",
             "replaced": "reemplazado",
             "modType": "Tipo de modificación",
-            "externalRef": "Set external ref",
             "type": "Type",
             "oldText": "El texto anterior",
             "haveToSelectElement": "Usted tiene que seleccionar el elemento {name}",

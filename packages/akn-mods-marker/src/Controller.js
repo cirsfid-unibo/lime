@@ -506,20 +506,26 @@ Ext.define('AknModsMarker.Controller', {
             // Set the source href to internetId because the eId can change,
             // at the translation this process will be reverted
             var refId = referencedNode.getAttribute(DomUtils.elementIdAttribute);
-            if (rec.get('type') === 'destination') {
+            rec.set('href', refId);
+            return referencedNode;
+        };
+
+        var bindDestNode = function(rec) {
+            var referencedNode = getNodeByModRec(rec);
+            if (referencedNode) {
+                var refId = referencedNode.getAttribute(DomUtils.elementIdAttribute);
                 rec.set('href', AknMain.metadata.HtmlSerializer.normalizeHref(
                                     referencedNode.getAttribute(LangProp.attrPrefix+'href')
                                 )
                     );
                 rec.set('refInternalId', refId);
             } else {
-                rec.set('href', refId);
+                rec.set('refInternalId', 'customHref');
             }
-            return referencedNode;
         };
 
-        var setModAttrs = function(mod, rec) {
-            var modNode = bindNode(rec);
+        var setModAttrs = function(mod, rec, bindCustom) {
+            var modNode = Ext.isFunction(bindCustom) ? bindCustom(rec) : bindNode(rec);
             if (!modNode) return;
             var id = modNode.getAttribute(DomUtils.elementIdAttribute);
             me.modsMap[id] = mod;
@@ -529,7 +535,9 @@ Ext.define('AknModsMarker.Controller', {
 
         me.getTextualMods('active').forEach(function(mod) {
             mod.getSourceDestinations('source').forEach(setModAttrs.bind(me, mod));
-            mod.getSourceDestinations('destination').forEach(setModAttrs.bind(me, mod));
+            mod.getSourceDestinations('destination').forEach(function(rec) {
+                setModAttrs(mod, rec, bindDestNode);
+            });
             mod.getTextualChanges().forEach(bindNode);
         });
 
@@ -644,10 +652,10 @@ Ext.define('AknModsMarker.Controller', {
             }
         }]);
         if (mod)
-            me.addExternalRefMenuItems(node, menu, mod);
+            me.addRefsMenuItems(node, menu, mod);
     },
 
-    addExternalRefMenuItems: function(node, menu, mod) {
+    addRefsMenuItems: function(node, menu, mod) {
         var me = this, itemName = 'externalRefs';
 
         if(menu.down("*[name="+itemName+"]")) return;
@@ -688,7 +696,7 @@ Ext.define('AknModsMarker.Controller', {
                     if (newHref != href) {
                         // Create a clone and update the href attribute
                         ref = ref.cloneNode(true);
-                        ref.setAttribute(LangProp.attrPrefix+'href', newHref);
+                        setFakeRefAttributes(ref, newHref);
                     }
                     me.bindActiveModRef(mod.textMod, ref, true);
                 });
@@ -701,9 +709,15 @@ Ext.define('AknModsMarker.Controller', {
             });
         };
 
-        var items = me.getModExternalReferences(node).map(function(ref) {
+        var setFakeRefAttributes = function(node, href) {
+            node.setAttribute(LangProp.attrPrefix+'href', href);
+            node.setAttribute(DomUtils.elementIdAttribute, 'customHref');
+            return node;
+        };
+
+        var refNodeMap = function(ref) {
             return {
-                text : Ext.String.ellipsis(ref.text, 50),
+                text : ref.href || Ext.String.ellipsis(ref.text, 50),
                 ref: ref,
                 checked: findDestinationByRef(ref.node) !== undefined,
                 checkHandler : onSelectRefItem,
@@ -711,10 +725,29 @@ Ext.define('AknModsMarker.Controller', {
                     focus: onFocusRefItem
                 }
             };
-        });
+        };
+
+        var refDestinationMap = function(dest) {
+            var href = dest.get('href');
+            // Creating a fake ref element in order to use the same functions
+            // of real references
+            var fakeRef = node.ownerDocument.createElement('span');
+            return refNodeMap({
+                href: href,
+                node: setFakeRefAttributes(fakeRef, href)
+            });
+        };
+
+        var isCustomDestination = function(dest) {
+            var refId = dest.get('refInternalId');
+            return refId === 'customHref' || !refId;
+        };
+
+        var items = me.getModRelatedReferences(node).map(refNodeMap)
+                    .concat(destinations.filter(isCustomDestination).map(refDestinationMap));
 
         menu.add(['-', {
-            text : AknModsMarker.Strings.get('externalRef'),
+            text : AknModsMarker.Strings.get('setRefs'),
             name: itemName,
             defaultType: 'checkboxfield',
             menu : {
@@ -723,14 +756,16 @@ Ext.define('AknModsMarker.Controller', {
         }]);
     },
 
-    getModExternalReferences: function(node) {
+    getModRelatedReferences: function(node) {
         // Get the outmost hcontainer parent
         var nodeWithRefs = AknMain.xml.Document.newDocument(node)
                             .select("(./ancestor::*[contains(@class, 'hcontainer')])[1]")[0]
                             || node.ownerDocument;
         var references = Ext.Array.toArray(nodeWithRefs.querySelectorAll('.ref')).filter(function(refNode) {
-            // Keep only the references that precedes the mod node
-            return node.compareDocumentPosition(refNode) & Node.DOCUMENT_POSITION_PRECEDING;
+            var nodePos = node.compareDocumentPosition(refNode);
+            // Keep the references that precedes and contained in the mod node
+            return nodePos & Node.DOCUMENT_POSITION_PRECEDING ||
+                    nodePos & Node.DOCUMENT_POSITION_CONTAINED_BY;
         }).map(function(refNode) {
             return {
                 text: refNode.textContent,
