@@ -45,21 +45,21 @@
  */
 
 // Parse xml and allow to use XPath on it.
-// Eg. var doc = AknMain.xml.Document.parse('<akomaNtoso></akomaNtoso>', 'akn');
+// Eg. var doc = Xml.Document.parse('<akomaNtoso></akomaNtoso>', 'akn');
 // doc.select('//akn:references') -> [Dom elements]
 // doc.getXml('//akn:meta') -> "<meta xmlns="">...</meta>"
 // doc.getValue('//FRBRWork/FRBRdate/@date') -> "2015-04-03"
 // doc.query('count(//akn:references)') -> "4"
 // The second parameter (ns) is the namespace prefix which can be used in the
 // xpath queries to match the namespace of root element. (which often is the default one)
-Ext.define('AknMain.xml.Document', {
+Ext.define('Xml.Document', {
     singleton: true,
 
     parser: new DOMParser(),
     serializer: new XMLSerializer(),
 
     parse: function (xml, ns) {
-        var dom = this.parser.parseFromString(xml, "application/xml");
+        var dom = this.parser.parseFromString(xml, 'application/xml');
         return this.newDocument(dom, ns);
     },
 
@@ -73,8 +73,14 @@ Ext.define('AknMain.xml.Document', {
         //
         var defaultResolver = document.createNSResolver(dom).lookupNamespaceURI;
         var defaultNs = dom.namespaceURI || dom.firstElementChild.namespaceURI;
+        var namespaces = {};
+        if (Ext.isObject(ns)) {
+            namespaces = ns;
+        } else {
+            namespaces[ns] = defaultNs;
+        }
         var nsResolver = function (prefix) {
-            if (prefix == ns) return defaultNs;
+            if (namespaces[prefix]) return namespaces[prefix];
             else defaultResolver(prefix);
         }
 
