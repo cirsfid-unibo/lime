@@ -50,7 +50,7 @@ Ext.define('AknMetadata.sync.ImportController', {
     extend: 'Ext.app.Controller',
 
     requires: [
-        'AknMain.xml.Document',
+        'Xml.Document',
         'AknMain.Uri',
         'AknMain.metadata.HtmlSerializer',
         'AknMain.TLCIri'
@@ -72,7 +72,7 @@ Ext.define('AknMetadata.sync.ImportController', {
         metadata.removeAll();
         try {
             metaNodes.forEach(function(meta) {
-                var doc = AknMain.xml.Document.newDocument(meta, 'akn');
+                var doc = Xml.Document.newDocument(meta, 'akn');
                 this.importDocumentMeta(doc, metadata.newDocument());
             }, this);
         } catch (e) {
@@ -85,13 +85,13 @@ Ext.define('AknMetadata.sync.ImportController', {
     getMetadataNodes: function(config) {
         var metaNodes = [];
         try {
-            metaNodes = AknMain.xml.Document.parse(config.originalXml, 'akn').select('//akn:meta');
+            metaNodes = Xml.Document.parse(config.originalXml, 'akn').select('//akn:meta');
         } catch(e) {
             console.warn('Exception parsing xml: ', e);
         }
         if (!metaNodes.length) {
             var xml = this.generateMetaXml(config);
-            metaNodes = xml && AknMain.xml.Document.parse(xml, 'akn').select('//akn:meta') || [];
+            metaNodes = xml && Xml.Document.parse(xml, 'akn').select('//akn:meta') || [];
         }
 
         return metaNodes;

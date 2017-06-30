@@ -60,7 +60,8 @@ Ext.define('AknModsMarker.Controller', {
     }],
 
     requires: [
-        'AknMain.LangProp'
+        'AknMain.LangProp',
+        'Xml.Document'
     ],
 
     config: {
@@ -144,7 +145,7 @@ Ext.define('AknModsMarker.Controller', {
 
         var expUri = '';
         if (metaNodes.length) {
-            var doc = AknMain.xml.Document.newDocument(metaNodes[0], 'akn');
+            var doc = Xml.Document.newDocument(metaNodes[0], 'akn');
             expUri = doc.getValue('.//akn:FRBRExpression/akn:FRBRuri/@value');
         }
 
@@ -758,7 +759,7 @@ Ext.define('AknModsMarker.Controller', {
 
     getModRelatedReferences: function(node) {
         // Get the outmost hcontainer parent
-        var nodeWithRefs = AknMain.xml.Document.newDocument(node)
+        var nodeWithRefs = Xml.Document.newDocument(node)
                             .select("(./ancestor::*[contains(@class, 'hcontainer')])[1]")[0]
                             || node.ownerDocument;
         var references = Ext.Array.toArray(nodeWithRefs.querySelectorAll('.ref')).filter(function(refNode) {

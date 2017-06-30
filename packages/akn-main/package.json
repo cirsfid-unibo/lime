@@ -17,5 +17,5 @@
     },
     "output": "${package.dir}/build",
     "local": true,
-    "requires": []
+    "requires": ["default-xml"]
 }

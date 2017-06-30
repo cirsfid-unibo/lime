@@ -49,7 +49,7 @@
 
     requires: [
         'AknMain.metadata.HtmlSerializer',
-        'AknMain.xml.Document',
+        'Xml.Document',
         'LIME.DomUtils'
     ],
 
@@ -63,7 +63,7 @@
     overwriteMetadata: function(metaNode, store) {
         if (!store) return;
         var metaStr = AknMain.metadata.HtmlSerializer.serialize(store),
-            doc = AknMain.xml.Document.parse(metaStr);
+            doc = Xml.Document.parse(metaStr);
         var lastInsertedNode = undefined;
         doc.select('//*[@class="meta"]/*').forEach(function(node) {
             node = metaNode.ownerDocument.adoptNode(node);
@@ -85,7 +85,7 @@
     },
 
     removeInconsistentElements: function(node) {
-        var doc = AknMain.xml.Document.newDocument(node);
+        var doc = Xml.Document.newDocument(node);
         this.removeNotDetachedReferences(doc);
         var query = '//*[@class="classification" or '+
                     '@class="lifecycle" or '+

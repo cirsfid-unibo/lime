@@ -51,7 +51,7 @@ Ext.define('AknCollection.DocumentCollectionController', {
 
     requires: [
         'AknMain.xml.DocumentCollection',
-        'AknMain.xml.Document',
+        'Xml.Document',
         'AknMain.LangProp',
         'AknMain.metadata.HtmlSerializer'
     ],
@@ -432,7 +432,7 @@ Ext.define('AknCollection.DocumentCollectionController', {
         } else {
             me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
 
-                var result = AknMain.xml.Document.parse(xml, 'akn').getXml(
+                var result = Xml.Document.parse(xml, 'akn').getXml(
                     '//akn:component/*' +
                     '[descendant::akn:FRBRthis[@value="' + document.id + '"]]'
                 );

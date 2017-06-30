@@ -51,7 +51,8 @@ Ext.define('AknMain.xml.DocumentCollection', {
     requires: [
         'AknMain.metadata.Document',
         'AknMain.metadata.XmlSerializer',
-        'AknMain.utilities.Template'
+        'AknMain.utilities.Template',
+        'Xml.Document'
     ],
 
     config: {
@@ -134,7 +135,7 @@ Ext.define('AknMain.xml.DocumentCollection', {
     getComponents: function () {
         return this.getLinkedDocuments().map(function (xml) {
             var serializer = new XMLSerializer();
-            var doc = AknMain.xml.Document.parse(xml, 'akn');
+            var doc = Xml.Document.parse(xml, 'akn');
             return doc.select('//akn:akomaNtoso/*').map(function (dom) {
                 return serializer.serializeToString(dom);
             }).join('');
