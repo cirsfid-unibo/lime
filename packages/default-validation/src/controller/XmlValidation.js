@@ -137,7 +137,7 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
     },
 
     createResultWindow: function(result) {
-        this.errorData = result.errors;
+        this.errorData = result.errors && this.filterErrors(result.errors);
 
         if (result.success) {
             this.createSuccessResult();
@@ -146,6 +146,13 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
         } else {
             Ext.Msg.alert(Locale.getString('error'), '');
         }
+    },
+
+    filterErrors: function(errors) {
+        return errors.filter(function(error) {
+            // Excludes "XML_FROM_SCHEMASP" errors
+            return error.domain != 16;
+        });
     },
 
     createSuccessResult: function() {
