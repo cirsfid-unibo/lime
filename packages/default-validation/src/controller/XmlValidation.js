@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -59,10 +59,10 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
         selector : 'main'
     },{
         ref: 'validationResult',
-        selector: 'uxNotification [cls*=validationResult]' 
+        selector: 'uxNotification [cls*=validationResult]'
     },{
         ref: 'errorNumberText',
-        selector: 'uxNotification [cls*=validationResult] [cls*=errorNumberText]' 
+        selector: 'uxNotification [cls*=validationResult] [cls*=errorNumberText]'
     },{
         ref: 'moreInfoButton',
         selector: 'uxNotification [cls*=validationResult] #moreInfo'
@@ -73,6 +73,12 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
 
     config : {
         pluginName : "default-validation"
+    },
+
+    listen: {
+        global:  {
+            xmlValidation: 'initXmlValidation'
+        }
     },
 
     onDocumentLoaded : function(docConfig) {
@@ -91,12 +97,16 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
 
     beforeValidateXml: function() {
         var me = this;
-        me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml, aknIdMapping) {
-            me.storeXmlData(xml, aknIdMapping);
-            me.validateXml(xml);
+        me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml, idMapping) {
+            me.initXmlValidation(xml, idMapping);
         });
     },
-    
+
+    initXmlValidation: function(xml, idMapping) {
+        this.storeXmlData(xml, idMapping);
+        this.validateXml(xml);
+    },
+
     validateXml : function(xml) {
         var app = this.application;
         app.fireEvent(Statics.eventsNames.progressStart, null, {
@@ -120,10 +130,10 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
         this.createResultWindow(jsonData);
     },
 
-    storeXmlData: function(xml, aknIdMapping) {
+    storeXmlData: function(xml, idMapping) {
         this.validatedXml = xml;
         this.xmlRows = xml.split('\n');
-        this.aknIdMapping = aknIdMapping;
+        this.idMapping = idMapping || {};
     },
 
     createResultWindow: function(result) {
@@ -209,7 +219,7 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
                     lineString: Ext.String.htmlEncode(this.xmlRows[item.line-1])
                 }))
             }),
-            isAknPreview = this.getMainTabs().getActiveTab().xtype == "aknPreviewMainTab",
+            isAknPreview = this.getMainTabs().getActiveTab().down('codemirror'),
             mainMessage = isAknPreview ? technicalMessage : simpleMessage,
             secondaryMessage = isAknPreview ? simpleMessage : technicalMessage;
 
@@ -257,7 +267,7 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
         if ( this.errorsMapping && this.errorsMapping[config.code] ) {
             var errorConfig = this.errorsMapping[config.code],
                 parent = ( editorNode ) ? DomUtils.getFirstMarkedAncestor(editorNode.parentNode) : false,
-                parentName = (parent) ? DomUtils.getNameByNode(parent) : 
+                parentName = (parent) ? DomUtils.getNameByNode(parent) :
                             ( editorNode ) ? editorNode.parentNode.nodeName.toLowerCase() : false,
                 nodeInfo = {
                     name : name,
@@ -297,7 +307,7 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
     },
 
     buildErrorTipsHtml: function(nodeInfo, tips) {
-        var me = this, html = "", 
+        var me = this, html = "",
             listTpl = new Ext.Template("<h4>{tipsCaption}</h4><ul>{tips}</ul>"),
             listItemTpl = new Ext.Template("<li>{tip}</li>");
         if ( tips && tips.length ) {
@@ -386,7 +396,8 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
     },
 
     findEditorNode: function(name, errorData) {
-        var me = this, row = this.xmlRows[errorData.line],
+        var me = this,
+            row = (this.xmlRows[errorData.line] || '').trim(),
             editorBody = this.getController('Editor').getBody(),
             editorNodes = editorBody.querySelectorAll('.'+name);
 
@@ -394,14 +405,15 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
 
         var idMatch = row.match(/eId="([^"]+)"/i);
 
-        if ( idMatch && idMatch.length && me.aknIdMapping[idMatch[1]] ) {
-            var node = editorBody.querySelector('['+DomUtils.elementIdAttribute+'="'+me.aknIdMapping[idMatch[1]]+'"]');
+        if ( idMatch && idMatch.length && me.idMapping[idMatch[1]] ) {
+            var node = editorBody.querySelector('['+DomUtils.elementIdAttribute+'="'+me.idMapping[idMatch[1]]+'"]');
             if ( node ) return node;
         }
 
         //TODO: manage multiple occorences
+        if (!row) return;
         try {
-            range = DomUtils.findTextIgnoringHtml(row.trim(), editorBody).filter(function(range) {
+            range = DomUtils.findTextIgnoringHtml(row, editorBody).filter(function(range) {
                             return me.queryIncludingNode(range.startContainer, '.'+name) ? true : false;
                         })[0];
             return range.startContainer;
@@ -437,7 +449,7 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
                     var otherBtn = windowCmp.query('#card-prev, #card-next').filter(function(cmp) {
                         return cmp != btn;
                     })[0];
-                    
+
                     var indicator = this.numberIndicator.apply({
                         nr: windowCmp.getLayout().getLayoutItems().indexOf(card)+1,
                         nrTot: this.errorData.length
@@ -496,7 +508,7 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
                     if ( this.getValidationResult() ) {
                         me.localizeElement();
 
-                        // If we're moving to or from the AKN preview tab, swap all 
+                        // If we're moving to or from the AKN preview tab, swap all
                         // technical/simple messsages in errors.
                         if (newCard.xtype == "aknPreviewMainTab" || oldCard.xtype == "aknPreviewMainTab") {
                             var cmps = me.getValidationResult().query('[cls*=goToElement]');
