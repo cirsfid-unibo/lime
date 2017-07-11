@@ -108,5 +108,9 @@
             "unexpectedElement": "non è previsto in {parentName}",
             "elementOnly": "non può contenere direttamente testo"
         }
+    },
+
+    getStrings: function() {
+        return this.strings;
     }
 });
