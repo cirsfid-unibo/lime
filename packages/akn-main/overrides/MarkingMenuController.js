@@ -64,6 +64,8 @@ Ext.define('AknMain.MarkingMenuController', {
             treeCommon.children.push(me.buildConfigData(button, false, false, false, 'common'));
         }, this);
 
-        me.getTreeButtonsCommons().getStore().setRootNode(treeCommon);
+        var treeCmp = me.getTreeButtonsCommons();
+        if (treeCmp)
+            treeCmp.getStore().setRootNode(treeCommon);
     }
 });

@@ -150,7 +150,9 @@ Ext.define('LIME.controller.MarkingMenu', {
             treeData.children.push(me.buildConfigData(button, false, false, false, 'rootButtons'));
         }, this);
 
-        me.getTreeButtons().getStore().setRootNode(treeData);
+        var treeCmp = me.getTreeButtons();
+        if (treeCmp)
+            treeCmp.getStore().setRootNode(treeData);
     },
 
     /**
