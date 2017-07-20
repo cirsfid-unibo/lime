@@ -94,40 +94,6 @@ div#markingMenu-body table tr.x-grid-tree-node-leaf td div.x-grid-cell-inner a{
 	color:#FFFFFF;
 }
 
-
-/* This is for the forms */
-div#markingMenu-body table tr td div.widgets_hook{
-	border: 1px solid #3355AA;
-	-moz-border-radius: 5px;
- 	-webkit-border-radius: 5px;
- 	border-radius: 5px;
- 	background-color:transparent !important;
-	margin-left:5%;
-	margin-top:5px;
-	width:90%;
-}
-
-div#markingMenu-body table tr td div.widgets_hook label{
-	font-size:8pt;
-	font-family:Arial, Helvetica, sans-serif;
-	padding-left:3px;
-	padding-top:5px;
-}
-
-div#markingMenu-body table tr td div.widgets_hook:hover{
-	background-color:transparent !important;
-}
-
-div#markingMenu-body table tr td.x-panel-default-framed{
-	margin-left:10px;
-}
-
-div#markingMenu-body table tr td:hover {
-	background-color:transparent !important;
-}
-
-
-
 /* The elemnts buttons */
 
 /* Remove the cursor on the whole button (leave it only on the links) */

@@ -110,6 +110,7 @@ Ext.define('AknMetadata.newMeta.MetadataManagerController', {
 
     toggleMetadataButton: function(state) {
         var btn = this.getToolbar().down("[cls='editorTabButton openMetadataBtn']");
-        btn.toggle(state);
+        if (btn)
+            btn.toggle(state);
     }
 });

@@ -347,6 +347,7 @@ Ext.define('LIME.controller.MarkingMenu', {
      */
     expandButtons: function(node) {
         var me = this, markingMenu = this.getMarkingMenu(), markingId, relatedButton;
+        if (!markingMenu) return;
         Ext.suspendLayouts();
         if ( node ) {
             markingId = node.getAttribute(DomUtils.elementIdAttribute);
