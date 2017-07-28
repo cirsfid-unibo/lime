@@ -71,15 +71,21 @@ Ext.define('LIME.controller.LoginManager', {
         selector : 'registration'
     }],
 
+    // This is a separate function to be overridable
+    showLogin: function(viewport) {
+        viewport.showLogin();
+    },
+
+    restoreUser: function() {
+        User.loadFromLocalStorage();
+    },
 
     init : function() {
         var me = this;
-        User.loadFromLocalStorage();
+        this.restoreUser();
         this.control({
             'viewport': {
-                render: function(cmp) {
-                    cmp.showLogin();
-                }
+                render: this.showLogin
             },
             'login': {
                 added: function(cmp) {
