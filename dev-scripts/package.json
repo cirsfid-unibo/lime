@@ -1,7 +1,7 @@
 {
-  "name": "lime-scripts",
+  "name": "lime-scripts-dev",
   "version": "0.0.1",
-  "description": "A set of scripts for LIME build configuration and installation",
+  "description": "A set of scripts for LIME configuration and installation",
   "main": "''",
   "dependencies": {
     "fs-extra": "^2.0.0",

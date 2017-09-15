@@ -27,7 +27,7 @@
 
             <target name="-before-init"/>
             <target name="-after-init"/>
-        
+
         The "page" target performs the call to Sencha Cmd to build the 'all-classes.js' file.
 
             <target name="-before-page"/>
@@ -52,6 +52,7 @@
         <delete dir="${build.dir}/php" />
         <delete dir="${build.dir}/resources" />
         <delete dir="${build.dir}/config" />
+        <delete dir="${build.dir}/scripts" />
         <property name="buildRunning" value="true"/>
     </target>
 
@@ -59,7 +60,7 @@
         <x-echo message="Building and injection of LIME config into app.json"/>
         <x-echo message="${build.environment}"/>
         <exec executable="node">
-            <arg value="scripts/injectConfigToApp.node.js"/>
+            <arg value="dev-scripts/injectConfigToApp.node.js"/>
         </exec>
     </target>
 
@@ -76,7 +77,7 @@
         <move file="app.back.json" tofile="app.json"/>
     </target>
 
-    <target name="-after-build" 
+    <target name="-after-build"
         if="${is.build}"
         depends="test.if.is.build">
         <x-echo message="Restoring original app.json"/>
