@@ -22,10 +22,10 @@
         "akn-metadata",
         "akn-collection",
         "akn-validation",
+        "akn-automatic-markup",
         "akn-mods-marker",
         "akn-tab-xml-preview",
         "akn-tab-visualizer",
-        "akn-automatic-markup",
         "akn-toc-generator",
         "akn-diff"
     ]

@@ -159,8 +159,7 @@ Ext.define('AknDiff.controller.XmlDiff', {
                         }, 1000);
                     };
 
-                    DocProperties.documentState = 'diffEditingScenarioB';
-
+                    Ext.GlobalEvents.fireEvent('changedDefaultModMode', 'consolidation');
                 },
 
                 stopCallback: function () {
@@ -169,7 +168,7 @@ Ext.define('AknDiff.controller.XmlDiff', {
                     var treeButtons = markingMenuController.getTreeButtons();
                     markingMenuController.clearTreeFilter(treeButtons);
                     me.getController('Editor').defaultActions = {};
-                    DocProperties.documentState = '';
+                    Ext.GlobalEvents.fireEvent('changedDefaultModMode', 'amendment');
                 }
             });
         }

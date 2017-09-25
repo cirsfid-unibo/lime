@@ -76,7 +76,8 @@ Ext.define('AknModsMarker.Controller', {
     listen: {
         global:  {
             secondDocumentLoaded: 'onSecondDocumentLoaded',
-            nodeAttributesChanged: 'nodeChangedAttributes'
+            nodeAttributesChanged: 'nodeChangedAttributes',
+            changedDefaultModMode: 'setDefaultPassiveModMode'
         }
     },
 
@@ -137,6 +138,34 @@ Ext.define('AknModsMarker.Controller', {
                 }
             }
         });
+    },
+
+    defaultPassiveModMode: 'amendment',
+
+    getOptionsMenuItems: function() {
+        var me = this;
+        function getRadioCheckItem(type) {
+            return {
+                xtype: 'menucheckitem',
+                text: type,
+                group : 'passiveModDefault',
+                checked: me.defaultPassiveModMode == type,
+                handler: me.setDefaultPassiveModMode.bind(me, type)
+            };
+        }
+        return [{
+            xtype: 'menuseparator'
+        },{
+            text: 'Passive modifications default behavior',
+            plain: true
+        },
+        getRadioCheckItem('amendment'),
+        getRadioCheckItem('consolidation')
+        ];
+    },
+
+    setDefaultPassiveModMode: function(mode) {
+        this.defaultPassiveModMode = mode;
     },
 
     onSecondDocumentLoaded: function(config) {
@@ -367,7 +396,7 @@ Ext.define('AknModsMarker.Controller', {
                 splitCustom: {
                     label: AknModsMarker.Strings.get('split'),
                     handler: function(button) {
-                        if ( DocProperties.documentState == 'diffEditingScenarioB' ) {
+                        if ( me.defaultPassiveModMode == 'consolidation' ) {
                             me.splitHandlerConsolidation(button);
                         } else {
                             me.splitHandler(button);
@@ -377,7 +406,7 @@ Ext.define('AknModsMarker.Controller', {
                 joinCustom: {
                     label: AknModsMarker.Strings.get('join'),
                     handler: function(button) {
-                        if ( DocProperties.documentState == 'diffEditingScenarioB' ) {
+                        if ( me.defaultPassiveModMode == 'consolidation' ) {
                             me.joinHandlerConsolidation(button);
                         } else {
                             me.joinHandler(button);
@@ -387,7 +416,7 @@ Ext.define('AknModsMarker.Controller', {
                 renumberingCustom: {
                     label: AknModsMarker.Strings.get('renumbering'),
                     handler: function (button) {
-                        if ( DocProperties.documentState == 'diffEditingScenarioB' ) {
+                        if ( me.defaultPassiveModMode == 'consolidation' ) {
                             me.renumberingHandlerConsolidation(button);
                         } else {
                             me.renumberingHandler(button);
@@ -1317,7 +1346,7 @@ Ext.define('AknModsMarker.Controller', {
             var button = DomUtils.getButtonByElement(focusedNode);
             me.insertionHandler(button, [focusedNode]);
             // For now ask renumbering only in consolidation mode
-            if ( DocProperties.documentState != 'diffEditingScenarioB' ) return;
+            if ( me.defaultPassiveModMode != 'consolidation' ) return;
             me.askForRenumbering(function() {
                 me.getNextSiblingsSameCls(focusedNode).forEach(function(node, index, arr) {
                     var prevNode = (index != 0) ? arr[index-1] : focusedNode;
@@ -1952,14 +1981,28 @@ Ext.define('AknModsMarker.Controller', {
         this.addPassiveMeta(joinedNode, 'join', meta);
     },
 
-    beforeDelHandler: function() {
-        if ( DocProperties.documentState == 'diffEditingScenarioB' )
-            this.beforeDelHandlerConsolidation();
+    beforeDelHandler: function(button, node) {
+        if ( this.defaultPassiveModMode == 'consolidation' )
+            if (this.getSecondEditor())
+                this.beforeDelHandlerConsolidationDualEditor();
+            else
+                this.beforeDelHandlerConsolidation(node);
         else
             this.beforeDelHandlerAmendment();
     },
 
-    beforeDelHandlerConsolidation: function() {
+    beforeDelHandlerConsolidation: function(node) {
+        var me = this;
+        var selectedNode = me.getController("Editor").getSelectedNode();
+        me.createAndShowFloatingForm(selectedNode, AknModsMarker.Strings.get('oldText'), '', false, function(cmp, text) {
+            me.delHandlerConsolidation(text, null, '', '');
+            cmp.close();
+        }, function(cmp) {
+            cmp.close();
+        }).center();
+    },
+
+    beforeDelHandlerConsolidationDualEditor: function() {
         var me = this;
         var winCmp = Ext.widget('repealWindow').show().center();
 
@@ -2144,7 +2187,7 @@ Ext.define('AknModsMarker.Controller', {
             });
         };
 
-        if ( DocProperties.documentState != 'diffEditingScenarioB' ) {
+        if ( me.defaultPassiveModMode != 'consolidation' ) {
             setMetadata();
             me.askForRenumbering(modEl, textualMod);
         } else if ( markedElements.length ) {
@@ -2374,8 +2417,8 @@ Ext.define('AknModsMarker.Controller', {
     },
 
     createSubstitution: function(node, formText, update) {
-        if ( DocProperties.documentState == 'diffEditingScenarioB' )
-            if (update)
+        if ( this.defaultPassiveModMode == 'consolidation' )
+            if (!this.getSecondEditor() || update)
                 this.createSubstitutionConsolidationUpdate(node, update);
             else
                 this.createSubstitutionConsolidation(node);
