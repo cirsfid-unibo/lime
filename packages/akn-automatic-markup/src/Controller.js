@@ -83,6 +83,9 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
     getOptionsMenuItems: function() {
         return [{
+            text: 'Automatic markup',
+            plain: true
+        }, {
             xtype: 'menucheckitem',
             itemId: 'enableParagraphParsing',
             checked: this.paragraphAutomaticMarkup,
