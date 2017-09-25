@@ -45,20 +45,10 @@
  */
 
 Ext.define('AknAutomaticMarkup.Tools', {
-    override: 'LIME.view.Tools',
+    override: 'LIME.controller.Tools',
 
-    collapsible: false,
-
-    tools: [{
-            type: 'gear',
-            itemId: 'automaticMarkupOptions'
-        }, {
-            //trick to positionate the collapse button on the right
-            type: 'right',
-            handler: function() {
-                this.up('panel').collapse();
-            }
-        }
-    ]
+    getOptionsMenuItems: function() {
+        var items = this.callParent(arguments);
+        return items.concat(this.getController('AknAutomaticMarkup.Controller').getOptionsMenuItems());
+    }
 });
-

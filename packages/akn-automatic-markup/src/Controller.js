@@ -73,24 +73,21 @@ Ext.define('AknAutomaticMarkup.Controller', {
         me.application.fireEvent(Statics.eventsNames.registerContextMenuBeforeShow, Ext.bind(me.beforeContextMenuShow, me));
 
         this.control({
-            '*[itemId=automaticMarkupOptions]': {
-                click: function(cmp) {
-                    Ext.widget('menu', {
-                        items: [{
-                            xtype: 'menucheckitem',
-                            itemId: 'enableParagraphParsing',
-                            checked: me.paragraphAutomaticMarkup,
-                            text: 'Paragraph automatic markup' //TODO: translate
-                        }]
-                    }).showBy(cmp);
-                }
-            },
             '*[itemId=enableParagraphParsing]': {
                 checkchange: function(cmp, checked) {
                     me.paragraphAutomaticMarkup = checked;
                 }
             }
         });
+    },
+
+    getOptionsMenuItems: function() {
+        return [{
+            xtype: 'menucheckitem',
+            itemId: 'enableParagraphParsing',
+            checked: this.paragraphAutomaticMarkup,
+            text: 'Paragraph automatic markup' //TODO: translate
+        }];
     },
 
     onDocumentLoaded : function(docConfig) {

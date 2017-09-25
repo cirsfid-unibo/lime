@@ -45,42 +45,30 @@
  */
 
 /**
- * This menu is a container for all the buttons we will use to mark.
- * Each button is a TreeButton (our "panelish" implementation of a tree made of buttons)
+ * This controller manages tools and tools options that can be
+ * extended by other packages
  */
-Ext.define('LIME.view.Tools', {
-    extend: 'Ext.tab.Panel',
-    alias: 'widget.tools',
+Ext.define('LIME.controller.Tools', {
+    extend: 'Ext.app.Controller',
+    views: ['LIME.view.Tools'],
 
-    title: Locale.getString('tools'),
-
-    collapsible: false,
-    expandable: true,
-    resizable: true,
-    scrollable: 'y',
-
-    layout: 'fit',
-
-    listeners: {
-        resize: function(cmp) {
-            cmp.doLayout();
-        }
+    init: function() {
+        var me = this;
+        this.control({
+            '*[itemId=toolsOptions]': {
+                click: function(cmp) {
+                    var items = me.getOptionsMenuItems();
+                    if (Ext.isEmpty(items)) return;
+                    Ext.widget('menu', {
+                        items: items
+                    }).showBy(cmp);
+                }
+            }
+        });
     },
 
-    tools: [{
-            type: 'gear',
-            itemId: 'toolsOptions'
-        }, {
-            //trick to positionate the collapse button on the right
-            type: 'right',
-            handler: function() {
-                this.up('panel').collapse();
-            }
-        }
-    ],
-
-    items: [{
-        xtype: 'markingMenu'
-    }]
+    // This have to be overwritten in order to add options
+    getOptionsMenuItems: function() {
+        return [];
+    }
 });
-

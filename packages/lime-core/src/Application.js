@@ -79,6 +79,7 @@ Ext.define('LIME.Application', {
         'LIME.controller.ContextInfoManager',
         'LIME.controller.WidgetManager',
         'LIME.controller.UndoManager',
+        'LIME.controller.Tools',
 
         'LIME.store.Outliner',
         'LIME.store.Languages',
@@ -108,7 +109,8 @@ Ext.define('LIME.Application', {
         'ContextMenu',
         'ContextInfoManager',
         'UndoManager',
-        'WidgetManager'
+        'WidgetManager',
+        'Tools'
     ],
 
     stores: [
