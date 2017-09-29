@@ -1,40 +1,40 @@
 /*
  * Copyright (c) 2014 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
- * 
- * Authors: 
+ *
+ * Authors:
  * Monica Palmirani – CIRSFID of the University of Bologna
  * Fabio Vitali – Department of Computer Science and Engineering of the University of Bologna
  * Luca Cervone – CIRSFID of the University of Bologna
- * 
+ *
  * Permission is hereby granted to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The Software can be used by anyone for purposes without commercial gain,
  * including scientific, individual, and charity purposes. If it is used
  * for purposes having commercial gains, an agreement with the copyright
  * holders is required. The above copyright notice and this permission
  * notice shall be included in all copies or substantial portions of the
  * Software.
- * 
+ *
  * Except as contained in this notice, the name(s) of the above copyright
  * holders and authors shall not be used in advertising or otherwise to
  * promote the sale, use or other dealings in this Software without prior
  * written authorization.
- * 
+ *
  * The end-user documentation included with the redistribution, if any,
  * must include the following acknowledgment: "This product includes
  * software developed by University of Bologna (CIRSFID and Department of
- * Computer Science and Engineering) and its authors (Monica Palmirani, 
+ * Computer Science and Engineering) and its authors (Monica Palmirani,
  * Fabio Vitali, Luca Cervone)", in the same place and form as other
  * third-party acknowledgments. Alternatively, this acknowledgment may
  * appear in the software itself, in the same form and location as other
  * such third-party acknowledgments.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -52,10 +52,13 @@ Ext.define('AknConsolidation.ModificationController', {
         'LIME.view.modal.newSavefile.Main'
     ],
 
-    requires: ['AknMain.LangProp'],
-    
+    requires: [
+        'AknConsolidation.ModificationModel',
+        'AknMain.LangProp'
+    ],
+
     refs: [
-        { ref: 'viewport', selector: 'appViewport' }, 
+        { ref: 'viewport', selector: 'appViewport' },
         { ref: 'mainToolbar', selector: 'mainToolbar' },
         { ref: 'panel', selector: 'modification' },
         { ref: 'pager', selector: 'modification pagingtoolbar' },
@@ -65,9 +68,9 @@ Ext.define('AknConsolidation.ModificationController', {
     config : {
         pluginName : "akn-consolidation"
     },
-    
+
     modifications: [],
-    
+
     init: function () {
         var me = this;
         this.control({
@@ -114,7 +117,7 @@ Ext.define('AknConsolidation.ModificationController', {
         var me = this;
         this.modifyingDom = modifyingDom;
         this.modifiedDom = modifiedDom;
-
+        console.log(modifications, [modifyingDom], modifiedDom);
         this.modifications = Ext.toArray(modifications)
             .map(this.createModObject.bind(this))
             .map(function (modification) {
@@ -156,7 +159,6 @@ Ext.define('AknConsolidation.ModificationController', {
         var source = node.querySelector('[class=source]');
         var sourceHref = (source) ? source.getAttribute(LangProp.attrPrefix+'href') : false;
         sourceHref = (sourceHref) ? sourceHref.replace('#', '') : false;
-
         if ( sourceHref ) {
             var modNode = this.modifyingDom.querySelector('['+LangProp.attrPrefix+'eId'+'='+sourceHref+'], ['+LangProp.attrPrefix+'wId'+'='+sourceHref+']');
             if ( modNode ) {
@@ -195,12 +197,15 @@ Ext.define('AknConsolidation.ModificationController', {
         output.destinations = [];
         refNode = refNode || this.modifyingDom.querySelector('['+LangProp.attrPrefix+'eId'+'='+refId+']');
         console.log('WTF', refNode);
+        var findModifiedNode = function(id) {
+            return me.modifiedDom.querySelector('['+LangProp.attrPrefix+'eId'+'*='+id+'], ['+LangProp.attrPrefix+'wId'+'*='+id+']');
+        };
         if ( refNode ) {
             var elementName = DomUtils.getNameByNode(refNode);
             switch( elementName ) {
                 case 'ref':
                     var from = me.getIdFromHref(refNode.getAttribute(LangProp.attrPrefix+'href'));
-                    var fromNode = ( from ) ? me.modifiedDom.querySelector('['+LangProp.attrPrefix+'eId'+'*='+from+']') : false;
+                    var fromNode = ( from ) ? findModifiedNode(from) : false;
                     output.destinationHref = from;
                     console.log('destinationHref', from);
                     if ( fromNode ) {
@@ -210,8 +215,8 @@ Ext.define('AknConsolidation.ModificationController', {
                 case 'rref':
                     var from = me.getIdFromHref(refNode.getAttribute(LangProp.attrPrefix+'from'));
                     var upTo = me.getIdFromHref(refNode.getAttribute(LangProp.attrPrefix+'upTo'));
-                    var fromNode = ( from ) ? me.modifiedDom.querySelector('['+LangProp.attrPrefix+'eId'+'*='+from+']') : false;
-                    var upToNode = ( upTo ) ? me.modifiedDom.querySelector('['+LangProp.attrPrefix+'eId'+'*='+upTo+']') : false;
+                    var fromNode = ( from ) ? findModifiedNode(from) : false;
+                    var upToNode = ( upTo ) ? findModifiedNode(upTo) : false;
                     output.destinationHref = from;
                     console.log('destinationHref', from);
                     if ( fromNode && upToNode ) {
@@ -239,10 +244,14 @@ Ext.define('AknConsolidation.ModificationController', {
 
     // Show modification in editor.
     displayModification: function (modification) {
-        console.log('displayModification', modification.get('source'));
         this.clearHighlight();
-        modification.get('source').scrollIntoView();
-        modification.get('source').setAttribute('highlighted', 'true');
+        var source = modification.get('source');
+        console.log('displayModification', source);
+        console.log(modification);
+        if (source) {
+            source.scrollIntoView();
+            source.setAttribute('highlighted', 'true');
+        }
 
         try {
             modification.get('destinations')[0].scrollIntoView();
@@ -267,7 +276,7 @@ Ext.define('AknConsolidation.ModificationController', {
     // Execute callback on affermative answer.
     showConfirmationDialog: function (callback) {
         Ext.Msg.show({
-            title: Locale.getString('dialogTitle', this.getPluginName()), 
+            title: Locale.getString('dialogTitle', this.getPluginName()),
             msg: Locale.getString('dialogQuestion', this.getPluginName()),
             buttons: Ext.Msg.YESNOCANCEL,
             fn: function(btn) {

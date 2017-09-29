@@ -138,7 +138,7 @@ Ext.define('LIME.controller.CustomizationManager', {
     },
 
     // Save document and restore single editor mode
-    finishEditingMode: function(editor, diff) {
+    finishEditingMode: function(editor, diff, cb) {
         var me = this;
         Ext.GlobalEvents.fireEvent('saveDocument', function() {
             var language = me.getController("Language");
@@ -147,6 +147,7 @@ Ext.define('LIME.controller.CustomizationManager', {
                 xml = xml.replace('<?xml version="1.0" encoding="UTF-8"?>', '');
                 Server.saveDocument(me.secondDocumentConfig.docId, xml, function () {
                     me.restoreSingleEditor(editor, diff);
+                    if (Ext.isFunction(cb)) cb();
                 });
             });
         });
@@ -170,7 +171,6 @@ Ext.define('LIME.controller.CustomizationManager', {
             diff.fireEvent("finishEditing", diff);
         }
 
-        var editorTab = me.getMainEditor().up();
         me.getController('Editor').setAutosaveEnabled(true);
         var viewport = me.getAppViewport();
         viewport.remove(editor.up('main'));
@@ -230,22 +230,27 @@ Ext.define('LIME.controller.CustomizationManager', {
         if(xmlDiff) {
             xmlDiff.tab.hide();
         }
-        
+
         secondEditor = me.createSecondEditor();
+        if (Ext.isFunction(dualConfig.secondEditorCreated))
+            dualConfig.secondEditorCreated(secondEditor);
         me.secondEditor = secondEditor;
 
         // TODO: prevent adding onother outliner in DualEditMode
         Ext.each(Ext.ComponentQuery.query('outliner'), function(outliner) {
             outliner.up().remove(outliner);
         });
-        me.addButtons(secondEditor, xmlDiff);
+        if (Ext.isFunction(dualConfig.addButtons))
+            dualConfig.addButtons(secondEditor, xmlDiff);
+        else
+            me.addButtons(secondEditor, xmlDiff);
 
         Ext.defer(function() {
             storage.openDocumentNoEditor(dualConfig.notEditableDoc, function(config) {
                 config = language.beforeLoadManager(config, true);
                 me.secondDocumentConfig = config;
-                Ext.GlobalEvents.fireEvent('secondDocumentLoaded', config);
                 editorController.setContent(config.docText, secondEditor, true);
+                Ext.GlobalEvents.fireEvent('secondDocumentLoaded', config);
                 storage.openDocument(dualConfig.editableDoc);
             });
         }, 100);

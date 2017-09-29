@@ -88,6 +88,12 @@ Ext.define('AknConsolidation.ConsolidationController', {
         pluginName: "akn-consolidation"
     },
 
+    listen: {
+        global:  {
+            secondDocumentLoaded: 'onSecondDocumentLoaded'
+        }
+    },
+
     // The document being modified.
     modifiedDoc: null,
     // The document containing the active
@@ -97,7 +103,7 @@ Ext.define('AknConsolidation.ConsolidationController', {
     init: function () {
         var me = this;
 
-        me.application.on(Statics.eventsNames.afterLoad, me.afterDocumentLoaded, me);
+        me.application.on(Statics.eventsNames.afterLoad, me.parseDocuments, me);
 
         this.control({
             'consolidationMainTab fieldset[cls=selectModified] button': {
@@ -124,13 +130,14 @@ Ext.define('AknConsolidation.ConsolidationController', {
                 }
             },
             'consolidationMainTab button[cls=consolidationButton]': {
-                click: function(cmp) {
-                    me.startConsolidation();
-                }
+                click: me.startConsolidation
             }
         });
     },
 
+    onSecondDocumentLoaded: function(config) {
+        this.secondDocumentConfig = config;
+    },
     // Show the select document dialog and call
     // callback with the selected document.
     showOpenDocumentDialog: function (cb) {
@@ -152,7 +159,7 @@ Ext.define('AknConsolidation.ConsolidationController', {
     },
 
     parseDocuments: function() {
-        var me = this, modController = this.getController('ModificationController'),
+        var me = this, modController = this.getController('AknConsolidation.ModificationController'),
             editorController = me.getController("Editor");
 
         if ( me.secondDocumentConfig && me.secondDocumentConfig.metaDom ) {
@@ -167,178 +174,66 @@ Ext.define('AknConsolidation.ConsolidationController', {
         }
     },
 
-    // Switch to dual editing mode.
-    startConsolidation: function () {
+    startConsolidation: function (cmp) {
         var dualConfig = {
-            "editableDoc": this.modifiedDoc.id,
-            "notEditableDoc": this.modifyingDoc.id
+            editableDoc: this.modifiedDoc.id,
+            notEditableDoc: this.modifyingDoc.id
         };
-        // var dualConfig={editableDoc:
-        //     "/db/wawe_users_documents/aasd.gmail.com/my_documents/it/doc.xml",
-        //     notEditableDoc:
-        //     "/db/wawe_users_documents/aasd.gmail.com/my_documents/it/veto.xml"};
-        console.log(dualConfig);
-
-        var me = this,
-            mainTabPanel = me.getMain(),
-            explorer = me.getOutliner(),
-            markingMenu = me.getMarkingMenuContainer(),
-            editorTab = me.getMainEditor().up(),
-            storage = me.getController("Storage"),
-            editorController = me.getController("Editor"),
-            language = me.getController("Language"),
-            consolidationTab = mainTabPanel.down("consolidationMainTab"),
-            secondEditor;
-
-        //me.getAppViewport().setLoading(true);
-
-        me.getController('Editor').setAutosaveEnabled(false);
-
-        // Set active the editor tab
-        mainTabPanel.setActiveTab(editorTab);
-
-        if(consolidationTab) {
-            consolidationTab.tab.hide();
-        }
-
-        var tinyView = me.getMainEditor();
-        var tinyEditor = tinyView.editor;
-
-        /*Ext.each(tinyNode.querySelectorAll('div.mce-toolbar'), function( toolbar ) {
-            Ext.fly(toolbar).parent('.mce-first').hide();
-        });*/
-
-        tinyEditor.execCommand("contentReadOnly", false, tinyEditor.getElement());
-
-        var body = tinyEditor.getBody();
-        Ext.fly(body).addCls('readOnly');
-
+        var editorController = this.getController("Editor");
         editorController.defaultActions = {
             noExpandButtons: true
         };
-
-        //explorer.setVisible(false);
-
-        explorer.up().remove(explorer);
-
-        //markingMenu.collapse();
-
+        var markingMenu = this.getMarkingMenuContainer();
         if(markingMenu) {
-            markingMenu.hide();//up().remove(markingMenu);
+            markingMenu.hide();
         }
-
-        secondEditor = me.createSecondEditor();
-        me.secondEditor = secondEditor;
-        var el2 = Ext.fly(secondEditor.down('tinymcefield').getEditor().getBody());
-        el2.addCls('noboxes');
-        el2.addCls('nocolors');
-        el2.addCls('pdfstyle');
-
-        editorController.getSecondEditor().up().setTitle(Locale.getString("modifyingDocument", me.getPluginName()));
-        me.initialMainEditorTitle = editorController.getMainEditor().up().title;
-        editorController.getMainEditor().up().setTitle(Locale.getString("modifiedDocument", me.getPluginName()));
-        Ext.defer(function() {
-          editorController.addContentStyle('#tinymce div.mod', 'padding-left: 15px', editorController.getSecondEditor());
-          editorController.addContentStyle('#tinymce div.mod', 'border-radius: 0', editorController.getSecondEditor());
-          editorController.addContentStyle('#tinymce div.mod', 'border-left: 5px solid #1B6427', editorController.getSecondEditor());
-
-          editorController.addContentStyle('#tinymce div.quotedStructure', 'padding-left: 15px', editorController.getSecondEditor());
-          editorController.addContentStyle('#tinymce div.quotedStructure', 'border-radius: 0', editorController.getSecondEditor());
-          editorController.addContentStyle('#tinymce div.quotedStructure', 'border-left: 5px solid #ABB26E', editorController.getSecondEditor());
-        }, 2000);
-
-        me.addFinishEditingButton(secondEditor, consolidationTab);
-
-        Ext.defer(function() {
-
-            storage.openDocumentNoEditor(dualConfig.notEditableDoc, function(config) {
-                language.beforeLoadManager(config, function(newConfig) {
-                    me.secondDocumentConfig = newConfig;
-                    editorController.setContent(newConfig.docText, secondEditor.down('tinymcefield'), true);
-                    me.manageAfterLoad = function() {
-                        var newId = dualConfig.editableDoc.replace("/diff/", "/diff_modified/");
-                        DocProperties.documentInfo.docId = newId;
-                        me.parseDocuments();
-                    };
-                    storage.openDocument(dualConfig.editableDoc);
-                }, true);
-            });
-        }, 100);
-    },
-
-    stopConsolidation: function (editor, diff) {
-        var me = this,
-            mainTabPanel = me.getMain(),
-            viewport = me.getAppViewport(),
-            userInfo = this.getController('LoginManager').getUserInfo(),
-            editorTab = me.getMainEditor().up(),
-            newExplorer, language = me.getController("Language"),
-            editorController = me.getController("Editor");
-
-        if(me.finishEditBtn) {
-            me.finishEditBtn.up().remove(me.finishEditBtn);
-        }
-
-        Ext.GlobalEvents.fireEvent('saveDocument');
-        editorController.getMainEditor().up().setTitle(me.initialMainEditorTitle);
-        Ext.fly(editorController.getBody()).addCls('readOnly');
-        //this.getController('MarkingMenu').addMarkingMenu();
-        me.getMarkingMenuContainer().show();
-        this.getController('ModificationController').success();
-
-        language.beforeTranslate(function(xml) {
-            xml = xml.replace('<?xml version="1.0" encoding="UTF-8"?>', '');
-            var params = {
-                userName : userInfo.username,
-                fileContent : xml,
-                metadata: DomUtils.serializeToString(me.secondDocumentConfig.metaDom)
-            };
-
-            var url = me.secondDocumentConfig.docId.replace("/diff/", "/diff_modified/");
-            //TODO: this event is no more available on the application, chage it
-            // to GlobalEvents and update the arguments
-            me.application.fireEvent(Statics.eventsNames.saveDocument, url, params, function() {
-                if(diff) {
-                    diff.tab.show();
-                    diff.enforceReload = true;
-                    mainTabPanel.setActiveTab(diff);
-                }
-
-                me.getController('Editor').setAutosaveEnabled(true);
-                viewport.remove(editor);
-
-                newExplorer = Ext.widget("outliner", {
-                    region : 'west',
-                    expandable : true,
-                    resizable : true,
-                    width : '15%',
-                    scrollable: true,
-                    margin : 2
-                });
-                viewport.add(newExplorer);
-            });
-        }, {}, null, editor, me.secondDocumentConfig.metaDom);
-    },
-
-    createSecondEditor: function() {
-        var secondEditor = Ext.widget("main", {
-            id: 'secondEditor',
-            resizable : true,
-            region : 'west',
-            width: '48%',
-            margin : 2
-        });
-
-        this.getAppViewport().add(secondEditor);
-        return secondEditor;
-    },
-
-    afterDocumentLoaded: function() {
         var me = this;
-        if(Ext.isFunction(me.manageAfterLoad)) {
-            Ext.callback(me.manageAfterLoad);
-            me.manageAfterLoad = null;
-        }
+        this.application.fireEvent(Statics.eventsNames.enableDualEditorMode, {
+            diffTab: cmp.up('consolidationMainTab'),
+            editableDoc: dualConfig.editableDoc,
+            notEditableDoc: dualConfig.notEditableDoc,
+            startCallback: function () {},
+            stopCallback: function () {},
+            addButtons: me.addFinishEditingButton.bind(me),
+            secondEditorCreated: function(cmp) {
+                me.secondEditor = cmp;
+                var el2 = Ext.fly(cmp.getEditor().getBody());
+                el2.addCls('noboxes');
+                el2.addCls('nocolors');
+                el2.addCls('pdfstyle');
+                console.log(cmp, editorController.getSecondEditor());
+                cmp.up().setTitle(Locale.getString("modifyingDocument", me.getPluginName()));
+                me.initialMainEditorTitle = editorController.getMainEditor().up().title;
+                editorController.getMainEditor().up().setTitle(Locale.getString("modifiedDocument", me.getPluginName()));
+                Ext.defer(function() {
+                  editorController.addContentStyle('#tinymce div.mod', 'padding-left: 15px', cmp);
+                  editorController.addContentStyle('#tinymce div.mod', 'border-radius: 0', cmp);
+                  editorController.addContentStyle('#tinymce div.mod', 'border-left: 5px solid #1B6427', cmp);
+
+                  editorController.addContentStyle('#tinymce div.quotedStructure', 'padding-left: 15px', cmp);
+                  editorController.addContentStyle('#tinymce div.quotedStructure', 'border-radius: 0', cmp);
+                  editorController.addContentStyle('#tinymce div.quotedStructure', 'border-left: 5px solid #ABB26E', cmp);
+                }, 2000);
+            }
+        });
+    },
+
+    stopConsolidation: function(editor, tab) {
+        var me = this;
+        var markingMenu = this.getMarkingMenuContainer();
+
+        var singleModeRestored = function() {
+            if(markingMenu) {
+                markingMenu.show();
+            }
+            if(me.finishEditBtn) {
+                me.finishEditBtn.up().remove(me.finishEditBtn);
+            }
+            var editorController = me.getController('Editor');
+            editorController.getMainEditor().up().setTitle(me.initialMainEditorTitle);
+            me.getController('AknConsolidation.ModificationController').success();
+        };
+        this.getController('CustomizationManager').finishEditingMode(editor, tab, singleModeRestored);
     },
 
     addFinishEditingButton : function(cmp, consolidationTab) {
