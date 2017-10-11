@@ -1,0 +1,9 @@
+[submodule "languagesPlugins/akoma3.0"]
+	path = languagesPlugins/akoma3.0
+	url = https://github.com/cirsfid-unibo/lime-language-akn.git
+[submodule "php/AKNDiff"]
+	path = php/AKNDiff
+	url = https://github.com/cirsfid-unibo/akn-diff-php.git
+[submodule "php/parsers"]
+	path = php/parsers
+	url = https://github.com/cirsfid-unibo/akn-parsers-php.git
