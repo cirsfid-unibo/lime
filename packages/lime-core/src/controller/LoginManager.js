@@ -168,10 +168,15 @@ Ext.define('LIME.controller.LoginManager', {
             loginView.hide();
             me.getViewport().showEditor();
         }, function(error) {
+            console.log(error);
+
+            var errorMessage = Locale.strings.authErrors.ERR_0;
+            if (error.status != 401) // 401 is the error code in case the user is not registered
+                errorMessage = Locale.strings.authErrors.ERR_3;
+
             loginView.show();
             loginView.loginFailed();
-            Ext.Msg.alert(Locale.strings.authErrors.LOGIN_FAILED_TITLE,
-                          Locale.strings.authErrors.ERR_0);
+            Ext.Msg.alert(Locale.strings.authErrors.LOGIN_FAILED_TITLE, errorMessage);
         });
         // throw new Error();
     },
@@ -203,10 +208,15 @@ Ext.define('LIME.controller.LoginManager', {
             registrationWindow.setLoading(false);
             registrationWindow.close();
         }, function(error) {
-            Ext.Msg.alert(Locale.strings.authErrors.REGISTRATION_FAILED_TITLE, Locale.strings.authErrors.ERR_1);
             console.log(error);
+
+            var errorMessage = Locale.strings.authErrors.ERR_1;
+            if (error.status != 400) // 400 is the error code in case the user is already registered
+                errorMessage = Locale.strings.authErrors.ERR_2 + " " + Locale.strings.authErrors.ERR_3;
+
             registrationWindow.setLoading(false);
             registrationWindow.registrationFailed();
+            Ext.Msg.alert(Locale.strings.authErrors.REGISTRATION_FAILED_TITLE, errorMessage);
         });
     },
 
