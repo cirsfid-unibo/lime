@@ -73,7 +73,8 @@ Ext.define('LIME.Strings', {
                 "REGISTRATION_FAILED_TITLE": "Registration failed",
                 "ERR_0": "Wrong username or password.<br/>If you are not registered yet please <a class=\"ciao\" href=\"#\">sign up</a>.",
                 "ERR_1": "User already exists on the database.",
-                "ERR_2": "User could not be created. Please try again in a while or write to admin@admin.com"
+                "ERR_2": "User could not be created.",
+                "ERR_3": "The server could not be reached.<br/>Please try again in a while or write to admin@admin.com"
             },
             "prefErrors": {
                 "GENERIC": "Your preferences could not be retrieved.",
@@ -209,7 +210,8 @@ Ext.define('LIME.Strings', {
                 "REGISTRATION_FAILED_TITLE": "Registrazione fallita",
                 "ERR_0": "Username o password errati.<br/><a class=\"ciao\" href=\"#\">Registrati</a> se non hai ancora un account.",
                 "ERR_1": "L'utente già esiste nel database.",
-                "ERR_2": "Non è stato possibile creare l'utente.<br/>Per favore riprova tra poco o contattaci al seguente indirizzo email:<br/>admin@admin.com"
+                "ERR_2": "Non è stato possibile creare l'utente.",
+                "ERR_3": "Non è stato possibile contattare il server.<br/>Per favore riprova tra poco o contattaci al seguente indirizzo email: admin@admin.com"
             },
             "prefErrors": {
                 "GENERIC": "Le tue preferenze non possono essere recuperate.",
@@ -352,7 +354,8 @@ Ext.define('LIME.Strings', {
                 "REGISTRATION_FAILED_TITLE": "Error en el registro",
                 "ERR_0": "Nombre de usuario o contraseña incorrecta. <br/> Si no está registrado todavía, por favor <a href=\"#\">inscribirse</a>.",
                 "ERR_1": "El usuario ya existe en la base de datos.",
-                "ERR_2": "El usuario no pudo ser creada. Vuelve a intentarlo en un rato o escribir a admin@admin.com"
+                "ERR_2": "El usuario no pudo ser creada.",
+                "ERR_3": "No se pudo acceder al servidor.<br/>Intente nuevamente por un tiempo o escriba a admin@admin.com"
             },
             "prefErrors": {
                 "GENERIC": "Sus preferencias no pueden ser recuperados.",
@@ -485,7 +488,8 @@ Ext.define('LIME.Strings', {
                 "REGISTRATION_FAILED_TITLE": "înregistrarea nu a reușit",
                 "ERR_0": "Utilizator sau parolă este greșită.<br/>Dacă nu sunteți încă înregistrat <a class=\"ciao\" href=\"#\">înregistrează-te</a>.",
                 "ERR_1": "Utilizatorul există deja.",
-                "ERR_2": "Utilizatorul nu a putut fi creat. Încearcă din nou sau scrie la admin@admin.com"
+                "ERR_2": "Utilizatorul nu a putut fi creat.",
+                "ERR_3": "Serverul nu a putut fi contactat.<br/>Încearcă din nou sau scrie la admin@admin.com"
             },
             "prefErrors": {
                 "GENERIC": "Preferințele nu au putut fi recuperate.",
@@ -611,7 +615,8 @@ Ext.define('LIME.Strings', {
                 "REGISTRATION_FAILED_TITLE": "Регистрация не удалась",
                 "ERR_0": "Неверное имя пользователя или пароль.<br/>Если вы еще не зарегистрированы, пожалуйста, <a class=\"ciao\" href=\"#\">зарегистрируйтесь</a>.",
                 "ERR_1": "Пользователь уже существует.",
-                "ERR_2": "Пользователь не может быть создан. Повторите попытку через некоторое время или пишите на admin@admin.com"
+                "ERR_2": "Пользователь не может быть создан.",
+                "ERR_3": "Не удалось связаться с сервером.<br/>Повторите попытку через некоторое время или пишите на admin@admin.com"
             },
             "prefErrors": {
                 "GENERIC": "Ваши настройки не может быть получен.",
