@@ -436,7 +436,8 @@ Ext.define('LIME.controller.Editor', {
      */
     getPosition: function(){
         var cmp = this.getEditorComponent();
-        return [cmp.getX(), cmp.getY()+cmp.edToolbar.getHeight()];
+        var toolbarHeight = cmp.edToolbar ? cmp.edToolbar.getHeight() : 0;
+        return [cmp.getX(), cmp.getY()+toolbarHeight];
     },
 
     /**
