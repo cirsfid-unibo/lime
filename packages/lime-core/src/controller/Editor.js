@@ -856,7 +856,6 @@ Ext.define('LIME.controller.Editor', {
     addStyles: function(urls, editor) {
         urls = urls || this.stylesUrl;
         this.stylesUrl = urls;
-
         var editorDom = this.getDom(editor),
             head = editorDom.querySelector("head");
         if ( urls && urls.length ) {
@@ -865,17 +864,23 @@ Ext.define('LIME.controller.Editor', {
             });
         }
 
-        Ext.each(urls, function(url) {
-            var link = editorDom.createElement("link");
-            link.setAttribute("href", url);
-            link.setAttribute("class", 'limeStyle');
-            link.setAttribute("rel", "stylesheet");
-            link.setAttribute("type", "text/css");
-            head.appendChild(link);
-        });
+        Ext.each(urls, (function(url) {
+            this.addStyle(url, editor);
+        }).bind(this));
 
         if (!editor && this.getSecondEditor())
             this.addStyles(urls, this.getSecondEditor());
+    },
+
+    addStyle: function(url, editor) {
+        var editorDom = this.getDom(editor),
+            head = editorDom.querySelector('head'),
+            link = editorDom.createElement('link');
+        link.setAttribute('href', url);
+        link.setAttribute('class', 'limeStyle');
+        link.setAttribute('rel', 'stylesheet');
+        link.setAttribute('type', 'text/css');
+        head.appendChild(link);
     },
 
     /**
