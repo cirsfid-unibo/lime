@@ -238,10 +238,8 @@ Ext.define('LIME.controller.Marker', {
 
     wrapRange: function(button, element) {
         element = element || 'div';
-        // Bug: IE sometimes creates elements outside main element
-        // Example: creating a preface outside of bill.
         var editor = this.getController('Editor'),
-            selectionRange = editor.lastSelectionRange || editor.getEditor().selection.getRng();
+            selectionRange = editor.getSelectionRange();
 
         DomUtils.range.normalize(selectionRange);
         DomUtils.range.normalization.getOutOfFakeEditorElements(selectionRange);
