@@ -92,7 +92,8 @@ Ext.define('DefaultImport.controller.Import', {
             params.docLang = response[DocProperties.languageAttribute] || "";
         }
         if(response && response["xml"]) {
-            params.originalXml = response["xml"] || "";
+            // Trim out U+FEFF BOM
+            params.originalXml = (response["xml"] || "").trim();
         }
 
         return params;
