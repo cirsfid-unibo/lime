@@ -537,13 +537,11 @@ Ext.define('LIME.controller.Editor', {
     getSelectionRange: function() {
         var selectionRange = this.lastSelectionRange || this.getEditor().selection.getRng();
         var rootDocument = this.getBody().getElementsByClassName(DocProperties.documentBaseClass)[0];
-
-        if (selectionRange && (
-            !DomUtils.nodeHasClass(selectionRange.commonAncestorContainer, DocProperties.documentBaseClass) ||
-            !((selectionRange.commonAncestorContainer.compareDocumentPosition(rootDocument) & Node.DOCUMENT_POSITION_CONTAINED_BY) == 16 ))) {
-                var newRange = selectionRange.cloneRange();
-                newRange.setStart(rootDocument, 0);
-                return newRange;
+        var ancestor = selectionRange.commonAncestorContainer;
+        if (selectionRange && !(rootDocument.contains(ancestor))) {
+            var newRange = selectionRange.cloneRange();
+            newRange.setStart(rootDocument, 0);
+            return newRange;
         }
 
         return selectionRange;
