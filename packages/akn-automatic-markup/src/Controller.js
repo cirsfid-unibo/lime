@@ -1862,7 +1862,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             if (passControl) {
                 ranges = ranges.filter(function(range) {
                     return me.canPassNode(range.startContainer.firstChild,
-                                            button.id, [DomUtils.tempParsingClass]);
+                                            button.id, [DomUtils.tempParsingClass, 'num']);
                 });
             }
 
