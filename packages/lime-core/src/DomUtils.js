@@ -339,6 +339,7 @@ Ext.define('LIME.DomUtils', {
      * @param {HTMLElement} type
      * @param {HTMLElement} [limit]
      * @returns {String}
+     * to be overridden by language package
      */
     getNodeExtraInfo : function(node, type, limit) {
         return '';
