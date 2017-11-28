@@ -341,38 +341,7 @@ Ext.define('LIME.DomUtils', {
      * @returns {String}
      */
     getNodeExtraInfo : function(node, type, limit) {
-        var info = '';
-        if (node && node.getAttribute("class") && node.getAttribute("class").indexOf(type) != -1) {
-            var infoLength = limit || Statics.extraInfoLimit;
-            var wrapper = Ext.fly(node);
-            var where = ["num", "heading", "subheading"];
-            var infoNode;
-            for (var i = 0; i < where.length; i++) {
-                var contentEl = wrapper.child(".content");
-                if (contentEl) {
-                    wrapper = contentEl;
-                }
-                var chNode = wrapper.down("." + where[i]);
-                if (chNode) {
-                    var hcontainer = chNode.parent(".hcontainer");
-                    if (hcontainer && hcontainer.dom == node) {
-                        infoNode = chNode;
-                        break;
-                    }
-                }
-            }
-            if (infoNode) {
-                for(var i = 0; i < infoNode.dom.childNodes.length; i++) {
-                    if(infoNode.dom.childNodes[i].nodeType == this.nodeType.TEXT) {
-                        info+= infoNode.dom.childNodes[i].textContent;
-                    }
-                }
-            }
-            if (info.length > infoLength) {
-                info = info.substr(0, infoLength) + "...";
-            }
-        }
-        return info;
+        return '';
     },
     /**
      * This function retrieves the first marked ascendant
