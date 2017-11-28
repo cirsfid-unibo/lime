@@ -208,8 +208,6 @@ Ext.define('LIME.DomUtils', {
     },
 
     /**
-     * TODO: test this function
-     *
      * This function is a innerHTML replacement.
      * It allows to completely move all the children nodes from
      * a source to a destination.
@@ -347,7 +345,6 @@ Ext.define('LIME.DomUtils', {
         if (node && node.getAttribute("class") && node.getAttribute("class").indexOf(type) != -1) {
             var infoLength = limit || Statics.extraInfoLimit;
             var wrapper = Ext.fly(node);
-            //TODO: da file config
             var where = ["num", "heading", "subheading"];
             var infoNode;
             for (var i = 0; i < where.length; i++) {

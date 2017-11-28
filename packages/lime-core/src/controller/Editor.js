@@ -176,6 +176,11 @@ Ext.define('LIME.controller.Editor', {
             docBaseCls = DocProperties.documentBaseClass,
             wrapper = body.querySelector('.'+docBaseCls+'.'+docType) || body.firstChild;
 
+        var document = this.getBody().getElementsByClassName(DocProperties.documentBaseClass)[0];
+        if (document) {
+            this.ensureContentWrapperPosition(document);
+        }
+
         if ( !wrapper || wrapper.nodeName.toLowerCase() != 'div' ) {
             wrapper = body.ownerDocument.createElement('div');
             DomUtils.moveChildrenNodes(body, wrapper);
@@ -192,6 +197,30 @@ Ext.define('LIME.controller.Editor', {
             wrapper.dataset.nomagicline = 'nomagicline';
         if (!wrapper.parentNode.dataset.nomagicline)
             wrapper.parentNode.dataset.nomagicline = 'nomagicline';
+    },
+
+    ensureContentWrapperPosition: function (wrapper) {
+        var prev = wrapper.previousSibling;
+        while (prev) {
+            var previousSibling = prev.previousSibling;
+            if (this.ensureContentWrapperNodeCheck(prev)) {
+                wrapper.insertBefore(prev, wrapper.firstChild);
+            }
+            prev = previousSibling;
+        }
+
+        var next = wrapper.nextSibling;
+        while (next) {
+            var nextSibling = next.nextSibling;
+            if (this.ensureContentWrapperNodeCheck(next)) {
+                wrapper.appendChild(next);
+            }
+            next = nextSibling;
+        }
+    },
+
+    ensureContentWrapperNodeCheck: function (node) {
+        return node.getAttribute(DomUtils.elementIdAttribute);
     },
 
     showContextMenu: function(ed, e) {
@@ -436,7 +465,8 @@ Ext.define('LIME.controller.Editor', {
      */
     getPosition: function(){
         var cmp = this.getEditorComponent();
-        return [cmp.getX(), cmp.getY()+cmp.edToolbar.getHeight()];
+        var toolbarHeight = cmp.edToolbar ? cmp.edToolbar.getHeight() : 0;
+        return [cmp.getX(), cmp.getY()+toolbarHeight];
     },
 
     /**
@@ -505,8 +535,16 @@ Ext.define('LIME.controller.Editor', {
      * @returns {Number[]} [start, end] The array containing the start and end of the range
      */
     getSelectionRange: function() {
-        var ed = this.getEditor(), rng = ed.selection.getRng(), range = [rng.startOffset, rng.endOffset];
-        return range;
+        var selectionRange = this.lastSelectionRange || this.getEditor().selection.getRng();
+        var rootDocument = this.getBody().getElementsByClassName(DocProperties.documentBaseClass)[0];
+        var ancestor = selectionRange.commonAncestorContainer;
+        if (selectionRange && !(rootDocument.contains(ancestor))) {
+            var newRange = selectionRange.cloneRange();
+            newRange.setStart(rootDocument, 0);
+            return newRange;
+        }
+
+        return selectionRange;
     },
 
     showDocumentIdentifier: function(isUri) {
@@ -855,7 +893,6 @@ Ext.define('LIME.controller.Editor', {
     addStyles: function(urls, editor) {
         urls = urls || this.stylesUrl;
         this.stylesUrl = urls;
-
         var editorDom = this.getDom(editor),
             head = editorDom.querySelector("head");
         if ( urls && urls.length ) {
@@ -864,17 +901,23 @@ Ext.define('LIME.controller.Editor', {
             });
         }
 
-        Ext.each(urls, function(url) {
-            var link = editorDom.createElement("link");
-            link.setAttribute("href", url);
-            link.setAttribute("class", 'limeStyle');
-            link.setAttribute("rel", "stylesheet");
-            link.setAttribute("type", "text/css");
-            head.appendChild(link);
-        });
+        Ext.each(urls, (function(url) {
+            this.addStyle(url, editor);
+        }).bind(this));
 
         if (!editor && this.getSecondEditor())
             this.addStyles(urls, this.getSecondEditor());
+    },
+
+    addStyle: function(url, editor) {
+        var editorDom = this.getDom(editor),
+            head = editorDom.querySelector('head'),
+            link = editorDom.createElement('link');
+        link.setAttribute('href', url);
+        link.setAttribute('class', 'limeStyle');
+        link.setAttribute('rel', 'stylesheet');
+        link.setAttribute('type', 'text/css');
+        head.appendChild(link);
     },
 
     /**
@@ -1269,7 +1312,7 @@ Ext.define('LIME.controller.Editor', {
                     DomUtils.wrapNode(node, 'span').setAttribute('class', 'visibleSelection');
                 });
             }
-        } else if (me.lastRange) {
+        } else if (me.lastRange && !DomUtils.nodeHasTagName(me.lastRange.commonAncestorContainer,'body') ) {
             var document = me.lastRange.startContainer.ownerDocument;
             var visibleBookmark = document.createElement('span');
             visibleBookmark.className = 'visibleBookmark';

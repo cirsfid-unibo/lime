@@ -56,7 +56,6 @@ Ext.define('LIME.Utilities', {
 
     /**
      * @property {String} buttonFieldDefault
-     * TODO
      */
     buttonFieldDefault : 'behavior',
 
