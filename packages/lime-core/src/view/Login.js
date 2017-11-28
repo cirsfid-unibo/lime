@@ -92,7 +92,7 @@ Ext.define('LIME.view.Login', {
         // Reset the fields
         win.resetData();
 
-        // Highlight wrong fields (TODO popup message from the server)
+        // Highlight wrong fields
         form.findField("username").markInvalid(Locale.strings.fieldIsInvalid);
         form.findField("password").markInvalid(Locale.strings.fieldIsInvalid);
 
