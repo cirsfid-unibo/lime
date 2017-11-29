@@ -316,7 +316,6 @@ Ext.define('LIME.controller.WidgetManager', {
      * @param {String} value
      * @param {Boolean} updateAttributes True to update the attributes of the widget and element
      * */
-     //TODO: move this to akn package
     updateWidgetData: function(widget, field, value, updateAttributes) {
         var originalName = field.origName;
         value = value || field.getValue();

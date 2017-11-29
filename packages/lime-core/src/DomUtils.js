@@ -147,7 +147,6 @@ Ext.define('LIME.DomUtils', {
      * @returns {String} The query
      */
     getTempClassesQuery : function() {
-        // TODO rendere le classi iterabili
         return "." + this.tempSelectionClass + ", ." + this.toRemoveClass + ", ." + this.tempSelectionClass;
     },
 
