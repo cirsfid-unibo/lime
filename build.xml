@@ -57,7 +57,7 @@
     </target>
 
     <target name="-before-refresh">
-        <x-echo message="Insalling dependencies"/>
+        <x-echo message="Installing dependencies"/>
         <exec dir = "dev-scripts" executable="npm">
           <arg value="install"/>
         </exec>
