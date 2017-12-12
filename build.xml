@@ -58,9 +58,16 @@
 
     <target name="-before-refresh">
         <x-echo message="Installing dependencies"/>
-        <exec dir = "dev-scripts" executable="npm">
-          <arg value="install"/>
-        </exec>
+        <trycatch>
+            <try>
+                <exec dir = "dev-scripts" executable="npm">
+                <arg value="install"/>
+                </exec>
+            </try>
+            <catch>
+                <x-echo level='warning' message="Failed to install dependencies"/>
+            </catch>
+        </trycatch>
         <x-echo message="Building and injection of LIME config into app.json"/>
         <x-echo message="${build.environment}"/>
         <exec executable="node">
