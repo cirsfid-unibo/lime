@@ -190,9 +190,7 @@ Ext.define('LIME.Server', {
 
     // Update user.
     saveUser: function (user, success, failure) {
-        var username = user.username,
-            password = user.password;
-        console.log('username', user.username, user.password);
+        var username = user.username;
         this.authRequest({
             method: 'PUT',
             url: '{nodeServer}/documentsdb/Users/' + encodeURI(username),
@@ -204,8 +202,7 @@ Ext.define('LIME.Server', {
 
     // Get file content
     getDocument: function (path, success, failure) {
-        var username = User.username,
-            password = User.password;
+        var username = User.username;
 
         this.authRequest({
             method: 'GET',
