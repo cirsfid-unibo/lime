@@ -56,18 +56,24 @@ Ext.define('AknDiff.controller.DualEditorSynchronizer', {
     init: function () {
         // Make sure this.onScroll handler is always bound to this controller...
         this.onScroll = this.onScroll.bind(this);
+        this.neverEnabled = true;
     },
 
     iframeA: undefined,
     iframeB: undefined,
 
+    neverEnabled: true,
     // Public: enable scroll synchronization on the two editors handled by
     // the Editor controller.
     enable: function () {
         var editor = this.getController('Editor');
         this.iframeA = editor.getEditorComponent().iframeEl.dom;
         this.iframeB = editor.getEditorComponent(editor.getSecondEditor()).iframeEl.dom;
-
+        if (this.neverEnabled){
+            editor.getEditorComponent().on('resize', this.generateCheckpoints.bind(this));
+            editor.getEditorComponent(editor.getSecondEditor()).on('resize', this.generateCheckpoints.bind(this));
+            this.neverEnabled = false;
+        }
         // Todo: this should be executed again on resize
         this.generateCheckpoints();
 
