@@ -74,7 +74,6 @@ Ext.define('AknDiff.controller.DualEditorSynchronizer', {
             editor.getEditorComponent(editor.getSecondEditor()).on('resize', this.generateCheckpoints.bind(this));
             this.neverEnabled = false;
         }
-        // Todo: this should be executed again on resize
         this.generateCheckpoints();
 
         this.iframeA.contentDocument.addEventListener('scroll', this.onScroll);
