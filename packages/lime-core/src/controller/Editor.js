@@ -554,14 +554,9 @@ Ext.define('LIME.controller.Editor', {
         this.setEditorHeader(valueToShow, isUri);
     },
 
+    // This should be overwritten by a language specific package
     getDocumentUri: function() {
-        // Todo: this should be abstracted away from Lime core
-        try {
-            var uri = Ext.getStore('metadata').getMainDocument().getUri();
-            return uri.manifestation();
-        } catch (e) {
-            return this.getDocumentPath();
-        }
+        return this.getDocumentPath();
     },
 
     getDocumentPath: function() {
@@ -1012,7 +1007,6 @@ Ext.define('LIME.controller.Editor', {
      */
     autoSaveContent: function() {
         /* Check if there has been a change */ /* TODO: pensare a una soluzione più intelligente */
-        // TODO: show document saved icon or message
         if (this.getAutosaveEnabled() && this.isChanged()) {
             this.setChanged(false);
             Ext.GlobalEvents.fireEvent('saveDocument');

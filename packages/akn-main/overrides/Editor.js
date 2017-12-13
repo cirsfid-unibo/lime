@@ -51,5 +51,14 @@ Ext.define('AknMain.Editor', {
         return this.callParent(arguments) &&
             DomUtils.getNameByNode(node) != 'components' &&
             DomUtils.getNameByNode(node) != 'attachments';
+    },
+
+    getDocumentUri: function() {
+        try {
+            var uri = Ext.getStore('metadata').getMainDocument().getUri();
+            return uri.manifestation();
+        } catch (e) {
+            return this.getDocumentPath();
+        }
     }
 });
