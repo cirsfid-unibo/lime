@@ -69,4 +69,24 @@ describe('Users', function() {
         });
     });
 
+    describe('setPreference', function() {
+        it('should be a function', function() {
+            expect(typeof User.setPreference).toEqual('function');
+        });
+
+        it('should set test preference', function(done) {
+            User.load({
+                username: 'demo@lime.com',
+                password: 'demo'
+            });
+            User.setPreference('test', 'test'+Ext.Number.randomInt(1, 9999), function(response) {
+                expect(response).toBeDefined();
+                expect(response.status).toEqual(200);
+                done();
+            }, function() {
+                done.fail('shouldn’t fail');
+            });
+        });
+    });
+
 });
