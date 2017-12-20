@@ -92,7 +92,7 @@ Ext.define('LIME.Server', {
         }
 
         var possiblePaths = [];
-        
+
         if (Ext.manifest['env'] === 'development') {
             possiblePaths.push({
                 name: 'dev',
@@ -122,20 +122,20 @@ Ext.define('LIME.Server', {
     // - content: auto-read response ...
     // Check (Server-side) which file exist and return them (If 'content' param is set to true)
     // Example reqUrls: [{"name":"patterns","url":"config/Patterns.json"},
-    // TODO: using OPTIONS method when content is set to false
     filterUrls: function (reqUrls, content, success, failure, scope) {
         var me = this;
         var newUrls = [];
         var makeRequest = function(urlObj, cb) {
             me.request({
                 url: urlObj.url,
+                method: (content) ? 'GET' : 'OPTIONS',
                 success: function (result) {
                     var content = result.responseText;
                     if (content) {
                         var json = Ext.decode(content, true);
                         urlObj.content = json || content;
-                        newUrls.push(urlObj);
                     }
+                    newUrls.push(urlObj); //I don't check result.status because we already are in success function
                 },
                 callback: cb
             });
@@ -190,9 +190,7 @@ Ext.define('LIME.Server', {
 
     // Update user.
     saveUser: function (user, success, failure) {
-        var username = user.username,
-            password = user.password;
-        console.log('username', user.username, user.password);
+        var username = user.username;
         this.authRequest({
             method: 'PUT',
             url: '{nodeServer}/documentsdb/Users/' + encodeURI(username),
@@ -204,8 +202,7 @@ Ext.define('LIME.Server', {
 
     // Get file content
     getDocument: function (path, success, failure) {
-        var username = User.username,
-            password = User.password;
+        var username = User.username;
 
         this.authRequest({
             method: 'GET',

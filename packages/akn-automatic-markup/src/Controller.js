@@ -1391,13 +1391,13 @@ Ext.define('AknAutomaticMarkup.Controller', {
             if ( !textNodesObj.length ) return;
             var textNodeObj = chooseTextObj(textNodesObj, numVal);
             if (!textNodeObj) return;
-            var firstNode = textNodeObj[0].node;
+            var numToMark = me.newTextNodeToSpans(textNodeObj);
+            var firstNode = numToMark[0];
             var partNode = (firstNode.parentNode == node) ? firstNode: firstNode.parentNode;
             var newWrapper = me.wrapPartNode(partNode, node);
             element.wrapper = newWrapper;
             nodesToMark.push(newWrapper);
-            numsToMark = Ext.Array.push(numsToMark, me.newTextNodeToSpans(textNodeObj));
-
+            numsToMark = Ext.Array.push(numsToMark, numToMark);
             if ( headingVal ) {
                 var text = DomUtils.smartFindTextNodes(headingVal, node);
                 if ( text.length ) {
@@ -1862,7 +1862,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
             if (passControl) {
                 ranges = ranges.filter(function(range) {
                     return me.canPassNode(range.startContainer.firstChild,
-                                            button.id, [DomUtils.tempParsingClass]);
+                                            button.id, [DomUtils.tempParsingClass, 'num']);
                 });
             }
 

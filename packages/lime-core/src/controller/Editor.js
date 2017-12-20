@@ -465,7 +465,8 @@ Ext.define('LIME.controller.Editor', {
      */
     getPosition: function(){
         var cmp = this.getEditorComponent();
-        return [cmp.getX(), cmp.getY()+cmp.edToolbar.getHeight()];
+        var toolbarHeight = cmp.edToolbar ? cmp.edToolbar.getHeight() : 0;
+        return [cmp.getX(), cmp.getY()+toolbarHeight];
     },
 
     /**
@@ -536,13 +537,11 @@ Ext.define('LIME.controller.Editor', {
     getSelectionRange: function() {
         var selectionRange = this.lastSelectionRange || this.getEditor().selection.getRng();
         var rootDocument = this.getBody().getElementsByClassName(DocProperties.documentBaseClass)[0];
-
-        if (selectionRange && (
-            !DomUtils.nodeHasClass(selectionRange.commonAncestorContainer, DocProperties.documentBaseClass) ||
-            !((selectionRange.commonAncestorContainer.compareDocumentPosition(rootDocument) & Node.DOCUMENT_POSITION_CONTAINED_BY) == 16 ))) {
-                var newRange = selectionRange.cloneRange();
-                newRange.setStart(rootDocument, 0);
-                return newRange;
+        var ancestor = selectionRange.commonAncestorContainer;
+        if (selectionRange && !(rootDocument.contains(ancestor))) {
+            var newRange = selectionRange.cloneRange();
+            newRange.setStart(rootDocument, 0);
+            return newRange;
         }
 
         return selectionRange;
@@ -555,14 +554,9 @@ Ext.define('LIME.controller.Editor', {
         this.setEditorHeader(valueToShow, isUri);
     },
 
+    // This should be overwritten by a language specific package
     getDocumentUri: function() {
-        // Todo: this should be abstracted away from Lime core
-        try {
-            var uri = Ext.getStore('metadata').getMainDocument().getUri();
-            return uri.manifestation();
-        } catch (e) {
-            return this.getDocumentPath();
-        }
+        return this.getDocumentPath();
     },
 
     getDocumentPath: function() {
@@ -894,7 +888,6 @@ Ext.define('LIME.controller.Editor', {
     addStyles: function(urls, editor) {
         urls = urls || this.stylesUrl;
         this.stylesUrl = urls;
-
         var editorDom = this.getDom(editor),
             head = editorDom.querySelector("head");
         if ( urls && urls.length ) {
@@ -903,17 +896,23 @@ Ext.define('LIME.controller.Editor', {
             });
         }
 
-        Ext.each(urls, function(url) {
-            var link = editorDom.createElement("link");
-            link.setAttribute("href", url);
-            link.setAttribute("class", 'limeStyle');
-            link.setAttribute("rel", "stylesheet");
-            link.setAttribute("type", "text/css");
-            head.appendChild(link);
-        });
+        Ext.each(urls, (function(url) {
+            this.addStyle(url, editor);
+        }).bind(this));
 
         if (!editor && this.getSecondEditor())
             this.addStyles(urls, this.getSecondEditor());
+    },
+
+    addStyle: function(url, editor) {
+        var editorDom = this.getDom(editor),
+            head = editorDom.querySelector('head'),
+            link = editorDom.createElement('link');
+        link.setAttribute('href', url);
+        link.setAttribute('class', 'limeStyle');
+        link.setAttribute('rel', 'stylesheet');
+        link.setAttribute('type', 'text/css');
+        head.appendChild(link);
     },
 
     /**
@@ -1008,7 +1007,6 @@ Ext.define('LIME.controller.Editor', {
      */
     autoSaveContent: function() {
         /* Check if there has been a change */ /* TODO: pensare a una soluzione più intelligente */
-        // TODO: show document saved icon or message
         if (this.getAutosaveEnabled() && this.isChanged()) {
             this.setChanged(false);
             Ext.GlobalEvents.fireEvent('saveDocument');

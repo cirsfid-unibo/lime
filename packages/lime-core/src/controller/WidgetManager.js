@@ -292,6 +292,7 @@ Ext.define('LIME.controller.WidgetManager', {
         var me = this, node = DocProperties.getMarkedNode(elementId);
         if (!node || !attributes.length) return;
         var updated = attributes.reduce(function(updated, attribute) {
+            attribute.value = (attribute.value || '').trim();
             return updated || me.setElementAttribute(node, attribute.name, attribute.value);
         }, false);
         if(updated)
@@ -315,7 +316,6 @@ Ext.define('LIME.controller.WidgetManager', {
      * @param {String} value
      * @param {Boolean} updateAttributes True to update the attributes of the widget and element
      * */
-     //TODO: move this to akn package
     updateWidgetData: function(widget, field, value, updateAttributes) {
         var originalName = field.origName;
         value = value || field.getValue();

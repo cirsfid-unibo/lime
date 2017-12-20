@@ -51,10 +51,15 @@
                 name: 'LIME',
                 extend: 'LIME.Application',
                 launch : function() {
-                    this.callParent();
-                    // Remove the loading icon
-                    var loadingDiv = document.querySelector("#loading");
-                    loadingDiv.parentNode.removeChild(loadingDiv);
+                    if (window.TEST_RUNNING) {
+                        //Launching the jasmine test
+                        window.jasmine.execute();
+                    } else {
+                        this.callParent();
+                        // Remove the loading icon
+                        var loadingDiv = document.querySelector("#loading");
+                        loadingDiv.parentNode.removeChild(loadingDiv);
+                    }
                 }
             });
         });
