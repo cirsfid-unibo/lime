@@ -109,16 +109,14 @@ Ext.define('LIME.controller.Marker', {
         })));
 
         Ext.callback(config.callback, this, [button, [newElement]]);
+
+        return [firstMarkedNode, newElement];
     },
 
     isAllowedMarking: function(markedNode, node, config) {
         var patterns = this.getStore("LanguagesPlugin").getConfigData().patterns,
             newParent, patternError = false, pattern,
             nodePattern = this.getPatternConfigByNode(markedNode);
-
-        if(!nodePattern || Ext.fly(node).is('table') || Ext.fly(node).up('table') ) {
-            return true;
-        }
 
         if (!this.isAllowedPattern(nodePattern,
                                    config.pattern)) {
@@ -430,9 +428,9 @@ Ext.define('LIME.controller.Marker', {
 
         if(!button)
             button = DocProperties.getFirstButtonByName(elId, 'common') ||
-                     DocProperties.getFirstButtonByName(nameAttr, 'common') ||
-                     DocProperties.getFirstButtonByName(elId) ||
-                     DocProperties.getFirstButtonByName(nameAttr);
+                DocProperties.getFirstButtonByName(nameAttr, 'common') ||
+                DocProperties.getFirstButtonByName(elId) ||
+                DocProperties.getFirstButtonByName(nameAttr);
 
         return button || DocProperties.getElementConfig(elId) ||
                         DocProperties.getFirstButtonByName(elId.replace(/\d/g,''));

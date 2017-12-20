@@ -66,6 +66,11 @@ Ext.define('AknMain.Marker', {
     },
 
     isAllowedMarking: function (markedNode, node, config) {
+        var nodePattern = this.getPatternConfigByNode(markedNode);
+        if (!nodePattern || Ext.fly(node).is('table') || Ext.fly(node).up('table')) {
+            return true;
+        }
+
         var allowed = this.callParent(arguments);
 
         // If marking is not allowed
@@ -80,9 +85,10 @@ Ext.define('AknMain.Marker', {
             // the user wants to wrap the "text" with an enactingFormula.
             var markedName = DomUtils.getNameByNode(markedNode);
             //TODO: check the root elements
-            if (markedName === 'p' && config.pattern.pattern === 'container')
+            if (markedName === 'p' && config.pattern.pattern === 'container') {
                 this.unMarkFirstMarkedNode = true;
                 return true;
+            }
         }
 
         return allowed;
