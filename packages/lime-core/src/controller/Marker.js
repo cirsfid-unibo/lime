@@ -427,12 +427,14 @@ Ext.define('LIME.controller.Marker', {
             elId = elId.substr(0, elId.indexOf(DomUtils.elementIdSeparator));
 
         if(!button)
-            button = DocProperties.getFirstButtonByName(elId, 'common') ||
-                DocProperties.getFirstButtonByName(nameAttr, 'common') ||
-                DocProperties.getFirstButtonByName(elId) ||
-                DocProperties.getFirstButtonByName(nameAttr);
+            button = this.getFirstButton(elId, nameAttr);
 
         return button || DocProperties.getElementConfig(elId) ||
                         DocProperties.getFirstButtonByName(elId.replace(/\d/g,''));
+    },
+
+    getFirstButton: function(elId, nameAttr) {
+        return DocProperties.getFirstButtonByName(elId) ||
+            DocProperties.getFirstButtonByName(nameAttr);
     }
 });

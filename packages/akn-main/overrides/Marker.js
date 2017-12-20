@@ -92,5 +92,11 @@ Ext.define('AknMain.Marker', {
         }
 
         return allowed;
+    },
+
+    getFirstButton: function (elId, nameAttr) {
+        return DocProperties.getFirstButtonByName(elId, 'common') ||
+            DocProperties.getFirstButtonByName(nameAttr, 'common') ||
+            this.callParent(arguments);
     }
 });
