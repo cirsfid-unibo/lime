@@ -83,24 +83,8 @@ Ext.define('LIME.controller.Marker', {
             selectedNode = editorController.getSelectedNode(),
             firstMarkedNode = DomUtils.getFirstMarkedAncestor(selectedNode);
 
-        var unMarkFirstMarkedNode = false;
-        // If marking is not allowed
         if( !this.isAllowedMarking(firstMarkedNode, selectedNode, button) ) {
-            // This is tricky and ugly and maybe we shouldn't do it...
-            // Make an exception when the user is trying to mark a container
-            // inside a "p" element, let mark the container and after remove the "p".
-            // Example of this scenario:
-            // <preamble>
-            //   <p> text text text </p>
-            // </preamble>
-            // the user wants to wrap the "text" with an enactingFormula.
-            var markedName = DomUtils.getNameByNode(firstMarkedNode);
-            //TODO: check the root elements
-            if (markedName === 'p' && button.pattern.pattern === 'container') {
-                unMarkFirstMarkedNode = true;
-            } else { // Show error and exit
-                return this.showPatternError(firstMarkedNode, button);
-            }
+            return this.showPatternError(firstMarkedNode, button);
         }
         // If the node is already been marked just exit
         if (firstMarkedNode &&
@@ -115,10 +99,6 @@ Ext.define('LIME.controller.Marker', {
         if ( !newElement.textContent.trim() ) {
             newElement.appendChild(newElement.ownerDocument.createTextNode("  "));
             setCursorLocation = true;
-        }
-
-        if (unMarkFirstMarkedNode) {
-            this.unmarkNode(firstMarkedNode);
         }
 
         // Warn of the changed nodes
