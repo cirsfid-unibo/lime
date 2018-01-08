@@ -83,24 +83,8 @@ Ext.define('LIME.controller.Marker', {
             selectedNode = editorController.getSelectedNode(),
             firstMarkedNode = DomUtils.getFirstMarkedAncestor(selectedNode);
 
-        var unMarkFirstMarkedNode = false;
-        // If marking is not allowed
         if( !this.isAllowedMarking(firstMarkedNode, selectedNode, button) ) {
-            // This is tricky and ugly and maybe we shouldn't do it...
-            // Make an exception when the user is trying to mark a container
-            // inside a "p" element, let mark the container and after remove the "p".
-            // Example of this scenario:
-            // <preamble>
-            //   <p> text text text </p>
-            // </preamble>
-            // the user wants to wrap the "text" with an enactingFormula.
-            var markedName = DomUtils.getNameByNode(firstMarkedNode);
-            //TODO: check the root elements
-            if (markedName === 'p' && button.pattern.pattern === 'container') {
-                unMarkFirstMarkedNode = true;
-            } else { // Show error and exit
-                return this.showPatternError(firstMarkedNode, button);
-            }
+            return this.showPatternError(firstMarkedNode, button);
         }
         // If the node is already been marked just exit
         if (firstMarkedNode &&
@@ -117,10 +101,6 @@ Ext.define('LIME.controller.Marker', {
             setCursorLocation = true;
         }
 
-        if (unMarkFirstMarkedNode) {
-            this.unmarkNode(firstMarkedNode);
-        }
-
         // Warn of the changed nodes
         this.application.fireEvent('nodeChangedExternally', [newElement], Ext.merge(config, Ext.merge(this.nodeChangedConfig, {
             click: (config.silent) ? false : true,
@@ -129,16 +109,14 @@ Ext.define('LIME.controller.Marker', {
         })));
 
         Ext.callback(config.callback, this, [button, [newElement]]);
+
+        return [firstMarkedNode, newElement];
     },
 
     isAllowedMarking: function(markedNode, node, config) {
         var patterns = this.getStore("LanguagesPlugin").getConfigData().patterns,
             newParent, patternError = false, pattern,
             nodePattern = this.getPatternConfigByNode(markedNode);
-
-        if(!nodePattern || Ext.fly(node).is('table') || Ext.fly(node).up('table') ) {
-            return true;
-        }
 
         if (!this.isAllowedPattern(nodePattern,
                                    config.pattern)) {
@@ -449,12 +427,14 @@ Ext.define('LIME.controller.Marker', {
             elId = elId.substr(0, elId.indexOf(DomUtils.elementIdSeparator));
 
         if(!button)
-            button = DocProperties.getFirstButtonByName(elId, 'common') ||
-                     DocProperties.getFirstButtonByName(nameAttr, 'common') ||
-                     DocProperties.getFirstButtonByName(elId) ||
-                     DocProperties.getFirstButtonByName(nameAttr);
+            button = this.getFirstButton(elId, nameAttr);
 
         return button || DocProperties.getElementConfig(elId) ||
                         DocProperties.getFirstButtonByName(elId.replace(/\d/g,''));
+    },
+
+    getFirstButton: function(elId, nameAttr) {
+        return DocProperties.getFirstButtonByName(elId) ||
+            DocProperties.getFirstButtonByName(nameAttr);
     }
 });
