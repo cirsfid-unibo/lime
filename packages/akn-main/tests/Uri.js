@@ -60,19 +60,16 @@ describe ('AknMain.Uri', function () {
         expect(fn).toThrowError('Invalid doc type: "asdasdasd"');
     });
 
+    it ('"/akn/dz/debaterecord/2004-12-21" -> Invalid doc type', function () {
+        var fn = function () { AknMain.Uri.parse('/akn/dz/debaterecord/2004-12-21'); };
+        expect(fn).toThrowError('Invalid doc type: "debaterecord"');
+    });
+
     it ('"/akn/it/act/20122112/..." -> Invalid date: "20122112,..."', function () {
         var fn = function () { AknMain.Uri.parse('/akn/it/act/20122112/...'); };
         expect(fn).toThrowError('Invalid date and subtype: "20122112"');
     });
 
-    it ('"/akn/dz/debaterecord/2004-12-21"', function () {
-        var uriStr = '/akn/dz/debaterecord/2004-12-21';
-        var uri = AknMain.Uri.parse(uriStr);
-        expect(uri.country).toEqual('dz');
-        expect(uri.type).toEqual('debaterecord');
-        expect(uri.date).toEqual('2004-12-21');
-        expect(uri.work()).toEqual(uriStr);
-    });
 
     it ('"/akn/ke/act/decree/MinetryForeightAffairs/2005-07-12/3"', function () {
         var uriStr = '/akn/ke/act/decree/MinetryForeightAffairs/2005-07-12/3';
@@ -98,8 +95,8 @@ describe ('AknMain.Uri', function () {
         expect(uri.expression()).toEqual(uriStr);
     });
 
-    it ('"/akn/it/act/2015-07-21/ita@/main.xml"', function () {
-        var uriStr = '/akn/it/act/2015-07-21/ita@/main.xml';
+    it ('"/akn/it/act/2015-07-21/ita@/!main.xml"', function () {
+        var uriStr = '/akn/it/act/2015-07-21/ita@/!main.xml';
         var uri = AknMain.Uri.parse(uriStr);
         expect(uri.country).toEqual('it');
         expect(uri.type).toEqual('act');
@@ -113,7 +110,7 @@ describe ('AknMain.Uri', function () {
         expect(uri.work()).toEqual('/akn/it/act/2015-07-21/!main');
         expect(uri.work(true)).toEqual('/akn/it/act/2015-07-21');
         expect(uri.expression(true)).toEqual('/akn/it/act/2015-07-21/ita@');
-        expect(uri.manifestation()).toEqual(uriStr+'/!main');
+        expect(uri.manifestation()).toEqual(uriStr);
     });
 
     it ('"/akn/it/act/1970-01-01/ita@/main.xml"', function () {
@@ -148,7 +145,7 @@ describe ('AknMain.Uri', function () {
         expect(uri.date).toEqual('1999-12-17');
         expect(uri.name).toEqual('1');
         expect(uri.language).toEqual('ita');
-        expect(uri.componenet).toEqual('main');
+        expect(uri.component).toEqual('main');
         expect(uri.media).toEqual('xml');
     });
 
@@ -170,18 +167,18 @@ describe ('AknMain.Uri', function () {
     it ('/akn/uy/bill/CRR/CRR/2000-03-26/Asunto4517/spa@2005-03-26/undefined.undefined', function () {
         var uriStr = '/akn/uy/bill/CRR/CRR/2000-03-26/Asunto4517/spa@2005-03-26/undefined.undefined';
         var uri = AknMain.Uri.parse(uriStr);
-        expect(uri.manifestation()).toEqual('/akn/uy/bill/CRR/CRR/2000-03-26/Asunto4517/spa@2005-03-26/undefined.undefined.xml/!undefined.undefined');
+        expect(uri.manifestation()).toEqual('/akn/uy/bill/CRR/CRR/2000-03-26/Asunto4517/spa@2005-03-26/!undefined.undefined.xml');
     });
 
-    it ('/akn/uy/bill/CRR/test/1996-06-08/esp@2002-10-03/main.xml/!main', function () {
-        var uriStr = '/akn/uy/bill/CRR/test/1996-06-08/esp@2002-10-03/main.xml/!main';
+    it ('/akn/uy/bill/CRR/test/1996-06-08/esp@2002-10-03/main.xml', function () {
+        var uriStr = '/akn/uy/bill/CRR/test/1996-06-08/esp@2002-10-03/!main.xml';
         var uri = AknMain.Uri.parse(uriStr);
         expect(uri.work()).toEqual('/akn/uy/bill/CRR/test/1996-06-08/!main');
         expect(uri.expression()).toEqual('/akn/uy/bill/CRR/test/1996-06-08/esp@2002-10-03/!main');
         expect(uri.manifestation()).toEqual(uriStr);
         expect(uri.manifestation(true)).toEqual('/akn/uy/bill/CRR/test/1996-06-08/esp@2002-10-03.xml');
     });
-    
+
 });
 
 

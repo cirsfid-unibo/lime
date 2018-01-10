@@ -120,9 +120,15 @@ Ext.define('AknMain.Uri', {
                 return required(is.date, 'Invalid date')
             });
         });
+
         var version = optional(is.version, function () {
             uri.name = optional(is.anything);
-            return optional(is.anything);
+            var versionCandidate = optional(is.version);
+            while(!versionCandidate && components.length > 0) {
+                optional(is.anything); // Ignore not version part, just consume it
+                versionCandidate = optional(is.version);
+            }
+            return versionCandidate;
         });
 
         if (is.version(version)) {
@@ -143,6 +149,8 @@ Ext.define('AknMain.Uri', {
                             ? uri.component.substring(1) : uri.component;
 
         function optional(test, failure) {
+            if (components.length == 0)
+                return failure ? failure() : undefined;
             var item = components.shift();
             if (test(item)) {
                 return item;
@@ -253,7 +261,7 @@ Ext.define('AknMain.Uri', {
         manifestation: function (forFrbrUri) {
             return this.expression(true) +
                     (forFrbrUri ? '.' + this.media :
-                    '/' + this.component + '.' +this.media + '/!' + this.component);
+                    '/!' + this.component + '.' +this.media);
         },
 
         item: function () {
