@@ -80,7 +80,7 @@ describe ('AknMain.Uri', function () {
         expect(uri.author).toEqual('MinetryForeightAffairs');
         expect(uri.date).toEqual('2005-07-12');
         expect(uri.name).toEqual('3');
-        expect(uri.work()).toEqual(uriStr);
+        expect(uri.work()).toEqual(uriStr.toLocaleLowerCase());
     });
 
     it ('"/akn/ng/bill/2003-05-14/19/eng@first"', function () {
@@ -167,16 +167,16 @@ describe ('AknMain.Uri', function () {
     it ('/akn/uy/bill/CRR/CRR/2000-03-26/Asunto4517/spa@2005-03-26/undefined.undefined', function () {
         var uriStr = '/akn/uy/bill/CRR/CRR/2000-03-26/Asunto4517/spa@2005-03-26/undefined.undefined';
         var uri = AknMain.Uri.parse(uriStr);
-        expect(uri.manifestation()).toEqual('/akn/uy/bill/CRR/CRR/2000-03-26/Asunto4517/spa@2005-03-26/!undefined.undefined.xml');
+        expect(uri.manifestation()).toEqual('/akn/uy/bill/crr/crr/2000-03-26/asunto4517/spa@2005-03-26/!undefined.undefined.xml');
     });
 
     it ('/akn/uy/bill/CRR/test/1996-06-08/esp@2002-10-03/main.xml', function () {
         var uriStr = '/akn/uy/bill/CRR/test/1996-06-08/esp@2002-10-03/!main.xml';
         var uri = AknMain.Uri.parse(uriStr);
-        expect(uri.work()).toEqual('/akn/uy/bill/CRR/test/1996-06-08/!main');
-        expect(uri.expression()).toEqual('/akn/uy/bill/CRR/test/1996-06-08/esp@2002-10-03/!main');
-        expect(uri.manifestation()).toEqual(uriStr);
-        expect(uri.manifestation(true)).toEqual('/akn/uy/bill/CRR/test/1996-06-08/esp@2002-10-03.xml');
+        expect(uri.work()).toEqual('/akn/uy/bill/crr/test/1996-06-08/!main');
+        expect(uri.expression()).toEqual('/akn/uy/bill/crr/test/1996-06-08/esp@2002-10-03/!main');
+        expect(uri.manifestation()).toEqual(uriStr.toLocaleLowerCase());
+        expect(uri.manifestation(true)).toEqual('/akn/uy/bill/crr/test/1996-06-08/esp@2002-10-03.xml');
     });
 
 });

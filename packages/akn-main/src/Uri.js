@@ -232,7 +232,7 @@ Ext.define('AknMain.Uri', {
     // Eg. uri.work()
     uriFunctions: {
         work: function (hideComponent) {
-            return '/akn' +
+            var uri = '/akn' +
                    '/' + this.country +
                    '/' + this.type +
                    (this.subtype ? '/' + this.subtype : '') +
@@ -240,15 +240,17 @@ Ext.define('AknMain.Uri', {
                    '/' + this.date +
                    (this.name ? '/' + this.name : '') +
                    ((this.component && !hideComponent) ? '/!' + this.component : '');
+            return uri.toLocaleLowerCase();
         },
 
         expression: function (hideComponent) {
             var version = ((this.version && this.version != this.date) ? this.version : '');
-            return this.work(true) +
+            var uri = this.work(true) +
                    '/' + this.language +
                    '@' + version +
                    (this.official ? '!' + this.official : '') +
                    ((this.component && !hideComponent) ? '/!' + this.component : '');
+            return uri.toLocaleLowerCase();
         },
 
         /**
@@ -259,9 +261,10 @@ Ext.define('AknMain.Uri', {
          * @returns {string}
          */
         manifestation: function (forFrbrUri) {
-            return this.expression(true) +
+            var uri = this.expression(true) +
                     (forFrbrUri ? '.' + this.media :
                     '/!' + this.component + '.' +this.media);
+            return uri.toLocaleLowerCase();
         },
 
         item: function () {
