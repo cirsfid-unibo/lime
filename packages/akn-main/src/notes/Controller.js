@@ -105,7 +105,7 @@ Ext.define('AknMain.notes.Controller', {
         var marker = LangProp.getNodeLangAttr(node, "marker"),
             placement = LangProp.getNodeLangAttr(node, "placement");
 
-        marker.value = marker.value || index && index+1 || 'note';
+        marker.value = marker.value || Ext.isNumber(index) && index+1 || 'note';
         placement.value = placement.value || "bottom";
 
         if(!tmpRef.querySelector('a')) {
