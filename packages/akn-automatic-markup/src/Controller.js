@@ -2073,7 +2073,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 });
 
                 notesContainer.appendChild(p);
-                notesContainer.setAttribute('akn_name', 'notesContainer');
+                notesContainer.setAttribute(LangProp.attrPrefix+'name', 'notesContainer');
                 nodesToMark[0].parentNode.insertBefore(notesContainer, nodesToMark[0]);
                 var supLinkTemplate = new Ext.Template('<sup><a class="linker" href="#">{markerNumber}</a></sup>');
                 var isArtRef = /(articolo|art\.)(\s)+([ae\d\-\–\, ]+)/;
@@ -2108,6 +2108,7 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
                     tmpElement.setAttribute('noteref', noteId);
                     note.setAttribute('notetmpid', noteId);
+                    note.setAttribute(LangProp.attrPrefix+'marker', marker);
                     note.parentNode.insertBefore(tmpElement, note);
                 });
 
