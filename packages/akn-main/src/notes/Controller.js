@@ -252,9 +252,9 @@ Ext.define('AknMain.notes.Controller', {
             'ref' : noteTmpId
         }));
         node.setAttribute(this.getNoteTmpId(), noteTmpId);
-        // Move the element after the parent to prevent split in parent
+        // Move the element before the parent to prevent split in parent
         try {
-            DomUtils.insertAfter(node, node.parentNode);
+            node.parentNode.parentNode.insertBefore(node, node.parentNode);
         } catch(e) {
             console.error('Insert note', e);
         }
