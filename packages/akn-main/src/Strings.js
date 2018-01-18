@@ -44,24 +44,25 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('AknMain.Application', {
-    override: 'LIME.Application',
+Ext.define('AknMain.Strings', {
+    singleton : true,
 
-    requires: [
-        'AknMain.Strings',
-        'AknMain.parsers.Num',
-        'AknMain.metadata.Store',
-        'AknMain.Reference',
-        'AknMain.notes.Controller',
-        'AknMain.attachments.AttachmentsHandler',
-        'AknMain.components.ComponentsHandler'
-    ],
+    constructor: function() {
+        Locale.addPackageStrings(this);
+    },
 
-    init: function () {
-        Ext.create('AknMain.metadata.Store');
-        this.controllers.push('AknMain.notes.Controller');
-        this.controllers.push('AknMain.attachments.AttachmentsHandler');
-        this.controllers.push('AknMain.components.ComponentsHandler');
-        this.callParent(arguments);
+    get: function(name) {
+        return Locale.getString(name, Ext.getClassName(this));
+    },
+
+    strings: {
+        "en": {
+            "wrongComponentPos": "Component not expected here",
+            "replaceComponentWithRef": "Do you want to insert a <b>componentRef</b> and move this <b>component</b> at the bottom?"
+        },
+        "it": {
+        },
+        "es": {
+        }
     }
 });
