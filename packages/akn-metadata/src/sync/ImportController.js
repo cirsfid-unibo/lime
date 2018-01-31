@@ -71,9 +71,11 @@ Ext.define('AknMetadata.sync.ImportController', {
         var metadata = Ext.getStore('metadata');
         metadata.removeAll();
         try {
-            metaNodes.forEach(function(meta) {
+            metaNodes.forEach(function(meta, index) {
                 var doc = Xml.Document.newDocument(meta, 'akn');
-                this.importDocumentMeta(doc, metadata.newDocument());
+                this.importDocumentMeta(doc, metadata.newDocument({
+                    id: index
+                }));
             }, this);
         } catch (e) {
             console.warn('Exception parsing metadata: ', e);
@@ -98,9 +100,8 @@ Ext.define('AknMetadata.sync.ImportController', {
     },
 
     importDocumentMeta: function(akn, store) {
-        var expUri = akn.getValue('.//akn:FRBRExpression/akn:FRBRuri/@value'),
+        var expUri = akn.getValue('.//akn:FRBRExpression/akn:FRBRthis/@value'),
             uri = expUri ? AknMain.Uri.parse(expUri) : AknMain.Uri.empty();
-
         return main();
 
         function main () {
@@ -335,7 +336,8 @@ Ext.define('AknMetadata.sync.ImportController', {
         }
 
         function importManifestation () {
-            store.set('component', 'main');
+            var component = uri.component || 'main';
+            store.set('component', component);
             store.set('media', 'xml');
             store.setManifestationAuthor(getReference('.//akn:FRBRManifestation/akn:FRBRauthor/@href'));
             store.setManifestationAuthorRole(getReference('.//akn:FRBRManifestation/akn:FRBRauthor/@as'));

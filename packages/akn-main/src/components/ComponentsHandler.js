@@ -82,11 +82,16 @@ Ext.define('AknMain.components.ComponentsHandler', {
         this.createComponentRef(node);
         var componentsNode = this.ensureComponentsNode();
         componentsNode.append(node);
+        var aknId = AknMain.IdGenerator.generateId(node, componentsNode);
+        var idSep = AknMain.IdGenerator.prefixSeparator;
+        var componentName = aknId.lastIndexOf(idSep) >= 0 ?
+                    aknId.substring(aknId.lastIndexOf(idSep)+idSep.length) : aknId;
+        this.wrapCmpContentWithDoc(node, 'doc', componentName);
     },
 
     createComponentRef: function(node) {
         var cmpRefNode = Ext.DomHelper.createDom({
-            tag : 'span'
+            tag: 'span'
         });
         cmpRefNode.setAttribute(LangProp.attrPrefix+"src", '');
         cmpRefNode.setAttribute(LangProp.attrPrefix+"showAs", '');
@@ -94,9 +99,9 @@ Ext.define('AknMain.components.ComponentsHandler', {
         this.application.fireEvent('markingRequest',
             DocProperties.getFirstButtonByName('componentRef'),
             {
-                silent : true,
-                noEvent : true,
-                nodes : [cmpRefNode]
+                silent: true,
+                noEvent: true,
+                nodes: [cmpRefNode]
             }
         );
     },
@@ -108,18 +113,52 @@ Ext.define('AknMain.components.ComponentsHandler', {
         if ( !componentsNode ) {
             var documentEl = this.getController('Editor').getDocumentElement();
             componentsNode = Ext.DomHelper.createDom({
-                tag : 'div',
-                cls : DomUtils.tempParsingClass
+                tag: 'div',
+                cls: DomUtils.tempParsingClass
             });
             documentEl.appendChild(componentsNode);
             this.application.fireEvent('markingRequest',
                 DocProperties.getFirstButtonByName('components'),
                 {
-                    silent : true,
-                    nodes : [componentsNode]
+                    silent: true,
+                    nodes: [componentsNode]
                 }
             );
         }
         return componentsNode;
+    },
+
+    wrapCmpContentWithDoc: function(cmpNode, docType, componentName) {
+        var docNode = Ext.DomHelper.createDom({
+            tag: 'div',
+            cls: DocProperties.getDocClassList(docType)
+        });
+        DomUtils.moveChildrenNodes(cmpNode, docNode);
+        cmpNode.appendChild(docNode);
+        var docId = this.setDocId(docNode);
+        this.setDocMetadata(docId, docType, componentName);
+    },
+
+    setDocId: function(node) {
+        var docId = this.getNewDocId(node.ownerDocument);
+        node.setAttribute(DocProperties.docIdAttribute, docId);
+        return docId;
+    },
+
+    getNewDocId: function(docNode) {
+        var docs = docNode.querySelectorAll('*['+DocProperties.docIdAttribute+']');
+        var lastDoc = docs[docs.length-1];
+        var lastId = parseInt(lastDoc.getAttribute(DocProperties.docIdAttribute));
+        return !isNaN(lastId) ? lastId+1 : 0;
+    },
+
+    setDocMetadata: function(docId, docType, componentName) {
+        var metaStore = Ext.getStore('metadata');
+        var mainDoc = metaStore.getMainDocument();
+        return metaStore.newDocument(Ext.merge(mainDoc.getData(), {
+            type: docType,
+            component: componentName,
+            id: docId
+        }));
     }
 });

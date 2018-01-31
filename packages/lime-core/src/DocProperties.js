@@ -127,8 +127,8 @@ Ext.define('LIME.DocProperties', {
      * Return the correct document's class based
      * on the metadata.
      */
-    getDocClassList : function() {
-        var docType = this.documentInfo.docType;
+    getDocClassList : function(docType) {
+        docType = docType || this.documentInfo.docType;
         return this.docClsTpl.apply({
             docType : docType
         });

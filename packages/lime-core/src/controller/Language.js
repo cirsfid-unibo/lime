@@ -111,7 +111,7 @@ Ext.define('LIME.controller.Language', {
             Locale.strings.progressBar.configurationFiles
         );
         var pluginData = this.getStore('LanguagesPlugin').loadPluginData(docType, config.docLocale);
-        
+
         this.application.fireEvent(
             Statics.eventsNames.progressUpdate,
             Locale.strings.progressBar.configurationFiles
@@ -224,6 +224,11 @@ Ext.define('LIME.controller.Language', {
             meta = docMeta && docMeta.metaDom;
         }
 
+        return this.insertMetaNode(root, meta);
+    },
+
+    insertMetaNode: function(docNode, metaNode) {
+        if (!docNode || !metaNode) return;
         var getMetaNode = function(node) {
             var children = node.children;
             for (var i = 0; i < children.length; i++) {
@@ -232,18 +237,16 @@ Ext.define('LIME.controller.Language', {
             }
         }
 
-        if (meta && root) {
-            var metaDom = Ext.clone(meta);
-            metaDom.setAttribute("class", "meta");
+        var metaDom = Ext.clone(metaNode);
+        metaDom.setAttribute('class', 'meta');
 
-            var prevMeta = getMetaNode(root);
-            if (!prevMeta)
-                root.insertBefore(metaDom, root.firstChild);
-            else
-                prevMeta.parentNode.replaceChild(metaDom, prevMeta);
+        var prevMeta = getMetaNode(docNode);
+        if (!prevMeta)
+            docNode.insertBefore(metaDom, docNode.firstChild);
+        else
+            prevMeta.parentNode.replaceChild(metaDom, prevMeta);
 
-            return metaDom;
-        }
+        return metaDom;
     },
 
     beforeTranslate: function(config, cmp) {

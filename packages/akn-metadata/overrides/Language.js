@@ -56,8 +56,21 @@
     appendMetadata: function() {
         var metaNode = this.callParent(arguments);
         // if the meta are related to the main document
-        if (metaNode && metaNode.parentNode && metaNode.parentNode.hasAttribute(DocProperties.docIdAttribute))
-            this.overwriteMetadata(metaNode, Ext.getStore('metadata').getMainDocument());
+        if (!metaNode || !metaNode.parentNode ||
+                !metaNode.parentNode.hasAttribute(DocProperties.docIdAttribute))
+            return;
+        var metaStore = Ext.getStore('metadata');
+        var mainDocNode = metaNode.parentNode;
+        this.overwriteMetadata(metaNode, metaStore.getMainDocument());
+        var me = this;
+        // Handle components metadata
+        var mainDocNodeId = mainDocNode.getAttribute(DocProperties.docIdAttribute);
+        Ext.each(mainDocNode.querySelectorAll('*['+DocProperties.docIdAttribute+']'), function(docNode) {
+            var docId = docNode.getAttribute(DocProperties.docIdAttribute);
+            if (docId == mainDocNodeId) return;
+            var metaNode = me.insertMetaNode(docNode, docNode.ownerDocument.createElement('div'));
+            me.overwriteMetadata(metaNode, metaStore.getById(docId));
+        });
     },
 
     overwriteMetadata: function(metaNode, store) {
