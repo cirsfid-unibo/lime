@@ -203,6 +203,8 @@ Ext.define('AknMain.Language', {
         });
         this.getController('AknMain.attachments.AttachmentsHandler')
             .handleAttachmentsMetadata(dom);
+        this.getController('AknMain.components.ComponentsHandler')
+            .handleComponentsAttrs(dom);
         return params;
     },
 

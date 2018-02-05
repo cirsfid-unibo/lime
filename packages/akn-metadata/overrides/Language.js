@@ -70,6 +70,7 @@
             if (docId == mainDocNodeId) return;
             var metaNode = me.insertMetaNode(docNode, docNode.ownerDocument.createElement('div'));
             me.overwriteMetadata(metaNode, metaStore.getById(docId));
+            me.addIdPrefix(docNode);
         });
     },
 
@@ -139,6 +140,24 @@
                 node.parentNode.removeChild(node);
             }
         });
+    },
+
+    addIdPrefix: function(docNode) {
+        var idAttr = LangProp.attrPrefix + 'eId';
+        var metaIdAttr = 'eId';
+        var parentId = docNode.parentNode.getAttribute(idAttr);
+        if (!parentId) return;
+
+        var overWriteId = function(idAttr, node) {
+            var idVal = node.getAttribute(idAttr);
+            if (!idVal.startsWith(parentId)) {
+                node.setAttribute(idAttr, parentId+AknMain.IdGenerator.prefixSeparator+idVal);
+            }
+        }
+        // Document elements
+        Ext.each(docNode.querySelectorAll('*['+idAttr+']'), overWriteId.bind(this, idAttr));
+        // Metadata elements
+        Ext.each(docNode.querySelectorAll('*['+metaIdAttr+']'), overWriteId.bind(this, metaIdAttr));
     },
 
     // Replace meta href values from eId to internalId

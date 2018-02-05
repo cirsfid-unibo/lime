@@ -79,22 +79,25 @@ Ext.define('AknMain.components.ComponentsHandler', {
     },
 
     replaceComponentWithRef: function(node) {
-        this.createComponentRef(node);
+        var cmpRef = this.createComponentRef(node);
         var componentsNode = this.ensureComponentsNode();
         componentsNode.append(node);
         var aknId = AknMain.IdGenerator.generateId(node, componentsNode);
         var idSep = AknMain.IdGenerator.prefixSeparator;
         var componentName = aknId.lastIndexOf(idSep) >= 0 ?
                     aknId.substring(aknId.lastIndexOf(idSep)+idSep.length) : aknId;
-        this.wrapCmpContentWithDoc(node, 'doc', componentName);
+        var metaStore = this.wrapCmpContentWithDoc(node, 'doc', componentName);
+        var cmpUri = metaStore.getUri().work();
+        cmpRef.textContent = cmpUri;
+        cmpRef.setAttribute(LangProp.attrPrefix+'src', cmpUri);
     },
 
     createComponentRef: function(node) {
         var cmpRefNode = Ext.DomHelper.createDom({
             tag: 'span'
         });
-        cmpRefNode.setAttribute(LangProp.attrPrefix+"src", '');
-        cmpRefNode.setAttribute(LangProp.attrPrefix+"showAs", '');
+        cmpRefNode.setAttribute(LangProp.attrPrefix+'src', '');
+        cmpRefNode.setAttribute(LangProp.attrPrefix+'showAs', '');
         node.parentNode.insertBefore(cmpRefNode, node);
         this.application.fireEvent('markingRequest',
             DocProperties.getFirstButtonByName('componentRef'),
@@ -104,6 +107,7 @@ Ext.define('AknMain.components.ComponentsHandler', {
                 nodes: [cmpRefNode]
             }
         );
+        return cmpRefNode;
     },
 
     ensureComponentsNode: function() {
@@ -133,10 +137,11 @@ Ext.define('AknMain.components.ComponentsHandler', {
             tag: 'div',
             cls: DocProperties.getDocClassList(docType)
         });
+        docNode.setAttribute(LangProp.attrPrefix+'name', '');
         DomUtils.moveChildrenNodes(cmpNode, docNode);
         cmpNode.appendChild(docNode);
         var docId = this.setDocId(docNode);
-        this.setDocMetadata(docId, docType, componentName);
+        return this.setDocMetadata(docId, docType, componentName);
     },
 
     setDocId: function(node) {
@@ -160,5 +165,32 @@ Ext.define('AknMain.components.ComponentsHandler', {
             component: componentName,
             id: docId
         }));
+    },
+
+    // This function is called before translate by /overrides/Language.js
+    handleComponentsAttrs: function(docDom) {
+        Ext.Array.toArray(
+            docDom.getElementsByClassName('component')
+        ).forEach(function(node) {
+            var cmpDoc = node.getElementsByClassName(DocProperties.documentBaseClass)[0];
+            this.setComponentDocType(node, cmpDoc);
+            this.setComponentDocName(node, cmpDoc);
+        }, this);
+    },
+
+    setComponentDocType: function(cmpNode, docNode) {
+        var docType = cmpNode.getAttribute('akn_type') || 'doc';
+        if (!docNode.classList.contains(docType)) {
+            docNode.setAttribute('class', DocProperties.getDocClassList(docType));
+        }
+        // Remove the akn_type used temporary only here
+        cmpNode.removeAttribute('akn_type');
+    },
+
+    setComponentDocName: function(cmpNode, docNode) {
+        var docName = cmpNode.getAttribute('akn_name') || docNode.classList[1];
+        docNode.setAttribute('akn_name', docName);
+        // Remove the akn_name used temporary only here
+        cmpNode.removeAttribute('akn_name');
     }
 });

@@ -146,7 +146,7 @@ Ext.define('AknMain.attachments.AttachmentsHandler', {
         return node.getElementsByClassName(DocProperties.documentBaseClass)[0];
     },
 
-
+    // This function is called before translate by /overrides/Language.js
     handleAttachmentsMetadata: function(docDom) {
         Ext.Array.toArray(
             docDom.getElementsByClassName('attachment')
