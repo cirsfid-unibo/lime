@@ -67,7 +67,7 @@ Ext.define('AknMain.Language', {
     onNodeChange : function(node, deep) {
         var me = this, fly = Ext.fly(node);
         if (!node) return;
-        
+
         if ( deep === false ) {
             DomUtils.setNodeInfoAttr(node, 'hcontainer', " {data}");
         } else if ( fly && fly.is('.inline')) {
@@ -86,13 +86,13 @@ Ext.define('AknMain.Language', {
             if(documents.length) {
                 Ext.each(documents, function(doc, index) {
                     metaResults.push(Ext.Object.merge(this.processMeta(doc, params), {docDom: doc}));
-                }, this);    
+                }, this);
             } else {
                 metaResults.push(this.processMeta(null, params));
             }
-                   
+
             // Set the properties of main document which is the first docuemnt found
-            // params object contains properties inserted by user, 
+            // params object contains properties inserted by user,
             // metaResults contains properties founded in the document
             metaResults[0].docLang = metaResults[0].docLang || params.docLang;
             metaResults[0].docLocale = metaResults[0].docLocale || params.docLocale;
@@ -114,9 +114,9 @@ Ext.define('AknMain.Language', {
 
     processMeta: function(doc, params) {
         var meta, result = {}, ownDoc;
-        
+
         result.docMarkingLanguage = params.docMarkingLanguage;
-        
+
         if(!doc || !doc.querySelector("*[class="+this.getMetadataClass()+"]")) {
             result.metaDom = this.createBlankMeta();
         }  else {
@@ -125,7 +125,7 @@ Ext.define('AknMain.Language', {
             if (meta && meta.parentNode) {
                 var language = meta.querySelector("*[class=FRBRlanguage]"),
                     country = meta.querySelector("*[class=FRBRcountry]");
-    
+
                 if (language) {
                     result.docLang = language.getAttribute('language');
                 }
@@ -136,11 +136,11 @@ Ext.define('AknMain.Language', {
             }
         }
         if (doc)
-            result.docType = DomUtils.getDocTypeByNode(doc);         
-        
+            result.docType = DomUtils.getDocTypeByNode(doc);
+
         return result;
     },
-    
+
     createBlankMeta: function() {
         var meta = document.createElement('div');
         meta.setAttribute('class', this.getMetadataClass());
@@ -155,7 +155,7 @@ Ext.define('AknMain.Language', {
 
     afterLoad: function(params) {
         this.callParent(arguments);
-        
+
         var documentNode = params.docDom.querySelector('*[class="'+DocProperties.getDocClassList()+'"]');
         if(documentNode && !documentNode.getAttribute("akn_name")) {
             documentNode.setAttribute("akn_name", DocProperties.getDocType());

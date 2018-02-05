@@ -94,7 +94,7 @@ Ext.define('AknMain.attachments.AttachmentsHandler', {
         var attachmentsNodes = DocProperties.getMarkedElementsByName('attachments');
         return (attachmentsNodes.length > 0) ?
                 attachmentsNodes[0].htmlElement : false;
-        
+
     },
 
     moveNodeToDocumentRoot: function(node) {
@@ -146,7 +146,7 @@ Ext.define('AknMain.attachments.AttachmentsHandler', {
         return node.getElementsByClassName(DocProperties.documentBaseClass)[0];
     },
 
-    
+
     handleAttachmentsMetadata: function(docDom) {
         Ext.Array.toArray(
             docDom.getElementsByClassName('attachment')
