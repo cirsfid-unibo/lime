@@ -173,8 +173,10 @@ Ext.define('AknMain.components.ComponentsHandler', {
             docDom.getElementsByClassName('component')
         ).forEach(function(node) {
             var cmpDoc = node.getElementsByClassName(DocProperties.documentBaseClass)[0];
-            this.setComponentDocType(node, cmpDoc);
-            this.setComponentDocName(node, cmpDoc);
+            if (cmpDoc) {
+                this.setComponentDocType(node, cmpDoc);
+                this.setComponentDocName(node, cmpDoc);
+            }
         }, this);
     },
 
