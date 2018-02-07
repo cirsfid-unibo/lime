@@ -210,6 +210,20 @@ describe ('AknMain.Uri', function () {
         var uri = AknMain.Uri.parse(uriStr);
         expect(uri.work()).toEqual(uriStr);
     });
+
+    it ('/akn/sl/act/2004-02-13/2/eng@2004-07-21/!main/schedule_1/table_A', function () {
+        var uriStr = '/akn/sl/act/2004-02-13/2/eng@2004-07-21/!main/schedule_1/table_A';
+        var uri = AknMain.Uri.parse(uriStr);
+        expect(uri.work()).toEqual('/akn/sl/act/2004-02-13/2/!main/schedule_1/table_a');
+        expect(uri.expression()).toEqual(uriStr.toLowerCase());
+    });
+
+    it ('/akn/sl/act/2004-02-13/2/!main/schedule_1/table_A', function () {
+        var uriStr = '/akn/sl/act/2004-02-13/2/!main/schedule_1/table_A';
+        var uri = AknMain.Uri.parse(uriStr);
+        expect(uri.work()).toEqual('/akn/sl/act/2004-02-13/2/!main/schedule_1/table_a');
+    });
+
 });
 
 

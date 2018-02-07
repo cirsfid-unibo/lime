@@ -106,8 +106,6 @@ Ext.define('AknMain.Uri', {
             components = uriStr.split('/'),
             is = this.is;
 
-        if (is.component(components[components.length-1]))
-            uri.component = components.pop();
         required(is.empty, 'Unexpected uri start');
         optional(is.equalTo('akn'));
         uri.country = required(is.country, 'Missing country');
@@ -136,18 +134,27 @@ Ext.define('AknMain.Uri', {
             return versionCandidate;
         });
 
+        var cmpElement = undefined;
         if (is.version(version)) {
             uri.language = version.substring(0, 3);
             uri.version = version.substring(4);
             if (uri.version === '') uri.version = uri.date;
-
-            var lastElement = optional(is.anything);
-            if (lastElement && lastElement.endsWith('.xml')) {
-                uri.media = 'xml';
-                uri.component = lastElement.substring(0, lastElement.length - 4);
-            } else if (lastElement) {
-                uri.component = lastElement;
+            cmpElement = optional(is.anything);
+        } else {
+            cmpElement = version;
+        }
+        if (is.component(cmpElement)) {
+            var componentElements = [];
+            while(cmpElement) {
+                if (cmpElement.endsWith('.xml')) {
+                    uri.media = 'xml';
+                    componentElements.push(cmpElement.substring(0, cmpElement.length - 4));
+                } else {
+                    componentElements.push(cmpElement);
+                }
+                cmpElement = optional(is.anything);
             }
+            uri.component = componentElements.join('/');
         }
 
         uri.component = (uri.component !== undefined && uri.component.charAt(0) == '!')
@@ -224,12 +231,14 @@ Ext.define('AknMain.Uri', {
             return item && !!item.match(/^[a-zA-Z\.]*$/);
         },
         component: function (item) {
-            item = item && item.charAt(0) == '!' ? item.substring(1) : item;
-            return item && [
+            var initCmp = item && item.charAt(0) == '!';
+            item = initCmp ? item.substring(1) : item;
+            item = item && item.endsWith('.xml') ? item.substring(0, item.length - 4) : item;
+            return initCmp || (item && [
                 'main',
                 'table',
                 'schedule'
-            ].indexOf(item) !== -1;
+            ].indexOf(item) !== -1);
         }
     },
 
