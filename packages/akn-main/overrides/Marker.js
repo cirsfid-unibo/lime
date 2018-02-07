@@ -63,6 +63,7 @@ Ext.define('AknMain.Marker', {
         if (this.unMarkFirstMarkedNode && firstMarkedNode) {
             this.unmarkNode(firstMarkedNode);
         }
+        this.unMarkFirstMarkedNode = false;
     },
 
     isAllowedMarking: function (markedNode, node, config) {
