@@ -72,4 +72,11 @@ describe ('AknMain.Reference', function () {
         // should be work level without version part
         expect(ref.ref()).toEqual('/akn/it/act/2015-07-21/!main/#sec_10');
     });
+
+    it ('/akn/un/act/provision/fao/1945-10-16/gro/!main/#rule_xxiii shouldn\'t go in loop', function () {
+        var ref = AknMain.Reference.parse('/akn/un/act/provision/fao/1945-10-16/gro/!main/#rule_xxiii');
+        expect(ref.ref()).toEqual('/akn/un/act/provision/fao/1945-10-16/gro/!main/#rule_xxiii');
+        expect(ref.internal).toEqual(false);
+        expect(ref.id).toEqual('rule_xxiii');
+    });
 });

@@ -103,7 +103,7 @@ Ext.define('AknMain.Uri', {
 
     parse: function (uriStr) {
         var uri = this.empty(),
-            components = uriStr.split('/');
+            components = uriStr.split('/'),
             is = this.is;
 
         if (is.component(components[components.length-1]))
@@ -125,7 +125,12 @@ Ext.define('AknMain.Uri', {
             uri.name = optional(is.anything);
             var versionCandidate = optional(is.version);
             while(!versionCandidate && components.length > 0) {
+                if (is.component(components[0])) {
+                    versionCandidate = optional(is.component);
+                    break;
+                }
                 optional(is.anything); // Ignore not version part, just consume it
+                optional(is.empty); // Cosume enventual empty element
                 versionCandidate = optional(is.version);
             }
             return versionCandidate;

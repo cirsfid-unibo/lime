@@ -137,7 +137,6 @@ describe ('AknMain.Uri', function () {
     it ('/akn/it/judgment/sentenza/cc/1999-12-17/1/2000/ita@/main.xml', function () {
         // Should ignore nonstandard components 2000
         var uri = AknMain.Uri.parse('/akn/it/judgment/sentenza/cc/1999-12-17/1/2000/ita@/main.xml');
-        console.log(uri)
         expect(uri.country).toEqual('it');
         expect(uri.type).toEqual('judgment');
         expect(uri.subtype).toEqual('sentenza');
@@ -179,6 +178,38 @@ describe ('AknMain.Uri', function () {
         expect(uri.manifestation(true)).toEqual('/akn/uy/bill/crr/test/1996-06-08/esp@2002-10-03.xml');
     });
 
+    it ('/akn/un/act/provision/fao/1945-10-16/gro/!main', function () {
+        var uri = AknMain.Uri.parse('/akn/un/act/provision/fao/1945-10-16/gro/!main');
+        expect(uri.component).toEqual('main');
+    });
+
+    it ('/akn/un/act/provision/fao/1945-10-16/gro', function () {
+        var uriStr = '/akn/un/act/provision/fao/1945-10-16/gro';
+        var uri = AknMain.Uri.parse(uriStr);
+        expect(uri.work()).toEqual(uriStr);
+    });
+
+    it ('/akn/un/act/provision/fao/1945-10-16/gro/!main/ shouldn\'t go in loop', function () {
+        var uri = AknMain.Uri.parse('/akn/un/act/provision/fao/1945-10-16/gro/!main/');
+        expect(uri.work()).toEqual('/akn/un/act/provision/fao/1945-10-16/gro/!main');
+    });
+
+    it ('/akn/un/act/provision/fao/1945-10-16/gro/ shouldn\'t go in loop', function () {
+        var uri = AknMain.Uri.parse('/akn/un/act/provision/fao/1945-10-16/gro/');
+        expect(uri.work()).toEqual('/akn/un/act/provision/fao/1945-10-16/gro');
+    });
+
+    it ('/akn/sl/act/2004-02-13/2', function () {
+        var uriStr = '/akn/sl/act/2004-02-13/2';
+        var uri = AknMain.Uri.parse(uriStr);
+        expect(uri.work()).toEqual(uriStr);
+    });
+
+    it ('/akn/ng/bill/2003-05-14/19', function () {
+        var uriStr = '/akn/ng/bill/2003-05-14/19';
+        var uri = AknMain.Uri.parse(uriStr);
+        expect(uri.work()).toEqual(uriStr);
+    });
 });
 
 
