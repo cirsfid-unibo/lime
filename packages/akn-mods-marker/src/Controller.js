@@ -238,6 +238,7 @@ Ext.define('AknModsMarker.Controller', {
     showModInfo: function(node) {
         var mod = this.getModFromNode(node, 'passive');
         if(!mod || !mod.modElement) return;
+        this.showSourceRef(node, mod);
         switch(mod.textMod.get('modType')) {
             case "substitution":
                 if(mod.modElement.get('type') == 'new')
@@ -250,6 +251,24 @@ Ext.define('AknModsMarker.Controller', {
 
     showOldText: function(node, oldText) {
         this.openedForm = this.createAndShowFloatingForm(node, AknModsMarker.Strings.get('oldText'), oldText.trim(), true);
+    },
+
+    showSourceRef: function(node, mod) {
+        var tagAttrController = this.getController('AknMetadata.tagAttributes.Controller');
+        var source = mod.textMod.getSourceDestinations('source')[0];
+        var panel = this.creteSourceUriPanel(source);
+        panel.setTitle(AknModsMarker.Strings.get('sourceOf')+ ' ' +AknModsMarker.Strings.get(mod.textMod.get('modType')));
+        tagAttrController.showNodeAttributes(node, panel);
+    },
+
+    creteSourceUriPanel: function(source) {
+        var tagAttrController = this.getController('AknMetadata.tagAttributes.Controller');
+        var uri = source.get('href');
+        return tagAttrController.createRefPanel(uri, function(uri) {
+            if (!uri) return;
+            source.set('href', uri);
+            return true;
+        });
     },
 
     nodesUnmarked: function(nodesIds) {

@@ -107,8 +107,8 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
         return true;
     },
 
-    showNodeAttributes: function(node) {
-        var panel = this.getAttributePanel(node);
+    showNodeAttributes: function(node, panel) {
+        panel = panel || this.getAttributePanel(node);
         if (!panel) return;
         this.tagAttributesTab = this.tagAttributesTab || this.addTab();
         this.tagAttributesTab.removeAll(true);
@@ -128,7 +128,7 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
             case 'del':
                 return;
             case 'ref':
-                return this.createRefPanel(node);
+                return this.createRefNodePanel(node);
             case 'role':
                 return this.createNodeRefsPanel(node, [{
                     attr: 'refersTo',
@@ -182,13 +182,27 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
         return [];
     },
 
-    createRefPanel: function(node) {
+    createRefNodePanel: function(node) {
+        var hrefAttr = LangProp.attrPrefix+'href';
+        var href = node.getAttribute(hrefAttr);
+        return this.createRefPanel(href, function(uri) {
+            if (!uri) return;
+            node.setAttribute(hrefAttr, uri);
+            if (href !== uri) {
+                var attrs = {};
+                attrs[hrefAttr] = {value: uri, oldValue: href};
+                Ext.GlobalEvents.fireEvent('nodeAttributesChanged', node, attrs);
+            }
+            return true;
+        });
+    },
+
+    createRefPanel: function(uri, onSaveUri) {
         var me = this;
-        var attribute = LangProp.attrPrefix+'href';
-        var href = node.getAttribute(attribute);
         var ref = null;
+        if (!onSaveUri) return;
         try {
-            ref = AknMain.Reference.parse(href);
+            ref = AknMain.Reference.parse(uri);
         } catch (e) {
             console.error(e);
         }
@@ -239,14 +253,9 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
                 return;
             }
             if (href.length > 1) {
-                var oldValue = node.getAttribute(attribute);
-                node.setAttribute(attribute, href);
-                refPanel.down("#successSaveLabel").setVisible(true);
-                me.closeContextPanel();
-                if (href !== oldValue) {
-                    var attrs = {};
-                    attrs[attribute] = {value: href, oldValue: oldValue};
-                    Ext.GlobalEvents.fireEvent('nodeAttributesChanged', node, attrs);
+                if (onSaveUri(href)) {
+                    refPanel.down("#successSaveLabel").setVisible(true);
+                    me.closeContextPanel();
                 }
             }
         };

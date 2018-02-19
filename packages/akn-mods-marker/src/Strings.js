@@ -87,7 +87,8 @@
             "exclusion": "Exclusion",
             "redline": "Redline",
             "redlineMultiple": "Redline multiple",
-            "setRefs": "Set refs"
+            "setRefs": "Set refs",
+            "sourceOf": "Source of"
         },
         "it": {
             "insertion": "Inserimento",
