@@ -256,6 +256,7 @@ Ext.define('AknModsMarker.Controller', {
     showSourceRef: function(node, mod) {
         var tagAttrController = this.getController('AknMetadata.tagAttributes.Controller');
         var source = mod.textMod.getSourceDestinations('source')[0];
+        if (!source) return;
         var panel = this.creteSourceUriPanel(source);
         panel.setTitle(AknModsMarker.Strings.get('sourceOf')+ ' ' +AknModsMarker.Strings.get(mod.textMod.get('modType')));
         tagAttrController.showNodeAttributes(node, panel);
@@ -1397,7 +1398,8 @@ Ext.define('AknModsMarker.Controller', {
     insertionHandler: function(button, markedElements) {
         var node = markedElements[0];
         var meta = {
-            sourceDestinations: [{type:'destination', href: node.getAttribute(DomUtils.elementIdAttribute)}]
+            sourceDestinations: [{type:'source', href: ''},
+                                {type:'destination', href: node.getAttribute(DomUtils.elementIdAttribute)}]
         };
         this.setModDataAttributes(node, "insertion");
         return this.addPassiveMeta(node, 'insertion', meta);;
@@ -2189,7 +2191,8 @@ Ext.define('AknModsMarker.Controller', {
 
     addDelMeta: function(node, oldText, textBefore, textAfter) {
         var meta = {
-            sourceDestinations: [{type:'destination', href: node.getAttribute(DomUtils.elementIdAttribute)}],
+            sourceDestinations: [{type:'source', href: ''},
+                                {type:'destination', href: node.getAttribute(DomUtils.elementIdAttribute)}],
             textualChanges: [{type: 'old', content: oldText, textBefore: textBefore, textAfter: textAfter}]
         };
         return this.addPassiveMeta(node, 'repeal', meta);
@@ -2228,7 +2231,8 @@ Ext.define('AknModsMarker.Controller', {
         this.removeMod(elId); // Remove the possibly existing mod
 
         var meta = {
-            sourceDestinations: [{type:'destination', href: destId}],
+            sourceDestinations: [{type:'source', href: ''},
+                                {type:'destination', href: destId}],
             textualChanges: [
                 {type: 'old', content: oldText, textBefore: textBefore, textAfter: textAfter},
                 {type: 'new', href: elId}]
