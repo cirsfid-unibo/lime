@@ -265,6 +265,9 @@ Ext.define('AknModsMarker.Controller', {
     creteSourceUriPanel: function(source) {
         var tagAttrController = this.getController('AknMetadata.tagAttributes.Controller');
         var uri = source.get('href');
+        if (uri) {
+            uri = (uri.startsWith('/') || uri.startsWith('#')) ? uri : '#'+uri;
+        }
         return tagAttrController.createRefPanel(uri, function(uri) {
             if (!uri) return;
             source.set('href', uri);
@@ -593,8 +596,10 @@ Ext.define('AknModsMarker.Controller', {
 
         me.getTextualMods('passive').forEach(function(mod) {
             //TODO: check if destination href for substitution needs id update
-            var modEls = mod.getSourceDestinations('destination')
-
+            var modEls = mod.getSourceDestinations('destination');
+            if (mod.get('modType') == 'substitution') {
+                modEls = mod.getTextualChanges('new');
+            }
             var oldText = mod.getOldText();
             modEls.forEach(function(rec) {
                 var modNode = setModAttrs(mod, rec);
@@ -2228,10 +2233,16 @@ Ext.define('AknModsMarker.Controller', {
             parent = this.ensureHcontainerNode(node),
             destId = (parent) ? parent.getAttribute(DomUtils.elementIdAttribute) : elId;
 
-        this.removeMod(elId); // Remove the possibly existing mod
+        var oldMod = this.modsMap[elId];
+        var sourceHref = '';
+        if (oldMod) {
+            var source =  oldMod.getSourceDestinations('source')[0];
+            sourceHref = source ? source.get('href') : sourceHref;
+            this.removeMod(elId); // Remove the possibly existing mod
+        }
 
         var meta = {
-            sourceDestinations: [{type:'source', href: ''},
+            sourceDestinations: [{type:'source', href: sourceHref},
                                 {type:'destination', href: destId}],
             textualChanges: [
                 {type: 'old', content: oldText, textBefore: textBefore, textAfter: textAfter},
