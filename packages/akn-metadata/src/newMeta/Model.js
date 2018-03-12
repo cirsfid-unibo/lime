@@ -51,5 +51,51 @@ Ext.define('AknMetadata.newMeta.Model', {
 
     data: {
         document: null
+    },
+
+    stores: {
+        passiveModifications: {
+            source: '{document.modifications}',
+            filters: [{
+                property: 'amendmentType',
+                value: 'passive'
+            }],
+            listeners: {
+                datachanged: function() {
+                    this.each(function(record) {
+                        // This is a hack that brings up data from descendants records
+                        // in order to show it in the grid
+                        // TODO: move this to modification model
+                        var source = record.getSourceDestinations('source')[0];
+                        source = source && source.get('href');
+                        var destination = record.getSourceDestinations('destination')[0];
+                        destination = destination && destination.get('href');
+                        var old = record.getTextualChanges('old')[0];
+                        old = old && old.get('content');
+                        var newHref = record.getTextualChanges('new')[0];
+                        newHref = newHref && newHref.get('href');
+                        record.data = Ext.merge(record.data, {
+                            _source: source || '',
+                            _destination: destination || '',
+                            _new: newHref || '',
+                            _old: old || ''
+                        });
+                    });
+                }
+            }
+        }
+    },
+
+    formulas: {
+        passive: {
+            bind: '{passiveModifications}',
+            get: function(store) {
+                return store;
+            }
+        }
+    },
+
+    setData: function() {
+        this.callParent(arguments);
     }
 });

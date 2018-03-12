@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 - Copyright holders CIRSFID and Department of
+ * Copyright (c) 2016 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
  *
  * Authors:
@@ -44,48 +44,33 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Metadata editor for the AknMain.metadata.Store
-// Todo: add validation/display errors
-Ext.define('AknMetadata.newMeta.Editor', {
-    extend: 'Ext.tab.Panel',
-    xtype: 'akn-metadata-editor',
-
+Ext.define('AknMetadata.newMeta.ModificationTab', {
+    extend: 'AknMetadata.newMeta.EditorTab',
+    xtype: 'akn-metadata-tab-modification',
     requires: [
-        'AknMetadata.newMeta.Model',
-        'AknMetadata.newMeta.Controller',
-        'AknMetadata.newMeta.DocumentTab',
-        'AknMetadata.newMeta.PublicationTab',
-        'AknMetadata.newMeta.LifecycleTab',
-        'AknMetadata.newMeta.WorkflowTab',
-        'AknMetadata.newMeta.ClassificationTab',
-        'AknMetadata.newMeta.ReferenceTab',
-        'AknMetadata.newMeta.ModificationTab'
+        'AknMetadata.newMeta.EditorTab',
+        'AknMetadata.newMeta.ModificationTable'
     ],
+    title: Locale.getString('modifications', 'akn-metadata'),
+    glyph: 'xf044@FontAwesome',
+    layout: 'fit',
 
-    controller: 'akn-metadata',
-    viewModel: {
-        type: 'akn-metadata'
-    },
-
-    tabPosition: 'left',
-    tabRotation: 0,
-    tabBar: {
-        border: false
-    },
-
-    defaults: {
-        textAlign: 'left',
-        bodyPadding: 15
-    },
-
-    items: [
-        { xtype: 'akn-metadata-tab-document' },
-        { xtype: 'akn-metadata-tab-publication' },
-        { xtype: 'akn-metadata-tab-lifecycle' },
-        { xtype: 'akn-metadata-tab-workflow' },
-        { xtype: 'akn-metadata-tab-classification' },
-        { xtype: 'akn-metadata-tab-reference' },
-        { xtype: 'akn-metadata-tab-modification' }
-    ]
-});
-
+    items:[{
+        xtype: 'tabpanel',
+        items: [{
+            xtype: 'panel',
+            layout: 'fit',
+            title: Locale.getString('passiveModifications', 'akn-metadata'),
+            items: [{
+                xtype: 'metadatamodificationtable',
+                bind: {
+                    store: '{passive}'
+                }
+            }]
+        },{
+            xtype: 'panel',
+            title: Locale.getString('activeModifications', 'akn-metadata'),
+            disabled: true
+        }]
+    }]
+})

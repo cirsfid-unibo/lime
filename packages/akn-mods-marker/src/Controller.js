@@ -600,12 +600,18 @@ Ext.define('AknModsMarker.Controller', {
             if (mod.get('modType') == 'substitution') {
                 modEls = mod.getTextualChanges('new');
             }
+            var isLinked = false;
             var oldText = mod.getOldText();
             modEls.forEach(function(rec) {
                 var modNode = setModAttrs(mod, rec);
-                if (modNode && oldText)
-                    modNode.setAttribute('data-old-text', oldText);
+                if (modNode) {
+                    isLinked = true;
+                    if (oldText) {
+                        modNode.setAttribute('data-old-text', oldText);
+                    }
+                }
             });
+            mod.set('_isLinked', isLinked);
         });
     },
 
@@ -1305,7 +1311,8 @@ Ext.define('AknModsMarker.Controller', {
             amendmentType: 'passive',
             type: 'textualMod',
             modType: type,
-            eid: this.getTextualModId()
+            eid: this.getTextualModId(),
+            _isLinked: true
         }, meta.extraData);
         var mod = this.getModifications().add(data)[0];
         this.modsMap[node.getAttribute(DomUtils.elementIdAttribute)] = mod;
