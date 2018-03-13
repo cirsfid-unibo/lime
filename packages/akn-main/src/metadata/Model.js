@@ -306,6 +306,20 @@ Ext.define('AknMain.metadata.Modification', {
         return this.getTextualChanges('old').map(function(old) {
                 return old.get('content');
             }).join(' ').trim();
+    },
+
+    getAllData: function() {
+        var getData = function(rec) {
+            return rec.getData();
+        };
+
+        var data = Ext.clone(this.getData());
+        data['source'] = this.getSourceDestinations('source').map(getData);
+        data['destination'] = this.getSourceDestinations('destination').map(getData);
+        data['old'] = this.getTextualChanges('old').map(getData);
+        data['new'] = this.getTextualChanges('new').map(getData);
+
+        return data;
     }
 });
 

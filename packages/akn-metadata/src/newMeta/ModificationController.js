@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 - Copyright holders CIRSFID and Department of
+ * Copyright (c) 2015 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
  *
  * Authors:
@@ -44,76 +44,42 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('AknMetadata.newMeta.ModificationTable', {
-    extend: 'Ext.grid.Panel',
-    alias: 'widget.metadatamodificationtable',
+Ext.define('AknMetadata.newMeta.ModificationController', {
+    extend: 'Ext.app.ViewController',
+    alias: 'controller.akn-metadata-modification',
 
-    requires: ['AknMetadata.newMeta.ReferenceCombo'],
-
-    columns: [
-        {
-            text: Locale.getString('eId', 'akn-metadata'),
-            dataIndex: 'eid'
-        },
-        {
-            text: Locale.getString('type', 'akn-metadata'),
-            dataIndex: 'modType'
-        },
-        {
-            text: Locale.getString('source', 'akn-metadata'),
-            dataIndex: '_source',
-            cellTooltip: true
-        },
-        {
-            text: Locale.getString('destination', 'akn-metadata'),
-            dataIndex: '_destination',
-            renderer: function(value, metadata, record) {
-                metadata.tdAttr = 'data-qtip="' + record.get('_destination') + '"';
-                return value;
-            }
-        },
-        {
-            text: Locale.getString('new', 'akn-metadata'),
-            dataIndex: '_new'
-        },
-        {
-            text: Locale.getString('old', 'akn-metadata'),
-            dataIndex: '_old',
-            flex: 1,
-            cellWrap: true
-        }
-    ],
-
-    listeners: {
-        itemclick: 'onItemClick'
-    },
-
-    viewConfig: {
-        stripeRows: false,
-        getRowClass: function(record) {
-            return record.get('_isLinked') ? '' : 'forbidden-cell';
+    onItemClick: function(grid, record) {
+        var nodeId = record.data['_new'] || record.data['_destination'];
+        var node = nodeId && DocProperties.getMarkedElement(nodeId);
+        if (node) {
+            Ext.GlobalEvents.fireEvent('nodeFocusedExternally', node.htmlElement, {
+                select : true,
+                scroll : true
+            });
+            record.set('_isLinked', true);
+        } else {
+            record.set('_isLinked', false);
         }
     },
 
-    tools: [{
-        type: 'minus',
-        tooltip: Locale.getString('removeItem', 'akn-metadata'),
-        callback: 'onItemRemove'
-    }],
+    onItemRemove: function(grid) {
+        var selectedRows = grid.getSelection();
+        if (selectedRows.length == 0) return;
+        this.deleteConfirm(selectedRows[0].get('eid'), function() {
+            grid.getStore().remove(selectedRows);
+        });
+    },
 
-    initComponent: function() {
-        var renderer = function(value, metadata, record, rowIndex, colIndex) {
-            var headerCt = this.getHeaderContainer(),
-                column = headerCt.getHeaderAtIndex(colIndex);
-
-            metadata.tdAttr = 'data-qtip="' + record.get(column.dataIndex) + '"';
-            return value;
-        }
-        Ext.each(this.columns, function(column) {
-            if (!column.renderer && column.cellTooltip) {
-                column.renderer = renderer
+    deleteConfirm: function(ruleName, fn) {
+        var msg = new Ext.Template(AknMetadata.Strings.get('deleteModMsg')).apply({
+            name: ruleName
+        });
+        Ext.Msg.confirm(
+            AknMetadata.Strings.get('deleteMod'),
+            msg,
+            function(res){
+                if (res === 'yes') fn();
             }
-        })
-        this.callParent(arguments);
+        );
     }
 });

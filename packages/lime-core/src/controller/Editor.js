@@ -83,7 +83,8 @@ Ext.define('LIME.controller.Editor', {
     listen: {
         global: {
             scrollToActiveNode: 'scrollToShowActiveNode',
-            nodeAttributesChanged: 'onChangeAttribute'
+            nodeAttributesChanged: 'onChangeAttribute',
+            nodeFocusedExternally: 'focus'
         },
         controller: {
             '#Outliner': {

@@ -63,22 +63,17 @@ Ext.define('AknMetadata.newMeta.Model', {
             listeners: {
                 datachanged: function() {
                     this.each(function(record) {
+                        var data = record.getAllData();
+                        var getFirstVal = function(key, attr) {
+                            return data[key][0] && data[key][0][attr] || '';
+                        };
                         // This is a hack that brings up data from descendants records
                         // in order to show it in the grid
-                        // TODO: move this to modification model
-                        var source = record.getSourceDestinations('source')[0];
-                        source = source && source.get('href');
-                        var destination = record.getSourceDestinations('destination')[0];
-                        destination = destination && destination.get('href');
-                        var old = record.getTextualChanges('old')[0];
-                        old = old && old.get('content');
-                        var newHref = record.getTextualChanges('new')[0];
-                        newHref = newHref && newHref.get('href');
                         record.data = Ext.merge(record.data, {
-                            _source: source || '',
-                            _destination: destination || '',
-                            _new: newHref || '',
-                            _old: old || ''
+                            _source: getFirstVal('source', 'href'),
+                            _destination: getFirstVal('destination', 'href'),
+                            _new: getFirstVal('new', 'href'),
+                            _old: getFirstVal('old', 'content')
                         });
                     });
                 }

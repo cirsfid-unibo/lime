@@ -47,10 +47,15 @@
 Ext.define('AknMetadata.newMeta.ModificationTab', {
     extend: 'AknMetadata.newMeta.EditorTab',
     xtype: 'akn-metadata-tab-modification',
+
     requires: [
+        'AknMetadata.newMeta.ModificationController',
         'AknMetadata.newMeta.EditorTab',
         'AknMetadata.newMeta.ModificationTable'
     ],
+
+    controller: 'akn-metadata-modification',
+
     title: Locale.getString('modifications', 'akn-metadata'),
     glyph: 'xf044@FontAwesome',
     layout: 'fit',
