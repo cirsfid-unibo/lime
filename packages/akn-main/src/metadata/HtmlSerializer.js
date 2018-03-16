@@ -316,6 +316,36 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
             return res.concat(mapData(store));
         }
 
+        function getModRefs(mods) {
+            var passiveSources = [];
+            var activeSources = [];
+
+            mods.forEach(function(mod) {
+                var sources = mod.sourceDestinations.filter(function(obj) {
+                    return obj.type == 'source' && obj.href.length > 0;
+                });
+                if (sources.length == 0) return;
+                if (mod.amendmentType == 'passive') {
+                    passiveSources = passiveSources.concat(sources);
+                } else if(mod.amendmentType == 'active') {
+                    activeSources = activeSources.concat(sources);
+                }
+            });
+
+            var createRefObj = function(type, source, index) {
+                return {
+                    type: type,
+                    eid: type+'_' + (index+1),
+                    href: source.href,
+                    showAs:''
+                }
+            }
+
+            var references = passiveSources.map(createRefObj.bind(this, 'passiveRef'));
+            references = references.concat(activeSources.map(createRefObj.bind(this, 'activeRef')));
+            return references;
+        }
+
         var data = model.getData();
         data.date = AknMain.metadata.XmlSerializer.normalizeDate(data.date);
         data.version = AknMain.metadata.XmlSerializer.normalizeDate(data.version);
@@ -335,6 +365,9 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
                                             return !keyword.discardEmpty || keyword.href;
                                         });
         data.modifications = mapModifications(model.modifications());
+
+        data.references = data.references.concat(getModRefs(data.modifications));
+
         data.temporalGroups = mapTemporalGroups(model.temporalGroups());
         data.mappings = mapData(model.mappings()).map(mapMapping);
 

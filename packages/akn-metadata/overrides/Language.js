@@ -127,7 +127,8 @@
     // Remove all meta references that are not referenced in the document
     removeNotDetachedReferences: function(doc) {
         // It would be cool to do this with one query
-        var query = '//*[@class="references"]/*[@eId and @class != "hasAttachment" and @class != "attachmentOf"]';
+        // TODO: build this query from a list of allowed not linked references
+        var query = '//*[@class="references"]/*[@eId and @class != "hasAttachment" and @class != "attachmentOf" and @class != "passiveRef" and @class != "activeRef"]';
         var referingToTpl = new Ext.Template(
             '//*[@refersTo = "#{0}" or @akn_refersto = "#{0}" or @source = "#{0}"]'
         );
