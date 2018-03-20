@@ -59,25 +59,7 @@ Ext.define('AknMetadata.newMeta.Model', {
             filters: [{
                 property: 'amendmentType',
                 value: 'passive'
-            }],
-            listeners: {
-                datachanged: function() {
-                    this.each(function(record) {
-                        var data = record.getAllData();
-                        var getFirstVal = function(key, attr) {
-                            return data[key][0] && data[key][0][attr] || '';
-                        };
-                        // This is a hack that brings up data from descendants records
-                        // in order to show it in the grid
-                        record.data = Ext.merge(record.data, {
-                            _source: getFirstVal('source', 'href'),
-                            _destination: getFirstVal('destination', 'href'),
-                            _new: getFirstVal('new', 'href'),
-                            _old: getFirstVal('old', 'content')
-                        });
-                    });
-                }
-            }
+            }]
         }
     },
 
