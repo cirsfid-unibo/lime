@@ -258,12 +258,7 @@ Ext.define('AknMain.metadata.Modification', {
         { name: 'condition', type: 'string' },
         { name: 'conditionFrozen', type: 'string' },
         { name: 'exclusion', type: 'boolean' },
-        { name: 'incomplete', type: 'boolean' },
-        // These are computed from children stores
-        { name: '_source', type: 'string' },
-        { name: '_destination', type: 'string' },
-        { name: '_new', type: 'string' },
-        { name: '_old', type: 'string' }
+        { name: 'incomplete', type: 'boolean' }
     ],
 
     validators: {
@@ -311,26 +306,6 @@ Ext.define('AknMain.metadata.Modification', {
         return this.getTextualChanges('old').map(function(old) {
                 return old.get('content');
             }).join(' ').trim();
-    },
-
-    constructor: function() {
-        this.callParent(arguments);
-        this.fillComputedData();
-        this.sourceDestinations().on('update', this.fillComputedData.bind(this));
-        // this.sourceDestinations().on('datachanged', this.fillComputedData.bind(this));
-        this.textualChanges().on('update', this.fillComputedData.bind(this));
-        // this.textualChanges().on('datachanged', this.fillComputedData.bind(this));
-    },
-    // This is a temporary hack that brings up data from descendants records
-    fillComputedData: function() {
-        var data = this.getAllData();
-        var getFirstVal = function(key, attr) {
-            return data[key][0] && data[key][0][attr] || '';
-        };
-        this.set('_source', getFirstVal('source', 'href'));
-        this.set('_destination', getFirstVal('destination', 'href'));
-        this.set('_old', getFirstVal('old', 'content'));
-        this.set('_new', getFirstVal('new', 'href'));
     },
 
     getAllData: function() {

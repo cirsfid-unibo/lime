@@ -69,7 +69,7 @@ Ext.define('AknMetadata.newMeta.ModificationTab', {
             items: [{
                 xtype: 'metadatamodificationtable',
                 bind: {
-                    store: '{passive}'
+                    store: '{passiveModifications}'
                 }
             }]
         },{

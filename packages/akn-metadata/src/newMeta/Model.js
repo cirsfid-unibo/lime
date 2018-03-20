@@ -55,20 +55,12 @@ Ext.define('AknMetadata.newMeta.Model', {
 
     stores: {
         passiveModifications: {
-            source: '{document.modifications}',
+            model: 'AknMain.metadata.Modification',
+            autoLoad: false, // Data is loaded by ModificationController
             filters: [{
                 property: 'amendmentType',
                 value: 'passive'
             }]
-        }
-    },
-
-    formulas: {
-        passive: {
-            bind: '{passiveModifications}',
-            get: function(store) {
-                return store;
-            }
         }
     },
 

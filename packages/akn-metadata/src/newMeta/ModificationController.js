@@ -48,6 +48,58 @@ Ext.define('AknMetadata.newMeta.ModificationController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.akn-metadata-modification',
 
+    listen: {
+        store: {
+            '*': {
+                remove: 'onStoreAddRemove',
+                add: 'onStoreAddRemove',
+                update: 'onStoreChanged'
+            }
+        }
+    },
+
+    onStoreAddRemove: function(store, records) {
+        var record = records[0];
+        if (this.isRelevantChange(record))
+            this.updateGridStore();
+    },
+
+    onStoreChanged: function(store, record, operation) {
+        if (operation != 'edit') return;
+        if (this.isRelevantChange(record))
+            this.updateGridStore();
+    },
+
+    isRelevantChange: function(record) {
+        if (!record) return false;
+        switch(record.$className) {
+            case 'AknMain.metadata.Modification':
+            case 'AknMain.metadata.SourceDestination':
+            case 'AknMain.metadata.TextualChange':
+                return true;
+            default:
+                return false;
+        }
+    },
+
+    updateGridStore: Utilities.events.debounce(function() {
+        var store = this.getViewModel().getStore('passiveModifications');
+        var mainDoc = Ext.getStore('metadata').getMainDocument();
+        var records = [];
+        mainDoc.modifications().each(function(record) {
+            var data = record.getAllData();
+            var getFirstVal = function(key, attr) {
+                return data[key][0] && data[key][0][attr] || '';
+            };
+            data['_source'] = getFirstVal('source', 'href');
+            data['_destination'] = getFirstVal('destination', 'href');
+            data['_old'] = getFirstVal('old', 'content');
+            data['_new'] = getFirstVal('new', 'href');
+            records.push(data);
+        });
+        store.setData(records);
+    }, 500),
+
     onItemClick: function(grid, record) {
         var nodeId = record.data['_new'] || record.data['_destination'];
         var node = nodeId && DocProperties.getMarkedElement(nodeId);
