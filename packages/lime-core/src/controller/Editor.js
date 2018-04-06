@@ -201,6 +201,13 @@ Ext.define('LIME.controller.Editor', {
     },
 
     ensureContentWrapperPosition: function (wrapper) {
+        var docId = wrapper.getAttribute(DocProperties.docIdAttribute);
+        var isSameDocNode = function(node) {
+            return node != wrapper &&
+            node.nodeType == node.ELEMENT_NODE &&
+            node.classList.contains(DocProperties.documentBaseClass) &&
+            node.getAttribute(DocProperties.docIdAttribute) == docId;
+        };
         var prev = wrapper.previousSibling;
         while (prev) {
             var previousSibling = prev.previousSibling;
@@ -215,6 +222,11 @@ Ext.define('LIME.controller.Editor', {
             var nextSibling = next.nextSibling;
             if (this.ensureContentWrapperNodeCheck(next)) {
                 wrapper.appendChild(next);
+            } else if (isSameDocNode(next)) {
+                // merge duplicated nodes that are created when Shift+Enter
+                // is pressed if the document is empty
+                DomUtils.moveChildrenNodes(next, wrapper, true);
+                next.parentNode.removeChild(next);
             }
             next = nextSibling;
         }
