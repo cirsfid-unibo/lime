@@ -49,8 +49,11 @@ Ext.define('AknMain.Editor', {
 
     ensureContentWrapperNodeCheck: function (node) {
         return this.callParent(arguments) &&
-            DomUtils.getNameByNode(node) != 'components' &&
-            DomUtils.getNameByNode(node) != 'attachments';
+            (node.nodeType == node.TEXT_NODE ||
+                (node.nodeType == node.ELEMENT_NODE &&
+                DomUtils.getNameByNode(node) != 'components' &&
+                DomUtils.getNameByNode(node) != 'attachments')
+            );
     },
 
     getDocumentUri: function() {

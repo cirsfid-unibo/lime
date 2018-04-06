@@ -221,7 +221,8 @@ Ext.define('LIME.controller.Editor', {
     },
 
     ensureContentWrapperNodeCheck: function (node) {
-        return node.getAttribute(DomUtils.elementIdAttribute);
+        return node.nodeType == node.TEXT_NODE ||
+                node.nodeType == node.ELEMENT_NODE && node.getAttribute(DomUtils.elementIdAttribute);
     },
 
     showContextMenu: function(ed, e) {
