@@ -107,7 +107,7 @@ Ext.define('NirTranspiler.controller.NirPreview', {
     // Our XSLT expects a specific version of AKN 3.
     // This is a hack which may cause bugs.
     forceLatestVersion: function (aknXml) {
-        var targetNamespace = 'http://docs.oasis-open.org/legaldocml/ns/akn/3.0/WD17',
+        var targetNamespace = 'http://docs.oasis-open.org/legaldocml/ns/akn/3.0',
             schemaReg = Config.getLanguageConfig().schemaRegex,
             schemaMatch = schemaReg && aknXml.match(schemaReg);
         if (schemaMatch && schemaMatch[1])
