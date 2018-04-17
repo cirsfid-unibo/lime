@@ -511,6 +511,9 @@ Ext.define('LIME.controller.Storage', {
     // Create a new document using the default configurations from fieldsDefault
     // or the first types available
     createNewDefaultDocument: function() {
+        if (!Config.getLanguage())
+            return this.createNewDefaultDocumentLangSpecific();
+
         var config = Ext.clone(Config.fieldsDefaults);
 
         // Ensure the filling of the required configurations
@@ -519,6 +522,11 @@ Ext.define('LIME.controller.Storage', {
         config.docLocale = config.docLocale || docLocales[0].name;
         config.docLang = config.docLang || 'eng';
         this.createNewDocument(config);
+    },
+
+    // To be overriden by language package
+    createNewDefaultDocumentLangSpecific: function() {
+        console.warn('Cannot create default document because the Storage.createNewDefaultDocumentLangSpecific is not overriden by language package.');
     },
 
     // Create a new document, this consists of loading an empty document

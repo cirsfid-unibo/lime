@@ -1062,53 +1062,22 @@ Ext.define('LIME.controller.Editor', {
      * @private
      */
     tinyInit: function() {
-        var me = this;
-
-        /* Load exemple document if there is no saved document */
-
         if (!User.preferences.lastOpened) {
-            Ext.Ajax.request({
-                url : me.getEditorStartContentUrl(),
-                success: function(response) {
-                    var animation = me.getController('MainToolbar').highlightFileMenu();
-                    // Create a window containing the example document and highlight the file menu
-                    var exampleWin = Ext.widget('window', {
-                        height : 400,
-                        width : 800,
-                        modal: true,
-                        resizable : false,
-                        closable : false,
-                        layout : {
-                            type : 'vbox',
-                            align : 'center'
-                        },
-                        title : Locale.strings.welcome,
-                        items : [{
-                            xtype : 'panel',
-                            width : 800,
-                            height : 320,
-                            html : response.responseText
-                        }, {
-                            xtype : 'button',
-                            cls: "bigButton",
-                            text : Locale.strings.continueStr,
-                            style : {
-                                width : '150px',
-                                height : '40px',
-                                margin : '5px 5px 5px 5px'
-                            },
-                            handler: function(cmp){
-                                clearInterval(animation);
-                                cmp.up('window').close();
-                            }
-                        }]
-                    }).show();
-                }
-            });
-
+            this.getController('Storage').createNewDefaultDocument();
+            this.showWelcomeWindow();
         } else {
-            me.restoreSession();
+            this.restoreSession();
         }
+    },
+
+    showWelcomeWindow: function() {
+        Ext.Ajax.request({
+            url : this.getEditorStartContentUrl(),
+            success: (function(response) {
+                var win = this.createWelcomeWindow(response.responseText);
+                win.show();
+            }).bind(this)
+        });
     },
 
     /**
@@ -1116,6 +1085,43 @@ Ext.define('LIME.controller.Editor', {
     */
     getEditorStartContentUrl: function() {
         return 'config/examples/editorStartContent-'+Locale.getLang()+'.html';
+    },
+
+    createWelcomeWindow: function(content) {
+        var animation = this.getController('MainToolbar').highlightFileMenu();
+        // Create a window containing the example document and highlight the file menu
+        // TODO: move this to a view file
+        return Ext.widget('window', {
+            height : 400,
+            width : 800,
+            modal: true,
+            resizable : false,
+            closable : false,
+            layout : {
+                type : 'vbox',
+                align : 'center'
+            },
+            title : Locale.strings.welcome,
+            items : [{
+                xtype : 'panel',
+                width : 800,
+                height : 320,
+                html : content
+            }, {
+                xtype : 'button',
+                cls: 'bigButton',
+                text : Locale.strings.continueStr,
+                style : {
+                    width : '150px',
+                    height : '40px',
+                    margin : '5px 5px 5px 5px'
+                },
+                handler: function(cmp){
+                    clearInterval(animation);
+                    cmp.up('window').close();
+                }
+            }]
+        });
     },
 
 
