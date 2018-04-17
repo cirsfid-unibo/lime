@@ -324,12 +324,7 @@ Ext.define('LIME.controller.Language', {
         These functions are ment be overridden by other packages
     */
     beforeLoad: function(params) {},
-    afterLoad: function(params) {
-        var docEl = params.docDom.querySelector("."+DocProperties.documentBaseClass);
-        if(docEl && !docEl.getAttribute(DocProperties.docIdAttribute)) {
-            docEl.setAttribute(DocProperties.docIdAttribute, 0);
-        }
-    },
+    afterLoad: function(params) {},
     beforeSave: function(params) {},
     afterSave: function(params) {},
     translateContent: function(html, success, failure) {

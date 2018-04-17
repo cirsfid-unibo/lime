@@ -177,11 +177,6 @@ Ext.define('LIME.controller.Editor', {
             docBaseCls = DocProperties.documentBaseClass,
             wrapper = body.querySelector('.'+docBaseCls+'.'+docType) || body.firstChild;
 
-        var document = this.getBody().getElementsByClassName(DocProperties.documentBaseClass)[0];
-        if (document) {
-            this.ensureContentWrapperPosition(document);
-        }
-
         if ( !wrapper || wrapper.nodeName.toLowerCase() != 'div' ) {
             wrapper = body.ownerDocument.createElement('div');
             DomUtils.moveChildrenNodes(body, wrapper);
@@ -198,6 +193,11 @@ Ext.define('LIME.controller.Editor', {
             wrapper.dataset.nomagicline = 'nomagicline';
         if (!wrapper.parentNode.dataset.nomagicline)
             wrapper.parentNode.dataset.nomagicline = 'nomagicline';
+
+        if(!wrapper.hasAttribute(DocProperties.docIdAttribute)) {
+            wrapper.setAttribute(DocProperties.docIdAttribute, 0);
+        }
+        this.ensureContentWrapperPosition(wrapper);
     },
 
     ensureContentWrapperPosition: function (wrapper) {
