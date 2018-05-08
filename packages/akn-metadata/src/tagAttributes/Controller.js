@@ -230,7 +230,7 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
         var saveRef = function(refPanel) {
             var data = refPanel.getValues(false, false, false, true);
             var ref = AknMain.Reference.empty();
-            ref.internal = (data.type == "external") ? false : true;
+            ref.internal = (data.type == 'external') ? false : true;
             ref.id = data.fragment;
             ref.uri.component = 'main';
             ref.uri.country = data.nationality;
@@ -238,9 +238,10 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
             ref.uri.type = data.docType;
             ref.uri.subtype = normalizeSubtype(data.subtype);
             ref.uri.name = data.number;
-            ref.uri.date = (data.date) ? Ext.Date.format(data.date, 'Y-m-d') : "";
-            ref.uri.language = DocProperties.documentInfo.docLang;
-            var href = "";
+            ref.uri.date = (data.date) ? Ext.Date.format(data.date, 'Y-m-d') : '';
+            ref.uri.version = (data.versionDate) ? Ext.Date.format(data.versionDate, 'Y-m-d') : '';
+            ref.uri.language = data.versionLang;
+            var href = '';
             if (!refPanel.isValid() || !isValidInternalRef(ref, refPanel)) {
                 return;
             }
@@ -254,7 +255,7 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
             }
             if (href.length > 1) {
                 if (onSaveUri(href)) {
-                    refPanel.down("#successSaveLabel").setVisible(true);
+                    refPanel.down('#successSaveLabel').setVisible(true);
                     me.closeContextPanel();
                 }
             }

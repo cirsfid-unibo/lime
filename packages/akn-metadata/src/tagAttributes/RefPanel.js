@@ -48,9 +48,16 @@
 Ext.define('AknMetadata.tagAttributes.RefPanel', {
     extend: 'LIME.view.widgets.MarkedElementWidget',
     alias: 'widget.refPanel',
-
+    layout: {
+        type: 'table',
+        columns: 2
+    },
+    defaults: {
+        margin: 2
+    },
     ref: null,
-    contextHeight: 320,
+    width: 400,
+    contextHeight: 250,
     title: Locale.getString('referenceWidgetTitle', 'akn-metadata'),
     items: [{
         xtype: 'combo',
@@ -64,6 +71,19 @@ Ext.define('AknMetadata.tagAttributes.RefPanel', {
             fields: ['name', 'type'],
             data: [{name: Locale.getString('internal', 'akn-metadata'), type: 'internal'},
                     {name: Locale.getString('external', 'akn-metadata'), type: 'external'}]
+        })
+    }, {
+        xtype: 'combo',
+        emptyText: Locale.getString('type', 'akn-metadata'),
+        name: 'typeStatic',
+        displayField: 'name',
+        allowBlank: false,
+        valueField: 'type',
+        queryMode: 'local',
+        store: Ext.create('Ext.data.Store', {
+            fields: ['name', 'type'],
+            data: [{name: Locale.getString('dynamic', 'akn-metadata'), type: 'dynamic'},
+                    {name: Locale.getString('static', 'akn-metadata'), type: 'static'}]
         })
     }, {
         xtype: 'nationalitySelector'
@@ -87,20 +107,32 @@ Ext.define('AknMetadata.tagAttributes.RefPanel', {
         name: 'number',
         emptyText: Locale.getString('number', 'akn-metadata')
     }, {
+        xtype: 'docLangSelector',
+        name: 'versionLang',
+        disabled: true
+    }, {
+        xtype: 'datefield',
+        name: 'versionDate',
+        emptyText: Locale.getString('versionDate', 'akn-metadata'),
+        disabled: true
+    }, {
         xtype: 'textfield',
         name: 'fragment',
-        emptyText: Locale.getString('fragment', 'akn-metadata')
+        emptyText: Locale.getString('fragment', 'akn-metadata'),
+        colspan: 2,
+        width: 344
     }],
 
     listeners: {
         afterrender: function () {
             this.down('[name=type]').on('change', this.onTypeChange, this);
+            this.down('[name=typeStatic]').on('change', this.onTypeStaticChange, this);
             if (this.ref)
                 this.getForm().setValues(this.refToFormValues());
         }
     },
 
-    onTypeChange: function(field, newValue, oldValue) {
+    onTypeChange: function(field, newValue) {
         if (newValue == 'internal') {
             this.query('field').filter(function(field) {
                 return (field.name != 'type' && field.name != 'fragment');
@@ -109,20 +141,43 @@ Ext.define('AknMetadata.tagAttributes.RefPanel', {
             });
         } else {
             this.query('field').forEach(function(field) {
-                field.enable();
+                if (name != 'versionLang' && name != 'versionDate') {
+                    field.enable();
+                }
             });
+            this.setRefTypeStatic();
         }
     },
 
+    onTypeStaticChange: function(field, newValue) {
+        this.setRefTypeStatic(newValue);
+    },
+
+    setRefTypeStatic: function(type) {
+        type = type || this.down('[name=typeStatic]').getValue();
+        var versionSelector = this.query('[name=versionLang],[name=versionDate]');
+        versionSelector.forEach(function(field) {
+            if (type == 'static') {
+                field.enable();
+            } else {
+                field.disable();
+            }
+        });
+    },
+
     refToFormValues: function() {
+        var typeStatic = this.ref.uri.language != undefined ? 'static' : 'dynamic';
         return {
             type: (this.ref.internal) ? 'internal' : 'external',
+            typeStatic: typeStatic,
             nationality: this.ref.uri.country,
             docType: this.ref.uri.type,
             author: this.ref.uri.author,
             subtype: this.ref.uri.subtype,
             date: this.ref.uri.date,
             number: this.ref.uri.name,
+            versionLang: this.ref.uri.language,
+            versionDate: this.ref.uri.version,
             fragment: this.ref.id
         }
     },

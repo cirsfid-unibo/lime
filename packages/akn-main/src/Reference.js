@@ -103,8 +103,8 @@ Ext.define('AknMain.Reference', {
             if ( this.internal )
                 return idSep+this.id;
 
-            var work = this.uri.work();
-            return (this.id) ? work+'/'+idSep+this.id : work;
+            var uriStr = this.uri.language ? this.uri.expression() : this.uri.work();
+            return (this.id) ? uriStr+'/'+idSep+this.id : uriStr;
         }
     }
 });
