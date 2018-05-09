@@ -66,8 +66,8 @@ Ext.define('AknDiff.controller.XmlDiff', {
     ],
 
     config: {
-        diffServiceUrl : "AKNDiff/index.php",
-        initDiffPage: "AKNDiff/data/empty.html"
+        diffServiceUrl : "php/AKNDiff/index.php",
+        initDiffPage: "php/AKNDiff/data/empty.html"
     },
 
     // Set the iframe source of the current tab to either the Akomantoso diff
@@ -75,7 +75,7 @@ Ext.define('AknDiff.controller.XmlDiff', {
     getDiff: function(tab, selector) {
         var format = tab.down("*[cls=diffContainer]").getActiveTab().format || 'text',
             baseUrl = this.getDiffServiceUrl(),
-            url = 'php/' + baseUrl + '?' + Ext.urlEncode({
+            url = baseUrl + '?' + Ext.urlEncode({
                 from: selector.firstDoc.url,
                 to: selector.secondDoc.url,
                 format: format,
@@ -201,7 +201,7 @@ Ext.define('AknDiff.controller.XmlDiff', {
                 },
 
                 docsDeselected: function (selector) {
-                    selector.up('diffTab').setIframeSource('php/' + me.getInitDiffPage());
+                    selector.up('diffTab').setIframeSource(me.getInitDiffPage());
                 },
 
                 docsSelected: function (selector) {
