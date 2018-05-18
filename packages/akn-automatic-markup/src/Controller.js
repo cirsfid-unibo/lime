@@ -1765,9 +1765,13 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
         var todayDate = Ext.Date.format(new Date(), 'Y-m-d');
 
-        data.sort(function compare(a,b) {
-            return b.ref.length - a.ref.length;
-        });
+        data.filter(function(item) {
+            if (!item.ref)
+                return item.ref != undefined;
+            })
+            .sort(function compare(a,b) {
+                return b.ref.length - a.ref.length;
+            });
         // Filter the result and remove repeating elements
         var filtredData = [];
         var containsRef = function(list, ref) {
