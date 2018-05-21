@@ -44,50 +44,12 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('AknTabXmlPreview.controller.AknPreviewController', {
-    extend : 'Ext.app.Controller',
+Ext.define('AknTabXmlPreview.ImportController', {
+    override: 'AknMetadata.sync.ImportController',
 
-    views: ['AknTabXmlPreview.view.AknPreviewMainTab'],
-
-    refs : [{
-        selector : 'appViewport',
-        ref : 'appViewport'
-    }, {
-        selector: 'aknPreviewMainTab',
-        ref: 'xml'
-    }],
-
-    doTranslate: function() {
-        if(!this.getXml()) return;
-        var me = this,
-        activeTab = this.getXml().up('main').getActiveTab();
-        if (activeTab == this.getXml()) {
-            activeTab.setLoading(true);
-            me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
-                me.updateContent(xml);
-                activeTab.setLoading(false);
-            });
-        }
-    },
-
-    /**
-     * Actually update the related view with the given content
-     * @param {String} content
-     * @private
-     */
-    updateContent : function(content) {
-        if (this.getXml() && content != this.content) {
-            this.getXml().down('codemirror').setValue(content);
-            this.content = content;
-        }
-    },
-
-    init : function() {
-        var me = this;
-        this.control({
-            'aknPreviewMainTab' : {
-                activate : me.doTranslate
-            }
-        });
+    onLoadDocument: function() {
+        this.callParent(arguments);
+        // Calling the translate function after the loading of metadata
+        this.getController('AknTabXmlPreview.controller.AknPreviewController').doTranslate();
     }
 });
