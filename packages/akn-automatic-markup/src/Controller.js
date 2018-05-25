@@ -1354,6 +1354,21 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 return !containedInTmp(nodes[0].node);
             });
             if (textNodesObjs.length == 1) return textNodesObjs[0];
+
+            // Try to get the exact match nodes
+            // Example: String to search: "Capo I"
+            // document contains "Capo I", "Capo II", "Capo III"
+            // this will keep only "Capo I"
+            var textNodesExactMatch = textNodesObjs.filter(function(nodes) {
+                return nodes[0].str == nodes[0].node.textContent;
+            });
+
+            if (textNodesExactMatch.length == 1) {
+                return textNodesExactMatch[0];
+            } else if (textNodesExactMatch.length > 1) {
+                textNodesObjs = textNodesExactMatch;
+            }
+
             var finishCharactersReg = /[;.:]$/;
             for (var i = 0; i < textNodesObjs.length; i++) {
                 var textBeforeNum = textNodesObjs[i][0].node.textContent;
