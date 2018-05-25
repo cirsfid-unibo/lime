@@ -2716,8 +2716,8 @@ Ext.define('AknAutomaticMarkup.Controller', {
                 Server.callParser("quote", content, function(result) {
                     var jsonData = Ext.decode(result.responseText, true);
                     if (jsonData && jsonData.success !== false) {
-                        var data = filterData(jsonData.response).slice(0, 50);
-                        var clusterNum = 5;
+                        var data = filterData(jsonData.response);
+                        var clusterNum = 10;
                         var times = Math.ceil(data.length/clusterNum);
                         var done = 0;
                         var goNext = function() {
