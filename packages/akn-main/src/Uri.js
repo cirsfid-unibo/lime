@@ -225,10 +225,10 @@ Ext.define('AknMain.Uri', {
         },
         // Accept subtypes
         subtype: function (item) {
-            return item && !!item.match(/^[a-zA-Z\.]*$/);
+            return item && !!item.match(/^[a-zA-Z\.-]*$/);
         },
         author: function (item) {
-            return item && !!item.match(/^[a-zA-Z\.]*$/);
+            return item && !!item.match(/^[a-zA-Z\.-]*$/);
         },
         component: function (item) {
             var initCmp = item && item.charAt(0) == '!';
