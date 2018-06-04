@@ -350,10 +350,15 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
         });
         var onSaveRefers = panel.onSave;
         panel.onSave = function(panel) {
-            var date = panel.down('[name=date]').getValue();
+            var oldValue = date;
+            date = panel.down('[name=date]').getValue();
             date = Utilities.isValidDate(date) && Utilities.normalizeDate(date);
-            if (date)
+            if (date) {
                 node.setAttribute(dateAttr, date);
+                var attrs = {};
+                attrs[dateAttr] = {value: date, oldValue: oldValue};
+                Ext.GlobalEvents.fireEvent('nodeAttributesChanged', node, attrs);
+            }
             me.closeContextPanel();
             return onSaveRefers(panel);
         }
