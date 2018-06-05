@@ -392,6 +392,7 @@ Ext.define('LIME.controller.Marker', {
 
     // Link marked elements with buttons and build documentProprieties
     searchAndManageMarkedElements: function(node) {
+        DocProperties.removeAllMarkedElements();
         var markedElements = node.querySelectorAll("*[" + DomUtils.elementIdAttribute + "]");
         Ext.each(markedElements, function(node) {
             var elId = node.getAttribute(DomUtils.elementIdAttribute),

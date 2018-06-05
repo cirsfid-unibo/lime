@@ -94,7 +94,6 @@ Ext.define('LIME.controller.Language', {
     },
 
     setDocProperties: function(config) {
-        DocProperties.removeAll();
         DocProperties.setDocId(config.docId || User.getDefaultFilePath());
         DocProperties.documentInfo.docType = config.docType;
         DocProperties.documentInfo.docLang = config.docLang;

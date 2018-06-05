@@ -141,10 +141,7 @@ Ext.define('LIME.DocProperties', {
     getLang : function() {
         return this.documentInfo.docLang;
     },
-    /**
-     * This function removes all document proprieties
-     */
-    removeAll : function() {
+    removeAllMarkedElements : function() {
         this.markedElements = {};
     },
 
