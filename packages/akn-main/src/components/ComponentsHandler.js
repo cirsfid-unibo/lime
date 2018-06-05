@@ -111,11 +111,15 @@ Ext.define('AknMain.components.ComponentsHandler', {
     },
 
     ensureComponentsNode: function() {
-        var componentsNode = DocProperties.getMarkedElementsByName('components')[0];
-        componentsNode = componentsNode && componentsNode.htmlElement;
+        var documentEl = this.getController('Editor').getDocumentElement();
+        var componentsNode = Ext.Array.toArray(
+                                documentEl.querySelectorAll('.components')
+                            ).filter(function(node) {
+                                // It has to be in the root
+                                return !DomUtils.getFirstMarkedAncestor(node.parentNode)
+                            })[0];
 
         if ( !componentsNode ) {
-            var documentEl = this.getController('Editor').getDocumentElement();
             componentsNode = Ext.DomHelper.createDom({
                 tag: 'div',
                 cls: DomUtils.tempParsingClass
