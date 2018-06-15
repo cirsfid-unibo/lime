@@ -2,6 +2,7 @@ var commander = require('commander');
 var colors = require('colors');
 var fs = require('fs');
 var path = require('path');
+var prompt = require('inquirer').prompt;
 
 
 var configFile = path.join(__dirname, '../app.json');
@@ -9,11 +10,11 @@ var appConfig = getAppConfig();
 checkLimeBuild();
 
 commander
-	.command('get <config>')
+	.command('get <property>')
 	.action(get);
 
 commander
-	.command('set <config>')
+	.command('set <property> <value>')
 	.action(set);
 
 commander.parse(process.argv);
@@ -50,8 +51,55 @@ function get(property) {
 	}
 }
 
-function set(property) {
-	getLimeConfig();
+function set(property, value) {
+	var fields = property.split('.');
+	var limeConfig = getLimeConfig();
+	var field = fields.pop();
+	var config = fields.reduce(function(prev, curr) {
+		return prev[curr];
+	}, limeConfig);
+	setRaw(config, field, value, function(updated) {
+		if(updated) {
+			writeToFile();
+		}
+	});
+}
+
+function setRaw(obj, property, value, cb) {
+	if (obj[property] && obj[property] instanceof Object) {
+		console.error(make_red('Property "'+property+ '" is an object you cannot set it.'));
+		return cb(false);
+	}
+	var update = function(res) {
+		if (res) {
+			obj[property] = value;
+		}
+		cb(res);
+	};
+	if (obj[property]) {
+		askConfirm('Are you sure you want to replace the value of "'+
+						property+'" from: \n"'+obj[property]+'" \nto\n"'+value+'"',
+					update);
+	} else {
+		update(true);
+	}
+}
+
+function askConfirm(msg, cb) {
+	prompt([{
+		type : 'confirm',
+		name : 'response',
+		message : make_orange(msg)
+	}]).then(function(ans) {
+		cb(ans.response);
+	});
+}
+
+function writeToFile() {
+	fs.writeFile(configFile, JSON.stringify(appConfig), function(err) {
+		if (err) return console.error(make_red(err));
+		console.log(make_green('LIME configuration was successfully updated.'))
+	});
 }
 
 function getConfigProperty(limeConfig, property) {
@@ -67,5 +115,13 @@ if (!process.argv.slice(2).length) {
 }
 
 function make_red(txt) {
-	return colors.red(txt); //display the help text in red on the console
+	return colors.red(txt);
+}
+
+function make_orange(txt) {
+	return colors.yellow(txt);
+}
+
+function make_green(txt) {
+	return colors.green(txt);
 }
