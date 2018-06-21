@@ -1861,7 +1861,6 @@ Ext.define('AknAutomaticMarkup.Controller', {
             ref.uri.subtype = normalizeRefValue(refData.type);
             ref.uri.name = normalizeRefValue(refData.docnum);
             ref.uri.date = refData.date || todayDate;
-            ref.uri.language = DocProperties.documentInfo.docLang;
             ref.uri.component = 'main';
             var href = "";
             try {
