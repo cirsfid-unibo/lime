@@ -172,6 +172,8 @@ Ext.define('AknMetadata.tagAttributes.Controller', {
             case 'entity':
             case 'docPurpose':
                 return ['TLCConcept'];
+            case 'docAuthority':
+                return ['TLCOrganization'];
             default:
                 var validTypes = AknMain.metadata.Reference.validators.type[0].list;
                 var type = 'TLC'+Ext.String.capitalize(name);
