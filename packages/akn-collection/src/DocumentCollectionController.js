@@ -430,7 +430,8 @@ Ext.define('AknCollection.DocumentCollectionController', {
         if (document.download) {
             Server.getDocument(document.id, callback);
         } else {
-            me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
+            me.application.fireEvent(Statics.eventsNames.translateRequest, function(err, xml) {
+                if (err) return callback('');
 
                 var result = Xml.Document.parse(xml, 'akn').getXml(
                     '//akn:component/*' +

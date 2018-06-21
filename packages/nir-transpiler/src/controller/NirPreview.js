@@ -96,7 +96,8 @@ Ext.define('NirTranspiler.controller.NirPreview', {
     translateToNir: function (cb, failureCb) {
         var me = this;
         // HTMLToso to AkomaNtoso
-        me.application.fireEvent(Statics.eventsNames.translateRequest, function (aknXml) {
+        me.application.fireEvent(Statics.eventsNames.translateRequest, function (err, aknXml) {
+            if (err) return failureCb(err);
             // AkomaNtoso to NIR
             aknXml = me.forceLatestVersion(aknXml);
             Server.translateAkn(aknXml, cb, failureCb);

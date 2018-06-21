@@ -261,6 +261,7 @@ Ext.define('LIME.Server', {
             },
             failure: function (error) {
                 console.warn('Saving document failed:', error);
+                if (failure) failure(error);
             }
         });
     },

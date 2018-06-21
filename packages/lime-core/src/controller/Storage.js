@@ -425,7 +425,11 @@ Ext.define('LIME.controller.Storage', {
         }, this);
 
         this.updateDocProperties(values);
-        this.saveDocument(function () {
+        this.saveDocument(function (err) {
+            if (err) return Ext.Msg.alert({
+                            title: Locale.getString('error'),
+                            msg:  err
+                        });
             relatedWindow.close();
             var docName = "";
             Ext.Msg.alert({
@@ -466,25 +470,30 @@ Ext.define('LIME.controller.Storage', {
     // Fire beforeSave and afterSave events.
     saveDocument: function(callback, path) {
         var me = this;
+        Ext.GlobalEvents.fireEvent('setAutosaveEnabled', false);
         // Before saving
         me.application.fireEvent(Statics.eventsNames.beforeSave, {
             editorDom: me.getController('Editor').getDom(),
             documentInfo: DocProperties.documentInfo
         });
-
         path = path || DocProperties.documentInfo.docId;
-        me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml, idMapping, html) {
+        DocProperties.setDocId(path);
+        var onError = function(err) {
+            Ext.GlobalEvents.fireEvent('setAutosaveEnabled', true);
+            return callback && callback(err);
+        };
+        me.application.fireEvent(Statics.eventsNames.translateRequest, function(err, xml, idMapping, html) {
+            if (err) return onError(err);
             Server.saveDocument(path, xml, function () {
-                DocProperties.setDocId(path);
                 User.setPreference('lastOpened', path);
-                if (callback) callback(xml, html);
-
+                Ext.GlobalEvents.fireEvent('setAutosaveEnabled', true);
+                if (callback) callback(null, xml, html);
                 // After saving
                 me.application.fireEvent(Statics.eventsNames.afterSave, {
                     editorDom: me.getController('Editor').getDom(),
                     documentInfo: DocProperties.documentInfo
                 });
-            });
+            }, onError);
         }, {complete: true});
     },
 

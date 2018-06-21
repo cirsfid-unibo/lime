@@ -81,8 +81,10 @@ Ext.define('AknPublish.PublishController', {
         var path = DocProperties.getDocId();
         var uri = me.getController('Editor').getDocumentUri();
         if ( path && path.trim() ) {
-            me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml) {
-                me.publishDoc(path, uri, xml);
+            me.application.fireEvent(Statics.eventsNames.translateRequest, function(err, xml) {
+                if (!err) {
+                    me.publishDoc(path, uri, xml);
+                }
             });
         } else {
             Ext.Msg.alert(Locale.strings.error, "Cannot find document uri");

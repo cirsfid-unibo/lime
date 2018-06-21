@@ -142,10 +142,9 @@ Ext.define('LIME.controller.Language', {
         me.translateContent(html, function(responseText) {
             // pretty print the code because codemirror is not enough
             var xmlPretty = vkbeautify.xml(responseText);
-            if (Ext.isFunction(callback)) {
-                callback.call(me, xmlPretty, me.aknIdMapping, html);
-            }
-        }, function() {
+            callback.call(me, null, xmlPretty, me.aknIdMapping, html);
+        }, function(error) {
+            callback.call(me, error);
             Ext.log({level: "error"}, "Document not translated");
         });
     },
@@ -329,7 +328,7 @@ Ext.define('LIME.controller.Language', {
     translateContent: function(html, success, failure) {
         var xslt = Config.getLanguageTransformationFile("LIMEtoLanguage");
         Server.applyXslt(html, xslt, success, function (error) {
-            Ext.callback(failure);
+            Ext.callback(failure, this, [error]);
         });
     },
     getLanguagePrefix: function() {

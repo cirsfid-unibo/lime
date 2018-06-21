@@ -127,7 +127,10 @@ Ext.define('DefaultExport.Controller', {
             Ext.GlobalEvents.fireEvent('setAppLoading', false);
             Ext.Msg.alert(Locale.getString('error'), err.statusText);
         };
-        var exportFn = function () {
+        var exportFn = function (err) {
+            if (err) return onExportFailure({
+                statusText: err
+            });
             // The document is saved in xml, so just get it
             if (extension === 'xml')
                 return Server.getDocument(path, onExportSuccess, onExportFailure);

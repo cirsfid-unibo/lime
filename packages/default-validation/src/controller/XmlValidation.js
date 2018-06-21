@@ -97,7 +97,8 @@ Ext.define('DefaultValidation.controller.XmlValidation', {
 
     beforeValidateXml: function() {
         var me = this;
-        me.application.fireEvent(Statics.eventsNames.translateRequest, function(xml, idMapping) {
+        me.application.fireEvent(Statics.eventsNames.translateRequest, function(err, xml, idMapping) {
+            if (err) return;
             me.initXmlValidation(xml, idMapping);
         });
     },
