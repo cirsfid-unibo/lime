@@ -122,9 +122,6 @@ Ext.define('LIME.controller.Language', {
     performLoad: function(config, styleUrls) {
         var app = this.application;
         app.fireEvent(Statics.eventsNames.progressUpdate, Locale.strings.progressBar.loadingDocument);
-        // Clear previous undo levels
-        this.getController('UndoManager').reset();
-
         // If the document loaded is empty, use the template
         // following the complicated rules in our json configuration files.
         if (config.docText == '<div> &nbsp; </div>')

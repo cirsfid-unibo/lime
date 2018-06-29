@@ -955,6 +955,8 @@ Ext.define('LIME.controller.Editor', {
         this.setPath(this.getBody());
         this.showDocumentIdentifier();
         this.startAutoSave();
+        // Clear previous undo levels
+        this.getController('UndoManager').reset();
         return body;
     },
 

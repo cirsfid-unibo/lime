@@ -66,7 +66,12 @@ Ext.define('LIME.controller.UndoManager', {
     maxLevels: 50,
 
     init: function () {
-        setInterval(this.addCheckpoint.bind(this), 2000);
+        this.startAutoCheckpoint();
+    },
+
+    startAutoCheckpoint: function() {
+        clearInterval(this.checkpointInterval);
+        this.checkpointInterval = setInterval(this.addCheckpoint.bind(this), 2000);
     },
 
     // Create and add a new checkpoint
@@ -107,6 +112,7 @@ Ext.define('LIME.controller.UndoManager', {
         this.currentLevel = 0;
         this.checkpoints = [this.buildCheckpoint()];
         this.fireEvent('change');
+        this.startAutoCheckpoint();
     },
 
     // Return if we can revert to an earlier checkpoint
