@@ -48,8 +48,6 @@ Ext.define('AknMetadata.newMeta.ModificationTable', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.metadatamodificationtable',
 
-    requires: ['AknMetadata.newMeta.ReferenceCombo'],
-
     columns: [
         {
             text: Locale.getString('eId', 'akn-metadata'),

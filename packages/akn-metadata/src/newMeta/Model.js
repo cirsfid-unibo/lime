@@ -61,6 +61,14 @@ Ext.define('AknMetadata.newMeta.Model', {
                 property: 'amendmentType',
                 value: 'passive'
             }]
+        },
+        activeModifications: {
+            model: 'AknMain.metadata.Modification',
+            autoLoad: false, // Data is loaded by ModificationController
+            filters: [{
+                property: 'amendmentType',
+                value: 'active'
+            }]
         }
     },
 

@@ -587,7 +587,14 @@ Ext.define('AknModsMarker.Controller', {
         };
 
         me.getTextualMods('active').forEach(function(mod) {
-            mod.getSourceDestinations('source').forEach(setModAttrs.bind(me, mod));
+            var isLinked = false;
+            mod.getSourceDestinations('source').forEach(function(rec) {
+                var modNode = setModAttrs(mod, rec);
+                if (modNode) {
+                    isLinked = true;
+                }
+            });
+            mod.set('_isLinked', isLinked);
             mod.getSourceDestinations('destination').forEach(function(rec) {
                 setModAttrs(mod, rec, bindDestNode);
             });

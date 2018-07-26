@@ -83,7 +83,6 @@ Ext.define('AknMetadata.newMeta.ModificationController', {
     },
 
     updateGridStore: Utilities.events.debounce(function() {
-        var store = this.getViewModel().getStore('passiveModifications');
         var mainDoc = Ext.getStore('metadata').getMainDocument();
         var records = [];
         mainDoc.modifications().each(function(record) {
@@ -97,6 +96,9 @@ Ext.define('AknMetadata.newMeta.ModificationController', {
             data['_new'] = getFirstVal('new', 'href');
             records.push(data);
         });
+        var store = this.getViewModel().getStore('passiveModifications');
+        store.setData(records);
+        store = this.getViewModel().getStore('activeModifications');
         store.setData(records);
     }, 500),
 
@@ -116,9 +118,13 @@ Ext.define('AknMetadata.newMeta.ModificationController', {
 
     onItemRemove: function(grid) {
         var selectedRows = grid.getSelection();
+        var modifications = Ext.getStore('metadata').getMainDocument().modifications();
         if (selectedRows.length == 0) return;
-        this.deleteConfirm(selectedRows[0].get('eid'), function() {
-            grid.getStore().remove(selectedRows);
+        var recToRemove = selectedRows[0];
+        this.deleteConfirm(recToRemove.get('eid'), function() {
+            modifications.remove(
+                modifications.getById(recToRemove.get('id'))
+            );
         });
     },
 

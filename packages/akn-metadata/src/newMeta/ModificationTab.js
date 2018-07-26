@@ -72,10 +72,16 @@ Ext.define('AknMetadata.newMeta.ModificationTab', {
                     store: '{passiveModifications}'
                 }
             }]
-        },{
+        }, {
             xtype: 'panel',
+            layout: 'fit',
             title: Locale.getString('activeModifications', 'akn-metadata'),
-            disabled: true
+            items: [{
+                xtype: 'metadatamodificationtable',
+                bind: {
+                    store: '{activeModifications}'
+                }
+            }]
         }]
     }]
 })
