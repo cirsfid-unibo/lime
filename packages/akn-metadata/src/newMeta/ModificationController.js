@@ -84,7 +84,8 @@ Ext.define('AknMetadata.newMeta.ModificationController', {
 
     updateGridStore: Utilities.events.debounce(function() {
         var mainDoc = Ext.getStore('metadata').getMainDocument();
-        var records = [];
+        var passiveRecords = [];
+        var activeRecords = [];
         mainDoc.modifications().each(function(record) {
             var data = record.getAllData();
             var getFirstVal = function(key, attr) {
@@ -92,14 +93,19 @@ Ext.define('AknMetadata.newMeta.ModificationController', {
             };
             data['_source'] = getFirstVal('source', 'href');
             data['_destination'] = getFirstVal('destination', 'href');
-            data['_old'] = getFirstVal('old', 'content');
+            data['_old'] = getFirstVal('old', 'content') || getFirstVal('old', 'href');
             data['_new'] = getFirstVal('new', 'href');
-            records.push(data);
+
+            if (data.amendmentType == 'passive') {
+                passiveRecords.push(data);
+            } else if (data.amendmentType == 'active') {
+                activeRecords.push(data);
+            }
         });
         var store = this.getViewModel().getStore('passiveModifications');
-        store.setData(records);
+        store.setData(passiveRecords);
         store = this.getViewModel().getStore('activeModifications');
-        store.setData(records);
+        store.setData(activeRecords);
     }, 500),
 
     onItemClick: function(grid, record) {

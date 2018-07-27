@@ -51,7 +51,8 @@ Ext.define('AknMetadata.newMeta.ModificationTab', {
     requires: [
         'AknMetadata.newMeta.ModificationController',
         'AknMetadata.newMeta.EditorTab',
-        'AknMetadata.newMeta.ModificationTable'
+        'AknMetadata.newMeta.ModificationTable',
+        'AknMetadata.newMeta.ActiveModificationTable'
     ],
 
     controller: 'akn-metadata-modification',
@@ -77,7 +78,7 @@ Ext.define('AknMetadata.newMeta.ModificationTab', {
             layout: 'fit',
             title: Locale.getString('activeModifications', 'akn-metadata'),
             items: [{
-                xtype: 'metadatamodificationtable',
+                xtype: 'metadataactivemodificationtable',
                 bind: {
                     store: '{activeModifications}'
                 }

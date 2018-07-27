@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 - Copyright holders CIRSFID and Department of
+ * Copyright (c) 2016 - Copyright holders CIRSFID and Department of
  * Computer Science and Engineering of the University of Bologna
  *
  * Authors:
@@ -44,27 +44,41 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Ext.define('AknMetadata.newMeta.Model', {
-    extend: 'Ext.app.ViewModel',
+Ext.define('AknMetadata.newMeta.ActiveModificationTable', {
+    extend: 'AknMetadata.newMeta.ModificationTable',
+    alias: 'widget.metadataactivemodificationtable',
 
-    alias: 'viewmodel.akn-metadata',
-
-    data: {
-        document: null
-    },
-
-    stores: {
-        passiveModifications: {
-            model: 'AknMain.metadata.Modification',
-            autoLoad: false // Data is loaded by ModificationController
+    columns: [
+        {
+            text: Locale.getString('eId', 'akn-metadata'),
+            dataIndex: 'eid'
         },
-        activeModifications: {
-            model: 'AknMain.metadata.Modification',
-            autoLoad: false // Data is loaded by ModificationController
+        {
+            text: Locale.getString('type', 'akn-metadata'),
+            dataIndex: 'modType'
+        },
+        {
+            text: Locale.getString('source', 'akn-metadata'),
+            dataIndex: '_source',
+            cellTooltip: true
+        },
+        {
+            text: Locale.getString('destination', 'akn-metadata'),
+            dataIndex: '_destination',
+            flex: 1,
+            renderer: function(value, metadata, record) {
+                metadata.tdAttr = 'data-qtip="' + record.get('_destination') + '"';
+                return value;
+            }
+        },
+        {
+            text: Locale.getString('new', 'akn-metadata'),
+            dataIndex: '_new'
+        },
+        {
+            text: Locale.getString('old', 'akn-metadata'),
+            dataIndex: '_old',
+            cellWrap: true
         }
-    },
-
-    setData: function() {
-        this.callParent(arguments);
-    }
+    ]
 });
