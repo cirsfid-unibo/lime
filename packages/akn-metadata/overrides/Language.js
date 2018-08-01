@@ -111,6 +111,7 @@
                     '@class="temporalData" or '+
                     '@class="temporalGroup" or '+
                     '@class="references" or '+
+                    '@class="notes" or '+
                     '@class="componentInfo"]'+
                     '[not(child::*)]';
 

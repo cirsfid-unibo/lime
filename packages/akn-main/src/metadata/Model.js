@@ -198,6 +198,25 @@ Ext.define('AknMain.metadata.Reference', {
     }
 });
 
+Ext.define('AknMain.metadata.Note', {
+    extend: 'AknMain.metadata.Base',
+    fields: [
+        { name: 'documentId', reference: 'Document' },
+        { name: 'marker', type: 'string' },
+        { name: 'placement', type: 'string' },
+        { name: 'content', type: 'string' }
+    ],
+    validators: {
+        placement: { type: 'inclusion', list: [
+            'side',
+            'left',
+            'right',
+            'bottom',
+            'inline'
+        ] }
+    }
+});
+
 Ext.define('AknMain.metadata.LifecycleEvent', {
     extend: 'AknMain.metadata.Base',
     fields: [

@@ -107,7 +107,8 @@ Ext.define('AknMetadata.Strings', {
             "passiveModifications": "Passive modifications",
             "activeModifications": "Active modifications",
             "deleteMod": "Delete selected modification",
-            "deleteModMsg": "Are you sure you want to delete the <b>{name}</b> modification?"
+            "deleteModMsg": "Are you sure you want to delete the <b>{name}</b> modification?",
+            "notes": "Notes"
         },
         "it": {
             "title": "Editor metadati",
@@ -164,7 +165,8 @@ Ext.define('AknMetadata.Strings', {
             "repeal": "Abrogazione",
             "refersTo": "Riferito a",
             "as": "Come",
-            "component": "Componente"
+            "component": "Componente",
+            "notes": "Note"
         },
         "es": {
             "title": "Editor de metadatos",

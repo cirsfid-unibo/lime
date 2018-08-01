@@ -164,6 +164,13 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         '    </tpl>' +
         '</tpl>' +
         '   </div>',
+        '   <div class="notes" source="#{source}">',
+        '<tpl for="notes">' +
+        '      <div class="note" marker="{marker}" placement="{placement}">',
+        '           {content}',
+        '      </div>',
+        '</tpl>' +
+        '   </div>',
 
         '</div>',
         {
@@ -370,6 +377,7 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
 
         data.temporalGroups = mapTemporalGroups(model.temporalGroups());
         data.mappings = mapData(model.mappings()).map(mapMapping);
+        data.notes = mapData(model.notes());
 
         var uri = model.getUri();
         data.uri = {
