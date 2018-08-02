@@ -113,6 +113,7 @@ Ext.define('AknMetadata.sync.ImportController', {
             importModifications();
             importTemporalGroups();
             importMappings();
+            importNotes();
 
             importWork();
             importExpression();
@@ -308,6 +309,17 @@ Ext.define('AknMetadata.sync.ImportController', {
             function getTmpGroupByRef (ref, fallback) {
                 return getRecordByRef(ref, 'temporalGroups', fallback);
             }
+        }
+
+        function importNotes () {
+            akn.select('.//akn:notes/akn:note').forEach(function (note) {
+                var data = {
+                    marker: note.getAttribute('marker'),
+                    placement: note.getAttribute('placement'),
+                    content: akn.getInnerXml(note).trim()
+                };
+                store.notes().add(data);
+            });
         }
 
         function importWork() {

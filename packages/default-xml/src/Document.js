@@ -122,6 +122,18 @@ Ext.define('Xml.Document', {
                 var result = executeXpath(xpath, XPathResult.FIRST_ORDERED_NODE_TYPE, contextNode);
                 if (result.singleNodeValue)
                     return me.serializer.serializeToString(result.singleNodeValue);
+            },
+
+            // Return serialization of the content of contextNode
+            // similar to innerHtml
+            getInnerXml: function (contextNode) {
+                var result = executeXpath('./*', XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, contextNode);
+                var matches = [];
+                for (var i=0; i < result.snapshotLength; i++)
+                    matches.push(me.serializer.serializeToString(result.snapshotItem(i)));
+                return matches
+                        .join('')
+                        .replace(/xmlns="[^"]+"/g, '');
             }
         };
     }
