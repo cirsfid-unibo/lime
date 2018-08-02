@@ -166,7 +166,15 @@ Ext.define('AknMetadata.Strings', {
             "refersTo": "Riferito a",
             "as": "Come",
             "component": "Componente",
-            "notes": "Note"
+            "notes": "Note",
+            "marker": "Marcatore",
+            "placement": "Posizionamento",
+            "content": "Contenuto",
+            "side": "Laterale",
+            "left": "A sinistra",
+            "right": "A destra",
+            "bottom": "In basso",
+            "inline": "In linea"
         },
         "es": {
             "title": "Editor de metadatos",
