@@ -166,7 +166,7 @@ Ext.define('AknMain.metadata.HtmlSerializer', {
         '   </div>',
         '   <div class="notes" source="#{source}">',
         '<tpl for="notes">' +
-        '      <div class="note" marker="{marker}" placement="{placement}">',
+        '      <div class="note" {[this.optAttr("marker", values.marker)]} {[this.optAttr("placement", values.placement)]}>',
         '           {content}',
         '      </div>',
         '</tpl>' +

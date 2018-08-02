@@ -73,17 +73,7 @@ Ext.define('AknMetadata.newMeta.NotesTab', {
                     store: AknMain.metadata.Note.validators.placement[0].list
                             .map(function(type) {
                                 return [type, Locale.getString(type, 'akn-metadata')]
-                            }),
-                    forceSelection: true,
-                    listeners: {
-                        // set the default value
-                        afterrender: function(cmp) {
-                            setTimeout(function() {
-                                if (!cmp.getValue())
-                                    cmp.setValue(cmp.getStore().last());
-                            }, 10);
-                        }
-                    }
+                            })
                 }
             },
             {
