@@ -86,7 +86,25 @@ Ext.define('AknMetadata.newMeta.NotesTab', {
                     }
                 }
             },
-            { flex: 1, text: Locale.getString('content', 'akn-metadata'), dataIndex: 'content', editor: 'textarea'}
+            {
+                flex: 1,
+                text: Locale.getString('content', 'akn-metadata'),
+                dataIndex: 'content',
+                editor: {
+                    xtype: 'textarea',
+                    validator: function(val) {
+                        try {
+                            var xmlDoc = Xml.Document.parse('<p>'+val+'</p>');
+                            if (xmlDoc.select('//*[local-name()="parsererror"]').length > 0) {
+                                return Locale.getString('contentParseError', 'akn-metadata');
+                            }
+                            return true;
+                        } catch(e) {
+                            return Locale.getString('contentParseError', 'akn-metadata');
+                        }
+                    }
+                }
+            }
         ]
     }]
 })

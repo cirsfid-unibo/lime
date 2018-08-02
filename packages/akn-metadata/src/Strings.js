@@ -108,7 +108,8 @@ Ext.define('AknMetadata.Strings', {
             "activeModifications": "Active modifications",
             "deleteMod": "Delete selected modification",
             "deleteModMsg": "Are you sure you want to delete the <b>{name}</b> modification?",
-            "notes": "Notes"
+            "notes": "Notes",
+            "contentParseError": "The content must be plain text or a valid XML string"
         },
         "it": {
             "title": "Editor metadati",
@@ -174,7 +175,8 @@ Ext.define('AknMetadata.Strings', {
             "left": "A sinistra",
             "right": "A destra",
             "bottom": "In basso",
-            "inline": "In linea"
+            "inline": "In linea",
+            "contentParseError": "Il contenuto deve essere testo semplice oppure una stringa XML valida"
         },
         "es": {
             "title": "Editor de metadatos",

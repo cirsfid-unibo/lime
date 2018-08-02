@@ -72,7 +72,7 @@ Ext.define('Xml.Document', {
         document = (document.createNSResolver && document.evaluate) ? document : window.document;
         //
         var defaultResolver = document.createNSResolver(dom).lookupNamespaceURI;
-        var defaultNs = dom.namespaceURI || dom.firstElementChild.namespaceURI;
+        var defaultNs = dom.namespaceURI || dom.firstElementChild && dom.firstElementChild.namespaceURI;
         var namespaces = {};
         if (Ext.isObject(ns)) {
             namespaces = ns;
