@@ -47,7 +47,7 @@
  Ext.define('AknAutomaticMarkup.Strings', {
     singleton : true,
 
-    strings: {
+     strings: {
         "en": {
             "parseDocumentText": "Automatic markup",
             "parseDocumentTooltip": "Try to markup automatically this document",
@@ -61,7 +61,10 @@
             "parsersErrors": {
                 "LANG_MISSING_ERROR_TITLE": "Language error",
                 "langMissingError": "The language of document is missing"
-            }
+            },
+            "refExtensionNotFound": "No extension found",
+            "refExtensionFound": "The reference was extended from \"{oldText}\" to \"{newText}\"",
+            "paragraphParse": "Paragraph automatic markup"
         },
         "it": {
             "parseDocumentText": "Markup automatico",
@@ -76,7 +79,10 @@
             "parsersErrors": {
                 "LANG_MISSING_ERROR_TITLE": "Errore lingua",
                 "langMissingError": "La lingua del documento non è stata trovata"
-            }
+            },
+            "refExtensionNotFound": "Non è stata trovata nessuna estensione",
+            "refExtensionFound": "Il riferimento è stato esteso da \"{oldText}\" a \"{newText}\"",
+            "paragraphParse": "Paragrafi marcati automaticamente"
         },
         "es": {
             "parseDocumentText": "Marcado Autimático",
