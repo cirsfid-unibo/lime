@@ -47,14 +47,24 @@
  Ext.define('NirTranspiler.Strings', {
     singleton : true,
 
+    constructor: function() {
+        Locale.addPackageStrings(this);
+    },
+
+    get: function(name) {
+        return Locale.getString(name, Ext.getClassName(this));
+    },
+
     strings: {
         "en": {
             "confirmAknTranslationTitle": "Translate to AkomaNtoso",
-            "confirmAknTranslationQuestion": "We can't open NIR files directly. Would you like to convert it to Akomantoso?"
+            "confirmAknTranslationQuestion": "We can't open NIR files directly. Would you like to convert it to Akomantoso?",
+            "nirPreviewTitle": "NIR Preview"
         },
         "it": {
             "confirmAknTranslationTitle": "Conversione ad AkomaNtoso",
-            "confirmAknTranslationQuestion": "LIME non permette di aprire i file NIR direttamente. Convertirlo in Akomantoso?"
+            "confirmAknTranslationQuestion": "LIME non permette di aprire i file NIR direttamente. Convertirlo in Akomantoso?",
+            "nirPreviewTitle": "Anteprima NIR"
         }
     }
 });

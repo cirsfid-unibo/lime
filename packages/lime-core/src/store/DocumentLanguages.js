@@ -2000,13 +2000,12 @@ Ext.define('LIME.store.DocumentLanguages', {
         }
     ],
 
-    listeners: {
+    constructor: function() {
+        this.callParent(arguments);
         // Replace names with the translated ones
-        load: function(store, records) {
-            records.forEach(function(r) {
-                var translatedName = Locale.getString('languages')[r.get('code')];
-                if (translatedName) r.set('name', translatedName);
-            });
-        }
+        this.each(function(r) {
+            var translatedName = Locale.getString('languages')[r.get('code')];
+            if (translatedName) r.set('name', translatedName);
+        });
     }
 });

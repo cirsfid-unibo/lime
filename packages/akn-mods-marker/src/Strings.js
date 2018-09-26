@@ -88,7 +88,8 @@
             "redline": "Redline",
             "redlineMultiple": "Redline multiple",
             "setRefs": "Set refs",
-            "sourceOf": "Source of"
+            "sourceOf": "Source of",
+            "passiveModsDefaultBehaviour": "Passive modifications default behavior"
         },
         "it": {
             "insertion": "Inserimento",
@@ -114,7 +115,10 @@
             "splitOnlySiblings": "Puoi dividere solo elementi vicini",
             "causedRenumbering": "Questa modifica ha causato una rinumerazione?",
             "propagationRenumbering": "Vuoi propagare la rinumerazione?",
-            "selection": "Selezione"
+            "selection": "Selezione",
+            "passiveModsDefaultBehaviour": "Modalità di marcatura delle modifiche passive",
+            "amendment": "Emendamento",
+            "consolidation": "Consolidamento"
         },
         "es": {
             "insertion": "Insertion",

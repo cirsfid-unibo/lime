@@ -83,13 +83,13 @@ Ext.define('AknAutomaticMarkup.Controller', {
 
     getOptionsMenuItems: function() {
         return [{
-            text: 'Automatic markup',
+            text: Locale.getString('parseDocumentText', this.getPluginName()),
             plain: true
         }, {
             xtype: 'menucheckitem',
             itemId: 'enableParagraphParsing',
             checked: this.paragraphAutomaticMarkup,
-            text: 'Paragraph automatic markup' //TODO: translate
+            text: Locale.getString('paragraphParse', this.getPluginName())
         }];
     },
 

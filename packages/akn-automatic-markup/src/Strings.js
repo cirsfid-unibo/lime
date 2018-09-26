@@ -47,7 +47,7 @@
  Ext.define('AknAutomaticMarkup.Strings', {
     singleton : true,
 
-     strings: {
+    strings: {
         "en": {
             "parseDocumentText": "Automatic markup",
             "parseDocumentTooltip": "Try to markup automatically this document",

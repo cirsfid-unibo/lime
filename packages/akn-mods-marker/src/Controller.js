@@ -147,7 +147,7 @@ Ext.define('AknModsMarker.Controller', {
         function getRadioCheckItem(type) {
             return {
                 xtype: 'menucheckitem',
-                text: type,
+                text: AknModsMarker.Strings.get(type),
                 group : 'passiveModDefault',
                 checked: me.defaultPassiveModMode == type,
                 handler: me.setDefaultPassiveModMode.bind(me, type)
@@ -156,7 +156,7 @@ Ext.define('AknModsMarker.Controller', {
         return [{
             xtype: 'menuseparator'
         },{
-            text: 'Passive modifications default behavior',
+            text: AknModsMarker.Strings.get('passiveModsDefaultBehaviour'),
             plain: true
         },
         getRadioCheckItem('amendment'),
